@@ -1,0 +1,83 @@
+{
+    "title": "Karabiner Settings",
+    "rules": [
+        {
+            "description": "left_control to right_command(without VMWare)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_control",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "right_command"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "^com\\.vmware\\.fusion"
+                            ]
+                        },
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                {
+                                    "vendor_id": 1278,
+                                    "product_id": 514,
+                                    "description": "HHKB-BT"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "right_command to left_control(without VMWare)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_command",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "^com\\.vmware\\.fusion"
+                            ]
+                        },
+                        {
+                            "type": "device_if",
+                            "identifiers": [
+                                {
+                                    "vendor_id": 1278,
+                                    "product_id": 514,
+                                    "description": "HHKB-BT"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+   ]
+}

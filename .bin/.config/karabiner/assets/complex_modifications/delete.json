@@ -1,0 +1,25 @@
+{
+  "title": "delete h",
+  "rules": [
+    {
+      "description": "<C-h> to delete",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "h",
+            "modifiers": {
+              "mandatory": ["left_control"],
+              "optional": ["any"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "delete_or_backspace"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    }
+  ]
+}
