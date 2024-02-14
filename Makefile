@@ -1,5 +1,5 @@
 # Do everything.
-all: init link defaults brew
+all: init link brew
 
 # Set initial preference.
 init:
