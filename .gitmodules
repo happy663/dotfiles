@@ -1,3 +1,0 @@
-[submodule ".bin/.config/.bin/.config/nvim/pack/packer/start/packer.nvim"]
-	path = .bin/.config/.bin/.config/nvim/pack/packer/start/packer.nvim
-	url = https://github.com/wbthomason/packer.nvim
