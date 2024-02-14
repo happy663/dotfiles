@@ -11,7 +11,7 @@
 --]]
 
 vim.o.updatetime = 700
-vim.cmd [[
+vim.cmd([[
   highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
   highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
   highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
@@ -19,29 +19,33 @@ vim.cmd [[
   autocmd!
   autocmd CursorHold,CursorHoldI * lua require'lsp-hover'.on_cursor_hold()
   augroup END
-]]
+]])
 
-require("noice").setup {
+require("noice").setup({
   routes = {
     {
       filter = {
         event = "notify",
         find = "No information available",
       },
+      filter = {
+        event = "notify",
+        find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
+      },
       opts = { skip = true },
     },
   },
-}
+})
 
-vim.cmd [[
+vim.cmd([[
   autocmd BufLeave * silent! update
   autocmd BufUnload * silent! update
-]]
+]])
 
-vim.cmd [[
+vim.cmd([[
   autocmd CursorHold * silent! update
-]]
+]])
 
-vim.cmd [[
+vim.cmd([[
   autocmd BufWritePost init.lua source <afile> | echo "Configuration reloaded!"
-]]
+]])

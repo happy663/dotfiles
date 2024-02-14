@@ -1,20 +1,20 @@
 -- lsp.lua
 -- Mason and LSP configuration setup
-require("mason").setup {
+require("mason").setup({
   ui = {
     border = "single",
   },
-}
+})
 require("mason-lspconfig").setup()
 
-local lspconfig = require "lspconfig"
+local lspconfig = require("lspconfig")
 
 -- Individual LSP server configurations
-lspconfig.tsserver.setup {}
+lspconfig.tsserver.setup({})
 
 -- nvim-cmp setup for autocompletion
-local cmp = require "cmp"
-cmp.setup {
+local cmp = require("cmp")
+cmp.setup({
   snippet = {
     expand = function(args)
       -- For vsnip users
@@ -28,10 +28,10 @@ cmp.setup {
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.close(),
-    ["<CR>"] = cmp.mapping.confirm {
+    ["<CR>"] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
-    },
+    }),
   },
   sources = {
     { name = "nvim_lsp" },
@@ -50,7 +50,7 @@ cmp.setup {
       cmp.config.compare.length,
     },
   },
-}
+})
 
 -- Additional LSP related settings or functions can be added here
 -- For example, setting up LSP keybindings, diagnostics format, etc.
@@ -71,11 +71,11 @@ end
 
 -- Function to setup LSP servers with the above keymaps
 local function setup_servers()
-  require("mason-lspconfig").setup_handlers {
+  require("mason-lspconfig").setup_handlers({
     function(server_name) -- Default handler for all servers
       -- 特定のLSPサーバーのカスタム設定を行う
       if server_name == "lua_ls" then
-        require("lspconfig")[server_name].setup {
+        require("lspconfig")[server_name].setup({
           on_attach = set_lsp_keymaps,
           settings = {
             Lua = {
@@ -85,25 +85,25 @@ local function setup_servers()
               },
             },
           },
-        }
+        })
       else
-        require("lspconfig")[server_name].setup {
+        require("lspconfig")[server_name].setup({
           on_attach = set_lsp_keymaps,
-        }
+        })
       end
     end,
-  }
+  })
 end
 
 setup_servers()
 
-require("lspconfig").eslint.setup {
+require("lspconfig").eslint.setup({
   on_attach = function(client, bufnr)
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = bufnr,
       command = "EslintFixAll",
     })
   end,
-}
+})
 
 require("lspconfig.ui.windows").default_options.border = "single"
