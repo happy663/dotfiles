@@ -1,0 +1,104 @@
+-- keymaps.lua
+local map = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+
+-- Normal mode keymaps
+map("n", "<C-h>", "<C-w>h", opts)
+map("n", "<C-l>", "<C-w>l", opts)
+map("n", "<C-j>", "<C-w>j", opts)
+map("n", "<C-k>", "<C-w>k", opts)
+map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
+
+-- easy-motion
+map("n", "<Leader><Leader>", "<Plug>(easymotion-prefix)", opts)
+
+-- fuzzy-motion
+map("n", "<Leader>fu", "<CMD>FuzzyMotion<CR>", opts)
+
+-- ファイルを検索する
+map("n", "<C-p>", '<cmd>lua require("telescope.builtin").find_files()<CR>', opts)
+-- ファイル内をgrep検索する
+map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep()<CR>', opts)
+-- カーソルまたは選択範囲のgrep検索
+map("n", "<Leader>*", '<cmd>lua require("telescope.builtin").grep_string()<CR>', opts)
+-- 履歴表示
+map("n", "<Leader>h", '<cmd>lua require("telescope.builtin").search_history()<CR>', opts)
+-- Gitブランチを切り替える
+map("n", "<Leader>b", '<cmd>lua require("telescope.builtin").git_branches()<CR>', opts)
+
+map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
+map("n", "<leader>/", "<Plug>NERDCommenterToggle", opts)
+map("n", "x", '"_x', opts)
+map("n", "-", "<CMD>split<CR>", opts)
+map("n", "|", "<CMD>vsplit<CR>", opts)
+map("n", "<leader>wl", "<CMD>BufferLineCloseRight<CR>", opts)
+map("n", "<S-k>", "<CMD>BufferLineCycleNext<CR>", opts)
+map("n", "<S-j>", "<CMD>BufferLineCyclePrev<CR>", opts)
+map("n", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
+map("n", "<C-f>", "<CMD>lua vim.lsp.buf.format({ async = false })<CR><CMD>w<CR>", opts)
+
+map("n", "<leader>w", "<CMD>w<CR>", opts)
+map("n", "<leader>wq", "<CMD>wq<CR>", opts)
+map("n", "<leader>q", "<CMD>q!<CR>", opts)
+
+-- Insert mode keymaps
+map("i", "jj", "<Esc>", opts)
+map("i", "<C-f>", "<Right>", opts)
+map("i", "<C-b>", "<Left>", opts)
+
+-- Visual mode keymaps
+map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
+
+-- terminal mode
+map("t", "<esc> ", [[<C-\><C-n>]], opts)
+map("t", "jj", [[<C-\><C-n>]], opts)
+--map('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
+--map('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
+map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
+map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
+
+local Terminal = require("toggleterm.terminal").Terminal
+
+local lazygit = Terminal:new {
+  cmd = "lazygit",
+  direction = "float",
+  hidden = true,
+  on_open = function(term)
+    vim.api.nvim_buf_set_keymap(term.bufnr, "t", "j", "<Down>", { noremap = true })
+    vim.api.nvim_buf_set_keymap(term.bufnr, "t", "k", "<Up>", { noremap = true })
+  end,
+  on_close = function(term)
+    vim.api.nvim_buf_del_keymap(term.bufnr, "t", "j")
+    vim.api.nvim_buf_del_keymap(term.bufnr, "t", "k")
+  end,
+}
+
+function _lazygit_toggle() lazygit:toggle() end
+
+vim.api.nvim_set_keymap("n", "<Leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
+
+-- Lazygitが開かれたときにキーバインドを設定
+vim.api.nvim_create_autocmd("TermOpen", {
+  pattern = "term://*lazygit*",
+  callback = function()
+    -- TermモードとInsertモードでのマッピング
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
+  end,
+})
+
+-- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
+function goto_definition_vsplit()
+  vim.cmd "vsplit" -- 縦分割コマンド
+  vim.cmd "tag"    -- タグジャンプコマンド
+end
+
+-- カスタムコマンドとして設定
+vim.api.nvim_set_keymap("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
+
+vim.api.nvim_set_keymap("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+
+
+
