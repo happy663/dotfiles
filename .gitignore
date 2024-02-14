@@ -3,4 +3,8 @@ nvimbackup/
 configstore/
 .DS_Store
 Github/
+gtk-2.0/
+gh/
+ghc/
+
 
