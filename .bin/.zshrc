@@ -50,7 +50,6 @@ bindkey '^x^b' anyframe-widget-checkout-git-branch
 alias ls="gls --color=auto"
 alias cat=bat
 alias g='cd $(ghq root)/$(ghq list | peco)'
-#alias gh='hub browse $(ghq list | ptteco | cut -d "/" -f 2,3)'
 alias find='fd'
 alias de='docker exec -it $(docker ps | peco | cut -d " " -f 1) /bin/bash'
 # ドットの数で表現
@@ -63,41 +62,22 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 export GOPATH=$HOME/go
 export PATH=$PATH:$HOME/.local/bin
 
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 alias gc='ghq get'
 
-# Fig post block. Keep at the bottom of this file.
-#[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
-
-
 
 [ -f "/Users/toyama/.ghcup/env" ] && source "/Users/toyama/.ghcup/env" # ghcup-env
-
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/shims:$PATH"
 eval "$(pyenv init --path)" # これを追記
 eval "$(pyenv init -)"
 
-#export CC=/opt/homebrew/Cellar/gcc/13.2.0/bin/gcc-13
-#export CXX=/opt/homebrew/Cellar/gcc/13.2.0/bin/g++-13
-#export PATH="$(brew --prefix gh)/bin:$PATH"
-
-#export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
-#export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
-
-#export LDFLAGS="-L$(brew --prefix openssl)/lib"
-#export CPPFLAGS="-I$(brew --prefix openssl)/include"
-#export PKG_CONFIG_PATH="$(brew --prefix openssl)/lib/pkgconfig"
-
 export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib $LDFLAGS"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include $CPPFLAGS"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
-
-
 
 export HISTSIZE=10000
 
