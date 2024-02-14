@@ -1,20 +1,20 @@
 -- plugins.lua
-require("packer").startup {
+require("packer").startup({
   function()
-    use "wbthomason/packer.nvim"    -- Packer can manage itself
-    use "easymotion/vim-easymotion" -- easymotion plugin
-    use "skanehira/jumpcursor.vim"
+    use("wbthomason/packer.nvim")  -- Packer can manage itself
+    use("easymotion/vim-easymotion") -- easymotion plugin
+    use("skanehira/jumpcursor.vim")
     -- Color themes
-    use "hrsh7th/vim-searchx"
-    use "gruvbox-community/gruvbox"
-    use "https://codeberg.org/miyakogi/iceberg-tokyo.nvim"
-    use "Mofiqul/dracula.nvim"
+    use("hrsh7th/vim-searchx")
+    use("gruvbox-community/gruvbox")
+    use("https://codeberg.org/miyakogi/iceberg-tokyo.nvim")
+    use("Mofiqul/dracula.nvim")
     -- File tree
-    use {
+    use({
       "nvim-tree/nvim-tree.lua",
       requires = "nvim-tree/nvim-web-devicons", -- オプション: アイコン表示のため
       config = function()
-        require("nvim-tree").setup {
+        require("nvim-tree").setup({
           sort_by = "case_sensitive",
           view = {
             width = 30,
@@ -25,55 +25,61 @@ require("packer").startup {
           filters = {
             dotfiles = false,
           },
-        }
+        })
       end,
-    }
+    })
     --Commenting
-    use "preservim/nerdcommenter"
+    use("preservim/nerdcommenter")
     -- LSP
-    use "neovim/nvim-lspconfig"
-    use "williamboman/mason.nvim"
-    use "williamboman/mason-lspconfig.nvim"
+    use("neovim/nvim-lspconfig")
+    use("williamboman/mason.nvim")
+    use("williamboman/mason-lspconfig.nvim")
     -- Completion
-    use {
+    use({
       "hrsh7th/nvim-cmp",
       requires = {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
       },
-    }
+    })
 
     -- FZF
-    use {
+    use({
       "ibhagwan/fzf-lua",
       requires = { "kyazdani42/nvim-web-devicons" },
-    }
-    use { "kana/vim-operator-user" }
-    use { "kana/vim-operator-replace" }
+    })
+    use({ "kana/vim-operator-user" })
+    use({ "kana/vim-operator-replace" })
     -- Auto pairs
-    use {
+    use({
       "windwp/nvim-autopairs",
-      config = function() require("nvim-autopairs").setup {} end,
-    }
+      config = function()
+        require("nvim-autopairs").setup({})
+      end,
+    })
     -- Bufferline
-    use {
+    use({
       "akinsho/bufferline.nvim",
       tag = "*",
       requires = "kyazdani42/nvim-web-devicons",
-      config = function() require("bufferline").setup {} end,
-    }
+      config = function()
+        require("bufferline").setup({})
+      end,
+    })
 
-    use {
+    use({
       "nvimtools/none-ls.nvim",
-      config = function() require("null-ls").setup() end,
+      config = function()
+        require("null-ls").setup()
+      end,
       requires = { "nvim-lua/plenary.nvim" },
-    }
+    })
 
-    use {
+    use({
       "akinsho/toggleterm.nvim",
       tag = "*",
       config = function()
-        require("toggleterm").setup {
+        require("toggleterm").setup({
           size = 20,
           open_mapping = [[<c-\>]],
           hide_numbers = true,
@@ -92,15 +98,15 @@ require("packer").startup {
               background = "Normal",
             },
           },
-        }
+        })
       end,
-    }
+    })
 
-    use {
+    use({
       "lewis6991/gitsigns.nvim",
       tag = "*",
       config = function()
-        require("gitsigns").setup {
+        require("gitsigns").setup({
           signs = {
             add = { text = "│" },
             change = { text = "│" },
@@ -110,8 +116,8 @@ require("packer").startup {
             untracked = { text = "┆" },
           },
           signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-          numhl = false,     -- Toggle with `:Gitsigns toggle_numhl`
-          linehl = false,    -- Toggle with `:Gitsigns toggle_linehl`
+          numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+          linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
           word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
           watch_gitdir = {
             follow_files = true,
@@ -129,7 +135,7 @@ require("packer").startup {
           current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
           sign_priority = 6,
           update_debounce = 100,
-          status_formatter = nil,  -- Use default
+          status_formatter = nil, -- Use default
           max_file_length = 40000, -- Disable if file is longer than this (in lines)
           preview_config = {
             -- Options passed to nvim_open_win
@@ -142,27 +148,29 @@ require("packer").startup {
           yadm = {
             enable = false,
           },
-        }
+        })
       end,
-    }
+    })
 
     --レジスタ
-    use {
+    use({
       "tversteeg/registers.nvim",
-      config = function() require("registers").setup() end,
-    }
+      config = function()
+        require("registers").setup()
+      end,
+    })
 
     --コードランナー
-    use "CRAG666/code_runner.nvim"
-    use "nvim-lua/plenary.nvim"
+    use("CRAG666/code_runner.nvim")
+    use("nvim-lua/plenary.nvim")
 
     -- コマンドラインを中央にする
-    use {
+    use({
       "folke/noice.nvim",
       --event = "VimEnter",
       config = function()
         -- add any options here
-        require("noice").setup {
+        require("noice").setup({
           lsp = {
             -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
             override = {
@@ -173,13 +181,13 @@ require("packer").startup {
           },
           -- you can enable a preset for easier configuration
           presets = {
-            bottom_search = true,         -- use a classic bottom cmdline for search
-            command_palette = true,       -- position the cmdline and popupmenu together
+            bottom_search = true,   -- use a classic bottom cmdline for search
+            command_palette = true, -- position the cmdline and popupmenu together
             long_message_to_split = true, -- long messages will be sent to a split
-            inc_rename = false,           -- enables an input dialog for inc-rename.nvim
-            lsp_doc_border = false,       -- add a border to hover docs and signature help
+            inc_rename = false,     -- enables an input dialog for inc-rename.nvim
+            lsp_doc_border = false, -- add a border to hover docs and signature help
           },
-        }
+        })
       end,
       requires = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries in packer's use
@@ -189,96 +197,104 @@ require("packer").startup {
         --   If not available, we fallback to something else, but in packer, you just include it if needed.
         "rcarriga/nvim-notify",
       },
-    }
+    })
 
-    use "lukas-reineke/indent-blankline.nvim"
+    use("lukas-reineke/indent-blankline.nvim")
 
-    use {
+    use({
       "nvim-telescope/telescope.nvim",
       tag = "0.1.5",
       -- or                            , branch = '0.1.x',
       requires = { { "nvim-lua/plenary.nvim" } },
-    }
+    })
 
-    use {
+    use({
       "numToStr/Comment.nvim",
-      config = function() require("Comment").setup() end,
-    }
+      config = function()
+        require("Comment").setup()
+      end,
+    })
 
-    use {
+    use({
       "github/copilot.vim",
-      cond = function() return not vim.g.vscode end,
-    }
+      cond = function()
+        return not vim.g.vscode
+      end,
+    })
 
-    use {
+    use({
       "nvim-treesitter/nvim-treesitter",
       run = function()
-        local ts_update = require("nvim-treesitter.install").update { with_sync = true }
+        local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
         ts_update()
       end,
-    }
+    })
 
-    use {
+    use({
       "yuki-yano/fuzzy-motion.vim",
       requires = {
         "vim-denops/denops.vim",
       },
-    }
+    })
 
-    use {
+    use({
       "nvim-telescope/telescope-frecency.nvim",
-      config = function() require("telescope").load_extension "frecency" end,
-    }
+      config = function()
+        require("telescope").load_extension("frecency")
+      end,
+    })
 
-    use {
+    use({
       "nvim-telescope/telescope-file-browser.nvim",
       requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-    }
+    })
 
-    use {
+    use({
       "kylechui/nvim-surround",
       tag = "*", -- Use for stability; omit to use `main` branch for the latest features
       config = function()
-        require("nvim-surround").setup {
+        require("nvim-surround").setup({
           -- Configuration here, or leave empty to use defaults
-        }
+        })
       end,
-    }
+    })
 
-    use {
+    use({
       "windwp/nvim-ts-autotag",
-    }
+    })
 
-    use {
+    use({
       "antosha417/nvim-lsp-file-operations",
       requires = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-tree.lua",
       },
-      config = function() require("lsp-file-operations").setup() end,
-    }
+      config = function()
+        require("lsp-file-operations").setup()
+      end,
+    })
   end,
   config = {
     display = {
       open_fn = require("packer.util").float,
     },
   },
-}
+})
 
-local null_ls = require "null-ls"
-null_ls.setup {
+local null_ls = require("null-ls")
+null_ls.setup({
   sources = {
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.completion.spell,
     null_ls.builtins.formatting.prettier,
     null_ls.builtins.code_actions.eslint_d, -- Code Actionsを追加
-    null_ls.builtins.diagnostics.luacheck.with {
+    null_ls.builtins.diagnostics.luacheck.with({
       extra_args = { "--globals", "vim", "--globals", "use" },
-    },
+    }),
   },
-}
+})
 
-require("code_runner").setup {
+require("code_runner").setup({
   filetype = {
     java = {
       "cd $dir &&",
@@ -294,7 +310,7 @@ require("code_runner").setup {
     },
     c = { "cd $dir && gcc $fileName -o $fileNameWithoutExt && ./$fileNameWithoutExt" },
   },
-}
+})
 
 local highlight = {
   "RainbowRed",
@@ -306,7 +322,7 @@ local highlight = {
   "RainbowCyan",
 }
 
-local hooks = require "ibl.hooks"
+local hooks = require("ibl.hooks")
 -- create the highlight groups in the highlight setup hook, so they are reset every time the colorscheme changes
 hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
   vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
@@ -318,9 +334,9 @@ hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
   vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
 end)
 
-require("ibl").setup { indent = { highlight = highlight } }
+require("ibl").setup({ indent = { highlight = highlight } })
 
-require("telescope").setup {
+require("telescope").setup({
   defaults = {
     sorting_strategy = "ascending",
     layout_strategy = "horizontal",
@@ -334,9 +350,9 @@ require("telescope").setup {
   },
   pickers = {},
   extensions = {},
-}
+})
 
-require("nvim-treesitter.configs").setup {
+require("nvim-treesitter.configs").setup({
   -- A list of parser names, or "all" (the five listed parsers should always be installed)
   ensure_installed = "all",
   -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -355,7 +371,7 @@ require("nvim-treesitter.configs").setup {
     enable = true,
     disable = {},
   },
-}
+})
 
 require("nvim-ts-autotag").setup()
 
