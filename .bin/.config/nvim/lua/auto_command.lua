@@ -28,10 +28,10 @@ require("noice").setup({
         event = "notify",
         find = "No information available",
       },
-      filter = {
-        event = "notify",
-        find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
-      },
+      --filter = {
+      --event = "notify",
+      --find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
+      --},
       opts = { skip = true },
     },
   },
@@ -47,5 +47,10 @@ vim.cmd([[
 ]])
 
 vim.cmd([[
-  autocmd BufWritePost init.lua source <afile> | echo "Configuration reloaded!"
+  autocmd BufWritePost *.lua source <afile> | echo "Configuration reloaded!"
 ]])
+
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  -- 枠のスタイルを指定します: single, double, rounded, solid, shadow など
+  border = "rounded",
+})

@@ -59,46 +59,32 @@ map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
 map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
 
-local Terminal = require("toggleterm.terminal").Terminal
-
-local lazygit = Terminal:new {
-  cmd = "lazygit",
-  direction = "float",
-  hidden = true,
-  on_open = function(term)
-    vim.api.nvim_buf_set_keymap(term.bufnr, "t", "j", "<Down>", { noremap = true })
-    vim.api.nvim_buf_set_keymap(term.bufnr, "t", "k", "<Up>", { noremap = true })
-  end,
-  on_close = function(term)
-    vim.api.nvim_buf_del_keymap(term.bufnr, "t", "j")
-    vim.api.nvim_buf_del_keymap(term.bufnr, "t", "k")
-  end,
-}
-
-function _lazygit_toggle() lazygit:toggle() end
-
-vim.api.nvim_set_keymap("n", "<Leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
-
--- Lazygitが開かれたときにキーバインドを設定
-vim.api.nvim_create_autocmd("TermOpen", {
-  pattern = "term://*lazygit*",
-  callback = function()
-    -- TermモードとInsertモードでのマッピング
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
-  end,
-})
-
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
-  vim.cmd "vsplit" -- 縦分割コマンド
-  vim.cmd "tag"    -- タグジャンプコマンド
+  vim.cmd("vsplit") -- 縦分割コマンド
+  vim.cmd("tag")   -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定
-vim.api.nvim_set_keymap("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
+map("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+map("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 
+-- -- Lazygitが開かれたときにキーバインドを設定
+vim.api.nvim_create_autocmd("TermOpen", {
+  pattern = "term://*lazygit*",
+  callback = function()
+    print("TermOpen triggered")
+    -- TermモードとInsertモードでのマッピング
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
+    --vim.api.nvim_buf_set_keymap(0, "t", "<C-m>", "<cmd>close<CR>", opts)
+  end,
+})
 
+--map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
+map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
 
+function OpenLazyGit()
+  vim.cmd("LazyGit")
+end
