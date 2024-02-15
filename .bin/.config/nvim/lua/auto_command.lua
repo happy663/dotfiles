@@ -54,3 +54,10 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
   -- 枠のスタイルを指定します: single, double, rounded, solid, shadow など
   border = "rounded",
 })
+
+vim.api.nvim_create_autocmd("CursorMoved", {
+  pattern = "*",
+  callback = function()
+    vim.cmd("normal! zz")
+  end,
+})
