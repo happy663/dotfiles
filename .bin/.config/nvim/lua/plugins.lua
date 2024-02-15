@@ -284,6 +284,11 @@ require("packer").startup({
         "nvim-lua/plenary.nvim",
       },
     })
+
+    use({
+      "brglng/vim-im-select",
+    })
+
   end,
   config = {
     display = {

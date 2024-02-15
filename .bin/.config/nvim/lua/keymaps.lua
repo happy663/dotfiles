@@ -82,9 +82,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
---map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
 map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
-
-function OpenLazyGit()
-  vim.cmd("LazyGit")
-end
+map("i", "っj", "<esc>", opts)
+map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
