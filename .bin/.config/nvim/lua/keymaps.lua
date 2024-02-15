@@ -16,9 +16,9 @@ map("n", "<Leader><Leader>", "<Plug>(easymotion-prefix)", opts)
 map("n", "<Leader>fu", "<CMD>FuzzyMotion<CR>", opts)
 
 -- ファイルを検索する
-map("n", "<C-p>", '<cmd>lua require("telescope.builtin").find_files()<CR>', opts)
+map("n", "<C-p>", "<cmd>Telescope find_files hidden=true<CR>", opts)
 -- ファイル内をgrep検索する
-map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep()<CR>', opts)
+map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep() hidden=true<CR>', opts)
 -- カーソルまたは選択範囲のgrep検索
 map("n", "<Leader>*", '<cmd>lua require("telescope.builtin").grep_string()<CR>', opts)
 -- 履歴表示
