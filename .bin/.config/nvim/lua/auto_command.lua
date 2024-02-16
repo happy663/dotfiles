@@ -28,10 +28,13 @@ require("noice").setup({
         event = "notify",
         find = "No information available",
       },
-      --filter = {
-      --event = "notify",
-      --find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
-      --},
+      opts = { skip = true },
+    },
+    {
+      filter = {
+        event = "notify",
+        find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
+      },
       opts = { skip = true },
     },
   },
