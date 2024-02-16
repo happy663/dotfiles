@@ -234,6 +234,12 @@ require("packer").startup({
     })
 
     use({
+      "nvim-telescope/telescope-fzf-native.nvim",
+      run = "make",
+      requires = { "nvim-telescope/telescope.nvim" },
+    })
+
+    use({
       "numToStr/Comment.nvim",
       config = function()
         require("Comment").setup()
@@ -380,7 +386,14 @@ require("telescope").setup({
     },
   },
   pickers = {},
-  extensions = {},
+  extensions = {
+    fzf = {
+      fuzzy = true,                -- false will only do exact Matching
+      override_generic_sorter = true, -- override the generic sorter
+      override_file_sorter = true, -- override the file sorter
+      case_mode = "smart_case",    -- or "ignore_case" or "respect_case"
+    },
+  },
 })
 
 require("nvim-treesitter.configs").setup({
