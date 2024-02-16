@@ -212,6 +212,28 @@ require("packer").startup({
     })
 
     use({
+      "LukasPietzschmann/telescope-tabs",
+      requires = { "nvim-telescope/telescope.nvim" },
+      config = function()
+        require("telescope-tabs").setup({
+          -- Your custom config :^)
+        })
+      end,
+    })
+
+    use({
+      "nvim-telescope/telescope-frecency.nvim",
+      config = function()
+        require("telescope").load_extension("frecency")
+      end,
+    })
+
+    use({
+      "nvim-telescope/telescope-file-browser.nvim",
+      requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+    })
+
+    use({
       "numToStr/Comment.nvim",
       config = function()
         require("Comment").setup()
@@ -238,18 +260,6 @@ require("packer").startup({
       requires = {
         "vim-denops/denops.vim",
       },
-    })
-
-    use({
-      "nvim-telescope/telescope-frecency.nvim",
-      config = function()
-        require("telescope").load_extension("frecency")
-      end,
-    })
-
-    use({
-      "nvim-telescope/telescope-file-browser.nvim",
-      requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     })
 
     use({
@@ -288,7 +298,6 @@ require("packer").startup({
     use({
       "brglng/vim-im-select",
     })
-
   end,
   config = {
     display = {
@@ -366,6 +375,9 @@ require("telescope").setup({
         prompt_position = "top",
       },
     },
+    cache_picker = {
+      num_pickers = 5,
+    },
   },
   pickers = {},
   extensions = {},
@@ -396,4 +408,6 @@ require("nvim-ts-autotag").setup()
 
 --local treeutils = require "treeutils"
 --vim.keymap.set("n", "<Leader>f", treeutils.launch_find_files)
+--vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)
+--vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)
 --vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)
