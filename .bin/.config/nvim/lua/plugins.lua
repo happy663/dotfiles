@@ -13,20 +13,6 @@ require("packer").startup({
     use({
       "nvim-tree/nvim-tree.lua",
       requires = "nvim-tree/nvim-web-devicons", -- オプション: アイコン表示のため
-      config = function()
-        require("nvim-tree").setup({
-          sort_by = "case_sensitive",
-          view = {
-            width = 30,
-          },
-          renderer = {
-            group_empty = true,
-          },
-          filters = {
-            dotfiles = false,
-          },
-        })
-      end,
     })
     --Commenting
     use("preservim/nerdcommenter")
@@ -418,3 +404,16 @@ require("nvim-treesitter.configs").setup({
 })
 
 require("nvim-ts-autotag").setup()
+
+require("nvim-tree").setup({
+  sort_by = "case_sensitive",
+  view = {
+    width = 30,
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = false,
+  },
+})
