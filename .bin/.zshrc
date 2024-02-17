@@ -84,3 +84,6 @@ export HISTSIZE=10000
 alias vim="nvim"
 
 PATH=~/.console-ninja/.bin:$PATH
+
+
+export PATH="${PATH}:/Users/toyama/.local/lib/python3.10/site-packages"
