@@ -418,9 +418,3 @@ require("nvim-treesitter.configs").setup({
 })
 
 require("nvim-ts-autotag").setup()
-
---local treeutils = require "treeutils"
---vim.keymap.set("n", "<Leader>f", treeutils.launch_find_files)
---vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)
---vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)
---vim.keymap.set("n", "<Leader>g", treeutils.launch_live_grep)

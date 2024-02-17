@@ -50,8 +50,8 @@ map("i", "<C-b>", "<Left>", opts)
 map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
 
 -- terminal mode
-map("t", "<esc> ", [[<C-\><C-n>]], opts)
-map("t", "jj", [[<C-\><C-n>]], opts)
+map("t", "<esc>", [[<C-\><C-n>]], opts)
+
 --map('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 --map('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
@@ -61,8 +61,8 @@ map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
-  vim.cmd("vsplit") -- 縦分割コマンド
-  vim.cmd("tag")   -- タグジャンプコマンド
+	vim.cmd("vsplit") -- 縦分割コマンド
+	vim.cmd("tag") -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定
@@ -72,17 +72,17 @@ map("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 
 -- -- Lazygitが開かれたときにキーバインドを設定
 vim.api.nvim_create_autocmd("TermOpen", {
-  pattern = "term://*lazygit*",
-  callback = function()
-    print("TermOpen triggered")
-    -- TermモードとInsertモードでのマッピング
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
-    --vim.api.nvim_buf_set_keymap(0, "t", "<C-m>", "<cmd>close<CR>", opts)
-  end,
+	pattern = "term://*lazygit*",
+	callback = function()
+		print("TermOpen triggered")
+		-- TermモードとInsertモードでのマッピング
+		vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
+		vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
+		--vim.api.nvim_buf_set_keymap(0, "t", "<C-m>", "<cmd>close<CR>", opts)
+	end,
 })
 
-map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
+map("n", "<Leader>g", "<cmd>LazyGit<CR>", opts)
 map("i", "っj", "<esc>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
