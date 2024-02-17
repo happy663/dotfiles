@@ -87,3 +87,4 @@ PATH=~/.console-ninja/.bin:$PATH
 
 
 export PATH="${PATH}:/Users/toyama/.local/lib/python3.10/site-packages"
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)

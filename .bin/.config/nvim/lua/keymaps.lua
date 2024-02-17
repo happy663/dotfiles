@@ -50,8 +50,8 @@ map("i", "<C-b>", "<Left>", opts)
 map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
 
 -- terminal mode
-map("t", "<esc> ", [[<C-\><C-n>]], opts)
-map("t", "jj", [[<C-\><C-n>]], opts)
+map("t", "<esc>", [[<C-\><C-n>]], opts)
+
 --map('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 --map('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
@@ -82,8 +82,13 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-map("n", "<C-m>", "<cmd>LazyGit<CR>", opts)
+map("n", "<Leader>g", "<cmd>LazyGit<CR>", opts)
 map("i", "っj", "<esc>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
 map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
+
+-- windows用
+-- windowsではctrl+hをbackspaceに当てている
+-- 他環境と同じ動きになるように調整
+map("n", "<BS>", "<C-w>h", opts)
