@@ -35,7 +35,8 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 Masonでlsp周りの設定を行う必要があるが，そのための設定ファイルはないので検討中
 
 # Shell
-zshシェルを使用している
+zshシェルを使用
+
 zshのパスは以下で確認できる
 ```
 brew --prefix zsh
