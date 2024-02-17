@@ -1,6 +1,6 @@
 # Toyama Dotfiles
 
-主にmacOSでの向けでの設定ファイルを管理
+主にmacOS環境をメインに設定ファイルを管理している
 
 Windows環境でもWSL2でbrewを入れれば構築可能
 
@@ -31,3 +31,6 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 実行後NeovimがPackerコマンドを認識するのでコマンドラインモードで`:PackerInstall`を実行すればプラグインをインストールできる
 
 インストール後は`:PackerSync`でプラグインを反映できる
+
+Masonでlsp周りの設定を行う必要があるが，そのための設定ファイルはないので検討中
+
