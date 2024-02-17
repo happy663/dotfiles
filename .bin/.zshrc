@@ -84,3 +84,5 @@ export HISTSIZE=10000
 alias vim="nvim"
 
 PATH=~/.console-ninja/.bin:$PATH
+
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
