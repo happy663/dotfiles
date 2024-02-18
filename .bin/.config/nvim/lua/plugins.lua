@@ -305,6 +305,7 @@ null_ls.setup({
     null_ls.builtins.completion.spell,
     null_ls.builtins.formatting.prettier,
     null_ls.builtins.code_actions.eslint_d, -- Code Actionsを追加
+    null_ls.builtins.formatting.latexindent,
     null_ls.builtins.diagnostics.luacheck.with({
       extra_args = { "--globals", "vim", "--globals", "use" },
     }),
