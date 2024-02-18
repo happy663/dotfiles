@@ -13,7 +13,7 @@ map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 map("n", "<Leader><Leader>", "<Plug>(easymotion-prefix)", opts)
 
 -- fuzzy-motion
-map("n", "<Leader>fu", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 
 -- ファイルを検索する
 map("n", "<C-p>", "<cmd>Telescope find_files hidden=true<CR>", opts)
