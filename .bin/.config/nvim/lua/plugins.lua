@@ -165,7 +165,7 @@ require("packer").startup({
               ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
             },
             hover = {
-              enable = false,
+              enabled = false,
             },
           },
           -- you can enable a preset for easier configuration

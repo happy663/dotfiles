@@ -64,9 +64,18 @@ local function set_lsp_keymaps(bufnr)
   -- Keymaps for LSP
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-  buf_map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
+  --buf_map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   -- More keymaps can be added here
+end
+
+local on_attach = function(client, bufnr)
+  set_lsp_keymaps(bufnr)
+
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    -- 枠のスタイルを指定します: single, double, rounded, solid, shadow など
+    border = "single",
+  })
 end
 
 -- Function to setup LSP servers with the above keymaps
@@ -76,7 +85,7 @@ local function setup_servers()
       -- 特定のLSPサーバーのカスタム設定を行う
       if server_name == "lua_ls" then
         require("lspconfig")[server_name].setup({
-          on_attach = set_lsp_keymaps,
+          on_attach = on_attach,
           settings = {
             Lua = {
               diagnostics = {
@@ -88,7 +97,7 @@ local function setup_servers()
         })
       else
         require("lspconfig")[server_name].setup({
-          on_attach = set_lsp_keymaps,
+          on_attach = on_attach,
         })
       end
     end,
@@ -105,5 +114,3 @@ require("lspconfig").eslint.setup({
     })
   end,
 })
-
-require("lspconfig.ui.windows").default_options.border = "single"
