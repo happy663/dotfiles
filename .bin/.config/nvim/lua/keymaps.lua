@@ -5,8 +5,8 @@ local opts = { noremap = true, silent = true }
 -- Normal mode keymaps
 map("n", "<C-h>", "<C-w>h", opts)
 map("n", "<C-l>", "<C-w>l", opts)
-map("n", "<C-j>", "<C-w>j", opts)
-map("n", "<C-k>", "<C-w>k", opts)
+--map("n", "<C-j>", "<C-w>j", opts)
+--map("n", "<C-k>", "<C-w>k", opts)
 map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
 -- easy-motion
@@ -52,9 +52,7 @@ map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
 -- terminal mode
 map("t", "<esc>", [[<C-\><C-n>]], opts)
 
---map('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
---map('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
 map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
