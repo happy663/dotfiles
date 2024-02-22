@@ -98,20 +98,13 @@ return {
     end,
     config = function()
       require("nvim-treesitter.configs").setup({
-        -- A list of parser names, or "all" (the five listed parsers should always be installed)
         ensure_installed = "all",
-        -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
-        -- Automatically install missing parsers when entering buffer
-        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
         auto_install = false,
-        -- List of parsers to ignore installing (or "all")
         ignore_install = {},
-
         autotag = {
           enable = true,
         },
-
         highlight = {
           enable = true,
           disable = {},
@@ -126,5 +119,20 @@ return {
       "nvim-tree/nvim-tree.lua",
     },
     config = true,
+  },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    config = function()
+      require("mason-tool-installer").setup({
+        ensure_installed = {
+          "stylua",
+          "textlint",
+        },
+      })
+    end,
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
   },
 }
