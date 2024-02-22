@@ -1,9 +1,8 @@
 -- この関数をグローバルスコープに定義
 function on_cursor_hold()
-  if vim.bo.filetype == "NvimTree" then
-    return
+  if vim.bo.filetype ~= "NvimTree" then
+    vim.lsp.buf.hover()
   end
-  vim.lsp.buf.hover()
 end
 
 -- `updatetime`を設定
