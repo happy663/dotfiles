@@ -56,10 +56,10 @@ return {
   },
   {
     "windwp/nvim-ts-autotag",
-     config = true,
+    config = true,
   },
   {
     "windwp/nvim-autopairs",
-     config = true,
+    config = true,
   },
 }

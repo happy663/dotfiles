@@ -38,9 +38,13 @@ return {
   },
   {
     "folke/noice.nvim",
-    event = "BufEnter",
     config = function()
       require("noice").setup({
+        view = {
+          mini = {
+            position = "bottom-right",
+          },
+        },
         lsp = {
           override = {
             ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -54,6 +58,13 @@ return {
         routes = {
           {
             filter = {
+              event = "msg_show", -- msg_showイベントのメッセージを対象
+              min_height = 1, -- 最小高さが1行のメッセージを対象
+            },
+            view = "mini", -- 上で定義したカスタムビューにルーティング
+          },
+          {
+            filter = {
               event = "notify",
               find = "No information available",
             },
@@ -65,6 +76,12 @@ return {
               find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
             },
             opts = { skip = true },
+          },
+          {
+            filter = {
+              event = "notify",
+              find = "# Config Change Detected. Reloading...",
+            },
           },
         },
         presets = {
