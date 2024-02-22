@@ -25,7 +25,6 @@ require("lazy").setup("plugins", {
     },
   },
   ui = {
-    theme = "tokyonight",
     border = "single",
   },
 })

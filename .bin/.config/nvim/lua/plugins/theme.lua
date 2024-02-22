@@ -8,4 +8,8 @@ return {
   {
     "https://codeberg.org/miyakogi/iceberg-tokyo.nvim",
   },
+  {
+    "Shatur/neovim-ayu",
+  },
+  { "projekt0n/github-nvim-theme" },
 }
