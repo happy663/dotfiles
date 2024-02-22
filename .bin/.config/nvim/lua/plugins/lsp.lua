@@ -8,14 +8,13 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
   --buf_map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
-  -- More keymaps can be added here
 end
 
 local on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
 
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    -- 枠のスタイルを指定します: single, double, rounded, solid, shadow など
+    -- 枠のスタイルを指定: single, double, rounded, solid, shadow など
     border = "single",
   })
 end
