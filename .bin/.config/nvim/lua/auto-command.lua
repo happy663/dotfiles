@@ -1,25 +1,27 @@
---vim.cmd [[
---set updatetime=500
---highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
---highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
---highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
---augroup lsp_document_highlight
---autocmd!
---autocmd CursorHold,CursorHoldI * lua if vim.bo.filetype ~= 'NvimTree' then vim.lsp.buf.document_highlight() end
---autocmd CursorMoved,CursorMovedI * lua if vim.bo.filetype ~= 'NvimTree' then vim.lsp.buf.clear_references() end
---augroup END
---]]
+-- この関数をグローバルスコープに定義
+function on_cursor_hold()
+  if vim.bo.filetype == "NvimTree" then
+    return
+  end
+  vim.lsp.buf.hover()
+end
 
+-- `updatetime`を設定
 vim.o.updatetime = 700
+-- LSP関連のハイライト設定
 vim.cmd([[
 highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
 highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
 highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-augroup lsp_hover
-autocmd!
-autocmd CursorHold,CursorHoldI * lua require'lsp-hover'.on_cursor_hold()
-augroup END
 ]])
+
+-- autocmdグループを定義し、CursorHoldとCursorHoldIイベントでon_cursor_hold関数を呼び出す
+vim.api.nvim_create_augroup("lsp_hover", {})
+vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+  group = "lsp_hover",
+  pattern = "*",
+  callback = on_cursor_hold, -- ここで直接関数を指定
+})
 
 vim.cmd([[
   autocmd BufLeave * silent! update
