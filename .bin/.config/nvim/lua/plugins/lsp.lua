@@ -79,8 +79,8 @@ return {
         sources = {
           null_ls.builtins.formatting.stylua,
           null_ls.builtins.completion.spell,
-          null_ls.builtins.formatting.prettier,
-          null_ls.builtins.code_actions.eslint_d, -- Code Actionsを追加
+          null_ls.builtins.formatting.prettierd,
+          null_ls.builtins.code_actions.eslint_d,
           null_ls.builtins.formatting.latexindent,
           null_ls.builtins.diagnostics.luacheck.with({
             extra_args = { "--globals", "vim", "--globals", "use" },
@@ -92,6 +92,21 @@ return {
       "nvim-lua/plenary.nvim",
     },
   },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    config = function()
+      require("mason-tool-installer").setup({
+        ensure_installed = {
+          "stylua",
+          "textlint",
+          "prettierd",
+          "eslint_d",
+        },
+      })
+    end,
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
+  },
 }
-
-
