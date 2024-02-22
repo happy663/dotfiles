@@ -10,7 +10,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
 -- easy-motion
-map("n", "<Leader><Leader>", "<Plug>(easymotion-prefix)", opts)
+map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 -- fuzzy-motion
 map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
