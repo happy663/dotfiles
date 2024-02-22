@@ -10,16 +10,16 @@
 --augroup END
 --]]
 
-vim.o.updatetime = 700
-vim.cmd([[
-  highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-  highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-  highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-  augroup lsp_hover
-  autocmd!
-  autocmd CursorHold,CursorHoldI * lua require'lsp-hover'.on_cursor_hold()
-  augroup END
-]])
+--vim.o.updatetime = 700
+--vim.cmd([[
+--highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
+--highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
+--highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
+--augroup lsp_hover
+--autocmd!
+--autocmd CursorHold,CursorHoldI * lua require'lsp-hover'.on_cursor_hold()
+--augroup END
+--]])
 
 require("noice").setup({
   routes = {
