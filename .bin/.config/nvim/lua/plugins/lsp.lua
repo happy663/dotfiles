@@ -26,6 +26,8 @@ return {
       require("mason").setup({
         ui = {
           border = "single",
+          height = 0.8,
+          width = 0.8,
         },
       })
     end,
@@ -96,10 +98,21 @@ return {
     config = function()
       require("mason-tool-installer").setup({
         ensure_installed = {
+          "clangd",
+          "debugpy",
+          "eslint-lsp",
+          "eslint_d",
+          "gopls",
+          "latexindent",
+          "ltex-ls",
+          "lua-language-server",
+          "luacheck",
+          "prettierd",
+          "pyright",
+          "staticcheck",
           "stylua",
           "textlint",
-          "prettierd",
-          "eslint_d",
+          "typescript-language-server",
         },
       })
     end,
