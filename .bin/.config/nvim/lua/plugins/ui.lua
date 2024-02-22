@@ -38,6 +38,7 @@ return {
   },
   {
     "folke/noice.nvim",
+    event = "BufEnter",
     config = function()
       require("noice").setup({
         lsp = {
@@ -48,6 +49,22 @@ return {
           },
           hover = {
             enabled = false,
+          },
+        },
+        routes = {
+          {
+            filter = {
+              event = "notify",
+              find = "No information available",
+            },
+            opts = { skip = true },
+          },
+          {
+            filter = {
+              event = "notify",
+              find = "method textDocument/hover is not supported by any of the servers registered for the current buffer",
+            },
+            opts = { skip = true },
           },
         },
         presets = {
@@ -119,20 +136,5 @@ return {
       "nvim-tree/nvim-tree.lua",
     },
     config = true,
-  },
-  {
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
-    config = function()
-      require("mason-tool-installer").setup({
-        ensure_installed = {
-          "stylua",
-          "textlint",
-        },
-      })
-    end,
-    dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-    },
   },
 }
