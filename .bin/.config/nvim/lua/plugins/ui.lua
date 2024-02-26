@@ -141,7 +141,9 @@ return {
         },
         highlight = {
           enable = true,
-          disable = {},
+          disable = function()
+            return vim.g.vscode
+          end,
         },
       })
     end,
@@ -205,4 +207,3 @@ return {
     config = true,
   },
 }
-
