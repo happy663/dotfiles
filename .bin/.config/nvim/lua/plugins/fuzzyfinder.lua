@@ -58,6 +58,15 @@ return {
     run = "make",
   },
   {
+    "delphinus/telescope-memo.nvim",
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+    config = function()
+      require("telescope").load_extension("memo")
+    end,
+  },
+  {
     "ibhagwan/fzf-lua",
     dependencies = {
       "kyazdani42/nvim-web-devicons",
