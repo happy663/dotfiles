@@ -1,0 +1,9 @@
+memodir = "~/.memolist/memo" # memolist.vimの設定を揃える
+editor = "nvim"
+column = 20
+width = 0
+selectcmd = "fzf"
+grepcmd = "grep -nH ${PATTERN} ${FILES}"
+memotemplate = "~/.memolist/memotemplates/md.txt"
+assetsdir = "."
+pluginsdir = "~/.config/memo/plugins"
