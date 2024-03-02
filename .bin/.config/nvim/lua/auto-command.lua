@@ -1,48 +1,57 @@
--- この関数をグローバルスコープに定義
-function on_cursor_hold()
+-- `updatetime`を設定
+vim.o.updatetime = 700
+
+local autocmd = vim.api.nvim_create_autocmd
+local set_hl = vim.api.nvim_set_hl
+
+local function on_cursor_hold()
   if vim.bo.filetype ~= "NvimTree" then
     vim.lsp.buf.hover()
   end
 end
 
--- `updatetime`を設定
-vim.o.updatetime = 700
--- LSP関連のハイライト設定
-vim.cmd([[
-highlight LspReferenceText  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-highlight LspReferenceRead  cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-highlight LspReferenceWrite cterm=underline ctermfg=1 ctermbg=8 gui=underline guifg=#A00000 guibg=#104040
-]])
-
--- autocmdグループを定義し、CursorHoldとCursorHoldIイベントでon_cursor_hold関数を呼び出す
-vim.api.nvim_create_augroup("lsp_hover", {})
-vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-  group = "lsp_hover",
+local lsp_hover_group = vim.api.nvim_create_augroup("lsp_hover", { clear = true })
+autocmd({ "CursorHold", "CursorHoldI" }, {
   pattern = "*",
+  group = lsp_hover_group,
   callback = on_cursor_hold, -- ここで直接関数を指定
 })
 
-vim.cmd([[
-  autocmd BufLeave * silent! update
-  autocmd BufUnload * silent! update
-]])
 
-vim.cmd([[
-  autocmd CursorHold * silent! update
-]])
+-- LSPのハイライトを設定
+set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
+set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
+set_hl(0, "LspReferenceWrite", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 
-vim.cmd([[
-  autocmd BufWritePost *.lua source <afile> | echo "Configuration reloaded!"
-]])
-
-vim.api.nvim_create_autocmd("CursorMoved", {
+-- 自動ファイル保存
+-- markdonw以外のファイルを自動で保存する
+autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
   pattern = "*",
   callback = function()
-    vim.cmd("normal! zz")
-  end,
+    local filetype = vim.bo.filetype
+    if filetype ~= "markdown" then
+      vim.cmd("silent! update")
+    end
+  end
 })
 
-local function auto_update_path()
+
+vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true })
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = "MemoAutoCommit",
+  pattern = "*/.memolist/memo/*.md",
+  command = "!(memo commit)",
+})
+
+
+
+-- luaファイル保存時に設定をリロード
+autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
+
+-- カーソルを画面中央になるようにする
+autocmd("CursorMoved", { pattern = "*", command = "normal! zz" })
+
+local function auto_open_tree_file()
   local buf = vim.api.nvim_get_current_buf()
   local bufname = vim.api.nvim_buf_get_name(buf)
   if vim.fn.isdirectory(bufname) or vim.fn.isfile(bufname) then
@@ -50,4 +59,4 @@ local function auto_update_path()
   end
 end
 
-vim.api.nvim_create_autocmd("BufEnter", { callback = auto_update_path })
+autocmd("BufEnter", { pattern = "*", callback = auto_open_tree_file })

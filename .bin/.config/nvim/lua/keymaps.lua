@@ -60,7 +60,7 @@ map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
   vim.cmd("vsplit") -- 縦分割コマンド
-  vim.cmd("tag")   -- タグジャンプコマンド
+  vim.cmd("tag")    -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定
@@ -90,3 +90,8 @@ map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
 -- windowsではctrl+hをbackspaceに当てている
 -- 他環境と同じ動きになるように調整
 map("n", "<BS>", "<C-w>h", opts)
+
+
+map("n", "<Leader>mn", "<CMD>MemoNew<CR>", opts)
+map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
+map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
