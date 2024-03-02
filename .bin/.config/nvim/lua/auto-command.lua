@@ -36,6 +36,14 @@ autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
 })
 
 
+vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true })
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = "MemoAutoCommit",
+  pattern = "*/.memolist/memo/*.md",
+  command = "!(memo commit)",
+})
+
+
 
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })

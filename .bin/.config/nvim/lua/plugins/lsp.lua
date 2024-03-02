@@ -6,7 +6,6 @@ local function set_lsp_keymaps(bufnr)
   -- Keymaps for LSP
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-  --buf_map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
 end
 
@@ -14,7 +13,6 @@ local on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
 
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    -- 枠のスタイルを指定: single, double, rounded, solid, shadow など
     border = "single",
   })
 end
@@ -36,15 +34,13 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup_handlers({
-        function(server_name) -- Default handler for all servers
-          -- 特定のLSPサーバーのカスタム設定を行う
+        function(server_name)
           if server_name == "lua_ls" then
             require("lspconfig")[server_name].setup({
               on_attach = on_attach,
               settings = {
                 Lua = {
                   diagnostics = {
-                    -- `vim`をグローバル変数として認識させる
                     globals = { "vim", "use" },
                   },
                 },
