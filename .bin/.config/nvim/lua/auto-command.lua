@@ -24,7 +24,18 @@ set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg =
 set_hl(0, "LspReferenceWrite", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 
 -- 自動ファイル保存
-autocmd({ "BufLeave", "BufUnload", "CursorHold" }, { pattern = "*", command = "silent! update" })
+-- markdonw以外のファイルを自動で保存する
+autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
+  pattern = "*",
+  callback = function()
+    local filetype = vim.bo.filetype
+    if filetype ~= "markdown" then
+      vim.cmd("silent! update")
+    end
+  end
+})
+
+
 
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
