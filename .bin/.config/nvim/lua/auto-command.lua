@@ -1,6 +1,8 @@
 local autocmd = vim.api.nvim_create_autocmd
 local set_hl = vim.api.nvim_set_hl
 
+vim.o.updatetime = 300
+
 local function on_cursor_hold()
   if vim.bo.filetype ~= "NvimTree" then
     vim.lsp.buf.hover()
