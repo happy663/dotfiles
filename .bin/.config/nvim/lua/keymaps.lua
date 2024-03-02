@@ -94,3 +94,4 @@ map("n", "<BS>", "<C-w>h", opts)
 
 map("n", "<Leader>mn", "<CMD>MemoNew<CR>", opts)
 map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
+map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
