@@ -1,35 +1,32 @@
+-- `updatetime`を設定
+vim.o.updatetime = 700
+
 local autocmd = vim.api.nvim_create_autocmd
 local set_hl = vim.api.nvim_set_hl
 
--- この関数をグローバルスコープに定義
-function on_cursor_hold()
+local function on_cursor_hold()
   if vim.bo.filetype ~= "NvimTree" then
     vim.lsp.buf.hover()
   end
 end
 
--- `updatetime`を設定
-vim.o.updatetime = 700
+local lsp_hover_group = vim.api.nvim_create_augroup("lsp_hover", { clear = true })
+autocmd({ "CursorHold", "CursorHoldI" }, {
+  pattern = "*",
+  group = lsp_hover_group,
+  callback = on_cursor_hold, -- ここで直接関数を指定
+})
+
 
 -- LSPのハイライトを設定
 set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 set_hl(0, "LspReferenceWrite", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 
+-- 自動ファイル保存
+autocmd({ "BufLeave", "BufUnload", "CursorHold" }, { pattern = "*", command = "silent! update" })
 
--- autocmdグループを定義し、CursorHoldとCursorHoldIイベントでon_cursor_hold関数を呼び出す
-vim.api.nvim_create_augroup("lsp_hover", {})
-autocmd({ "CursorHold", "CursorHoldI" }, {
-  group = "lsp_hover",
-  pattern = "*",
-  callback = on_cursor_hold, -- ここで直接関数を指定
-})
-
-autocmd("BufLeave", { pattern = "*", command = "silent! update" })
-autocmd("BufUnload", { pattern = "*", command = "silent! update" })
-autocmd("CursorHold", { pattern = "*", command = "silent! update" })
-
--- ファイル保存時に設定をリロード
+-- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
 
 -- カーソルを画面中央になるようにする
