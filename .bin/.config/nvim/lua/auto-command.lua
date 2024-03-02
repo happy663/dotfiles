@@ -1,6 +1,3 @@
--- `updatetime`を設定
-vim.o.updatetime = 700
-
 local autocmd = vim.api.nvim_create_autocmd
 local set_hl = vim.api.nvim_set_hl
 
@@ -17,7 +14,6 @@ autocmd({ "CursorHold", "CursorHoldI" }, {
   callback = on_cursor_hold, -- ここで直接関数を指定
 })
 
-
 -- LSPのハイライトを設定
 set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
 set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
@@ -32,9 +28,8 @@ autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
     if filetype ~= "markdown" then
       vim.cmd("silent! update")
     end
-  end
+  end,
 })
-
 
 vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePost", {
@@ -42,8 +37,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = "*/.memolist/memo/*.md",
   command = "!(memo commit)",
 })
-
-
 
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
