@@ -3,7 +3,6 @@ local function set_lsp_keymaps(bufnr)
     vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts or { noremap = true })
   end
 
-  -- Keymaps for LSP
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
