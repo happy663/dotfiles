@@ -27,9 +27,24 @@ return {
   },
   {
     "akinsho/bufferline.nvim",
-    config = true,
     dependencies = "kyazdani42/nvim-web-devicons",
     version = "*",
+    config = function()
+      local bufferline = require("bufferline")
+      bufferline.setup({
+        options = {
+          numbers = "none",
+          diagnostics = "nvim_lsp",
+          diagnostics_update_in_insert = false,
+          diagnostics_indicator = function(count, level, diagnostics_dict, context)
+            local icon = level:match("error") and " " or " "
+            return " " .. icon .. count
+          end,
+          style_preset = bufferline.style_preset.no_italic,
+          separator_style = "slant",
+        },
+      })
+    end,
   },
   {
     "lukas-reineke/indent-blankline.nvim",
