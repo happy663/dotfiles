@@ -32,3 +32,7 @@ require("lazy").setup("plugins", {
 require("settings")
 require("keymaps")
 require("auto-command")
+
+require("notify").setup({
+  background_colour = "#000000",
+})
