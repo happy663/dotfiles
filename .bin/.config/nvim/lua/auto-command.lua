@@ -4,7 +4,7 @@ local set_hl = vim.api.nvim_set_hl
 vim.o.updatetime = 300
 
 local function on_cursor_hold()
-  if vim.bo.filetype ~= "NvimTree" then
+  if vim.bo.filetype ~= "NvimTree" and vim.api.nvim_get_mode().mode ~= "i" then
     vim.lsp.buf.hover()
   end
 end
