@@ -12,7 +12,7 @@ local on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
 
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "single",
+    border = "double",
   })
 end
 
@@ -22,7 +22,7 @@ return {
     config = function()
       require("mason").setup({
         ui = {
-          border = "single",
+          border = "double",
           height = 0.8,
           width = 0.8,
         },
