@@ -32,4 +32,3 @@ require("lazy").setup("plugins", {
 require("settings")
 require("keymaps")
 require("auto-command")
-

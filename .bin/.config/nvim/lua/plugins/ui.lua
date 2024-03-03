@@ -203,4 +203,9 @@ return {
     },
     config = true,
   },
+  {
+    "mvllow/modes.nvim",
+    version = "v0.2.0",
+    config = true,
+  },
 }
