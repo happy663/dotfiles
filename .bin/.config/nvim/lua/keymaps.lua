@@ -50,16 +50,25 @@ map("i", "<C-b>", "<Left>", opts)
 map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
 
 -- terminal mode
+-- escapeでnormal modeに戻る
 map("t", "<esc>", [[<C-\><C-n>]], opts)
-
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
-map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
+
+vim.api.nvim_create_autocmd("TermOpen", {
+  pattern = "term://*lazygit*",
+  callback = function()
+    -- normal modeに戻らずlazygitのesc機能を使うための設定
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
+  end,
+})
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
-  vim.cmd("vsplit") -- 縦分割コマンド
+  vim.cmd("vsplit") -- 縦分割コマン
   vim.cmd("tag")   -- タグジャンプコマンド
 end
 
@@ -67,18 +76,6 @@ end
 map("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-
--- -- Lazygitが開かれたときにキーバインドを設定
-vim.api.nvim_create_autocmd("TermOpen", {
-  pattern = "term://*lazygit*",
-  callback = function()
-    print("TermOpen triggered")
-    -- TermモードとInsertモードでのマッピング
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
-    --vim.api.nvim_buf_set_keymap(0, "t", "<C-m>", "<cmd>close<CR>", opts)
-  end,
-})
 
 map("n", "<Leader>g", "<cmd>LazyGit<CR>", opts)
 map("i", "っj", "<esc>", opts)
