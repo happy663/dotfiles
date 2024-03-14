@@ -3,6 +3,7 @@ git:
     colorArg: always
     pager: delta --dark --paging=never
 gui:
+  nerdFontsVersion: "3"
   sidePanelWidth: 0.15
   theme:
     selectedLineBgColor:
