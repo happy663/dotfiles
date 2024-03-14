@@ -17,7 +17,17 @@ return {
             num_pickers = 5,
           },
         },
-        pickers = {},
+        pickers = {
+          find_files = {
+            find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
+            file_ignore_patterns = { "node_modules/*" },
+          },
+          live_grep = {
+            additional_args = function()
+              return { "--hidden", "--glob", "!.git/" }
+            end,
+          },
+        },
         extensions = {
           fzf = {
             fuzzy = true,

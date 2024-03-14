@@ -16,9 +16,9 @@ map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 
 -- ファイルを検索する
-map("n", "<C-p>", "<cmd>Telescope find_files hidden=true<CR>", opts)
+map("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files()<CR>", opts)
 -- ファイル内をgrep検索する
-map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep() hidden=true<CR>', opts)
+map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep()<CR>', opts)
 -- カーソルまたは選択範囲のgrep検索
 map("n", "<Leader>*", '<cmd>lua require("telescope.builtin").grep_string()<CR>', opts)
 -- 履歴表示
@@ -96,4 +96,3 @@ map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
 map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
 
 map("n", "<CR>", "A<Return><Esc>k", opts)
-
