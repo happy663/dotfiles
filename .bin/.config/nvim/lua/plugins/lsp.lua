@@ -32,27 +32,27 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     config = function()
+      local lspconfig = require("lspconfig")
       require("mason-lspconfig").setup_handlers({
         function(server_name)
-          if server_name == "lua_ls" then
-            require("lspconfig")[server_name].setup({
-              on_attach = on_attach,
-              settings = {
-                Lua = {
-                  diagnostics = {
-                    globals = { "vim", "use" },
-                  },
+          lspconfig[server_name].setup({
+            on_attach = on_attach,
+          })
+        end,
+        lua_ls = function()
+          lspconfig.lua_ls.setup({
+            on_attach = on_attach,
+            settings = {
+              Lua = {
+                diagnostics = {
+                  globals = { "vim", "use" },
                 },
               },
-            })
-          else
-            require("lspconfig")[server_name].setup({
-              on_attach = on_attach,
-            })
-          end
+            },
+          })
         end,
         tsserver = function()
-          require("lspconfig").tsserver.setup({
+          lspconfig.tsserver.setup({
             on_attach = function(client, bufnr)
               client.server_capabilities.documentFormattingProvider = false
               client.server_capabilities.documentRangeFormattingProvider = false
