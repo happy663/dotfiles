@@ -54,3 +54,6 @@ vim.o.wrap = true
 require("notify").setup({
   background_colour = "#000000",
 })
+
+---- 現在選択中のアイテムのハイライト色を変更
+vim.cmd([[highlight TelescopeSelection guibg=#083747]])
