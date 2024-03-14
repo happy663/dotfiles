@@ -90,3 +90,4 @@ export PATH="${PATH}:/Users/toyama/.local/lib/python3.10/site-packages"
 eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
