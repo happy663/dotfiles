@@ -91,3 +91,17 @@ eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
+
+
+# cdしたらlsする
+case ${OSTYPE} in
+    darwin*)
+        #Mac用の設定
+        export CLICOLOR=1
+        function chpwd() { ls -A -G -F}
+        ;;
+    linux*)
+        #Linux用の設定
+        function chpwd() { ls -A -F --color=auto}
+        ;;
+esac
