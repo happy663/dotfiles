@@ -105,3 +105,7 @@ case ${OSTYPE} in
         function chpwd() { ls -A -F --color=auto}
         ;;
 esac
+
+alias ghb="gh browse"
+alias ghpc="gh pr checks"
+alias ghprc="gh pr create"
