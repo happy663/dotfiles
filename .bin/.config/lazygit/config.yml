@@ -3,6 +3,7 @@ git:
     colorArg: always
     pager: delta --dark --paging=never
 gui:
+  windowSize: "nomarl"
   nerdFontsVersion: "3"
   sidePanelWidth: 0.15
   theme:
@@ -10,6 +11,9 @@ gui:
       - underline
     selectedRangeBgColor:
       - underline
+  branchColors:
+    "fix": "#11aaff"
+    "feat": "#ffaa11"
 refresher:
   refreshInterval: 3
 os:
