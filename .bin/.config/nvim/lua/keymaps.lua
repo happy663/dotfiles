@@ -55,11 +55,10 @@ map("t", "<esc>", [[<C-\><C-n>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
-map("t", "<C-t>", "<CMD>ToggleTerm<CR>", opts)
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
-  vim.cmd("vsplit") -- 縦分割コマンド
+  vim.cmd("vsplit") -- 縦分割コマン
   vim.cmd("tag")   -- タグジャンプコマンド
 end
 
