@@ -93,3 +93,9 @@ map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
 map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
 
 map("n", "<CR>", "A<Return><Esc>k", opts)
+
+-- 矢印キーを無効化
+map("n", "<Up>", "<Nop>", opts)
+map("n", "<Down>", "<Nop>", opts)
+map("n", "<Left>", "<Nop>", opts)
+map("n", "<Right>", "<Nop>", opts)
