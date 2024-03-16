@@ -30,6 +30,8 @@ return {
                 "!.git/",
                 "--glob",
                 "!*lock.json",
+                "--glob",
+                "!.p10k.zsh",
               }
             end,
           },
