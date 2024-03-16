@@ -54,10 +54,7 @@ return {
         end,
         tsserver = function()
           lspconfig.tsserver.setup({
-            on_attach = function(client, bufnr)
-              client.server_capabilities.documentFormattingProvider = false
-              client.server_capabilities.documentRangeFormattingProvider = false
-            end,
+            on_attach = on_attach,
           })
         end,
       })
