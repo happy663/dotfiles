@@ -10,7 +10,8 @@ end
 
 local on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
-
+  client.server_capabilities.documentFormattingProvider = false
+  client.server_capabilities.documentRangeFormattingProvider = false
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "double",
   })
