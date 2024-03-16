@@ -9,7 +9,6 @@ return {
     "hrsh7th/nvim-cmp",
     config = function()
       local cmp = require("cmp")
-
       cmp.setup({
 
         snippet = {
@@ -27,7 +26,7 @@ return {
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
+            select = false,
           }),
         },
         sources = {
