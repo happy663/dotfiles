@@ -37,9 +37,11 @@ return {
           },
         },
       })
+      require("telescope").load_extension("recent-files")
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
+      "mollerhoj/telescope-recent-files.nvim",
     },
     version = "0.1.5",
   },
