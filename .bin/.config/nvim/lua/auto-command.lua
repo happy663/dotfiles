@@ -33,11 +33,33 @@ autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
   end,
 })
 
-vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true })
+local function on_exit_cb(job_id, exit_code, event)
+  -- コマンドが終了した後に何か処理を行いたい場合はここに書きます
+  -- 例: コマンドの終了ログを表示
+  print("memo commit finished with exit code", exit_code)
+end
+
+local function memo_commit_async()
+  local handle
+  -- memo commitコマンドを非同期に実行
+  handle, _ = vim.loop.spawn(
+    "memo",
+    {
+      args = { "commit" },
+      stdio = { nil, nil, nil }, -- 標準入出力を無視
+    },
+    vim.schedule_wrap(function(code, signal)
+      -- コマンド実行完了時のコールバック
+      on_exit_cb(handle, code, signal)
+    end)
+  )
+end
+
+-- 自動コマンドを設定
 vim.api.nvim_create_autocmd("BufWritePost", {
-  group = "MemoAutoCommit",
+  group = vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true }),
   pattern = "*/.memolist/memo/*.md",
-  command = "!(memo commit)",
+  callback = memo_commit_async,
 })
 
 -- luaファイル保存時に設定をリロード
