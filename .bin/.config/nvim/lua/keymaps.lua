@@ -56,19 +56,19 @@ map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
 
 vim.api.nvim_create_autocmd("TermOpen", {
-	pattern = "term://*lazygit*",
-	callback = function()
-		-- normal modeに戻らずlazygitのesc機能を使うための設定
-		vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-		vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
-		vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
-	end,
+  pattern = "term://*lazygit*",
+  callback = function()
+    -- normal modeに戻らずlazygitのesc機能を使うための設定
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
+    vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
+  end,
 })
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
-	vim.cmd("vsplit") -- 縦分割コマン
-	vim.cmd("tag") -- タグジャンプコマンド
+  vim.cmd("vsplit") -- 縦分割コマン
+  vim.cmd("tag")   -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定

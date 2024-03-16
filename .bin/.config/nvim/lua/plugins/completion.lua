@@ -15,7 +15,7 @@ return {
         snippet = {
           expand = function(args)
             -- For vsnip users
-            vim.fn["vsnip#anonymous"](args.body)
+            --vim.fn["vsnip#anonymous"](args.body)
           end,
         },
         mapping = {
@@ -33,18 +33,33 @@ return {
         sources = {
           { name = "nvim_lsp" },
           { name = "buffer" },
+          { name = "path" },
         },
         sorting = {
+          priority_weight = 2,
           comparators = {
+            function(entry1, entry2)
+              local kind1 = entry1:get_kind()
+              local kind2 = entry2:get_kind()
+              local kindKeyword = vim.lsp.protocol.CompletionItemKind.Keyword
+              local kindText = vim.lsp.protocol.CompletionItemKind.Text
+              if kind1 == kindKeyword and kind2 ~= kindKeyword then
+                return true
+              elseif kind1 ~= kindKeyword and kind2 == kindKeyword then
+                return false
+              elseif kind1 == kindText and kind2 ~= kindText then
+                return false
+              elseif kind1 ~= kindText and kind2 == kindText then
+                return true
+              end
+              -- 他の比較基準でソートする必要がある場合はnilを返す
+              return nil
+            end,
+            cmp.config.compare.offset,
             cmp.config.compare.order,
             cmp.config.compare.kind,
-            cmp.config.compare.offset,
-            cmp.config.compare.exact,
             cmp.config.compare.score,
-            cmp.config.compare.recently_used,
-            cmp.config.compare.locality,
-            cmp.config.compare.sort_text,
-            cmp.config.compare.length,
+            -- 他の比較関数をここに追加
           },
         },
       })
