@@ -33,6 +33,9 @@ return {
               }
             end,
           },
+          colorscheme = {
+            enable_preview = true,
+          },
         },
         extensions = {
           fzf = {
