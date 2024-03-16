@@ -57,3 +57,5 @@ require("notify").setup({
 
 ---- 現在選択中のアイテムのハイライト色を変更
 vim.cmd([[highlight TelescopeSelection guibg=#083747]])
+
+vim.g.lazygit_floating_window_scaling_factor = 1
