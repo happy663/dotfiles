@@ -215,4 +215,8 @@ return {
       return not vim.g.vscode
     end,
   },
+  {
+    "brenoprata10/nvim-highlight-colors",
+    config = true,
+  },
 }
