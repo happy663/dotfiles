@@ -1,0 +1,6 @@
+repos:
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: "v0.20.0" # StyLuaのバージョンを指定。例えば 'v0.11.0'
+    hooks:
+      - id: stylua
+        files: '\.lua$'
