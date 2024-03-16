@@ -69,7 +69,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 function goto_definition_vsplit()
   vim.cmd("vsplit") -- 縦分割コマン
-  vim.cmd("tag")   -- タグジャンプコマンド
+  vim.cmd("tag") -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定
