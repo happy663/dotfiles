@@ -17,7 +17,6 @@ vim.o.tabstop = 2 -- タブの幅を2スペースに設定
 vim.o.shiftwidth = 2 -- インデントの幅を2スペースに設定
 vim.o.smartindent = true -- 自動インデント機能を有効化
 vim.o.wrap = false -- 長い行を折り返さない
-vim.o.clipboard = "unnamedplus" -- システムクリップボードを使用
 
 -- 検索設定
 vim.o.hlsearch = true -- 検索結果をハイライト

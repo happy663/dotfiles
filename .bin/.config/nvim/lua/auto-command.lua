@@ -77,3 +77,12 @@ local function auto_open_tree_file()
 end
 
 autocmd("BufEnter", { pattern = "*", callback = auto_open_tree_file })
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  callback = function()
+    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
+      vim.fn.setreg("*", vim.fn.getreg('"'))
+      vim.fn.setreg("+", vim.fn.getreg('"'))
+    end
+  end,
+})
