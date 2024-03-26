@@ -29,9 +29,6 @@ vim.o.backup = false
 vim.o.writebackup = false
 vim.o.swapfile = false
 
--- キーマップのリーダーキーをスペースに設定
-vim.g.mapleader = " "
-
 -- コマンドラインの高さ
 vim.o.cmdheight = 1
 
