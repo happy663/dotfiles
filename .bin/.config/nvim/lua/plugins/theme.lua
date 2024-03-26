@@ -1,19 +1,19 @@
 return {
   {
     "gruvbox-community/gruvbox",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
   },
   {
     "Mofiqul/dracula.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
   },
   {
     "https://codeberg.org/miyakogi/iceberg-tokyo.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
   },
   {
     "Shatur/neovim-ayu",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("ayu").setup({
         overrides = {

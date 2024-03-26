@@ -1,7 +1,7 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").setup({
         defaults = {
@@ -60,21 +60,21 @@ return {
   {
     "LukasPietzschmann/telescope-tabs",
     config = true,
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
   },
   {
     "nvim-telescope/telescope-frecency.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").load_extension("frecency")
     end,
   },
   {
     "nvim-telescope/telescope-file-browser.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     dependencies = {
       "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
@@ -82,7 +82,7 @@ return {
   },
   {
     "nvim-telescope/telescope-fzf-native.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     run = "make",
   },
   {
@@ -90,13 +90,13 @@ return {
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").load_extension("memo")
     end,
   },
   {
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     "ibhagwan/fzf-lua",
     dependencies = {
       "kyazdani42/nvim-web-devicons",

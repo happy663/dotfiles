@@ -1,7 +1,7 @@
 return {
   {
     "nvim-lualine/lualine.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("lualine").setup({
         options = {
@@ -16,7 +16,7 @@ return {
   },
   {
     "nvim-tree/nvim-tree.lua",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("nvim-tree").setup({
         sort_by = "case_sensitive",
@@ -37,7 +37,7 @@ return {
     "akinsho/bufferline.nvim",
     dependencies = "kyazdani42/nvim-web-devicons",
     version = "*",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       local bufferline = require("bufferline")
       bufferline.setup({
@@ -57,12 +57,12 @@ return {
   {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = true,
   },
   {
     "folke/noice.nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("noice").setup({
         view = {
@@ -126,7 +126,7 @@ return {
   {
     "akinsho/toggleterm.nvim",
     version = "*",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     config = function()
       require("toggleterm").setup({
         size = 20,
@@ -229,7 +229,7 @@ return {
   },
   {
     "nvimdev/dashboard-nvim",
-    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
+    cond = vim.g.not_in_vscode,
     event = "VimEnter",
     config = function()
       require("dashboard").setup({})
