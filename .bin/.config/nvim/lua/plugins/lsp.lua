@@ -80,8 +80,9 @@ return {
       null_ls.setup({
         sources = {
           null_ls.builtins.formatting.stylua,
-          null_ls.builtins.completion.spell,
+          --null_ls.builtins.completion.spell,
           null_ls.builtins.formatting.prettierd,
+          null_ls.builtins.formatting.ruff,
           --null_ls.builtins.code_actions.eslint_d,
           --null_ls.builtins.formatting.latexindent,
           --null_ls.builtins.diagnostics.luacheck.with({
@@ -105,7 +106,7 @@ return {
           --"eslint_d",
           "gopls",
           --"latexindent",
-          "ltex-ls",
+          --"ltex-ls",
           "lua-language-server",
           --"luacheck",
           "prettierd",
