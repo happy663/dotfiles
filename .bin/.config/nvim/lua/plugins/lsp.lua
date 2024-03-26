@@ -20,6 +20,7 @@ end
 return {
   {
     "williamboman/mason.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       require("mason").setup({
         ui = {
@@ -32,6 +33,7 @@ return {
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       local lspconfig = require("lspconfig")
       require("mason-lspconfig").setup_handlers({
@@ -62,6 +64,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       require("lspconfig").eslint.setup({
         on_attach = function(client, bufnr)
@@ -75,6 +78,7 @@ return {
   },
   {
     "nvimtools/none-ls.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       local null_ls = require("null-ls")
       null_ls.setup({
@@ -97,6 +101,7 @@ return {
   },
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       require("mason-tool-installer").setup({
         ensure_installed = {

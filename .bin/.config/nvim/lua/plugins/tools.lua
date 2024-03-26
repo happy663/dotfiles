@@ -4,6 +4,7 @@ return {
   },
   {
     "CRAG666/code_runner.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       require("code_runner").setup({
         filetype = {
@@ -26,6 +27,7 @@ return {
   },
   {
     "glidenote/memolist.vim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     config = function()
       vim.g.memolist_path = "~/.memolist/memo"
       vim.g.memolist_memo_suffix = "md"
@@ -35,6 +37,7 @@ return {
   },
   {
     "iamcco/markdown-preview.nvim",
+    cond = vim.g.not_in_vscode, -- VSCodeの外でのみ読み込む
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
     build = function()

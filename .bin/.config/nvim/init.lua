@@ -13,6 +13,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.g.not_in_vscode = vim.g.vscode == nil
+
 require("lazy").setup("plugins", {
   performance = {
     rtp = {
@@ -29,6 +31,10 @@ require("lazy").setup("plugins", {
   },
 })
 
-require("settings")
-require("keymaps")
-require("auto-command")
+if vim.g.not_in_vscode then
+  require("auto-command")
+  require("settings")
+  require("keymaps")
+else
+  require("vscode")
+end

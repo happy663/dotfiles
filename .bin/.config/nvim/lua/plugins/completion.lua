@@ -1,12 +1,11 @@
 return {
   {
     "github/copilot.vim",
-    cond = function()
-      return not vim.g.vscode
-    end,
+    cond = vim.g.not_in_vscode,
   },
   {
     "hrsh7th/nvim-cmp",
+    cond = vim.g.not_in_vscode,
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
@@ -82,10 +81,12 @@ return {
   },
   {
     "windwp/nvim-ts-autotag",
+    cond = vim.g.not_in_vscode,
     config = true,
   },
   {
     "windwp/nvim-autopairs",
+    cond = vim.g.not_in_vscode,
     config = true,
   },
 }
