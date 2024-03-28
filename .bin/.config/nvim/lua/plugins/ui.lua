@@ -244,4 +244,9 @@ return {
     cond = vim.g.not_in_vscode,
     config = true,
   },
+  {
+    "kevinhwang91/nvim-hlslens",
+    cond = vim.g.not_in_vscode,
+    config = true,
+  },
 }
