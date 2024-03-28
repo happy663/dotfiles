@@ -6,6 +6,8 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+  buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
+  buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
 end
 
 local on_attach = function(client, bufnr)
