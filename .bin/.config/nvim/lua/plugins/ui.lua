@@ -247,10 +247,6 @@ return {
   {
     "kevinhwang91/nvim-hlslens",
     cond = vim.g.not_in_vscode,
-    config = function()
-      require("scrollbar.handlers.search").setup({
-        override_lens = function() end,
-      })
-    end,
+    config = true,
   },
 }
