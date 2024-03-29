@@ -15,7 +15,7 @@ return {
             },
           },
           cache_picker = {
-            num_pickers = 5,
+            num_pickers = 10,
           },
         },
         pickers = {

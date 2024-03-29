@@ -78,6 +78,7 @@ map("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, sil
 map("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 
 map("n", "<Leader>g", "<cmd>LazyGit<CR>", opts)
+map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)
 map("i", "っj", "<esc>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
