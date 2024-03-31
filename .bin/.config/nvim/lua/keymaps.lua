@@ -27,7 +27,7 @@ map("n", "<Leader>h", '<cmd>lua require("telescope.builtin").search_history()<CR
 -- Gitブランチを切り替える
 map("n", "<Leader>b", '<cmd>lua require("telescope.builtin").git_branches()<CR>', opts)
 -- git statusを表示
-map("n", "<Leader>gs", '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
+--map("n", "<Leader>gs", '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
 
 map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
 map("n", "<leader>/", "<Plug>NERDCommenterToggle", opts)
