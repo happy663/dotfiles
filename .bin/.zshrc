@@ -68,37 +68,63 @@ alias gc='ghq get'
 
 [ -f "/Users/toyama/.ghcup/env" ] && source "/Users/toyama/.ghcup/env" # ghcup-env
 
-export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib $LDFLAGS"
-export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include $CPPFLAGS"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+    export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib $LDFLAGS"
+    export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include $CPPFLAGS"
+    export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    export LDFLAGS="-L/home/linuxbrew/.linuxbrew/opt/zlib/lib \
+    -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib \
+    -L/home/linuxbrew/.linuxbrew/opt/readline/lib \
+    -L/home/linuxbrew/.linuxbrew/opt/libffi/lib \
+    -L/home/linuxbrew/.linuxbrew/opt/ncurses/lib \
+    -L/home/linuxbrew/.linuxbrew/opt/bzip2/lib $LDFLAGS"
 
-export HISTSIZE=10000
+    export CPPFLAGS="-I/home/linuxbrew/.linuxbrew/opt/zlib/include \
+    -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include \
+    -I/home/linuxbrew/.linuxbrew/opt/readline/include \
+    -I/home/linuxbrew/.linuxbrew/opt/libffi/include \
+    -I/home/linuxbrew/.linuxbrew/opt/ncurses/include \
+    -I/home/linuxbrew/.linuxbrew/opt/bzip2/include $CPPFLAGS"
 
-PATH=~/.console-ninja/.bin:$PATH
+    export PKG_CONFIG_PATH="/home/linuxbrew/.linuxbrew/opt/zlib/lib/pkgconfig:\
+    /home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib/pkgconfig:\
+    /home/linuxbrew/.linuxbrew/opt/readline/lib/pkgconfig:\
+    /home/linuxbrew/.linuxbrew/opt/libffi/lib/pkgconfig:\
+    /home/linuxbrew/.linuxbrew/opt/ncurses/lib/pkgconfig:\
+    /home/linuxbrew/.linuxbrew/opt/bzip2/lib/pkgconfig:\
+    $PKG_CONFIG_PATH"
+
+fi
 
 
-export PATH="${PATH}:/Users/toyama/.local/lib/python3.10/site-packages"
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-
-export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
-export XDG_CONFIG_HOME="$HOME/.config"
 
 
-# cdしたらlsする
-case ${OSTYPE} in
-    darwin*)
-        #Mac用の設定
-        export CLICOLOR=1
-        function chpwd() { ls -A -G -F}
-        ;;
-    linux*)
-        #Linux用の設定
-        function chpwd() { ls -A -F --color=auto}
-        ;;
-esac
+    export HISTSIZE=10000
 
-alias ghb="gh browse"
-alias ghpc="gh pr checks"
-alias ghprc="gh pr create"
-eval "$(mise activate zsh)"
-alias relogin='exec $SHELL -l'
+    PATH=~/.console-ninja/.bin:$PATH
+
+
+    export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
+    export XDG_CONFIG_HOME="$HOME/.config"
+
+
+    # cdしたらlsする
+    case ${OSTYPE} in
+        darwin*)
+            #Mac用の設定
+            export CLICOLOR=1
+            function chpwd() { ls -A -G -F}
+            ;;
+        linux*)
+            #Linux用の設定
+            function chpwd() { ls -A -F --color=auto}
+            ;;
+    esac
+
+    alias ghb="gh browse"
+    alias ghpc="gh pr checks"
+    alias ghprc="gh pr create"
+    eval "$(mise activate zsh)"
+    alias relogin='exec $SHELL -l'
