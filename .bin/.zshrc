@@ -57,8 +57,6 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
 export GOPATH=$HOME/go
 export PATH=$PATH:$HOME/.local/bin
 
@@ -109,3 +107,5 @@ esac
 alias ghb="gh browse"
 alias ghpc="gh pr checks"
 alias ghprc="gh pr create"
+eval "$(mise activate zsh)"
+alias relogin='exec $SHELL -l'
