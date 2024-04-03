@@ -68,18 +68,11 @@ alias gc='ghq get'
 
 [ -f "/Users/toyama/.ghcup/env" ] && source "/Users/toyama/.ghcup/env" # ghcup-env
 
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/shims:$PATH"
-eval "$(pyenv init --path)" # これを追記
-eval "$(pyenv init -)"
-
 export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib $LDFLAGS"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include $CPPFLAGS"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
 
 export HISTSIZE=10000
-
-alias vim="nvim"
 
 PATH=~/.console-ninja/.bin:$PATH
 
