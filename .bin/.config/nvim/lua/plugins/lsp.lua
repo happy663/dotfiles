@@ -17,6 +17,21 @@ local on_attach = function(client, bufnr)
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "double",
   })
+  vim.api.nvim_buf_set_keymap(
+    bufnr,
+    "n",
+    "<leader>d",
+    '<cmd>lua vim.diagnostic.open_float(nil, {focus=false, border="double"})<CR>',
+    { noremap = true, silent = true }
+  )
+  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    update_in_insert = false,
+    virtual_text = {
+      format = function(diagnostic)
+        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
+      end,
+    },
+  })
 end
 
 return {
@@ -61,22 +76,22 @@ return {
             on_attach = on_attach,
           })
         end,
+        eslint = function()
+          lspconfig.eslint.setup({
+            on_attach = function(client, bufnr)
+              vim.api.nvim_create_autocmd("BufWritePre", {
+                buffer = bufnr,
+                command = "EslintFixAll",
+              })
+            end,
+          })
+        end,
       })
     end,
   },
   {
     "neovim/nvim-lspconfig",
     cond = vim.g.not_in_vscode,
-    config = function()
-      require("lspconfig").eslint.setup({
-        on_attach = function(client, bufnr)
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            command = "EslintFixAll",
-          })
-        end,
-      })
-    end,
   },
   {
     "nvimtools/none-ls.nvim",
@@ -84,6 +99,7 @@ return {
     config = function()
       local null_ls = require("null-ls")
       null_ls.setup({
+        diagnostics_format = "#{m} (#{s}: #{c})",
         sources = {
           null_ls.builtins.formatting.stylua,
           --null_ls.builtins.completion.spell,
