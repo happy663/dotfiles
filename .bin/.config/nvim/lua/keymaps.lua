@@ -103,8 +103,8 @@ map("n", "<Down>", "<Nop>", opts)
 map("n", "<Left>", "<Nop>", opts)
 map("n", "<Right>", "<Nop>", opts)
 
-map("n", "gp", '"*p', opts)
-map("n", "gP", '"*P', opts)
+map("n", "gp", '"+p', opts)
+map("n", "gP", '"+P', opts)
 
 -- mason
 map("n", "<Leader>ma", ":Mason<CR>", opts)

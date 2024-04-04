@@ -2,6 +2,7 @@
 #[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
 #
 #
+#
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n] confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -96,35 +97,37 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     /home/linuxbrew/.linuxbrew/opt/bzip2/lib/pkgconfig:\
     $PKG_CONFIG_PATH"
 
+    alias pbcopy='xsel --clipboard --input'
+    #export DISPLAY=`ip route | grep 'default via' | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'`:0
 fi
 
+HISTFILE=~/.zsh_history
+export HISTSIZE=1000
+export HISTFILESIZE=1000
+setopt HIST_IGNORE_ALL_DUPS
+setopt SHARE_HISTORY
+
+PATH=~/.console-ninja/.bin:$PATH
 
 
+export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
 
-  export HISTSIZE=10000
-
-  PATH=~/.console-ninja/.bin:$PATH
-
-
-  export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
-  export XDG_CONFIG_HOME="$HOME/.config"
-
-
-  # cdしたらlsする
-  case ${OSTYPE} in
-      darwin*)
-          #Mac用の設定
-          export CLICOLOR=1
-          function chpwd() { ls -A -G -F}
+# cdしたらlsする
+case ${OSTYPE} in
+    darwin*)
+        #Mac用の設定
+        export CLICOLOR=1
+        function chpwd() { ls -A -G -F}
+        ;;
+    linux*)
+        #Linux用の設定
+        function chpwd() { ls -A -F --color=auto}
           ;;
-      linux*)
-          #Linux用の設定
-          function chpwd() { ls -A -F --color=auto}
-          ;;
-  esac
+esac
 
-  alias ghb="gh browse"
-  alias ghpc="gh pr checks"
-  alias ghprc="gh pr create"
-  eval "$(mise activate zsh)"
-  alias relogin='exec $SHELL -l'
+alias ghb="gh browse"
+alias ghpc="gh pr checks"
+alias ghprc="gh pr create"
+eval "$(mise activate zsh)"
+alias relogin='exec $SHELL -l'
