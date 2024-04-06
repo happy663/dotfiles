@@ -16,7 +16,7 @@ map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 
 map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
-map("n", "<leader>/", "<Plug>NERDCommenterToggle", opts)
+map("n", "<leader>/", "gcc", { noremap = false, silent = true })
 map("n", "x", '"_x', opts)
 map("n", "-", "<CMD>split<CR>", opts)
 map("n", "|", "<CMD>vsplit<CR>", opts)
@@ -35,7 +35,7 @@ map("i", "<C-f>", "<Right>", opts)
 map("i", "<C-b>", "<Left>", opts)
 
 -- Visual mode keymaps
-map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
+map("v", "<leader>/", "gcc", { noremap = false, silent = true })
 
 -- terminal mode
 -- escapeでnormal modeに戻る
