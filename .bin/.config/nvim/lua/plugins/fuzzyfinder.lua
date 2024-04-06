@@ -49,13 +49,43 @@ return {
           },
         },
       })
-      require("telescope").load_extension("recent-files")
+      --require("telescope").load_extension("recent-files")
+      --vim.keymap.set("n", "<leader>p", function()
+      --require("telescope").extensions["recent-files"].recent_files({})
+      --end, { noremap = true, silent = true })
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "mollerhoj/telescope-recent-files.nvim",
+    },
+    keys = {
+      {
+        "<C-g>",
+        "<cmd>lua require('telescope.builtin').live_grep()<CR>",
+      },
+      {
+        "<Leader>h",
+        "<cmd>lua require('telescope.builtin').search_history()<CR>",
+      },
+      {
+        "<Leader>b",
+        "<cmd>lua require('telescope.builtin').git_branches()<CR>",
+      },
+      {
+        "<Leader>*",
+        "<cmd>lua require('telescope.builtin').grep_string()<CR>",
+      },
     },
     version = "0.1.5",
+  },
+  {
+    "mollerhoj/telescope-recent-files.nvim",
+    cond = vim.g.not_in_vscode,
+    keys = {
+      {
+        "<C-p>",
+        "<cmd>lua require('telescope').extensions['recent-files'].recent_files({})<CR>",
+      },
+    },
   },
   {
     "LukasPietzschmann/telescope-tabs",
@@ -94,6 +124,7 @@ return {
     config = function()
       require("telescope").load_extension("memo")
     end,
+    key = {},
   },
   {
     cond = vim.g.not_in_vscode,

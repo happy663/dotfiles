@@ -15,20 +15,6 @@ map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 -- fuzzy-motion
 map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 
-map("n", "<C-p>", "<CMD>Telescope recent-files recent_files<CR>", opts)
--- ファイルを検索する
---map("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files()<CR>", opts)
--- ファイル内をgrep検索する
-map("n", "<C-g>", '<cmd>lua require("telescope.builtin").live_grep()<CR>', opts)
--- カーソルまたは選択範囲のgrep検索
-map("n", "<Leader>*", '<cmd>lua require("telescope.builtin").grep_string()<CR>', opts)
--- 履歴表示
-map("n", "<Leader>h", '<cmd>lua require("telescope.builtin").search_history()<CR>', opts)
--- Gitブランチを切り替える
-map("n", "<Leader>b", '<cmd>lua require("telescope.builtin").git_branches()<CR>', opts)
--- git statusを表示
---map("n", "<Leader>gs", '<cmd>lua require("telescope.builtin").git_status()<CR>', opts)
-
 map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
 map("n", "<leader>/", "<Plug>NERDCommenterToggle", opts)
 map("n", "x", '"_x', opts)
