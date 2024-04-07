@@ -1,8 +1,8 @@
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
-map("n", "<leader>/", "<Plug>NERDCommenterToggle", opts)
-map("v", "<leader>/", "<Plug>NERDCommenterToggle", opts)
+map("n", "<leader>/", "gcc", opts)
+map("v", "<leader>/", "gcc", opts)
 map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 map("n", "gp", '"*p', opts)
 map("n", "gP", '"*P', opts)
