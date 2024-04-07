@@ -17,7 +17,7 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 end
 
 -- mac
-if wezterm.target_triple == "x86_64-apple-darwin" then
+if wezterm.target_triple == "aarch64-apple-darwin" then
   config.window_background_image =
     "/Users/toyama/src/github.com/dotfiles/.bin/.config/wezterm/images/wallpaperflare.com_wallpaper.jpg"
 end
