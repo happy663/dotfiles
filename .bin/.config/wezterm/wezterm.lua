@@ -13,7 +13,9 @@ wezterm.log_info(wezterm.target_triple)
 random_image_num = math.random(0, 5)
 -- windows
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
-  config.window_background_image = "C:/Users/toyama/wallpaperflare.com_wallpaper_" .. random_image_num .. ".jpg"
+  config.window_background_image = "C:/Users/toyama/.config/wezterm/images/wallpaperflare.com_wallpaper_"
+    .. random_image_num
+    .. ".jpg"
   config.default_domain = "WSL:Ubuntu-22.04"
 end
 
