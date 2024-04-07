@@ -10,16 +10,18 @@ local config = wezterm.config_builder()
 config.color_scheme = "AdventureTime"
 wezterm.log_info(wezterm.target_triple)
 
+random_image_num = math.random(0, 5)
 -- windows
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
-  config.window_background_image = "C:/Users/toyama/wallpaperflare.com_wallpaper.jpg"
+  config.window_background_image = "C:/Users/toyama/wallpaperflare.com_wallpaper_" .. random_image_num .. ".jpg"
   config.default_domain = "WSL:Ubuntu-22.04"
 end
 
 -- mac
 if wezterm.target_triple == "aarch64-apple-darwin" then
-  config.window_background_image =
-    "/Users/toyama/src/github.com/dotfiles/.bin/.config/wezterm/images/wallpaperflare.com_wallpaper.jpg"
+  config.window_background_image = "/Users/toyama/src/github.com/dotfiles/.bin/.config/wezterm/images/wallpaperflare.com_wallpaper_"
+    .. random_image_num
+    .. ".jpg"
 end
 
 -- 最初からフルスクリーンで起動
