@@ -8,7 +8,7 @@ config.font = wezterm.font("HackGen Console", { weight = "Regular", stretch = "N
 config.color_scheme = "AdventureTime"
 wezterm.log_info(wezterm.target_triple)
 
-random_image_num = math.random(0, 5)
+random_image_num = math.random(0, 8)
 -- windows
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   config.window_background_image = "C:/Users/toyama/wallpaperflare.com_wallpaper_" .. random_image_num .. ".jpg"
