@@ -4,9 +4,7 @@ local wezterm = require("wezterm")
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
--- This is where you actually apply your config choices
-
--- For example, changing the color scheme:
+config.font = wezterm.font("HackGen Console", { weight = "Regular", stretch = "Normal", style = "Normal" })
 config.color_scheme = "AdventureTime"
 wezterm.log_info(wezterm.target_triple)
 
@@ -57,6 +55,11 @@ config.keys = {
     key = "f",
     mods = "SHIFT|META",
     action = wezterm.action.ToggleFullScreen,
+  },
+  {
+    key = "r",
+    mods = "CMD|SHIFT",
+    action = wezterm.action.ReloadConfiguration,
   },
 }
 -- and finally, return the configuration to wezterm
