@@ -4,7 +4,8 @@ local wezterm = require("wezterm")
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
-config.font = wezterm.font("HackGen Console", { weight = "Regular", stretch = "Normal", style = "Normal" })
+-- config.font = wezterm.font("HackGen Console", { weight = "Regular", stretch = "Normal", style = "Normal" })
+config.font = wezterm.font("HackGen Console NF", { weight = "Regular", stretch = "Normal", style = "Normal" })
 config.color_scheme = "AdventureTime"
 wezterm.log_info(wezterm.target_triple)
 
