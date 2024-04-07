@@ -56,7 +56,7 @@ config.keys = {
   -- Alt(Opt)+Shift+Fでフルスクリーン切り替え
   {
     key = "f",
-    mods = "SHIFT|META",
+    mods = "CMD|SHIFT",
     action = wezterm.action.ToggleFullScreen,
   },
   {
