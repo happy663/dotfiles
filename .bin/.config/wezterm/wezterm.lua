@@ -9,7 +9,7 @@ config.font = wezterm.font("HackGen Console NF", { weight = "Regular", stretch =
 config.color_scheme = "AdventureTime"
 wezterm.log_info(wezterm.target_triple)
 
-random_image_num = math.random(0, 8)
+local random_image_num = math.random(0, 8)
 -- windows
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   config.window_background_image = "C:/Users/toyama/.config/wezterm/images/wallpaperflare.com_wallpaper_"
@@ -47,6 +47,8 @@ config.inactive_pane_hsb = {
   brightness = 0.8,
 }
 
+config.macos_forward_to_ime_modifier_mask = "CTRL|SHIFT"
+
 local act = wezterm.action
 config.keys = {
   -- paste from the clipboard
@@ -65,5 +67,6 @@ config.keys = {
     action = wezterm.action.ReloadConfiguration,
   },
 }
+
 -- and finally, return the configuration to wezterm
 return config

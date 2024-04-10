@@ -13,7 +13,8 @@ map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 -- fuzzy-motion
-map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
+-- map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>f", "<CMD>HopWord<CR>", opts)
 
 map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
@@ -43,7 +44,7 @@ map("t", "<esc>", [[<C-\><C-n>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
-
+--
 vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "term://*lazygit*",
   callback = function()

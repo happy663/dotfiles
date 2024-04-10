@@ -17,4 +17,7 @@ return {
       require("registers").setup()
     end,
   },
+  {
+    "vim-skk/skkeleton",
+  },
 }

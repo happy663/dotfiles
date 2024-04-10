@@ -49,10 +49,6 @@ return {
           },
         },
       })
-      --require("telescope").load_extension("recent-files")
-      --vim.keymap.set("n", "<leader>p", function()
-      --require("telescope").extensions["recent-files"].recent_files({})
-      --end, { noremap = true, silent = true })
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",

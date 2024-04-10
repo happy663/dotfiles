@@ -3,7 +3,7 @@ local opts = { noremap = true, silent = true }
 
 map("n", "<leader>/", "gcc", opts)
 map("v", "<leader>/", "gcc", opts)
-map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>f", "<CMD>HopWord<CR>", opts)
 map("n", "gp", '"*p', opts)
 map("n", "gP", '"*P', opts)
 map("n", "<CR>", "A<Return><Esc>k", opts)
