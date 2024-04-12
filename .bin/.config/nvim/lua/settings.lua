@@ -56,3 +56,17 @@ vim.cmd([[highlight TelescopeSelection guibg=#083747]])
 vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
 
 vim.g.lazygit_floating_window_scaling_factor = 1
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "skkeleton-initialize-pre",
+  callback = function()
+    vim.fn["skkeleton#config"]({
+      globalDictionaries = { { "/Users/toyama/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
+    })
+    vim.fn["skkeleton#register_kanatable"]("rom", {
+      ["hh"] = { "お", "h" },
+      ["jj"] = "escape",
+      ["z,"] = { "―", "" },
+    })
+  end,
+})
