@@ -95,3 +95,5 @@ map("n", "gP", '"+P', opts)
 
 -- mason
 map("n", "<Leader>ma", ":Mason<CR>", opts)
+
+map("i", "<C-J>", "<Plug>(skkeleton-toggle)", { silent = true })
