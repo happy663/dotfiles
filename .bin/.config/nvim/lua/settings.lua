@@ -62,11 +62,14 @@ vim.api.nvim_create_autocmd("User", {
   callback = function()
     vim.fn["skkeleton#config"]({
       globalDictionaries = { { "/Users/toyama/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
+      eggLikeNewline = true,
     })
     vim.fn["skkeleton#register_kanatable"]("rom", {
       ["hh"] = { "お", "h" },
       ["jj"] = "escape",
       ["z,"] = { "―", "" },
+      [","] = { ",", "" },
+      ["."] = { ".", "" },
     })
   end,
 })
