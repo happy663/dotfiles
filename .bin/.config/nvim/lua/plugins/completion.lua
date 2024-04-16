@@ -2,6 +2,7 @@ return {
   {
     "github/copilot.vim",
     cond = vim.g.not_in_vscode,
+    opt = true,
   },
   {
     "hrsh7th/nvim-cmp",
@@ -29,9 +30,10 @@ return {
           }),
         },
         sources = {
+          { name = "skkeleton" },
           { name = "nvim_lsp" },
-          { name = "buffer" },
           { name = "path" },
+          { name = "buffer" },
         },
         sorting = {
           priority_weight = 2,
@@ -88,5 +90,8 @@ return {
     "windwp/nvim-autopairs",
     cond = vim.g.not_in_vscode,
     config = true,
+  },
+  {
+    "uga-rosa/cmp-skkeleton",
   },
 }

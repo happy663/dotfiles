@@ -86,3 +86,29 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "skkeleton-enable-pre",
+  callback = function()
+    local cmp = require("cmp")
+    cmp.setup.buffer({
+      sources = cmp.config.sources({
+        { name = "skkeleton" },
+      }),
+    })
+  end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "skkeleton-disable-pre",
+  callback = function()
+    local cmp = require("cmp")
+    cmp.setup.buffer({
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "path" },
+        { name = "buffer" },
+      }),
+    })
+  end,
+})
