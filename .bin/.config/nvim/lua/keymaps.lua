@@ -99,3 +99,5 @@ map("n", "<Leader>ma", ":Mason<CR>", opts)
 map("i", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
 map("c", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
 map("t", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
+
+map("n", "<Leader>cr", "<CMD>RunCode<CR>", opts)
