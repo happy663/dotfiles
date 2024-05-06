@@ -55,10 +55,17 @@ return {
     end,
   },
   {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    cond = vim.g.not_in_vscode,
-    config = true,
+    -- "lukas-reineke/indent-blankline.nvim",
+    -- main = "ibl",
+    -- cond = vim.g.not_in_vscode,
+    -- config = true,
+  },
+  {
+    "shellRaining/hlchunk.nvim",
+    event = { "UIEnter" },
+    config = function()
+      require("hlchunk").setup({})
+    end,
   },
   {
     "folke/noice.nvim",

@@ -17,11 +17,16 @@ return {
           cache_picker = {
             num_pickers = 10,
           },
+          mappings = {
+            i = {
+              ["<C-J>"] = false, -- to support skkeleton.vim
+            },
+          },
         },
         pickers = {
           find_files = {
             find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
-            file_ignore_patterns = { "node_modules/*" },
+            file_ignore_patterns = { "node_modules/*", "startuptime-logs/*" },
           },
           live_grep = {
             additional_args = function()
@@ -33,6 +38,8 @@ return {
                 "!*lock.json",
                 "--glob",
                 "!.p10k.zsh",
+                "--glob",
+                "!*startuptime-logs/",
               }
             end,
           },

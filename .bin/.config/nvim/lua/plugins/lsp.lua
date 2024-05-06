@@ -105,7 +105,7 @@ return {
           --null_ls.builtins.completion.spell,
           null_ls.builtins.formatting.prettierd,
           --null_ls.builtins.code_actions.eslint_d,
-          --null_ls.builtins.formatting.latexindent,
+          -- null_ls.builtins.formatting.latexindent,
           --null_ls.builtins.diagnostics.luacheck.with({
           --extra_args = { "--globals", "vim", "--globals", "use" },
           --}),
@@ -136,7 +136,7 @@ return {
           "staticcheck",
           "stylua",
           "textlint",
-          "typescript-language-server",
+          -- "typescript-language-server",
         },
       })
     end,

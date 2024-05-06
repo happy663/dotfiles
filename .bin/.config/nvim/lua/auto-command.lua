@@ -88,6 +88,23 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 vim.api.nvim_create_autocmd("User", {
+  pattern = "skkeleton-initialize-pre",
+  callback = function()
+    vim.fn["skkeleton#config"]({
+      globalDictionaries = { { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
+      eggLikeNewline = true,
+    })
+    vim.fn["skkeleton#register_kanatable"]("rom", {
+      ["hh"] = { "お", "h" },
+      ["jj"] = "escape",
+      ["z,"] = { "―", "" },
+      [","] = { ",", "" },
+      ["."] = { ".", "" },
+    })
+  end,
+})
+
+vim.api.nvim_create_autocmd("User", {
   pattern = "skkeleton-enable-pre",
   callback = function()
     local cmp = require("cmp")
