@@ -113,6 +113,13 @@ vim.api.nvim_create_autocmd("User", {
         { name = "skkeleton" },
       }),
     })
+
+    cmp.setup.cmdline("/", {
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = {
+        { name = "skkeleton" },
+      },
+    })
   end,
 })
 
@@ -126,6 +133,13 @@ vim.api.nvim_create_autocmd("User", {
         { name = "path" },
         { name = "buffer" },
       }),
+    })
+
+    cmp.setup.cmdline("/", {
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = {
+        { name = "buffer" },
+      },
     })
   end,
 })

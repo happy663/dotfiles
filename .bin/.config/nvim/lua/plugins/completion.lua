@@ -10,6 +10,12 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
+      cmp.setup.cmdline("/", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer" },
+        },
+      })
       cmp.setup({
         snippet = {
           expand = function(args)
@@ -30,7 +36,6 @@ return {
           }),
         },
         sources = {
-          { name = "skkeleton" },
           { name = "nvim_lsp" },
           { name = "path" },
           { name = "buffer" },
