@@ -105,3 +105,5 @@ map("n", "<Leader>cr", "<CMD>RunCode<CR>", opts)
 vim.cmd([[
   cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
 ]])
+
+map("n", "<ESC><ESC>", ":noh<CR>", opts)
