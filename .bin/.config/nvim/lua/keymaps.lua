@@ -36,7 +36,6 @@ map("i", "<C-b>", "<Left>", opts)
 
 -- Visual mode keymaps
 map("v", "<leader>/", "gcc", { noremap = false, silent = true })
-
 -- terminal mode
 -- escapeでnormal modeに戻る
 map("t", "<esc>", [[<C-\><C-n>]], opts)
@@ -110,10 +109,12 @@ function Toggle_highlight()
   if vim.g.highlight_on then
     -- ハイライトがオンの場合、オフにする
     vim.cmd("nohlsearch")
+    vim.cmd("HlSearchLensDisable")
     vim.g.highlight_on = false
   else
     -- ハイライトがオフの場合、オンにする
     vim.cmd("set hlsearch")
+    vim.cmd("HlSearchLensEnable")
     vim.g.highlight_on = true
   end
 end
