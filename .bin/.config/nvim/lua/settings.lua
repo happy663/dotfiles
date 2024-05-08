@@ -53,3 +53,5 @@ vim.cmd([[highlight TelescopeSelection guibg=#083747]])
 vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
 
 vim.g.lazygit_floating_window_scaling_factor = 1
+
+vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
