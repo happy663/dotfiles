@@ -132,4 +132,5 @@ alias ghprc="gh pr create"
 eval "$(mise activate zsh)"
 alias relogin='exec $SHELL -l'
 alias po='poetry'
+alias py='python3'
 

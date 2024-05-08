@@ -101,3 +101,7 @@ map("c", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
 map("t", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
 
 map("n", "<Leader>cr", "<CMD>RunCode<CR>", opts)
+
+vim.cmd([[
+  cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
+]])

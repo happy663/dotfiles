@@ -44,9 +44,6 @@ vim.opt.shortmess:append("sI")
 -- デフォルトのカラースキームを設定
 vim.cmd("colorscheme ayu-mirage")
 
--- 折り返し
-vim.o.wrap = true
-
 require("notify").setup({
   background_colour = "#000000",
 })
