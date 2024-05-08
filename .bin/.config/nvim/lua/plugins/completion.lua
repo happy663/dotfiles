@@ -29,6 +29,28 @@ return {
         sources = {
           { name = "buffer" },
         },
+        sorting = {
+          comparators = {
+            function(entry1, entry2)
+              local input = vim.fn.getcmdline() -- 現在のコマンドライン入力を取得
+              local prefix1 = entry1:get_completion_item().label:sub(1, #input) == input
+              local prefix2 = entry2:get_completion_item().label:sub(1, #input) == input
+              if prefix1 and not prefix2 then
+                return true
+              elseif not prefix1 and prefix2 then
+                return false
+              end
+            end,
+            -- 標準の比較関数を続ける
+            cmp.config.compare.offset,
+            cmp.config.compare.exact,
+            cmp.config.compare.score,
+            cmp.config.compare.kind,
+            cmp.config.compare.sort_text,
+            cmp.config.compare.length,
+            cmp.config.compare.order,
+          },
+        },
       })
       cmp.setup({
         snippet = {
