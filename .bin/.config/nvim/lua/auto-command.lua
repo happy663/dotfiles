@@ -93,6 +93,7 @@ vim.api.nvim_create_autocmd("User", {
     vim.fn["skkeleton#config"]({
       globalDictionaries = { { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
       eggLikeNewline = true,
+      userDictionary = "~/.config/skk/dictionary/.userDict",
     })
     vim.fn["skkeleton#register_kanatable"]("rom", {
       ["hh"] = { "お", "h" },
