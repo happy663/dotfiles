@@ -5,11 +5,12 @@ local opts = { noremap = true, silent = true }
 -- Normal mode keymaps
 map("n", "<C-h>", "<C-w>h", opts)
 map("n", "<C-l>", "<C-w>l", opts)
---map("n", "<C-j>", "<C-w>j", opts)
---map("n", "<C-k>", "<C-w>k", opts)
+map("n", "<C-j>", "<C-w>j", opts)
+map("n", "<C-k>", "<C-w>k", opts)
 map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
 -- easy-motion
+--
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 -- fuzzy-motion
@@ -127,7 +128,7 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
 map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
 map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 
-map("n", "<Leader>j", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>a", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
 map("n", "<Leader>me", "<CMD>messages<CR>", opts)
