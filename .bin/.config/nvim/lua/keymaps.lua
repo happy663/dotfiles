@@ -106,4 +106,24 @@ vim.cmd([[
   cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
 ]])
 
-map("n", "<ESC><ESC>", ":noh<CR>", opts)
+vim.g.highlight_on = true
+function Toggle_highlight()
+  if vim.g.highlight_on then
+    -- ハイライトがオンの場合、オフにする
+    vim.cmd("nohlsearch")
+    vim.g.highlight_on = false
+  else
+    -- ハイライトがオフの場合、オンにする
+    vim.cmd("set hlsearch")
+    vim.g.highlight_on = true
+  end
+end
+
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+  pattern = { "/" },
+  callback = function()
+    vim.g.highlight_on = true
+  end,
+})
+
+map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
