@@ -13,6 +13,7 @@ vim.o.termguicolors = true -- True color support
 
 -- エディタ設定
 vim.o.expandtab = true -- タブをスペースに変換
+
 vim.o.tabstop = 2 -- タブの幅を2スペースに設定
 vim.o.shiftwidth = 2 -- インデントの幅を2スペースに設定
 vim.o.smartindent = true -- 自動インデント機能を有効化
@@ -51,6 +52,9 @@ require("notify").setup({
 ---- 現在選択中のアイテムのハイライト色を変更
 vim.cmd([[highlight TelescopeSelection guibg=#083747]])
 vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+
+vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
+vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
 
 vim.g.lazygit_floating_window_scaling_factor = 1
 

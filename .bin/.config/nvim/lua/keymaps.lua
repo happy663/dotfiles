@@ -13,10 +13,8 @@ map("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 -- fuzzy-motion
--- map("n", "<Leader>f", "<CMD>FuzzyMotion<CR>", opts)
 map("n", "<Leader>f", "<CMD>HopWord<CR>", opts)
 
-map("n", "<Leader>[", "<Plug>(jumpcursor-jump)", opts)
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
 map("n", "x", '"_x', opts)
 map("n", "-", "<CMD>split<CR>", opts)
@@ -127,3 +125,9 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
 })
 
 map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
+map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
+
+map("n", "<Leader>j", "<CMD>FuzzyMotion<CR>", opts)
+vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
+
+map("n", "<Leader>me", "<CMD>messages<CR>", opts)
