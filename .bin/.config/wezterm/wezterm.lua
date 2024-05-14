@@ -17,9 +17,8 @@ local function build_image_path(image_num)
   local base_path = ""
   if wezterm.target_triple == "x86_64-pc-windows-msvc" then
     base_path = "C:/Users/toyama/.config/wezterm/images/wallpaperflare.com_wallpaper_"
-  elseif wezterm.target_triple == "aarch64-apple-darwin" then
+  elseif wezterm.target_triple == "aarch64-apple-darwin" or wezterm.target_triple == "x86_64-apple-darwin" then
     base_path = wezterm.home_dir .. "/.config/wezterm/images/wallpaperflare.com_wallpaper_"
-    print(base_path)
   end
   return base_path .. image_num .. ".jpg"
 end
