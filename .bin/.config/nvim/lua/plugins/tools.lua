@@ -134,4 +134,13 @@ return {
       -- See Commands section for default commands if you want to lazy load on them
     },
   },
+  {
+    "lervag/vimtex",
+    cond = vim.g.not_in_vscode,
+    lazy = false,
+    tag = "v2.15",
+    init = function()
+      vim.g.vimtex_view_method = "skim"
+    end,
+  },
 }
