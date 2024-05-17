@@ -140,7 +140,7 @@ return {
     lazy = false,
     tag = "v2.15",
     init = function()
-      vim.g.vimtex_view_method = "skim"
+      vim.g.vimtex_view_general_viewer = "zathura"
     end,
   },
 }
