@@ -133,3 +133,11 @@ map("n", "<Leader>a", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
 map("n", "<Leader>me", "<CMD>messages<CR>", opts)
+
+vim.api.nvim_create_user_command("Help", function(command)
+  local success, msg = pcall(vim.cmd, "vertical help " .. command.args .. " | vertical resize 80")
+  if not success then
+    vim.api.nvim_err_writeln(msg)
+  end
+end, { nargs = 1, complete = "help" })
+vim.api.nvim_set_keymap("n", "<Leader>he", ":Help ", opts)
