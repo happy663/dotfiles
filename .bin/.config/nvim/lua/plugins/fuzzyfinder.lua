@@ -66,10 +66,6 @@ return {
         "<cmd>lua require('telescope.builtin').live_grep()<CR>",
       },
       {
-        "<Leader>h",
-        "<cmd>lua require('telescope.builtin').search_history()<CR>",
-      },
-      {
         "<Leader>b",
         "<cmd>lua require('telescope.builtin').git_branches()<CR>",
       },

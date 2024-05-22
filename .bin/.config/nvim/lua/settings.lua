@@ -15,6 +15,7 @@ vim.o.termguicolors = true -- True color support
 vim.o.expandtab = true -- タブをスペースに変換
 
 vim.o.tabstop = 2 -- タブの幅を2スペースに設定
+-- Add the keymap for <C-n> in henkan mode
 vim.o.shiftwidth = 2 -- インデントの幅を2スペースに設定
 vim.o.smartindent = true -- 自動インデント機能を有効化
 vim.o.wrap = false -- 長い行を折り返さない

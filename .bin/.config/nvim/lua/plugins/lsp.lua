@@ -10,10 +10,32 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
 end
 
-local on_attach = function(client, bufnr)
+local no_format_on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
   client.server_capabilities.documentFormattingProvider = false
   client.server_capabilities.documentRangeFormattingProvider = false
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    border = "double",
+  })
+  vim.api.nvim_buf_set_keymap(
+    bufnr,
+    "n",
+    "<leader>d",
+    '<cmd>lua vim.diagnostic.open_float(nil, {focus=false, border="double"})<CR>',
+    { noremap = true, silent = true }
+  )
+  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    update_in_insert = false,
+    virtual_text = {
+      format = function(diagnostic)
+        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
+      end,
+    },
+  })
+end
+
+local on_attach = function(client, bufnr)
+  set_lsp_keymaps(bufnr)
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "double",
   })
@@ -61,7 +83,7 @@ return {
         end,
         lua_ls = function()
           lspconfig.lua_ls.setup({
-            on_attach = on_attach,
+            on_attach = no_format_on_attach,
             settings = {
               Lua = {
                 diagnostics = {
@@ -73,7 +95,7 @@ return {
         end,
         tsserver = function()
           lspconfig.tsserver.setup({
-            on_attach = on_attach,
+            on_attach = no_format_on_attach,
           })
         end,
         eslint = function()
@@ -84,6 +106,21 @@ return {
                 command = "EslintFixAll",
               })
             end,
+          })
+        end,
+        texlab = function()
+          lspconfig.texlab.setup({
+            on_attach = on_attach,
+            settings = {
+              texlab = {
+                build = {
+                  executable = "latexmk",
+                  args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+                  onSave = true,
+                },
+                rootDirectory = ".",
+              },
+            },
           })
         end,
       })

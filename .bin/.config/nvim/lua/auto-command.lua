@@ -15,6 +15,7 @@ local lsp_hover_group = vim.api.nvim_create_augroup("lsp_hover", { clear = true 
 --   group = lsp_hover_group,
 --   callback = on_cursor_hold, -- ここで直接関数を指定
 -- })
+--
 
 -- LSPのハイライトを設定
 set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
@@ -94,14 +95,28 @@ vim.api.nvim_create_autocmd("User", {
       globalDictionaries = { { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
       eggLikeNewline = true,
       userDictionary = "~/.config/skk/dictionary/.userDict",
+      -- globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
+      completionRankFile = "~/.config/skk/dictionary/userCompletionRankFile",
+      immediatelyOkuriConvert = true,
     })
+
     vim.fn["skkeleton#register_kanatable"]("rom", {
       ["hh"] = { "お", "h" },
       ["jj"] = "escape",
-      ["z,"] = { "―", "" },
+      ["z,"] = { "ー", "" },
       [","] = { "，", "" },
       ["."] = { "．", "" },
+      ["q"] = "katakana",
+      ["'"] = { "っ" },
     })
+
+    vim.api.nvim_exec(
+      [[
+      call add(g:skkeleton#mapped_keys, '<C-a>')
+      ]],
+      false
+    )
+    vim.fn["skkeleton#register_keymap"]("henkan", "<C-a>", "henkanForward")
   end,
 })
 
