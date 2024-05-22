@@ -94,8 +94,8 @@ vim.api.nvim_create_autocmd("User", {
     vim.fn["skkeleton#config"]({
       globalDictionaries = { { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
       eggLikeNewline = true,
-      userDictionary = "~/.config/skk/dictionary/.userDict",
-      -- globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
+      userDictionary = "~/.config/skk/dictionary/userDict",
+      globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
       completionRankFile = "~/.config/skk/dictionary/userCompletionRankFile",
       immediatelyOkuriConvert = true,
     })
