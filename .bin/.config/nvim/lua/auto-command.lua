@@ -108,6 +108,7 @@ vim.api.nvim_create_autocmd("User", {
       ["."] = { "．", "" },
       ["q"] = "katakana",
       ["'"] = { "っ" },
+      ["_"] = { "-" },
     })
 
     vim.api.nvim_exec(
