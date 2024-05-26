@@ -7,6 +7,10 @@ local config = wezterm.config_builder()
 -- Font and colorscheme settings
 config.font = wezterm.font("HackGen Console NF", { weight = "Regular", stretch = "Normal", style = "Normal" })
 config.color_scheme = "AdventureTime"
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+  config.default_domain = "WSL:Ubuntu-22.04"
+end
+
 wezterm.log_info(wezterm.target_triple)
 
 -- Initialize the image number globally
