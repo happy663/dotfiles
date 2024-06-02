@@ -36,5 +36,5 @@ if vim.g.not_in_vscode then
   require("settings")
   require("keymaps")
 else
-  require("vscode")
+  require("self-vscode")
 end
