@@ -25,19 +25,3 @@ https://github.com/folke/lazy.nvim
 インストール後は`:Lazy sync`でプラグインを反映できる
 
 ただし初回起動時にnvim-tree-sitterのインストールコマンドが走るのでしばらく操作ができなくなるかもしれない
-
-# Shell
-
-zshシェルを使用
-
-zshのパスは以下で確認できる
-
-```
-brew --prefix zsh
-```
-
-zshに変更
-
-```
-sudo chsh -s 上記のコマンドのパス
-```
