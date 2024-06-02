@@ -101,7 +101,6 @@ vim.api.nvim_create_autocmd("User", {
     })
 
     vim.fn["skkeleton#register_kanatable"]("rom", {
-      ["hh"] = { "お", "h" },
       ["jj"] = "escape",
       ["z,"] = { "ー", "" },
       [","] = { "，", "" },
