@@ -171,7 +171,10 @@ return {
         ignore_install = {},
         highlight = {
           enable = true,
-          disable = function()
+          disable = function(lang)
+            if lang == "latex" then
+              return true
+            end
             return vim.g.vscode
           end,
         },
