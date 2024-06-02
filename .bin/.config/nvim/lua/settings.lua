@@ -55,7 +55,7 @@ require("notify").setup({
 
 ---- 現在選択中のアイテムのハイライト色を変更
 vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+vim.cmd([[highlight TelescopePreviewLine guibg=#ff99cc]])
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
