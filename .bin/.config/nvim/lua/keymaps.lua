@@ -61,7 +61,6 @@ end
 
 -- カスタムコマンドとして設定
 map("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
-map("n", "<Leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
 map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)

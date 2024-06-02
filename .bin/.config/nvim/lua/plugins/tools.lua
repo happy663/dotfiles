@@ -144,4 +144,10 @@ return {
       vim.g.vimtex_quickfix_open_on_warning = 0
     end,
   },
+  {
+    "aznhe21/actions-preview.nvim",
+    config = function()
+      vim.keymap.set({ "v", "n" }, "<Leader>ca", require("actions-preview").code_actions)
+    end,
+  },
 }
