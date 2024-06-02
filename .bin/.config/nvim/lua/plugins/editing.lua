@@ -7,20 +7,27 @@ return {
     config = true,
   },
   {
-    "numToStr/Comment.nvim",
-    config = function()
-      require("Comment").setup({
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-      })
-    end,
+    -- "numToStr/Comment.nvim",
+    -- config = function()
+    --   require("Comment").setup({
+    --     pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+    --   })
+    -- end,
   },
   {
     "JoosepAlviste/nvim-ts-context-commentstring",
+    config = function()
+      local get_option = vim.filetype.get_option
+      vim.filetype.get_option = function(filetype, option)
+        return option == "commentstring" and require("ts_context_commentstring.internal").calculate_commentstring()
+          or get_option(filetype, option)
+      end
+    end,
   },
   {
     "tversteeg/registers.nvim",
     cond = vim.g.not_in_vscode,
-    config = function()
+    config = function(qq)
       require("registers").setup()
     end,
   },
