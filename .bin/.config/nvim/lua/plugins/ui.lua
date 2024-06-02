@@ -169,9 +169,6 @@ return {
         sync_install = false,
         auto_install = false,
         ignore_install = {},
-        autotag = {
-          enable = true,
-        },
         highlight = {
           enable = true,
           disable = function()
