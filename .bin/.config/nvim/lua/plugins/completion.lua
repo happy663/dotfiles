@@ -41,7 +41,6 @@ return {
                 return false
               end
             end,
-            -- 標準の比較関数を続ける
             cmp.config.compare.offset,
             cmp.config.compare.exact,
             cmp.config.compare.score,
@@ -56,7 +55,7 @@ return {
         snippet = {
           expand = function(args)
             -- For vsnip users
-            --vim.fn["vsnip#anonymous"](args.body)
+            vim.fn["vsnip#anonymous"](args.body)
           end,
         },
         mapping = {
@@ -66,13 +65,11 @@ return {
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
-          ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = false,
-          }),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
         },
         sources = {
           { name = "nvim_lsp" },
+          { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
         },
@@ -123,6 +120,9 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "onsails/lspkind.nvim",
+      "uga-rosa/cmp-skkeleton",
+      "hrsh7th/cmp-vsnip",
+      "hrsh7th/vim-vsnip",
     },
   },
   {
@@ -136,8 +136,5 @@ return {
     "windwp/nvim-autopairs",
     cond = vim.g.not_in_vscode,
     config = true,
-  },
-  {
-    "uga-rosa/cmp-skkeleton",
   },
 }
