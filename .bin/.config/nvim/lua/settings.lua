@@ -68,3 +68,5 @@ vim.api.nvim_set_hl(0, "Search", { fg = "#ffffff", bg = "#008000" })
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { fg = "#ffffff", bg = "#ff99cc" }) -- 近いマッチにはIncSearchと同じ色
 vim.api.nvim_set_hl(0, "HlSearchLens", { fg = "#000000", bg = "#bae67e" }) -- 中間のマッチには明るい緑
 vim.api.nvim_set_hl(0, "HlSearchLensFar", { fg = "#ffffff", bg = "#5ccfe6" }) -- 遠いマッチには明るいブルー
+
+vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"

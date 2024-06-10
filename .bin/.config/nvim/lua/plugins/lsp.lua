@@ -21,7 +21,7 @@ local no_format_on_attach = function(client, bufnr)
     bufnr,
     "n",
     "<leader>d",
-    '<cmd>lua vim.diagnostic.open_float(nil, {focus=false, border="double"})<CR>',
+    '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
     { noremap = true, silent = true }
   )
   vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -43,7 +43,7 @@ local on_attach = function(client, bufnr)
     bufnr,
     "n",
     "<leader>d",
-    '<cmd>lua vim.diagnostic.open_float(nil, {focus=false, border="double"})<CR>',
+    '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
     { noremap = true, silent = true }
   )
   vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -111,6 +111,7 @@ return {
         texlab = function()
           lspconfig.texlab.setup({
             on_attach = on_attach,
+            root_dir = lspconfig.util.root_pattern(".texlabroot", ".git", ".latexmkrc", "texlabroot", "Tectonic.toml"),
             settings = {
               texlab = {
                 build = {
@@ -118,7 +119,6 @@ return {
                   args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
                   onSave = true,
                 },
-                rootDirectory = ".",
               },
             },
           })
