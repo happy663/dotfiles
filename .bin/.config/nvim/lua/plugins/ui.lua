@@ -172,9 +172,9 @@ return {
         highlight = {
           enable = true,
           disable = function(lang)
-            if lang == "latex" then
-              return true
-            end
+            -- if lang == "latex" then
+            --   return true
+            -- end
             return vim.g.vscode
           end,
         },
