@@ -96,8 +96,12 @@ vim.api.nvim_create_autocmd("User", {
       eggLikeNewline = true,
       userDictionary = "~/.config/skk/dictionary/userDict",
       globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
-      completionRankFile = "~/.config/skk/dictionary/userCompletionRankFile",
+      completionRankFile = "~/.config/skk/dictionary/userCompletionRankFile.json",
       immediatelyOkuriConvert = true,
+      sources = {
+        "skk_dictionary",
+        "google_japanese_input",
+      },
     })
 
     vim.fn["skkeleton#register_kanatable"]("rom", {
@@ -125,6 +129,7 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "skkeleton-enable-pre",
   callback = function()
     local cmp = require("cmp")
+
     cmp.setup.buffer({
       sources = cmp.config.sources({
         { name = "skkeleton" },

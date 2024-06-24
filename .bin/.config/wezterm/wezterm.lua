@@ -5,6 +5,7 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 -- Font and colorscheme settings
+--
 config.font = wezterm.font("HackGen Console NF", { weight = "Regular", stretch = "Normal", style = "Normal" })
 config.color_scheme = "AdventureTime"
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
@@ -89,5 +90,33 @@ config.keys = {
   { key = "U", mods = "CTRL|SHIFT", action = wezterm.action.EmitEvent("toggle-opacity-and-remove-background-image") },
   { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.EmitEvent("change-window-background-image") },
 }
+
+local hacky_user_commands = {
+  ["new-ghosttext-window"] = function(window, pane, cmd_context)
+    wezterm.GLOBAL.new_window_transparent = true
+    local tab, pane, new_window = wezterm.mux.spawn_window({
+      args = { "zsh", "-l", "-c", "nvim -c GhostTextStart" }, -- ログインシェルとして起動
+      cwd = wezterm.home_dir,
+      size = { cols = 24, rows = 24 }, -- ウィンドウサイズを指定
+    })
+    wezterm.GLOBAL.new_window_transparent = false
+  end,
+}
+
+wezterm.on("user-var-changed", function(window, pane, name, value)
+  if name == "hacky-user-command" then
+    local cmd_context = wezterm.json_parse(value)
+    hacky_user_commands[cmd_context.cmd](window, pane, cmd_context)
+    return
+  end
+end)
+
+wezterm.on("format-window-title", function(tab, pane, tabs, panes, config)
+  if tab.window_id == wezterm.GLOBAL.ghosttext_window_id then
+    return "GhostText"
+  end
+
+  return "WezTerm"
+end)
 
 return config

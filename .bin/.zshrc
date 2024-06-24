@@ -134,3 +134,8 @@ alias relogin='exec $SHELL -l'
 alias po='poetry'
 alias py='python3'
 
+
+
+export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.config/wezterm
+export PATH="/opt/homebrew/bin:$PATH"
