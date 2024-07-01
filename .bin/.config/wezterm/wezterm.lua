@@ -97,9 +97,15 @@ local hacky_user_commands = {
     local tab, pane, new_window = wezterm.mux.spawn_window({
       args = { "zsh", "-l", "-c", "nvim -c GhostTextStart" }, -- ログインシェルとして起動
       cwd = wezterm.home_dir,
-      size = { cols = 24, rows = 24 }, -- ウィンドウサイズを指定
+      width = 60,
+      height = 30,
+      position = {
+        x = 2400,
+        y = 0,
+      },
     })
     wezterm.GLOBAL.new_window_transparent = false
+    new_window:set_title("GhostText")
   end,
 }
 
