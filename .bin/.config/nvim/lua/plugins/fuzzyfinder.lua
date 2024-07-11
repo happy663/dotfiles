@@ -79,12 +79,12 @@ return {
   {
     "mollerhoj/telescope-recent-files.nvim",
     cond = vim.g.not_in_vscode,
-    keys = {
-      {
-        "<C-p>",
-        "<cmd>lua require('telescope').extensions['recent-files'].recent_files({})<CR>",
-      },
-    },
+    -- keys = {
+    --   {
+    --     "<C-p>",
+    --     "<cmd>lua require('telescope').extensions['recent-files'].recent_files({})<CR>",
+    --   },
+    -- },
   },
   {
     "LukasPietzschmann/telescope-tabs",
