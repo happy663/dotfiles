@@ -138,3 +138,7 @@ vim.api.nvim_create_user_command("Help", function(command)
   end
 end, { nargs = 1, complete = "help" })
 vim.api.nvim_set_keymap("n", "<Leader>he", ":Help ", opts)
+
+vim.keymap.set("n", "<C-p>", function()
+  require("telescope").extensions.smart_open.smart_open()
+end, { noremap = true, silent = true })

@@ -165,3 +165,38 @@ vim.api.nvim_create_autocmd("User", {
     })
   end,
 })
+
+local play_process_id = nil
+-- 音声を再生する関数
+local function play_sound()
+  local filepath = vim.fn.expand("~/Downloads/VimJpRadio/20240708.mp3")
+  play_process_id = vim.fn.jobstart('afplay "' .. filepath .. '"', { detach = true })
+end
+
+-- 音声を停止する関数
+_G.stop_sound = function()
+  if play_process_id then
+    vim.fn.jobstop(play_process_id)
+    play_process_id = nil
+  end
+end
+
+-- toggle 音声再生
+_G.toggle_sound = function()
+  if play_process_id then
+    stop_sound()
+  else
+    play_sound()
+  end
+end
+
+-- 起動時に音声を再生
+-- vim.api.nvim_create_augroup("vim_jp_radio", { clear = true })
+-- vim.api.nvim_create_autocmd("VimEnter", {
+--   group = "vim_jp_radio",
+--   once = true,
+--   callback = play_sound,
+-- })
+
+-- キーマッピング（<leader>s で音声を停止）
+vim.api.nvim_set_keymap("n", "<leader>s", ":lua toggle_sound()<CR>", { noremap = true, silent = true })

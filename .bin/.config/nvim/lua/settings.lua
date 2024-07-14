@@ -70,3 +70,15 @@ vim.api.nvim_set_hl(0, "HlSearchLens", { fg = "#000000", bg = "#bae67e" }) -- �
 vim.api.nvim_set_hl(0, "HlSearchLensFar", { fg = "#ffffff", bg = "#5ccfe6" }) -- 遠いマッチには明るいブルー
 
 vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"
+
+-- <C-d> の再マッピング
+vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
+
+-- <C-u> の再マッピング
+vim.api.nvim_set_keymap("n", "<C-u>", "<Cmd>keepjumps normal! <C-u><CR>", { noremap = true, silent = true })
+
+-- { の再マッピング
+vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = true, silent = true })
+
+-- } の再マッピング
+vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
