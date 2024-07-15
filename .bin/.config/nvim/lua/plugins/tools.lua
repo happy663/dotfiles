@@ -169,4 +169,7 @@ return {
       })
     end,
   },
+  {
+    "simeji/winresizer",
+  },
 }
