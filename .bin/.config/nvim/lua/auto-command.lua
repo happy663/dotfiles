@@ -190,7 +190,7 @@ _G.toggle_sound = function()
   end
 end
 
--- 起動時に音声を再生
+-- -- 起動時に音声を再生
 -- vim.api.nvim_create_augroup("vim_jp_radio", { clear = true })
 -- vim.api.nvim_create_autocmd("VimEnter", {
 --   group = "vim_jp_radio",

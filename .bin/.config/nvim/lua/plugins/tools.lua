@@ -146,6 +146,7 @@ return {
   },
   {
     "aznhe21/actions-preview.nvim",
+    cond = vim.g.not_in_vscode,
     config = function()
       vim.keymap.set({ "v", "n" }, "<Leader>ca", require("actions-preview").code_actions)
       local hl = require("actions-preview.highlight")
@@ -171,5 +172,6 @@ return {
   },
   {
     "simeji/winresizer",
+    cond = vim.g.not_in_vscode,
   },
 }

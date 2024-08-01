@@ -139,3 +139,7 @@ alias py='python3'
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.config/wezterm
 export PATH="/opt/homebrew/bin:$PATH"
+
+
+export PATH="$PATH:/Users/toyama/src/github.com/wachikun/yaskkserv2/target/release"
+

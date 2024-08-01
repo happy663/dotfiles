@@ -33,6 +33,7 @@ return {
   },
   {
     "vim-skk/skkeleton", -- skkeleton プラグインの GitHub リポジトリ
+    cond = vim.g.not_in_vscode,
     dependencies = {
       { "vim-denops/denops.vim" },
     },
@@ -40,6 +41,7 @@ return {
   {
     "danielfalk/smart-open.nvim",
     branch = "0.2.x",
+    cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").load_extension("smart_open")
     end,

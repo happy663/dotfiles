@@ -29,7 +29,7 @@ local function build_image_path(image_num)
 end
 
 -- Set initial image
--- config.window_background_image = build_image_path(current_image_num)
+config.window_background_image = build_image_path(current_image_num)
 
 -- Fullscreen on startup
 local mux = wezterm.mux
