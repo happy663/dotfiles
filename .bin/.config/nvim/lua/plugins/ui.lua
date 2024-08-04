@@ -23,6 +23,9 @@ return {
         view = {
           width = {},
         },
+        update_focused_file = {
+          enable = true,
+        },
         renderer = {
           group_empty = true,
           highlight_git = true,
@@ -42,6 +45,7 @@ return {
           },
         },
         filters = {
+          git_ignored = false,
           dotfiles = false,
         },
       })

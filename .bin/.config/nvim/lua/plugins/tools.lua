@@ -60,6 +60,12 @@ return {
           debug = true, -- Enable debugging
           -- プロンプトの設定
           -- デフォルトは英語なので日本語でオーバーライドしています
+          mappings = {
+            complete = {
+              detail = "@<Tab>",
+              insert = "<S-Tab>",
+            },
+          },
           prompts = {
             MyCustomPrompt = {
               prompt = "どう機能するか教えてください",

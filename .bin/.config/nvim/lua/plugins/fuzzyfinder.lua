@@ -25,8 +25,16 @@ return {
         },
         pickers = {
           find_files = {
-            find_command = { "rg", "--files", "--hidden", "--glob", "!.git/*" },
-            file_ignore_patterns = { "node_modules/*", "startuptime-logs/*" },
+            find_command = {
+              "rg",
+              "--files",
+              "--hidden",
+              "--glob",
+              "!.git/*",
+              "--ignore-file",
+              ".gitignore",
+            },
+            file_ignore_patterns = { "node_modules/*", "startuptime-logs/*", ".p10k.zsh" },
           },
           live_grep = {
             additional_args = function()
