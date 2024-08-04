@@ -21,10 +21,25 @@ return {
       require("nvim-tree").setup({
         sort_by = "case_sensitive",
         view = {
-          width = 30,
+          width = {},
         },
         renderer = {
           group_empty = true,
+          highlight_git = true,
+          highlight_opened_files = "name",
+          icons = {
+            glyphs = {
+              git = {
+                unstaged = "!",
+                renamed = "»",
+                untracked = "?",
+                deleted = "✘",
+                staged = "✓",
+                unmerged = "",
+                ignored = "◌",
+              },
+            },
+          },
         },
         filters = {
           dotfiles = false,
