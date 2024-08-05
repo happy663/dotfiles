@@ -1,8 +1,18 @@
 return {
   {
+    -- "zbirenbaum/copilot.lua",
+    -- cmd = { "Copilot" },
+    -- event = { "InsertEnter" },
+    -- opts = {
+    --   filetypes = {
+    --     gitcommit = true,
+    --   },
+    -- },
+    -- config = true
+  },
+  {
     "github/copilot.vim",
     cond = vim.g.not_in_vscode,
-    opt = true,
   },
   {
     "hrsh7th/nvim-cmp",
@@ -63,6 +73,7 @@ return {
           ["<C-n>"] = cmp.mapping.select_next_item(),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
+
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
@@ -75,6 +86,7 @@ return {
         },
         sorting = {
           priority_weight = 2,
+
           comparators = {
             function(entry1, entry2)
               local kind1 = entry1:get_kind()
