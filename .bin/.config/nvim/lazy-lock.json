@@ -20,6 +20,7 @@
   "github-nvim-theme": { "branch": "main", "commit": "4f44a5c930372c85483d02700f332d34417e50b2" },
   "gitsigns.nvim": { "branch": "main", "commit": "39b5b6f48bde0595ce68007ffce408c5d7ac1f79" },
   "gruvbox": { "branch": "master", "commit": "143a3b8babcfd2bce6c99d6ba496942647c3e30b" },
+  "gyazo.vim": { "branch": "master", "commit": "236c82140b0b04337cbfa9f31ad38d536e1d88c8" },
   "hlchunk.nvim": { "branch": "main", "commit": "930fe6262f87d66ca0c85dada3bb7c2a8cb6ec3e" },
   "hop.nvim": { "branch": "v2", "commit": "90db1b2c61b820e230599a04fedcd2679e64bd07" },
   "iceberg-tokyo.nvim": { "branch": "iceberg-tokyo", "commit": "4c1b53fa94889b65a9b19835e5adf7b3a4452ebb" },
