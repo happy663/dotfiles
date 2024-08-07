@@ -47,6 +47,9 @@ return {
         filters = {
           git_ignored = false,
           dotfiles = false,
+          custom = {
+            "__pycache__",
+          },
         },
       })
     end,
