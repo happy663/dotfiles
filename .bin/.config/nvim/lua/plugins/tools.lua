@@ -184,4 +184,13 @@ return {
     "skanehira/gyazo.vim",
     cond = vim.g.not_in_vscode,
   },
+  {
+    "vinnymeller/swagger-preview.nvim",
+    config = function()
+      require("swagger-preview").setup({
+        port = 8003,
+        host = "localhost",
+      })
+    end,
+  },
 }
