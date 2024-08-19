@@ -77,12 +77,16 @@ return {
         "<cmd>lua require('telescope.builtin').live_grep()<CR>",
       },
       {
-        "<Leader>b",
+        "<Leader>gb",
         "<cmd>lua require('telescope.builtin').git_branches()<CR>",
       },
       {
         "<Leader>*",
         "<cmd>lua require('telescope.builtin').grep_string()<CR>",
+      },
+      {
+        "<Leader>bf",
+        "<cmd>lua require('telescope.builtin').buffers()<CR>",
       },
     },
     version = "0.1.5",
