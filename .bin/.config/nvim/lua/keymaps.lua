@@ -25,9 +25,9 @@ map("n", "<S-k>", "<CMD>BufferLineCycleNext<CR>", opts)
 map("n", "<S-j>", "<CMD>BufferLineCyclePrev<CR>", opts)
 map("n", "<C-f>", "<CMD>lua vim.lsp.buf.format({ async = false })<CR><CMD>w<CR>", opts)
 
-map("n", "<leader>w", "<CMD>w<CR>", opts)
-map("n", "<leader>wq", "<CMD>wq<CR>", opts)
-map("n", "<leader>q", "<CMD>q!<CR>", opts)
+-- map("n", "<leader>w", "<CMD>w<CR>", opts)
+-- map("n", "<leader>wq", "<CMD>wq<CR>", opts)
+-- map("n", "<leader>q", "<CMD>q!<CR>", opts)
 
 -- Insert mode keymaps
 map("i", "jj", "<Esc>", opts)
