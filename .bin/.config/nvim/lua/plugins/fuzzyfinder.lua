@@ -22,6 +22,10 @@ return {
               ["<C-J>"] = false, -- to support skkeleton.vim
             },
           },
+          path_display = function(_, path)
+            local tail = require("telescope.utils").path_tail(path)
+            return string.format("%s (%s)", tail, path)
+          end,
         },
         pickers = {
           find_files = {
@@ -50,6 +54,10 @@ return {
                 "!*startuptime-logs/",
               }
             end,
+          },
+          buffers = {
+            -- sort_lastused = true,
+            sort_mru = true,
           },
           colorscheme = {
             enable_preview = true,
