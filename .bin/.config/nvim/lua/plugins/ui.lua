@@ -74,6 +74,7 @@ return {
           style_preset = bufferline.style_preset.no_italic,
         },
       })
+      vim.api.nvim_set_keymap("n", "<leader>bco", ":BufferLineCloseOthers<CR>", { noremap = true, silent = true })
     end,
   },
   {
