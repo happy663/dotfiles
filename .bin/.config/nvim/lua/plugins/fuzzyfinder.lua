@@ -85,6 +85,10 @@ return {
         "<cmd>lua require('telescope.builtin').live_grep()<CR>",
       },
       {
+        "<Leader>bg",
+        "<cmd>lua require('telescope.builtin').live_grep({grep_open_files = true})<CR>",
+      },
+      {
         "<Leader>gb",
         "<cmd>lua require('telescope.builtin').git_branches()<CR>",
       },
