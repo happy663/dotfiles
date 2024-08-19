@@ -1,0 +1,3 @@
+(in-package :skkserv-user)
+
+setf *dictionary* (make-instance 'google-ime-dictionary))`
