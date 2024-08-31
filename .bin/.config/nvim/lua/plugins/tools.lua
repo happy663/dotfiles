@@ -186,6 +186,7 @@ return {
   },
   {
     "vinnymeller/swagger-preview.nvim",
+    cond = vim.g.not_in_vscode,
     config = function()
       require("swagger-preview").setup({
         port = 8003,
@@ -196,6 +197,7 @@ return {
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
+    cond = vim.g.not_in_vscode,
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       local harpoon = require("harpoon")
@@ -287,6 +289,7 @@ return {
   {
     "folke/persistence.nvim",
     event = "BufReadPre", -- this will only start session saving when an actual file was opened
+    cond = vim.g.not_in_vscode,
     config = function()
       require("persistence").setup({
         dir = vim.fn.stdpath("state") .. "/session/",
