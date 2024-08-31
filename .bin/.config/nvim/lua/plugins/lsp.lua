@@ -93,8 +93,13 @@ return {
             },
           })
         end,
-        tsserver = function()
-          lspconfig.tsserver.setup({
+        -- tsserver = function()
+        --   lspconfig.tsserver.setup({
+        --     on_attach = no_format_on_attach,
+        --   })
+        -- end,
+        vtsls = function()
+          lspconfig.vtsls.setup({
             on_attach = no_format_on_attach,
           })
         end,
