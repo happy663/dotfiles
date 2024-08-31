@@ -263,11 +263,11 @@ return {
           :find()
       end
 
-      vim.keymap.set("n", "<leader>q", function()
+      vim.keymap.set("n", "<leader>qq", function()
         toggle_telescope(harpoon:list())
       end)
 
-      vim.keymap.set("n", "<C-a>", function()
+      vim.keymap.set("n", "<leader>qa", function()
         harpoon:list():add()
       end)
       vim.keymap.set("n", "<C-1>", function()
@@ -281,6 +281,36 @@ return {
       end)
       vim.keymap.set("n", "<C-4>", function()
         harpoon:list():select(4)
+      end)
+    end,
+  },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre", -- this will only start session saving when an actual file was opened
+    config = function()
+      require("persistence").setup({
+        dir = vim.fn.stdpath("state") .. "/session/",
+        need = 1,
+        branch = true,
+      })
+      -- load the session for the current directory
+      vim.keymap.set("n", "<leader>qs", function()
+        require("persistence").load()
+      end)
+
+      -- select a session to load
+      vim.keymap.set("n", "<leader>qS", function()
+        require("persistence").select()
+      end)
+
+      -- load the last sessionJ
+      vim.keymap.set("n", "<leader>ql", function()
+        require("persistence").load({ last = true })
+      end)
+
+      -- stop Persistence => session won't be saved on exit
+      vim.keymap.set("n", "<leader>qd", function()
+        require("persistence").stop()
       end)
     end,
   },
