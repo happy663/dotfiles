@@ -127,7 +127,7 @@ vim.api.nvim_create_autocmd("User", {
 
     cmp.setup.buffer({
       sources = cmp.config.sources({
-        { name = "skkeleton" },
+        { name = "skkeleton", max_item_count = 10 },
       }),
     })
 

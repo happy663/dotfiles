@@ -197,6 +197,7 @@ return {
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
+    cond = vim.g.not_in_vscode,
     dependencies = { "nvim-lua/plenary.nvim" },
     cond = vim.g.not_in_vscode,
     config = function()
@@ -265,11 +266,11 @@ return {
           :find()
       end
 
-      vim.keymap.set("n", "<leader>q", function()
+      vim.keymap.set("n", "<leader>qq", function()
         toggle_telescope(harpoon:list())
       end)
 
-      vim.keymap.set("n", "<C-a>", function()
+      vim.keymap.set("n", "<leader>qa", function()
         harpoon:list():add()
       end)
       vim.keymap.set("n", "<C-1>", function()
@@ -285,5 +286,54 @@ return {
         harpoon:list():select(4)
       end)
     end,
+  },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre", -- this will only start session saving when an actual file was opened
+    cond = vim.g.not_in_vscode,
+    config = function()
+      require("persistence").setup({
+        dir = vim.fn.stdpath("state") .. "/session/",
+        need = 1,
+        branch = true,
+      })
+      -- load the session for the current directory
+      vim.keymap.set("n", "<leader>qs", function()
+        require("persistence").load()
+      end)
+
+      -- select a session to load
+      vim.keymap.set("n", "<leader>qS", function()
+        require("persistence").select()
+      end)
+
+      -- load the last sessionJ
+      vim.keymap.set("n", "<leader>ql", function()
+        require("persistence").load({ last = true })
+      end)
+
+      -- stop Persistence => session won't be saved on exit
+      vim.keymap.set("n", "<leader>qd", function()
+        require("persistence").stop()
+      end)
+    end,
+  },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+    keys = {
+      {
+        "<leader>?",
+        function()
+          require("which-key").show({ global = false })
+        end,
+        desc = "Buffer Local Keymaps (which-key)",
+      },
+    },
   },
 }
