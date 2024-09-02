@@ -67,6 +67,7 @@ map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
 map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
+map("n", "<Leader>qf", "<CMD>Telescope quickfix<CR>", opts)
 
 -- windows用
 -- windowsではctrl+hをbackspaceに当てている
@@ -76,8 +77,6 @@ map("n", "<BS>", "<C-w>h", opts)
 map("n", "<Leader>mn", "<CMD>MemoNew<CR>", opts)
 map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
 map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
-
-map("n", "<CR>", "A<Return><Esc>k", opts)
 
 -- 矢印キーを無効化
 map("n", "<Up>", "<Nop>", opts)
@@ -145,3 +144,16 @@ end, { noremap = true, silent = true })
 
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
+
+vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
+
+-- クイックフィックスウィンドウでマッピングを上書きする
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    vim.api.nvim_buf_set_keymap(0, "n", "<CR>", "<CR>", { noremap = true, silent = true, nowait = true })
+  end,
+})
+
+vim.api.nvim_set_keymap("n", "<C-[>", "<CMD>cprev<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-]>", "<CMD>cnext<CR>", opts)
