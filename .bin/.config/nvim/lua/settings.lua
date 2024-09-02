@@ -55,7 +55,7 @@ require("notify").setup({
 
 ---- 現在選択中のアイテムのハイライト色を変更
 vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-vim.cmd([[highlight TelescopePreviewLine guibg=#ff99cc]])
+vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
@@ -64,6 +64,7 @@ vim.g.lazygit_floating_window_scaling_factor = 1
 
 vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#ff99cc" })
 vim.api.nvim_set_hl(0, "Search", { fg = "#ffffff", bg = "#008000" })
+
 -- HlSearchLensNear、HlSearchLens、HlSearchLensFar は、検索マッチが画面に近い、画面内、画面から遠い場合に使用されます。
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { fg = "#ffffff", bg = "#ff99cc" }) -- 近いマッチにはIncSearchと同じ色
 vim.api.nvim_set_hl(0, "HlSearchLens", { fg = "#000000", bg = "#bae67e" }) -- 中間のマッチには明るい緑
