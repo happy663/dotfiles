@@ -155,5 +155,24 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.api.nvim_set_keymap("n", "<C-[>", "<CMD>cprev<CR>", opts)
-vim.api.nvim_set_keymap("n", "<C-]>", "<CMD>cnext<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-;>", "<CMD>cprev<CR>", opts)
+vim.api.nvim_set_keymap("n", "<C-'>", "<CMD>cnext<CR>", opts)
+
+-- init.luaまたは適切な設定ファイルでキーマッピングを設定
+local diag_qf = require("diagnostic_to_qf")
+
+-- すべての診断情報をQuickfixリストに送る
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>dq",
+  ':lua require("diagnostic_to_qf").diagnostics_to_qf()<CR>',
+  { noremap = true, silent = true }
+)
+
+-- 現在のバッファの診断情報をQuickfixリストに送る
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>db",
+  ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
+  { noremap = true, silent = true }
+)
