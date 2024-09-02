@@ -3,6 +3,7 @@ return {
     "nvim-telescope/telescope.nvim",
     cond = vim.g.not_in_vscode,
     config = function()
+      local actions = require("telescope.actions")
       require("telescope").setup({
         defaults = {
           sorting_strategy = "ascending",
@@ -20,6 +21,7 @@ return {
           mappings = {
             i = {
               ["<C-J>"] = false, -- to support skkeleton.vim
+              ["<C-o>"] = actions.send_to_qflist + actions.open_qflist,
             },
           },
           path_display = function(_, path)
