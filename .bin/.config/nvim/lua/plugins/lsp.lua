@@ -20,7 +20,7 @@ local no_format_on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(
     bufnr,
     "n",
-    "<leader>d",
+    "<leader>di",
     '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
     { noremap = true, silent = true }
   )
@@ -42,7 +42,7 @@ local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_keymap(
     bufnr,
     "n",
-    "<leader>d",
+    "<leader>di",
     '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
     { noremap = true, silent = true }
   )
