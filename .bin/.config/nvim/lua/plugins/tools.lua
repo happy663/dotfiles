@@ -103,9 +103,6 @@ return {
       cmd = "CopilotChatMyCustomPrompt",
       keys = {
         {
-          "<leader>ccmc",
-        },
-        {
           "<leader>ccq",
           function()
             local input = vim.fn.input("Quick Chat: ")
