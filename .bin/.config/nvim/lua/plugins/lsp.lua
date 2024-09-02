@@ -113,6 +113,11 @@ return {
             end,
           })
         end,
+        pylsp = function()
+          lspconfig.pylsp.setup({
+            on_attach = no_format_on_attach,
+          })
+        end,
         texlab = function()
           lspconfig.texlab.setup({
             on_attach = on_attach,
