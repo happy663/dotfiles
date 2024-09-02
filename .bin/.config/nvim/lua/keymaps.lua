@@ -155,6 +155,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_set_keymap("n", "<leader>cw", "<CMD>cwindow<CR>", opts)
 vim.api.nvim_set_keymap("n", "<C-;>", "<CMD>cprev<CR>", opts)
 vim.api.nvim_set_keymap("n", "<C-'>", "<CMD>cnext<CR>", opts)
 
