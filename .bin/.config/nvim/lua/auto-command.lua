@@ -164,7 +164,7 @@ vim.api.nvim_create_autocmd("User", {
 local play_process_id = nil
 -- 音声を再生する関数
 local function play_sound()
-  local filepath = vim.fn.expand("~/Downloads/VimJpRadio/20240805.mp3")
+  local filepath = vim.fn.expand("~/Downloads/VimJpRadio/20240902.mp3")
   play_process_id = vim.fn.jobstart('afplay "' .. filepath .. '"', { detach = true })
 end
 
