@@ -89,6 +89,7 @@ config.keys = {
   { key = "R", mods = "CTRL|SHIFT", action = wezterm.action.ReloadConfiguration },
   { key = "U", mods = "CTRL|SHIFT", action = wezterm.action.EmitEvent("toggle-opacity-and-remove-background-image") },
   { key = "C", mods = "CTRL|SHIFT", action = wezterm.action.EmitEvent("change-window-background-image") },
+  { key = "w", mods = "ALT", action = wezterm.action.HideApplication },
 }
 
 local hacky_user_commands = {

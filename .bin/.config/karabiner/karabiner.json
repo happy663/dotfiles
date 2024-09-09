@@ -23,20 +23,27 @@
               {
                 "conditions": [
                   {
-                    "bundle_identifiers": ["^com\\.microsoft\\.Powerpoint"],
+                    "bundle_identifiers": [
+                      "^com\\.microsoft\\.Powerpoint"
+                    ],
                     "type": "frontmost_application_if"
                   }
                 ],
                 "from": {
                   "key_code": "j",
                   "modifiers": {
-                    "mandatory": ["control"]
+                    "mandatory": [
+                      "control"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "0",
-                    "modifiers": ["control", "option"]
+                    "modifiers": [
+                      "control",
+                      "option"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -49,14 +56,18 @@
               {
                 "conditions": [
                   {
-                    "bundle_identifiers": ["^com\\.microsoft\\.Powerpoint"],
+                    "bundle_identifiers": [
+                      "^com\\.microsoft\\.Powerpoint"
+                    ],
                     "type": "frontmost_application_if"
                   }
                 ],
                 "from": {
                   "key_code": "h",
                   "modifiers": {
-                    "mandatory": ["control"]
+                    "mandatory": [
+                      "control"
+                    ]
                   }
                 },
                 "to": [
@@ -85,14 +96,20 @@
                 "from": {
                   "key_code": "c",
                   "modifiers": {
-                    "mandatory": ["control"],
-                    "optional": ["any"]
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "c",
-                    "modifiers": ["command"]
+                    "modifiers": [
+                      "command"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -111,14 +128,20 @@
                 "from": {
                   "key_code": "v",
                   "modifiers": {
-                    "mandatory": ["control"],
-                    "optional": ["any"]
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "v",
-                    "modifiers": ["command"]
+                    "modifiers": [
+                      "command"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -137,14 +160,20 @@
                 "from": {
                   "key_code": "w",
                   "modifiers": {
-                    "mandatory": ["control"],
-                    "optional": ["any"]
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "w",
-                    "modifiers": ["command"]
+                    "modifiers": [
+                      "command"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -163,14 +192,20 @@
                 "from": {
                   "key_code": "z",
                   "modifiers": {
-                    "mandatory": ["control"],
-                    "optional": ["any"]
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
                   }
                 },
                 "to": [
                   {
                     "key_code": "z",
-                    "modifiers": ["command"]
+                    "modifiers": [
+                      "command"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -183,7 +218,9 @@
               {
                 "conditions": [
                   {
-                    "bundle_identifiers": ["^com\\.openai\\.chat$"],
+                    "bundle_identifiers": [
+                      "^com\\.openai\\.chat$"
+                    ],
                     "type": "frontmost_application_if"
                   }
                 ],
@@ -193,7 +230,9 @@
                 "to": [
                   {
                     "key_code": "return_or_enter",
-                    "modifiers": ["control"]
+                    "modifiers": [
+                      "control"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -206,14 +245,18 @@
               {
                 "conditions": [
                   {
-                    "bundle_identifiers": ["^com\\.openai\\.chat$"],
+                    "bundle_identifiers": [
+                      "^com\\.openai\\.chat$"
+                    ],
                     "type": "frontmost_application_if"
                   }
                 ],
                 "from": {
                   "key_code": "return_or_enter",
                   "modifiers": {
-                    "mandatory": ["control"]
+                    "mandatory": [
+                      "control"
+                    ]
                   }
                 },
                 "to": [
@@ -222,6 +265,38 @@
                   }
                 ],
                 "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Alt+W to launch wezterm, disabled when wezterm is active",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "w",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "open -a wezterm"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^com\\.github\\.wez\\.wezterm$"
+                    ]
+                  }
+                ]
               }
             ]
           }
