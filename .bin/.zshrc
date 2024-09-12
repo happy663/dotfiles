@@ -144,3 +144,5 @@ export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$PATH:/Users/toyama/src/github.com/wachikun/yaskkserv2/target/release"
 
 export PATH="$PATH:$HOME/.roswell/bin"
+
+export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
