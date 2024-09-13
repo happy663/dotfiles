@@ -196,7 +196,6 @@ return {
     branch = "harpoon2",
     cond = vim.g.not_in_vscode,
     dependencies = { "nvim-lua/plenary.nvim" },
-    cond = vim.g.not_in_vscode,
     config = function()
       local harpoon = require("harpoon")
       harpoon:setup()
