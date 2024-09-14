@@ -159,4 +159,8 @@ return {
     cond = vim.g.not_in_vscode,
     config = true,
   },
+  {
+    "L3MON4D3/LuaSnip",
+    dependencies = { "rafamadriz/friendly-snippets" },
+  },
 }
