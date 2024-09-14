@@ -55,9 +55,7 @@ return {
       },
       config = function()
         local select = require("CopilotChat.select")
-
         require("CopilotChat").setup({
-          debug = true, -- Enable debugging
           -- プロンプトの設定
           -- デフォルトは英語なので日本語でオーバーライドしています
           mappings = {
@@ -72,6 +70,16 @@ return {
               mapping = "<leader>ccmc",
               description = "My custom prompt description",
               selection = require("CopilotChat.select").visual,
+            },
+            Commit = {
+              prompt = "コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
+              selection = select.staged,
+            },
+            CommitStaged = {
+              prompt = "ステージングされた変更をコミットします。コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
+              selection = function(source)
+                return select.gitdiff(source, true)
+              end,
             },
             Explain = {
               prompt = "/COPILOT_EXPLAIN カーソル上のコードの説明を段落をつけて書いてください。",
@@ -97,44 +105,27 @@ return {
               prompt = "ファイル内の次のような診断上の問題を解決してください：",
               selection = select.diagnostics,
             },
+            Review = {
+              prompt = "/COPILOT_REVIEW コードレビューを行います。",
+              selection = select.visual,
+            },
           },
         })
+        vim.keymap.set("n", "<leader>ccq", function()
+          local input = vim.fn.input("Quick Chat: ")
+          if input ~= "" then
+            require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
+          end
+        end)
+        vim.keymap.set("n", "<leader>cch", function()
+          local actions = require("CopilotChat.actions")
+          require("CopilotChat.integrations.telescope").pick(actions.help_actions())
+        end)
+        vim.keymap.set("n", "<leader>ccp", function()
+          local actions = require("CopilotChat.actions")
+          require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
+        end)
       end,
-      cmd = "CopilotChatMyCustomPrompt",
-      keys = {
-        {
-          "<leader>ccq",
-          function()
-            local input = vim.fn.input("Quick Chat: ")
-            if input ~= "" then
-              require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
-            end
-          end,
-          desc = "CopilotChat - Quick chat",
-        },
-        {
-          "<leader>cch",
-          function()
-            local actions = require("CopilotChat.actions")
-            require("CopilotChat.integrations.telescope").pick(actions.help_actions())
-          end,
-          desc = "CopilotChat - Help actions",
-        },
-        -- Show prompts actions with telescope
-        {
-          "<leader>ccp",
-          function()
-            local actions = require("CopilotChat.actions")
-            require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-          end,
-          desc = "CopilotChat - Prompt actions",
-          mode = {
-            "n",
-            "v",
-          },
-        },
-      },
-      -- See Commands section for default commands if you want to lazy load on them
     },
   },
   {
@@ -220,7 +211,6 @@ return {
             results = paths,
           })
         end
-
         require("telescope.pickers")
           .new({}, {
             prompt_title = "Harpoon",
@@ -232,7 +222,6 @@ return {
             layout_strategy = "center",
             layout_config = {
               preview_cutoff = 1, -- Preview should always show (unless previewer = false)
-
               width = function(_, max_columns, _)
                 return math.min(max_columns, 80)
               end,
