@@ -131,7 +131,8 @@ vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 map("n", "<Leader>me", "<CMD>messages<CR>", opts)
 
 vim.api.nvim_create_user_command("Help", function(command)
-  local success, msg = pcall(vim.cmd, "vertical help " .. command.args .. " | vertical resize 80")
+  local current_win_width = vim.api.nvim_win_get_width(0)
+  local success, msg = pcall(vim.cmd, "vertical help " .. command.args .. " | vertical" .. current_win_width)
   if not success then
     vim.api.nvim_err_writeln(msg)
   end
