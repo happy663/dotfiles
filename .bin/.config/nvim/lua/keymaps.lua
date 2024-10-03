@@ -54,13 +54,14 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
-function goto_definition_vsplit()
+_G.goto_definition_vsplit = function()
+  print("goto_definition_vsplit")
   vim.cmd("vsplit") -- 縦分割コマン
   vim.cmd("tag") -- タグジャンプコマンド
 end
 
 -- カスタムコマンドとして設定
-map("n", "<C-}>", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
+map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
 map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)
@@ -128,7 +129,7 @@ map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 map("n", "<Leader>a", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
-map("n", "<Leader>me", "<CMD>messages<CR>", opts)
+map("n", "<Leader>me", "<CMD>NoiceAll<CR>", opts)
 
 vim.api.nvim_create_user_command("Help", function(command)
   local current_win_width = vim.api.nvim_win_get_width(0)
