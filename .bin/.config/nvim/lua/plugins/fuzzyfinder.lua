@@ -4,6 +4,9 @@ return {
     cond = vim.g.not_in_vscode,
     config = function()
       local actions = require("telescope.actions")
+      local state = require("telescope.actions.state")
+      local builtin = require("telescope.builtin")
+
       require("telescope").setup({
         defaults = {
           sorting_strategy = "ascending",
@@ -20,8 +23,14 @@ return {
           },
           mappings = {
             i = {
+              ["<C-Tab>"] = actions.move_selection_next,
+              ["<C-S-Tab>"] = actions.move_selection_previous,
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = actions.send_to_qflist + actions.open_qflist,
+            },
+            n = {
+              ["<C-Tab>"] = actions.move_selection_next,
+              ["<C-S-Tab>"] = actions.move_selection_previous,
             },
           },
           path_display = function(_, path)
@@ -58,9 +67,13 @@ return {
             end,
           },
           buffers = {
-            -- sort_lastused = true,
             sort_mru = true,
+            default_selection_index = 2, -- 2番目のアイテムを初期選択
+            attach_mappings = function(prompt_bufnr, map)
+              return true
+            end,
           },
+
           colorscheme = {
             enable_preview = true,
           },
@@ -77,6 +90,49 @@ return {
           },
         },
       })
+      -- バッファ切り替え用の関数
+      _G.cycle_buffers = function(direction)
+        local picker = state.get_current_picker()
+        if picker == nil then
+          -- Telescope buffersが開いていない場合は開く
+          builtin.buffers()
+        else
+          -- 既に開いている場合は選択を移動
+          if direction == "next" then
+            actions.move_selection_next(picker)
+          else
+            actions.move_selection_previous(picker)
+          end
+        end
+      end
+
+      -- キーマッピング（変更なし）
+      vim.api.nvim_set_keymap(
+        "n",
+        "<C-Tab>",
+        [[<cmd>lua _G.cycle_buffers('next')<CR>]],
+        { noremap = true, silent = true }
+      )
+      vim.api.nvim_set_keymap(
+        "n",
+        "<C-S-Tab>",
+        [[<cmd>lua _G.cycle_buffers('previous')<CR>]],
+        { noremap = true, silent = true }
+      )
+
+      -- Weztermからの特殊なキー入力に対応（変更なし）
+      vim.api.nvim_set_keymap(
+        "n",
+        "<esc>[27;5;9~",
+        [[<cmd>lua _G.cycle_buffers('next')<CR>]],
+        { noremap = true, silent = true }
+      )
+      vim.api.nvim_set_keymap(
+        "n",
+        "<esc>[27;6;9~",
+        [[<cmd>lua _G.cycle_buffers('previous')<CR>]],
+        { noremap = true, silent = true }
+      )
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
