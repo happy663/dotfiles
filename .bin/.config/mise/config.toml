@@ -1,6 +1,7 @@
 [tools]
 go = '1.21.5'
 node = "21"
-python = "3.11.5"
+python = "3.12.2"
 yarn = "1.22.19"
 neovim = "0.9.5"
+ghc = "9.6.5"
