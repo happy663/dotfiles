@@ -111,15 +111,17 @@ return {
             },
           },
         })
+        -- CopilotChatを開くキーバインドを追加する
+
+        vim.keymap.set("n", "<leader>cco", function()
+          require("CopilotChat").ask()
+        end)
+
         vim.keymap.set("n", "<leader>ccq", function()
           local input = vim.fn.input("Quick Chat: ")
           if input ~= "" then
             require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
           end
-        end)
-        vim.keymap.set("n", "<leader>cch", function()
-          local actions = require("CopilotChat.actions")
-          require("CopilotChat.integrations.telescope").pick(actions.help_actions())
         end)
         vim.keymap.set("n", "<leader>ccp", function()
           local actions = require("CopilotChat.actions")
@@ -328,6 +330,7 @@ return {
   -- jupytext change(ipynb -> py)
   {
     "GCBallesteros/jupytext.nvim",
+    cond = vim.g.not_in_vscode,
     config = true,
     ft = "ipynb",
     lazy = false,
@@ -384,6 +387,7 @@ return {
         end,
       },
     },
+    cond = vim.g.not_in_vscode,
     event = "VeryLazy",
     config = function()
       local nn = require("notebook-navigator")

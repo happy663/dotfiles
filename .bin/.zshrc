@@ -138,7 +138,7 @@ alias py='python3'
 
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.config/wezterm
-export PATH="/opt/homebrew/bin:$PATH"
+export PATH="$PATH:/opt/homebrew/bin"
 
 
 export PATH="$PATH:/Users/toyama/src/github.com/wachikun/yaskkserv2/target/release"
@@ -146,3 +146,10 @@ export PATH="$PATH:/Users/toyama/src/github.com/wachikun/yaskkserv2/target/relea
 export PATH="$PATH:$HOME/.roswell/bin"
 
 export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
+
+ghcr() {
+  gh repo create "$@" # 全引数をそのままghに渡す
+  ghq get "git@github.com:happy663/$1.git" # 最初の引数のみ使用
+  nvim "/Users/toyama/src/github.com/happy663/$1"
+}
+
