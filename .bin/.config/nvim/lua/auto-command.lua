@@ -194,4 +194,13 @@ end
 -- })
 
 -- キーマッピング（<leader>s で音声を停止）
+
 vim.api.nvim_set_keymap("n", "<leader>s", ":lua toggle_sound()<CR>", { noremap = true, silent = true })
+
+-- コメントアウト時の制御
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
