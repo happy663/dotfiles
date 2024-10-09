@@ -9,3 +9,4 @@ ghc/
 automatic_backups/
 .bin/.config/lazygit/state.yml
 .bin/.config/zed
+.bin/.config/raycast/
