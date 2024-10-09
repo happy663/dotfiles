@@ -396,10 +396,15 @@ return {
   },
   {
     "folke/zen-mode.nvim",
+    cond = vim.g.not_in_vscode,
     opts = {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
     },
+  },
+  {
+    -- "ixru/nvim-markdown",
+    -- cond = vim.g.not_in_vscode,
   },
 }

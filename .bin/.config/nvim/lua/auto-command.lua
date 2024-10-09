@@ -92,6 +92,7 @@ vim.api.nvim_create_autocmd("User", {
         "skk_dictionary",
         "google_japanese_input",
       },
+      keepState = true,
     })
 
     vim.fn["skkeleton#register_kanatable"]("rom", {
@@ -126,7 +127,7 @@ vim.api.nvim_create_autocmd("User", {
 
     cmp.setup.buffer({
       sources = cmp.config.sources({
-        { name = "skkeleton", max_item_count = 10 },
+        { name = "skkeleton", max_item_count = 5 },
       }),
     })
 
@@ -203,3 +204,12 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.formatoptions:remove({ "c", "r", "o" })
   end,
 })
+
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "markdown",
+--   callback = function()
+--     vim.opt_local.autoindent = true
+--     vim.opt_local.formatoptions:append("r")
+--     vim.opt_local.comments:append("b:-")
+--   end,
+-- })
