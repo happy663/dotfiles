@@ -5,7 +5,7 @@ git:
 gui:
   windowSize: "nomarl"
   nerdFontsVersion: "3"
-  sidePanelWidth: 0.15
+  sidePanelWidth: 0.25
   theme:
     selectedLineBgColor:
       - underline
