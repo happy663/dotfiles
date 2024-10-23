@@ -21,6 +21,6 @@ os:
 customCommands:
   - key: "C"
     context: "files"
-    command: "git commit -v -t ~/.config/git/commit_template_with_prompt.txt"
+    command: "git commit -v -t ~/.config/git/commit_template_with_prompt_japanese.txt"
     description: "Commit changes using git editor"
     subprocess: true
