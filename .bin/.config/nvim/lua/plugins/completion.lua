@@ -78,17 +78,24 @@ return {
         sources = {
           { name = "buffer" },
         },
+
         sorting = {
           comparators = {
             function(entry1, entry2)
-              local input = vim.fn.getcmdline() -- 現在のコマンドライン入力を取得
-              local prefix1 = entry1:get_completion_item().label:sub(1, #input) == input
-              local prefix2 = entry2:get_completion_item().label:sub(1, #input) == input
-              if prefix1 and not prefix2 then
+              local word1 = entry1:get_word()
+              local word2 = entry2:get_word()
+              -- 小文字かどうかを判断する関数
+              local function is_lower(char)
+                return char:match("%l") ~= nil
+              end
+              -- 小文字で始まる項目を優先
+              if is_lower(word1:sub(1, 1)) and not is_lower(word2:sub(1, 1)) then
                 return true
-              elseif not prefix1 and prefix2 then
+              elseif not is_lower(word1:sub(1, 1)) and is_lower(word2:sub(1, 1)) then
                 return false
               end
+
+              return nil
             end,
             cmp.config.compare.offset,
             cmp.config.compare.exact,
@@ -114,7 +121,7 @@ return {
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<CR>"] = cmp.mapping.confirm(),
         },
         sources = {
           { name = "nvim_lsp" },
@@ -189,6 +196,7 @@ return {
   },
   {
     "L3MON4D3/LuaSnip",
+    cond = vim.g.not_in_vscode,
     dependencies = { "rafamadriz/friendly-snippets" },
   },
 }

@@ -92,7 +92,7 @@ vim.api.nvim_create_autocmd("User", {
         "skk_dictionary",
         "google_japanese_input",
       },
-      keepState = true,
+      -- keepState = true,
     })
 
     vim.fn["skkeleton#register_kanatable"]("rom", {

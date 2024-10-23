@@ -158,8 +158,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_set_keymap("n", "<leader>cw", "<CMD>cwindow<CR>", opts)
-vim.api.nvim_set_keymap("n", "<C-;>", "<CMD>cprev<CR>", opts)
-vim.api.nvim_set_keymap("n", "<C-'>", "<CMD>cnext<CR>", opts)
+vim.api.nvim_set_keymap("n", "<leader>;", "<CMD>cprev<CR>", opts)
+vim.api.nvim_set_keymap("n", "<Leader>'", "<CMD>cnext<CR>", opts)
 
 -- init.luaまたは適切な設定ファイルでキーマッピングを設定
 local diag_qf = require("diagnostic_to_qf")
