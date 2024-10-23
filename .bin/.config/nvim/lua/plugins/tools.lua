@@ -42,94 +42,93 @@ return {
     end,
   },
   {
-    {
-      "CopilotC-Nvim/CopilotChat.nvim",
-      branch = "canary",
-      dependencies = {
-        { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
-        { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
-      },
-      opts = {
-        -- debug = true, -- Enable debugging
-        -- See Configuration section for rest
-      },
-      config = function()
-        local select = require("CopilotChat.select")
-        require("CopilotChat").setup({
-          -- プロンプトの設定
-          -- デフォルトは英語なので日本語でオーバーライドしています
-          mappings = {
-            complete = {
-              detail = "@<Tab>",
-              insert = "<S-Tab>",
-            },
-          },
-          prompts = {
-            MyCustomPrompt = {
-              prompt = "どう機能するか教えてください",
-              mapping = "<leader>ccmc",
-              description = "My custom prompt description",
-              selection = require("CopilotChat.select").visual,
-            },
-            Commit = {
-              prompt = "コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
-              selection = select.staged,
-            },
-            CommitStaged = {
-              prompt = "ステージングされた変更をコミットします。コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
-              selection = function(source)
-                return select.gitdiff(source, true)
-              end,
-            },
-            Explain = {
-              prompt = "/COPILOT_EXPLAIN カーソル上のコードの説明を段落をつけて書いてください。",
-              selection = select.visual,
-            },
-            Tests = {
-              prompt = "/COPILOT_TESTS カーソル上のコードの詳細な単体テスト関数を書いてください。",
-              selection = select.visual,
-            },
-            Fix = {
-              prompt = "/COPILOT_FIX このコードには問題があります。バグを修正したコードに書き換えてください。",
-              selection = select.visual,
-            },
-            Optimize = {
-              prompt = "/COPILOT_REFACTOR 選択したコードを最適化し、パフォーマンスと可読性を向上させてください。",
-              selection = select.visual,
-            },
-            Docs = {
-              prompt = "/COPILOT_REFACTOR 選択したコードのドキュメントを書いてください。ドキュメントをコメントとして追加した元のコードを含むコードブロックで回答してください。使用するプログラミング言語に最も適したドキュメントスタイルを使用してください（例：JavaScriptのJSDoc、Pythonのdocstringsなど）",
-              selection = select.visual,
-            },
-            FixDiagnostic = {
-              prompt = "ファイル内の次のような診断上の問題を解決してください：",
-              selection = select.diagnostics,
-            },
-            Review = {
-              prompt = "/COPILOT_REVIEW コードレビューを行います。",
-              selection = select.visual,
-            },
-          },
-        })
-        -- CopilotChatを開くキーバインドを追加する
-
-        vim.keymap.set("n", "<leader>cco", function()
-          require("CopilotChat").ask()
-        end)
-
-        vim.keymap.set("n", "<leader>ccq", function()
-          local input = vim.fn.input("Quick Chat: ")
-          if input ~= "" then
-            require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
-          end
-        end)
-        vim.keymap.set("n", "<leader>ccp", function()
-          local actions = require("CopilotChat.actions")
-          require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-        end)
-      end,
-    },
+    -- "CopilotC-Nvim/CopilotChat.nvim",
+    -- branch = "canary",
+    -- dependencies = {
+    --   { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
+    --   { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+    -- },
+    -- opts = {
+    --   -- debug = true, -- Enable debugging
+    --   -- See Configuration section for rest
+    -- },
+    -- config = function()
+    --   local select = require("CopilotChat.select")
+    --   require("CopilotChat").setup({
+    --     -- プロンプトの設定
+    --     -- デフォルトは英語なので日本語でオーバーライドしています
+    --     mappings = {
+    --       complete = {
+    --         detail = "@<Tab>",
+    --         insert = "<S-Tab>",
+    --       },
+    --     },
+    --     prompts = {
+    --       MyCustomPrompt = {
+    --         prompt = "どう機能するか教えてください",
+    --         mapping = "<leader>ccmc",
+    --         description = "My custom prompt description",
+    --         selection = require("CopilotChat.select").visual,
+    --       },
+    --       Commit = {
+    --         prompt = "コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
+    --         selection = select.staged,
+    --       },
+    --       CommitStaged = {
+    --         prompt = "ステージングされた変更をコミットします。コミットメッセージをコミット規約に従って記述します。タイトルは最大50文字で、メッセージは72文字で折り返す。メッセージ全体をgitcommit言語でコードブロックにラップする。",
+    --         selection = function(source)
+    --           return select.gitdiff(source, true)
+    --         end,
+    --       },
+    --       Explain = {
+    --         prompt = "/COPILOT_EXPLAIN カーソル上のコードの説明を段落をつけて書いてください。",
+    --         selection = select.visual,
+    --       },
+    --       Tests = {
+    --         prompt = "/COPILOT_TESTS カーソル上のコードの詳細な単体テスト関数を書いてください。",
+    --         selection = select.visual,
+    --       },
+    --       Fix = {
+    --         prompt = "/COPILOT_FIX このコードには問題があります。バグを修正したコードに書き換えてください。",
+    --         selection = select.visual,
+    --       },
+    --       Optimize = {
+    --         prompt = "/COPILOT_REFACTOR 選択したコードを最適化し、パフォーマンスと可読性を向上させてください。",
+    --         selection = select.visual,
+    --       },
+    --       Docs = {
+    --         prompt = "/COPILOT_REFACTOR 選択したコードのドキュメントを書いてください。ドキュメントをコメントとして追加した元のコードを含むコードブロックで回答してください。使用するプログラミング言語に最も適したドキュメントスタイルを使用してください（例：JavaScriptのJSDoc、Pythonのdocstringsなど）",
+    --         selection = select.visual,
+    --       },
+    --       FixDiagnostic = {
+    --         prompt = "ファイル内の次のような診断上の問題を解決してください：",
+    --         selection = select.diagnostics,
+    --       },
+    --       Review = {
+    --         prompt = "/COPILOT_REVIEW コードレビューを行います。",
+    --         selection = select.visual,
+    --       },
+    --     },
+    --   })
+    --   -- CopilotChatを開くキーバインドを追加する
+    --
+    --   vim.keymap.set("n", "<leader>cco", function()
+    --     require("CopilotChat").ask()
+    --   end)
+    --
+    --   vim.keymap.set("n", "<leader>ccq", function()
+    --     local input = vim.fn.input("Quick Chat: ")
+    --     if input ~= "" then
+    --       require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
+    --     end
+    --   end)
+    --   vim.keymap.set("n", "<leader>ccp", function()
+    --     local actions = require("CopilotChat.actions")
+    --     require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
+    --   end)
+    -- end,
   },
+
   {
     "lervag/vimtex",
     cond = vim.g.not_in_vscode,
@@ -407,5 +406,52 @@ return {
   {
     -- "ixru/nvim-markdown",
     -- cond = vim.g.not_in_vscode,
+  },
+  {
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      -- add any opts here
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = "make",
+    cond = vim.g.not_in_vscode,
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
   },
 }

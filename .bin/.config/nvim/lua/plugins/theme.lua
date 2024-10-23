@@ -35,7 +35,7 @@ return {
     config = function()
       require("ayu").setup({
         overrides = {
-          -- Normal = { bg = "None" },
+          Normal = { bg = "None" },
           ColorColumn = { bg = "None" },
           SignColumn = { bg = "None" },
           Folded = { bg = "None" },
