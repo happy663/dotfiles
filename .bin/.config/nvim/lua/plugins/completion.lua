@@ -1,31 +1,5 @@
 return {
   {
-    -- "zbirenbaum/copilot.lua",
-    -- cmd = { "Copilot" },
-    -- event = { "InsertEnter" },
-    -- opts = {
-    --   filetypes = {
-    --     gitcommit = true,
-    --   },
-    -- },
-    -- config = true
-  },
-  -- Define the plugin to load
-  {
-    -- "github/copilot.vim",
-    -- -- Lazy load the plugin on InsertEnter event
-    -- -- event = "InsertEnter",
-    -- -- Configure the plugin options
-    -- cond = vim.g.not_in_vscode,
-    -- config = function()
-    --   -- Enable Copilot only for gitcommit filetype
-    --   vim.g.copilot_filetypes = {
-    --     gitcommit = true,
-    --     ["*"] = false,
-    --   }
-    -- end,
-  },
-  {
     "zbirenbaum/copilot.lua",
     cmd = { "Copilot" },
     event = { "InsertEnter" },
@@ -50,7 +24,6 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
-
       -- `:` cmdline setup.
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
@@ -97,7 +70,6 @@ return {
         sources = {
           { name = "buffer" },
         },
-
         sorting = {
           comparators = {
             function(entry1, entry2)
