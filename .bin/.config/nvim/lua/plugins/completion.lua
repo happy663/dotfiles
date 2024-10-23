@@ -12,17 +12,36 @@ return {
   },
   -- Define the plugin to load
   {
-    "github/copilot.vim",
-    -- Lazy load the plugin on InsertEnter event
-    -- event = "InsertEnter",
-    -- Configure the plugin options
+    -- "github/copilot.vim",
+    -- -- Lazy load the plugin on InsertEnter event
+    -- -- event = "InsertEnter",
+    -- -- Configure the plugin options
+    -- cond = vim.g.not_in_vscode,
+    -- config = function()
+    --   -- Enable Copilot only for gitcommit filetype
+    --   vim.g.copilot_filetypes = {
+    --     gitcommit = true,
+    --     ["*"] = false,
+    --   }
+    -- end,
+  },
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = { "Copilot" },
+    event = { "InsertEnter" },
     cond = vim.g.not_in_vscode,
     config = function()
-      -- Enable Copilot only for gitcommit filetype
-      vim.g.copilot_filetypes = {
-        gitcommit = true,
-        ["*"] = false,
-      }
+      require("copilot").setup({
+        suggestion = {
+          auto_trigger = true,
+          keymap = {
+            accept = "<Tab>",
+          },
+        },
+        filetypes = {
+          gitcommit = true,
+        },
+      })
     end,
   },
   {
