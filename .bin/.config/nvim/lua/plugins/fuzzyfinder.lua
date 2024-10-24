@@ -44,7 +44,6 @@ return {
               "rg",
               "--files",
               "--hidden",
-              "--glob",
               "!.git/*",
               "--ignore-file",
               ".gitignore",
@@ -63,6 +62,8 @@ return {
                 "!.p10k.zsh",
                 "--glob",
                 "!*startuptime-logs/",
+                "--glob",
+                "!*.L",
               }
             end,
           },
