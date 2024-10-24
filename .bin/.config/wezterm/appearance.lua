@@ -22,6 +22,16 @@ function M.apply(config)
   }
 
   config.enable_kitty_graphics = true
+  config.window_decorations = "RESIZE"
+
+  config.show_new_tab_button_in_tab_bar = false
+  config.show_close_tab_button_in_tabs = false
+
+  config.colors = {
+    tab_bar = {
+      inactive_tab_edge = "none",
+    },
+  }
 
   -- 背景画像の設定
   M.setup_background_image(config)

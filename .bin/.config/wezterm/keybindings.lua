@@ -3,7 +3,6 @@ local wezterm = require("wezterm")
 local M = {}
 
 function M.apply(config)
-  config.disable_default_key_bindings = true
   config.keys = {
     -- ctrl+alt+tでnew tab
     { key = "t", mods = "CTRL|SHIFT", action = wezterm.action({ SpawnTab = "CurrentPaneDomain" }) },
