@@ -153,3 +153,16 @@ ghcr() {
   nvim "/Users/toyama/src/github.com/happy663/$1"
 }
 
+
+if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+    alias nvim=nr -cc split --remote-wait +'set bufhidden=wipe'
+fi
+
+if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+    alias nvim=nvr -cc split --remote-wait +'set bufhidden=wipe'
+    export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+    export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+fi
+
+
+
