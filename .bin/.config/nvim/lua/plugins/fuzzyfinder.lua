@@ -134,6 +134,8 @@ return {
         [[<cmd>lua _G.cycle_buffers('previous')<CR>]],
         { noremap = true, silent = true }
       )
+
+      vim.api.nvim_set_keymap("n", "<Leader>td", "<cmd>Telescope diagnostics<CR>", { noremap = true, silent = true })
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
