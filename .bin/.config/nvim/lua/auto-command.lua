@@ -185,14 +185,6 @@ _G.toggle_sound = function()
   end
 end
 
--- -- 起動時に音声を再生
--- vim.api.nvim_create_augroup("vim_jp_radio", { clear = true })
--- vim.api.nvim_create_autocmd("VimEnter", {
---   group = "vim_jp_radio",
---   once = true,
---   callback = play_sound,
--- })
-
 -- キーマッピング（<leader>s で音声を停止）
 
 vim.api.nvim_set_keymap("n", "<leader>s", ":lua toggle_sound()<CR>", { noremap = true, silent = true })
