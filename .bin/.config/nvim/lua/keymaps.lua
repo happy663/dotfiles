@@ -195,3 +195,6 @@ vim.api.nvim_set_keymap(
   ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
   { noremap = true, silent = true }
 )
+
+-- leader wqで保存して終了
+map("n", "<leader>wq", "<CMD>wq<CR>", opts)
