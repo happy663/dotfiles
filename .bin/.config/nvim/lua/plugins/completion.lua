@@ -10,6 +10,7 @@ return {
           auto_trigger = true,
           keymap = {
             accept = "<Tab>",
+            next = "<M-CR>",
           },
         },
         filetypes = {
@@ -24,7 +25,6 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
-      -- `:` cmdline setup.
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
