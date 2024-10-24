@@ -3,7 +3,12 @@ local wezterm = require("wezterm")
 local M = {}
 
 function M.apply(config)
+  config.disable_default_key_bindings = true
   config.keys = {
+    -- ctrl+alt+tでnew tab
+    { key = "t", mods = "CTRL|SHIFT", action = wezterm.action({ SpawnTab = "CurrentPaneDomain" }) },
+    -- close
+    { key = "w", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentTab = { confirm = true } }) },
     { key = "V", mods = "CTRL", action = wezterm.action.PasteFrom("Clipboard") },
     { key = "V", mods = "CTRL", action = wezterm.action.PasteFrom("PrimarySelection") },
     { key = "F", mods = "CTRL|SHIFT", action = wezterm.action.ToggleFullScreen },
