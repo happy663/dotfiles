@@ -174,8 +174,8 @@ end
 
 map("n", "<leader>cw", "<cmd>lua toggle_cwindow()<CR>", opts)
 
-vim.api.nvim_set_keymap("n", "<M-;>", "<CMD>cprev<CR>", opts)
-vim.api.nvim_set_keymap("n", "<M-'>", "<CMD>cnext<CR>", opts)
+map("n", "<M-;>", "<CMD>cprev<CR>", opts)
+map("n", "<M-'>", "<CMD>cnext<CR>", opts)
 
 -- init.luaまたは適切な設定ファイルでキーマッピングを設定
 local diag_qf = require("diagnostic_to_qf")
