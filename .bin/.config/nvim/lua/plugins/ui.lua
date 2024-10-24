@@ -58,6 +58,7 @@ return {
           dotfiles = false,
           custom = {
             "__pycache__",
+            ".git",
           },
         },
       })
