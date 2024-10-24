@@ -70,7 +70,7 @@ return {
           buffers = {
             sort_mru = true,
             default_selection_index = 2, -- 2番目のアイテムを初期選択
-            attach_mappings = function(prompt_bufnr, map)
+            attach_mappings = function()
               return true
             end,
           },
