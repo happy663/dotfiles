@@ -157,7 +157,23 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.api.nvim_set_keymap("n", "<leader>cw", "<CMD>cwindow<CR>", opts)
+_G.toggle_cwindow = function()
+  local qf_exists = false
+  for _, win in pairs(vim.fn.getwininfo()) do
+    if win.quickfix == 1 then
+      qf_exists = true
+      break
+    end
+  end
+  if qf_exists then
+    vim.cmd("cclose")
+  else
+    vim.cmd("copen")
+  end
+end
+
+map("n", "<leader>cw", "<cmd>lua toggle_cwindow()<CR>", opts)
+
 vim.api.nvim_set_keymap("n", "<M-;>", "<CMD>cprev<CR>", opts)
 vim.api.nvim_set_keymap("n", "<M-'>", "<CMD>cnext<CR>", opts)
 
