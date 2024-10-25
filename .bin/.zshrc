@@ -154,6 +154,8 @@ ghcr() {
 }
 
 
+alias n='nvim'
+
 if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
     alias nvim=nr -cc split --remote-wait +'set bufhidden=wipe'
 fi
