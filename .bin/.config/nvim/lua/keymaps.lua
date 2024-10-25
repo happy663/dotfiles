@@ -68,7 +68,7 @@ map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
 map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
-map("n", "<Leader>qf", "<CMD>Telescope quickfix<CR>", opts)
+map("n", "<Leader>tq", "<CMD>Telescope quickfix<CR>", opts)
 
 -- windows用
 -- windowsではctrl+hをbackspaceに当てている
@@ -197,4 +197,6 @@ vim.api.nvim_set_keymap(
 )
 
 -- leader wqで保存して終了
-map("n", "<leader>wq", "<CMD>wq<CR>", opts)
+map("n", "<leader>qw", "<CMD>wq<CR>", opts)
+map("n", "<leader>qq", "<CMD>q<CR>", opts)
+map("n", "<leader>qa", "<CMD>qa<CR>", opts)

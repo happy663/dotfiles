@@ -252,11 +252,11 @@ return {
           :find()
       end
 
-      vim.keymap.set("n", "<leader>qq", function()
+      vim.keymap.set("n", "<leader>ww", function()
         toggle_telescope(harpoon:list())
       end)
 
-      vim.keymap.set("n", "<leader>qa", function()
+      vim.keymap.set("n", "<leader>wa", function()
         harpoon:list():add()
       end)
       vim.keymap.set("n", "<C-1>", function()
