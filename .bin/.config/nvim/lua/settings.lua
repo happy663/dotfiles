@@ -62,13 +62,75 @@ vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
 
 vim.g.lazygit_floating_window_scaling_factor = 1
 
-vim.api.nvim_set_hl(0, "IncSearch", { fg = "#000000", bg = "#ff99cc" })
-vim.api.nvim_set_hl(0, "Search", { fg = "#ffffff", bg = "#008000" })
+-- ayu_mirageに調和する検索ハイライトの設定
+local colors = {
+  bg = "#1f2430", -- ayu_mirageの背景色
+  fg = "#cbccc6", -- 基本的な文字色
+  search = {
+    current = {
+      fg = "#1f2430", -- 暗めの背景色
+      bg = "#ffd685", -- より鮮やかな黄金色（現在の検索位置）
+    },
+    normal = {
+      fg = "#1f2430",
+      bg = "#c5c5c5", -- より控えめな色（通常の検索マッチ）
+    },
+    near = {
+      fg = "#1f2430",
+      bg = "#d4bfff", -- 柔らかい紫（近いマッチ）
+    },
+    mid = {
+      fg = "#1f2430",
+      bg = "#80bfff", -- ソフトなティール（画面内のマッチ）
+    },
+    far = {
+      fg = "#1f2430",
+      bg = "#80bfff", -- 落ち着いた青（遠いマッチ）
+    },
+  },
+}
 
--- HlSearchLensNear、HlSearchLens、HlSearchLensFar は、検索マッチが画面に近い、画面内、画面から遠い場合に使用されます。
-vim.api.nvim_set_hl(0, "HlSearchLensNear", { fg = "#ffffff", bg = "#ff99cc" }) -- 近いマッチにはIncSearchと同じ色
-vim.api.nvim_set_hl(0, "HlSearchLens", { fg = "#000000", bg = "#bae67e" }) -- 中間のマッチには明るい緑
-vim.api.nvim_set_hl(0, "HlSearchLensFar", { fg = "#ffffff", bg = "#5ccfe6" }) -- 遠いマッチには明るいブルー
+-- カーソル位置の検索マッチ（より目立つ）
+vim.api.nvim_set_hl(0, "IncSearch", {
+  fg = colors.search.current.fg,
+  bg = colors.search.current.bg,
+  bold = true,
+  undercurl = true,
+  sp = "#ffd685",
+})
+
+-- その他の検索マッチ（より控えめ）
+vim.api.nvim_set_hl(0, "Search", {
+  fg = colors.search.normal.fg,
+  bg = colors.search.normal.bg,
+  bold = false,
+  underdashed = false,
+})
+
+vim.api.nvim_set_hl(0, "HlSearchLensNear", {
+  fg = colors.search.near.fg,
+  bg = colors.search.near.bg,
+  italic = true,
+})
+
+vim.api.nvim_set_hl(0, "HlSearchLens", {
+  fg = colors.search.mid.fg,
+  bg = colors.search.mid.bg,
+})
+
+vim.api.nvim_set_hl(0, "HlSearchLensFar", {
+  fg = colors.search.far.fg,
+  bg = colors.search.far.bg,
+})
+
+-- ColorScheme変更時の設定保持
+vim.cmd([[
+  augroup SearchHighlight
+    autocmd!
+    autocmd ColorScheme * highlight IncSearch guibg=#fcdc9d guifg=#1f2430 gui=bold,undercurl
+    autocmd ColorScheme * highlight Search guibg=#c5c5c5 guifg=#1f2430 gui=NONE
+  augroup END
+]])
 
 vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"
 
@@ -85,3 +147,40 @@ vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = tr
 vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
 
 vim.g.copilot_filetypes = { markdown = false }
+
+-- カーソルの設定
+vim.opt.guicursor = {
+  "n-v:block-Cursor", -- ノーマル・ビジュアルモード: ブロックカーソル
+  "i-c-ci-ve:ver25-Cursor", -- インサート・コマンドモード: 25%幅の縦線カーソル
+  "r-cr:hor20-Cursor", -- 置換モード: 20%高さの横線カーソル
+  "o:hor50-Cursor", -- オペレータ待機モード: 50%高さの横線カーソル
+  "a:blinkwait500-blinkoff200-blinkon200-Cursor", -- 0.5秒待機、0.2秒オン/オフ
+}
+
+-- カーソルカラーの設定
+vim.api.nvim_set_hl(0, "Cursor", {
+  fg = "#1f2430", -- カーソル上のテキストの色
+  bg = "#73d0ff", -- カーソルの背景色（黄金色）
+})
+
+-- 挿入モードのカーソル色を変更したい場合
+vim.api.nvim_set_hl(0, "iCursor", {
+  fg = "#1f2430",
+  bg = "#73d0ff", -- 青みがかった色
+})
+
+-- ビジュアルモードのカーソル色
+vim.api.nvim_set_hl(0, "vCursor", {
+  fg = "#1f2430",
+  bg = "#f28779", -- サーモンピンク
+})
+
+-- カラースキーム変更時にカーソルの色を保持
+vim.cmd([[
+  augroup CursorColor
+    autocmd!
+    autocmd ColorScheme * highlight Cursor guifg=#1f2430 guibg=#73d0ff
+    autocmd ColorScheme * highlight iCursor guifg=#1f2430 guibg=#73d0ff
+    autocmd ColorScheme * highlight vCursor guifg=#1f2430 guibg=#f28779
+  augroup END
+]])
