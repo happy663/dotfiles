@@ -182,7 +182,6 @@ return {
   },
   {
     "windwp/nvim-autopairs",
-    cond = vim.g.not_in_vscode,
     config = true,
   },
   {
