@@ -306,6 +306,7 @@ return {
   {
     "ramilito/winbar.nvim",
     event = "VimEnter", -- Alternatively, BufReadPre if we don't care about the empty file when starting with 'nvim'
+    cond = vim.g.not_in_vscode,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("winbar").setup({
@@ -347,6 +348,7 @@ return {
   },
   {
     "nvchad/showkeys",
+    cond = vim.g.not_in_vscode,
     cmd = "ShowkeysToggle",
     opts = {
       timeout = 1,
