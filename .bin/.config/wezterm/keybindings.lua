@@ -25,8 +25,8 @@ function M.apply(config)
     { key = "[", mods = "ALT", action = act.ActivateTabRelative(-1) },
     { key = "]", mods = "ALT", action = act.ActivateTabRelative(1) },
     -- Pane
-    { key = "r", mods = "LEADER", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
-    { key = "d", mods = "LEADER", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+    { key = "d", mods = "LEADER", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
+    { key = "v", mods = "LEADER", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
     { key = "x", mods = "LEADER", action = act({ CloseCurrentPane = { confirm = true } }) },
     -- Pane移動 leader + hlkj
     { key = "h", mods = "LEADER", action = act.ActivatePaneDirection("Left") },
