@@ -91,9 +91,9 @@ map("n", "gP", '"+P', opts)
 -- mason
 map("n", "<Leader>ma", ":Mason<CR>", opts)
 
-map("i", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
-map("c", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
-map("t", "<C-J>", "<Plug>(skkeleton-toggle)", opts)
+map("i", "<C-J>", "<Plug>(skkeleton-enable)", opts)
+map("c", "<C-J>", "<Plug>(skkeleton-enable)", opts)
+map("t", "<C-J>", "<Plug>(skkeleton-enable)", opts)
 
 map("n", "<Leader>cr", "<CMD>RunCode<CR>", opts)
 
