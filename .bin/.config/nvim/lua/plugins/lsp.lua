@@ -8,6 +8,7 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
   buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
+  buf_map("n", "gn", "<cmd>lua vim.lsp.buf.rename()<CR>")
 end
 
 local no_format_on_attach = function(client, bufnr)
