@@ -22,6 +22,13 @@ return {
   {
     "hrsh7th/nvim-cmp",
     cond = vim.g.not_in_vscode,
+    opts = function(_, opts)
+      opts.sources = opts.sources or {}
+      table.insert(opts.sources, {
+        name = "lazydev",
+        group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+      })
+    end,
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
@@ -38,6 +45,7 @@ return {
           },
         }),
         sorting = {
+          priority_weight = 1,
           comparators = {
             function(entry1, entry2)
               local word1 = entry1:get_word()
@@ -71,6 +79,7 @@ return {
           { name = "buffer" },
         },
         sorting = {
+          priority_weight = 1,
           comparators = {
             function(entry1, entry2)
               local word1 = entry1:get_word()
@@ -120,44 +129,14 @@ return {
           { name = "path" },
           { name = "buffer" },
         },
-        sorting = {
-          priority_weight = 2,
-
-          comparators = {
-            function(entry1, entry2)
-              local kind1 = entry1:get_kind()
-              local kind2 = entry2:get_kind()
-              local kindKeyword = vim.lsp.protocol.CompletionItemKind.Keyword
-              local kindText = vim.lsp.protocol.CompletionItemKind.Text
-              if kind1 == kindKeyword and kind2 ~= kindKeyword then
-                return true
-              elseif kind1 ~= kindKeyword and kind2 == kindKeyword then
-                return false
-              elseif kind1 == kindText and kind2 ~= kindText then
-                return false
-              elseif kind1 ~= kindText and kind2 == kindText then
-                return true
-              end
-              -- 他の比較基準でソートする必要がある場合はnilを返す
-              return nil
-            end,
-            cmp.config.compare.offset,
-            cmp.config.compare.order,
-            cmp.config.compare.kind,
-            cmp.config.compare.score,
-            -- 他の比較関数をここに追加
-          },
-        },
         formatting = {
+          expandable_indicator = true,
+          fields = {},
           format = lspkind.cmp_format({
-            mode = "symbol", -- show only symbol annotations
-            maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-            -- can also be a function to dynamically calculate max width such as
-            -- maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
-            ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-            show_labelDetails = true, -- show labelDetails in menu. Disabled by default
-            -- The function below will be called before any actual modifications from lspkind
-            -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
+            mode = "symbol",
+            maxwidth = 50,
+            ellipsis_char = "...",
+            show_labelDetails = true,
           }),
         },
       })
@@ -188,5 +167,16 @@ return {
     "L3MON4D3/LuaSnip",
     cond = vim.g.not_in_vscode,
     dependencies = { "rafamadriz/friendly-snippets" },
+  },
+  {
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- See the configuration section for more details
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
   },
 }

@@ -44,7 +44,6 @@ return {
               "rg",
               "--files",
               "--hidden",
-              "!.git/*",
               "--ignore-file",
               ".gitignore",
             },
