@@ -126,7 +126,7 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
 map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
 map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 
--- map("n", "<Leader>a", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>ga", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
 map("n", "<Leader>me", "<CMD>NoiceAll<CR>", opts)
