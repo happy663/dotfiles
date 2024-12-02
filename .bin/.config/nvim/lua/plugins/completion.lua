@@ -15,6 +15,8 @@ return {
         },
         filetypes = {
           gitcommit = true,
+          tex = false,
+          markdown = false,
         },
       })
     end,
@@ -26,7 +28,7 @@ return {
       opts.sources = opts.sources or {}
       table.insert(opts.sources, {
         name = "lazydev",
-        group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+        group_index = 0,
       })
     end,
     config = function()
@@ -130,8 +132,8 @@ return {
           { name = "buffer" },
         },
         formatting = {
-          expandable_indicator = true,
-          fields = {},
+          -- expandable_indicator = true,
+          -- fields = {},
           format = lspkind.cmp_format({
             mode = "symbol",
             maxwidth = 50,

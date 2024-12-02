@@ -146,8 +146,6 @@ vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = tr
 -- } の再マッピング
 vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
 
-vim.g.copilot_filetypes = { markdown = false }
-
 -- カーソルの設定
 vim.opt.guicursor = {
   "n-v:block-Cursor", -- ノーマル・ビジュアルモード: ブロックカーソル
