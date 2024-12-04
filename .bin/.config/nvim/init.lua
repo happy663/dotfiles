@@ -39,6 +39,7 @@ if vim.g.not_in_vscode then
   require("auto-command")
   require("settings")
   require("keymaps")
+  require("discord")
 else
   require("self-vscode")
 end
