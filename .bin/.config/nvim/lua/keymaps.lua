@@ -213,3 +213,14 @@ vim.api.nvim_set_keymap(
   [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
   opts
 )
+
+local function toggle_nvim_tree_ignore()
+  local api = require("nvim-tree.api")
+  local data = api.tree.toggle_gitignore_filter()
+end
+
+vim.keymap.set("n", "<leader>ti", toggle_nvim_tree_ignore, {
+  noremap = true,
+  silent = true,
+  desc = "tree-ignore-toggle",
+})
