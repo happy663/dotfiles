@@ -18,7 +18,7 @@ local function load_env(env_file_path)
 end
 
 local function send_to_discord(message)
-  load_env("~/.config/nvim/.env")
+  -- load_env("~/.config/nvim/.env")
   local webhook_url = vim.fn.getenv("DISCORD_WEBHOOK_URL")
   -- メッセージデータを作成
   local data = {
@@ -42,7 +42,6 @@ end
 local function create_discord_buffer()
   vim.cmd("edit `=tempname()`")
   local bufnr = vim.api.nvim_get_current_buf()
-
   vim.api.nvim_create_autocmd("BufWritePost", {
     buffer = bufnr,
     callback = function()
@@ -55,11 +54,19 @@ local function create_discord_buffer()
   })
 end
 
-vim.api.nvim_create_user_command("DiscordSendBuffer", create_discord_buffer, {
+local function process_discord(env_file_path)
+  load_env(env_file_path)
+  return function()
+    create_discord_buffer()
+  end
+end
+local discord_buffer = process_discord("~/.config/nvim/.env")
+
+vim.api.nvim_create_user_command("DiscordSendBuffer", discord_buffer, {
   desc = "Create Discord message buffer",
 })
 
-vim.keymap.set("n", "<leader>dsb", create_discord_buffer, {
+vim.keymap.set("n", "<leader>dsb", discord_buffer, {
   noremap = true,
   silent = true,
   desc = "Create Discord message buffer",
