@@ -40,8 +40,7 @@ local function send_to_discord(message)
 end
 
 local function create_discord_buffer()
-  vim.cmd("new")
-  vim.cmd("file discord-message.txt")
+  vim.cmd("edit `=tempname()`")
   local bufnr = vim.api.nvim_get_current_buf()
 
   vim.api.nvim_create_autocmd("BufWritePost", {
