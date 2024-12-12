@@ -102,13 +102,15 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
 fi
 
 HISTFILE=~/.zsh_history
-export HISTSIZE=1000
-export HISTFILESIZE=1000
-setopt HIST_IGNORE_ALL_DUPS
+HISTSIZE=1000
+SAVEHIST=1000
+
+setopt APPEND_HISTORY
 setopt SHARE_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+
 
 PATH=~/.console-ninja/.bin:$PATH
-
 
 export PATH="/opt/homebrew/opt/gcc/bin:$PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
