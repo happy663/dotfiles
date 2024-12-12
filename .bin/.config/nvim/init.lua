@@ -33,6 +33,11 @@ require("lazy").setup("plugins", {
   ui = {
     border = "double",
   },
+  spec = {
+    { import = "plugins" },
+    { import = "plugins.lsp" },
+    { import = "plugins.fuzzyfinder" },
+  },
 })
 
 if vim.g.not_in_vscode then
