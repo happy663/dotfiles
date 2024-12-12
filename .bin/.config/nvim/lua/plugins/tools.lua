@@ -453,7 +453,7 @@ return {
 
       vim.keymap.set("n", "<leader>ccc", "<cmd>CodeCompanionChat<cr>", { noremap = true, silent = true })
       vim.keymap.set("v", "<leader>ccc", "<cmd>CodeCompanionChat<cr>", { noremap = true, silent = true })
-      -- vim.keymap.set("v", "<leader>ccf", "<cmd>CodeCompanion /fix<cr>", { noremap = true, silent = true })
+      vim.keymap.set("v", "<leader>ccff", "<cmd>CodeCompanion /fix<cr>", { noremap = true, silent = true })
       vim.keymap.set("v", "<leader>cce", "<cmd>CodeCompanion /explain<cr>", { noremap = true, silent = true })
       vim.keymap.set("n", "<leader>cca", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
       vim.keymap.set("v", "<leader>cca", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
