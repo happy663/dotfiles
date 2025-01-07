@@ -16,6 +16,7 @@ function M.apply(config)
     { key = "R", mods = "CTRL|SHIFT", action = act.ReloadConfiguration },
     { key = "U", mods = "CTRL|SHIFT", action = act.EmitEvent("toggle-opacity-and-remove-background-image") },
     { key = "C", mods = "CTRL|SHIFT", action = act.EmitEvent("change-window-background-image") },
+    { key = "S", mods = "CTRL|SHIFT", action = act.EmitEvent("change-window-background-image-sakurai") },
     { key = "w", mods = "ALT", action = act.HideApplication },
     -- Ctrl+Tab をNeovimに渡す
     { key = "Tab", mods = "CTRL", action = act({ SendString = "\x1b[27;5;9~" }) },

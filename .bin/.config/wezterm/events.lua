@@ -44,6 +44,14 @@ function M.setup()
     window:set_config_overrides(overrides)
   end)
 
+  -- Change background image
+  wezterm.on("change-window-background-image-sakurai", function(window)
+    current_image_num = 12
+    local overrides = window:get_config_overrides() or {}
+    overrides.window_background_image = build_image_path(current_image_num)
+    window:set_config_overrides(overrides)
+  end)
+
   -- Window title formatting
   wezterm.on("format-window-title", function(tab, pane, tabs, panes)
     if tab.window_id == wezterm.GLOBAL.ghosttext_window_id then
