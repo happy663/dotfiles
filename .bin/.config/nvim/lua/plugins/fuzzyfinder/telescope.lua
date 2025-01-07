@@ -164,4 +164,76 @@ return {
     },
     version = "0.1.5",
   },
+  -- TODO Telescopeプラグインの整理をする
+  {
+    "mollerhoj/telescope-recent-files.nvim",
+    cond = vim.g.not_in_vscode,
+    -- keys = {
+    --   {
+    --     "<C-p>",
+    --     "<cmd>lua require('telescope').extensions['recent-files'].recent_files({})<CR>",
+    --   },
+    -- },
+  },
+  {
+    "LukasPietzschmann/telescope-tabs",
+    config = true,
+    cond = vim.g.not_in_vscode,
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+  },
+  {
+    "nvim-telescope/telescope-frecency.nvim",
+    cond = vim.g.not_in_vscode,
+    config = function()
+      require("telescope").load_extension("frecency")
+    end,
+  },
+  {
+    "nvim-telescope/telescope-file-browser.nvim",
+    cond = vim.g.not_in_vscode,
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim",
+    },
+  },
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    cond = vim.g.not_in_vscode,
+    run = "make",
+  },
+  {
+    "delphinus/telescope-memo.nvim",
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+    cond = vim.g.not_in_vscode,
+    config = function()
+      require("telescope").load_extension("memo")
+    end,
+    key = {},
+  },
+  {
+    cond = vim.g.not_in_vscode,
+    "ibhagwan/fzf-lua",
+    dependencies = {
+      "kyazdani42/nvim-web-devicons",
+    },
+  },
+  {
+    "danielfalk/smart-open.nvim",
+    branch = "0.2.x",
+    cond = vim.g.not_in_vscode,
+    config = function()
+      require("telescope").load_extension("smart_open")
+    end,
+    dependencies = {
+      "kkharji/sqlite.lua",
+      -- Only required if using match_algorithm fzf
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+      -- Optional.  If installed, native fzy will be used when match_algorithm is fzy
+      { "nvim-telescope/telescope-fzy-native.nvim" },
+    },
+  },
 }
