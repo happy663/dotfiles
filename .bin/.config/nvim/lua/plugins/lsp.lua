@@ -1,60 +1,77 @@
-local function set_lsp_keymaps(bufnr)
-  local buf_map = function(mode, lhs, rhs, opts)
-    vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts or { noremap = true })
+local function format_diagnostics(diagnostics)
+  local formatted = {}
+  for i, d in ipairs(diagnostics) do
+    table.insert(
+      formatted,
+      string.format("%d. [%s] Line %d: %s", i, d.severity == 1 and "ERROR" or "WARN", d.lnum + 1, d.message)
+    )
   end
+  return table.concat(formatted, "\n")
+end
 
+local function copy_all_diagnostic_text(bufnr)
+  local diagnostics = vim.diagnostic.get(bufnr)
+  if #diagnostics == 0 then
+    print("No diagnostics found")
+    return
+  end
+  local diagnostic_text = format_diagnostics(diagnostics)
+  vim.fn.setreg("+", diagnostic_text)
+end
+
+local function copy_diagnostic_text(bufnr)
+  local cursor_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local diagnostics = vim.diagnostic.get(bufnr, { lnum = cursor_line })
+  if #diagnostics == 0 then
+    print("No diagnostics found on current line")
+    return
+  end
+  local diagnostic_text = format_diagnostics(diagnostics)
+  vim.fn.setreg("+", diagnostic_text)
+end
+
+local function set_lsp_keymaps(bufnr)
+  local function keymap(bufnum)
+    return function(mode, lhs, rhs, opts)
+      vim.api.nvim_buf_set_keymap(bufnum, mode, lhs, rhs, opts or { noremap = true, silent = true })
+    end
+  end
+  local buf_map = keymap(bufnr)
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
   buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
   buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gn", "<cmd>lua vim.lsp.buf.rename()<CR>")
+  buf_map("n", "<leader>di", '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>')
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    border = "double",
+  })
+  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    update_in_insert = false,
+    virtual_text = {
+      format = function(diagnostic)
+        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
+      end,
+    },
+  })
+  vim.keymap.set("n", "<leader>dcc", function()
+    copy_diagnostic_text(bufnr)
+  end)
+
+  vim.keymap.set("n", "<leader>dca", function()
+    copy_diagnostic_text(bufnr)
+  end)
 end
 
 local no_format_on_attach = function(client, bufnr)
   set_lsp_keymaps(bufnr)
   client.server_capabilities.documentFormattingProvider = false
   client.server_capabilities.documentRangeFormattingProvider = false
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "double",
-  })
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<leader>di",
-    '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
-    { noremap = true, silent = true }
-  )
-  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-    update_in_insert = false,
-    virtual_text = {
-      format = function(diagnostic)
-        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
-      end,
-    },
-  })
 end
 
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
   set_lsp_keymaps(bufnr)
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "double",
-  })
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<leader>di",
-    '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>',
-    { noremap = true, silent = true }
-  )
-  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-    update_in_insert = false,
-    virtual_text = {
-      format = function(diagnostic)
-        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
-      end,
-    },
-  })
 end
 
 return {
@@ -180,7 +197,7 @@ return {
           "lua-language-server",
           --"luacheck",
           "prettierd",
-          "pyright",
+          -- "pyright",
           "staticcheck",
           "stylua",
           "textlint",
