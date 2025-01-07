@@ -41,7 +41,6 @@ zstyle ':completion:*:default' menu select=1
 
 bindkey '^xb' anyframe-widget-cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook cpwd chpwd_recent_dirs
 bindkey '^xr' anyframe-widget-execute-history
 bindkey '^x^b' anyframe-widget-checkout-git-branch
 

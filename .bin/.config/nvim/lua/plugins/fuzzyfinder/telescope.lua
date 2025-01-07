@@ -164,6 +164,7 @@ return {
     },
     version = "0.1.5",
   },
+  -- TODO Telescopeプラグインの整理をする
   {
     "mollerhoj/telescope-recent-files.nvim",
     cond = vim.g.not_in_vscode,

@@ -1,27 +1,5 @@
 return {
   {
-    "zbirenbaum/copilot.lua",
-    cmd = { "Copilot" },
-    event = { "InsertEnter" },
-    cond = vim.g.not_in_vscode,
-    config = function()
-      require("copilot").setup({
-        suggestion = {
-          auto_trigger = true,
-          keymap = {
-            accept = "<Tab>",
-            next = "<M-CR>",
-          },
-        },
-        filetypes = {
-          gitcommit = true,
-          tex = false,
-          markdown = false,
-        },
-      })
-    end,
-  },
-  {
     "hrsh7th/nvim-cmp",
     cond = vim.g.not_in_vscode,
     opts = function(_, opts)
@@ -127,10 +105,12 @@ return {
         },
         sources = {
           { name = "nvim_lsp" },
-          { name = "vimtex" },
           { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
+          sources = {
+            { name = "vimtex" },
+          },
           {
             name = "spell",
             option = {
@@ -165,33 +145,6 @@ return {
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
       -- "f3fora/cmp-spell",
-    },
-  },
-  {
-    "windwp/nvim-ts-autotag",
-    cond = vim.g.not_in_vscode,
-    config = function()
-      require("nvim-ts-autotag").setup()
-    end,
-  },
-  {
-    "windwp/nvim-autopairs",
-    config = true,
-  },
-  {
-    "L3MON4D3/LuaSnip",
-    cond = vim.g.not_in_vscode,
-    dependencies = { "rafamadriz/friendly-snippets" },
-  },
-  {
-    "folke/lazydev.nvim",
-    ft = "lua", -- only load on lua files
-    opts = {
-      library = {
-        -- See the configuration section for more details
-        -- Load luvit types when the `vim.uv` word is found
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-      },
     },
   },
 }

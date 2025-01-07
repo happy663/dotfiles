@@ -76,19 +76,6 @@ end
 
 return {
   {
-    "williamboman/mason.nvim",
-    cond = vim.g.not_in_vscode,
-    config = function()
-      require("mason").setup({
-        ui = {
-          border = "double",
-          height = 0.8,
-          width = 0.8,
-        },
-      })
-    end,
-  },
-  {
     "williamboman/mason-lspconfig.nvim",
     cond = vim.g.not_in_vscode,
     config = function()
@@ -153,76 +140,9 @@ return {
         end,
       })
     end,
-  },
-  {
-    "neovim/nvim-lspconfig",
-    cond = vim.g.not_in_vscode,
-  },
-  {
-    "nvimtools/none-ls.nvim",
-    cond = vim.g.not_in_vscode,
-    config = function()
-      local null_ls = require("null-ls")
-      null_ls.setup({
-        diagnostics_format = "#{m} (#{s}: #{c})",
-        sources = {
-          null_ls.builtins.formatting.stylua,
-          --null_ls.builtins.completion.spell,
-          null_ls.builtins.formatting.prettierd,
-          --null_ls.builtins.code_actions.eslint_d,
-          -- null_ls.builtins.formatting.latexindent,
-          --null_ls.builtins.diagnostics.luacheck.with({
-          --extra_args = { "--globals", "vim", "--globals", "use" },
-          --}),
-        },
-      })
-    end,
     dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-  },
-  {
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
-    cond = vim.g.not_in_vscode,
-    config = function()
-      require("mason-tool-installer").setup({
-        ensure_installed = {
-          "clangd",
-          "debugpy",
-          "eslint-lsp",
-          --"eslint_d",
-          "gopls",
-          --"latexindent",
-          --"ltex-ls",
-          "lua-language-server",
-          --"luacheck",
-          "prettierd",
-          -- "pyright",
-          "staticcheck",
-          "stylua",
-          "textlint",
-          -- "typescript-language-server",
-        },
-      })
-    end,
-    dependencies = {
+      "neovim/nvim-lspconfig",
       "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
     },
   },
-  -- {
-  --   "nvimdev/lspsaga.nvim",
-  --   config = function()
-  --     require("lspsaga").setup({
-  --       lightbulb = {
-  --         enabled = false,
-  --         sign = false,
-  --       },
-  --     })
-  --   end,
-  --   dependencies = {
-  --     "nvim-treesitter/nvim-treesitter", -- optional
-  --     "nvim-tree/nvim-web-devicons", -- optional
-  --   },
-  -- },
 }

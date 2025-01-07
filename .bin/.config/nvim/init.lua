@@ -19,7 +19,7 @@ package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/shar
 
 vim.g.not_in_vscode = vim.g.vscode == nil
 
-require("lazy").setup("plugins", {
+require("lazy").setup({
   performance = {
     rtp = {
       disabled_plugins = {
@@ -32,6 +32,27 @@ require("lazy").setup("plugins", {
   },
   ui = {
     border = "double",
+  },
+  spec = {
+    -- { import = "plugins" },
+    -- TODO:複数形なのか単数形なのか統一した方がよさそう
+    { import = "plugins.ai" },
+    { import = "plugins.colorschema" },
+    { import = "plugins.completion" },
+    { import = "plugins.edit_support" },
+    { import = "plugins.fuzzyfinder" },
+    { import = "plugins.git" },
+    { import = "plugins.highlight" },
+    { import = "plugins.japanese" },
+    { import = "plugins.languages" },
+    { import = "plugins.lsp" },
+    { import = "plugins.misc" },
+    { import = "plugins.navigation" },
+    { import = "plugins.note" },
+    { import = "plugins.terminal" },
+    { import = "plugins.tools" },
+    { import = "plugins.treesitter" },
+    { import = "plugins.ui" },
   },
 })
 
