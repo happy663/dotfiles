@@ -1,5 +1,6 @@
 return {
   {
+    -- TODO: pluginsがarchiveされているので、代替を探す
     "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
     config = function()
