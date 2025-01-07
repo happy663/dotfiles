@@ -41,7 +41,7 @@ zstyle ':completion:*:default' menu select=1
 
 bindkey '^xb' anyframe-widget-cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
+add-zsh-hook cpwd chpwd_recent_dirs
 bindkey '^xr' anyframe-widget-execute-history
 bindkey '^x^b' anyframe-widget-checkout-git-branch
 
@@ -168,11 +168,30 @@ if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
     export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 fi
 
-
-
 # ~/.zshrc
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
 source <(carapace _carapace)
 
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+alias movehere='function _movehere(){ SEARCH_DIR=${1:-~/Downloads}; mv "$SEARCH_DIR/$(ls -t -r "$SEARCH_DIR" | fzf)" .; }; _movehere'
+
+# プロセスをkill
+fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
 
