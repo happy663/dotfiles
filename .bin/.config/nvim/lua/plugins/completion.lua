@@ -127,9 +127,20 @@ return {
         },
         sources = {
           { name = "nvim_lsp" },
+          { name = "vimtex" },
           { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
+          {
+            name = "spell",
+            option = {
+              keep_all_entries = false,
+              enable_in_context = function()
+                return true
+              end,
+              preselect_correct_word = true,
+            },
+          },
         },
         formatting = {
           -- expandable_indicator = true,
@@ -152,6 +163,8 @@ return {
       "uga-rosa/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
+      "micangl/cmp-vimtex",
+      -- "f3fora/cmp-spell",
     },
   },
   {

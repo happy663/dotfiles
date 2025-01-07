@@ -220,3 +220,7 @@ vim.keymap.set("n", "<leader>ti", toggle_nvim_tree_ignore, {
   silent = true,
   desc = "tree-ignore-toggle",
 })
+
+vim.keymap.set("n", "<leader>yy", function()
+  vim.cmd("normal! ggVGy")
+end, { noremap = true, silent = true, desc = "copy all sentence from current_file" })

@@ -182,3 +182,6 @@ vim.cmd([[
     autocmd ColorScheme * highlight vCursor guifg=#1f2430 guibg=#f28779
   augroup END
 ]])
+
+-- vim.opt.spell = true
+-- vim.opt.spelllang = { "en", "cjk" }
