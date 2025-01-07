@@ -57,9 +57,9 @@ require("lazy").setup({
 })
 
 if vim.g.not_in_vscode then
-  require("auto-command")
-  require("settings")
-  require("keymaps")
+  require("core.auto-command")
+  require("core.settings")
+  require("core.keymaps")
   require("discord")
 else
   require("self-vscode")
