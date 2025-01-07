@@ -108,6 +108,9 @@ return {
           { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
+          sources = {
+            { name = "vimtex" },
+          },
           {
             name = "spell",
             option = {
@@ -140,6 +143,7 @@ return {
       "uga-rosa/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
+      "micangl/cmp-vimtex",
       -- "f3fora/cmp-spell",
     },
   },
