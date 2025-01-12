@@ -145,10 +145,16 @@ vim.api.nvim_create_autocmd("User", {
   callback = function()
     local cmp = require("cmp")
     cmp.setup.buffer({
+      debug = true,
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "path" },
         { name = "buffer" },
+        { name = "codecompanion_models" },
+        { name = "codecompanion_slash_commands" },
+        { name = "codecompanion_tools" },
+        { name = "codecompanion_variables" },
+        { name = "vimtex" },
       }),
     })
 

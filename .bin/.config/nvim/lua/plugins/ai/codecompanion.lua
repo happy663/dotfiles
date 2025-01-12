@@ -9,17 +9,94 @@ return {
       local codecompanion = require("codecompanion")
       codecompanion.setup({
         prompt = {},
+        display = {
+          chat = {
+            show_settings = true, -- cmpを使用する場合はtrueにする必要
+          },
+          action_palette = {
+            provider = "telescope", -- default|telescope|mini_pick|fzf_lua
+          },
+        },
+        adapters = {
+          anthropic = function()
+            return require("codecompanion.adapters").extend("anthropic", {
+              schema = {
+                model = {
+                  default = "claude-3-5-haiku-20241022",
+                },
+              },
+              env = {
+                api_key = "",
+              },
+            })
+          end,
+          copilot = function()
+            return require("codecompanion.adapters").extend("copilot", {
+              schema = {
+                model = {
+                  default = "gpt-4o-2024-08-06",
+                },
+              },
+            })
+          end,
+          openai = function()
+            return require("codecompanion.adapters").extend("openai", {
+              schema = {
+                model = {
+                  default = "o1-mini-2024-09-12",
+                },
+              },
+            })
+          end,
+        },
         opts = {
           language = "Japanese",
+          ---@param adapter CodeCompanion.Adapter
+          ---@return string
+          -- system_prompt = function(adapter)
+          --   print(adapter)
+          --   if
+          --     adapter.schema
+          --     and adapter.schema.model
+          --     and adapter.schema.model.default == "claude-3-5-haiku-20241022"
+          --   then
+          --     print("schemaが存在する")
+          --     return "My custom system prompt"
+          --   end
+          --   print("schemaが存在しない")
+          --   return "My default system prompt"
+          -- end,
+          log_level = "DEBUG",
         },
         strategies = {
           chat = {
-            keymaps = {
-              send = {
-                modes = {
-                  n = { "<C-S>" }, -- 送信を<C-s>のみに変更
-                  i = { "<C-S>" },
+            adapter = "anthropic",
+            slash_commands = {
+              ["buffer"] = {
+                callback = "strategies.chat.slash_commands.buffer",
+                description = "Insert open buffers",
+                opts = {
+                  contains_code = true,
+                  provider = "telescope", -- default|telescope|mini_pick|fzf_lua
                 },
+              },
+              ["file"] = {
+                callback = "strategies.chat.slash_commands.file",
+                description = "Insert a file",
+                opts = {
+                  contains_code = true,
+                  max_lines = 1000,
+                  provider = "telescope", -- default|telescope|mini_pick|fzf_lua
+                },
+              },
+            },
+          },
+          inline = { adapter = "anthropic" },
+          keymaps = {
+            send = {
+              modes = {
+                n = { "<C-S>" }, -- 送信を<C-s>のみに変更
+                i = { "<C-S>" },
               },
             },
           },
