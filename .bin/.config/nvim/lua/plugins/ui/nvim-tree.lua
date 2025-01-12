@@ -38,6 +38,9 @@ return {
           },
         },
       })
+
+      local api = require("nvim-tree.api")
+      vim.keymap.set("n", "<leader>ea", api.tree.expand_all(), { silent = true, nowait = true })
     end,
     dependencies = "nvim-tree/nvim-web-devicons",
   },
