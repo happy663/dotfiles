@@ -37,7 +37,7 @@ require("lazy").setup({
     -- { import = "plugins" },
     -- TODO:複数形なのか単数形なのか統一した方がよさそう
     { import = "plugins.ai" },
-    { import = "plugins.colorschema" },
+    { import = "plugins.colorschemas" },
     { import = "plugins.completion" },
     { import = "plugins.edit_support" },
     { import = "plugins.fuzzyfinder" },
