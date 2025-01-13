@@ -1,3 +1,5 @@
+local utils = require("utils")
+
 return {
   {
     "olimorris/codecompanion.nvim",
@@ -7,6 +9,9 @@ return {
     },
     config = function()
       local codecompanion = require("codecompanion")
+
+      utils.load_env(".env")
+
       codecompanion.setup({
         prompt = {},
         display = {
@@ -26,7 +31,9 @@ return {
                 },
               },
               env = {
-                api_key = "",
+                api_key = function()
+                  return vim.fn.getenv("ANTHROPIC_API_KEY")
+                end,
               },
             })
           end,
@@ -43,8 +50,17 @@ return {
             return require("codecompanion.adapters").extend("openai", {
               schema = {
                 model = {
-                  default = "o1-mini-2024-09-12",
+                  default = "gpt-4o-mini",
                 },
+                choices = {
+                  "o1-mini-2024-09-12",
+                  "gpt-4o-mini",
+                },
+              },
+              env = {
+                api_key = function()
+                  return vim.fn.getenv("OPENAI_API_KEY")
+                end,
               },
             })
           end,
