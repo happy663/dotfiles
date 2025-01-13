@@ -36,6 +36,11 @@ return {
             ["zb"] = { "↓" },
             ["zn"] = { "↑" },
             ["zm"] = { "→" },
+            ["sha"] = false,
+            ["shi"] = false,
+            ["shu"] = false,
+            ["she"] = false,
+            ["sho"] = false,
           })
 
           vim.api.nvim_exec(
