@@ -133,6 +133,50 @@ return {
           }),
         },
       })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "skkeleton-enable-pre",
+        callback = function()
+          local cmp = require("cmp")
+          cmp.setup.buffer({
+            sources = cmp.config.sources({
+              { name = "skkeleton", max_item_count = 5 },
+            }),
+          })
+          cmp.setup.cmdline("/", {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = {
+              { name = "skkeleton" },
+            },
+          })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "skkeleton-disable-pre",
+        callback = function()
+          local cmp = require("cmp")
+          cmp.setup.buffer({
+            debug = true,
+            sources = cmp.config.sources({
+              { name = "nvim_lsp" },
+              { name = "path" },
+              { name = "buffer" },
+              { name = "codecompanion_models" },
+              { name = "codecompanion_slash_commands" },
+              { name = "codecompanion_tools" },
+              { name = "codecompanion_variables" },
+              { name = "vimtex" },
+            }),
+          })
+          cmp.setup.cmdline("/", {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = {
+              { name = "buffer" },
+            },
+          })
+        end,
+      })
     end,
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
