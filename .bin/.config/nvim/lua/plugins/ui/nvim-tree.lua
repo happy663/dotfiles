@@ -43,6 +43,10 @@ return {
       vim.keymap.set("n", "<leader>ea", function()
         api.tree.expand_all()
       end, { silent = true, nowait = true })
+
+      vim.keymap.set("n", "<leader>ec", function()
+        api.tree.collapse_all()
+      end, { silent = true, nowait = true })
     end,
     dependencies = "nvim-tree/nvim-web-devicons",
   },
