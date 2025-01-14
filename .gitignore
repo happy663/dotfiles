@@ -11,6 +11,7 @@ automatic_backups/
 .bin/.config/zed
 .bin/.config/raycast/
 .env
+.spotify_tokens.json
 
 
 
