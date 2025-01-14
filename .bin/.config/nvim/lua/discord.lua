@@ -1,7 +1,7 @@
 local utils = require("utils")
 
 local function send_to_discord(message)
-  -- load_env("~/.config/nvim/.env")
+  -- % refactor: plenary.curlを使ってcurlコマンドを実行できるかも
   local webhook_url = vim.fn.getenv("DISCORD_WEBHOOK_URL")
   -- メッセージデータを作成
   local data = {
