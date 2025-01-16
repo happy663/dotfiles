@@ -57,11 +57,15 @@ local function set_lsp_keymaps(bufnr)
   })
   vim.keymap.set("n", "<leader>dcc", function()
     copy_diagnostic_text(bufnr)
-  end)
+  end, {
+    desc = "Copy current line diagnostics",
+  })
 
   vim.keymap.set("n", "<leader>dca", function()
     copy_diagnostic_text(bufnr)
-  end)
+  end, {
+    desc = "Copy all diagnostics",
+  })
 end
 
 local no_format_on_attach = function(client, bufnr)

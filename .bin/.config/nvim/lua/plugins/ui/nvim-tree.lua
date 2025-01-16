@@ -42,15 +42,15 @@ return {
       local api = require("nvim-tree.api")
       vim.keymap.set("n", "<leader>ea", function()
         api.tree.expand_all()
-      end, { silent = true, nowait = true })
+      end, { silent = true, nowait = true, desc = "Expand all" })
 
       vim.keymap.set("n", "<leader>ec", function()
         api.tree.collapse_all()
-      end, { silent = true, nowait = true })
+      end, { silent = true, nowait = true, desc = "Collapse all" })
 
       vim.keymap.set("n", "<leader>ei", function()
         api.tree.toggle_gitignore_filter()
-      end, { silent = true, nowait = true })
+      end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
     end,
     dependencies = "nvim-tree/nvim-web-devicons",
   },
