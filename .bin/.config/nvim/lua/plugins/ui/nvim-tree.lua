@@ -47,6 +47,10 @@ return {
       vim.keymap.set("n", "<leader>ec", function()
         api.tree.collapse_all()
       end, { silent = true, nowait = true })
+
+      vim.keymap.set("n", "<leader>ei", function()
+        api.tree.toggle_gitignore_filter()
+      end, { silent = true, nowait = true })
     end,
     dependencies = "nvim-tree/nvim-web-devicons",
   },

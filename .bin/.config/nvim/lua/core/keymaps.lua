@@ -210,17 +210,6 @@ vim.api.nvim_set_keymap(
   opts
 )
 
-local function toggle_nvim_tree_ignore()
-  local api = require("nvim-tree.api")
-  local data = api.tree.toggle_gitignore_filter()
-end
-
-vim.keymap.set("n", "<leader>ti", toggle_nvim_tree_ignore, {
-  noremap = true,
-  silent = true,
-  desc = "tree-ignore-toggle",
-})
-
 vim.keymap.set("n", "<leader>yy", function()
   vim.cmd("normal! ggVGy")
 end, { noremap = true, silent = true, desc = "copy all sentence from current_file" })
