@@ -14,12 +14,19 @@ return {
               cond = require("noice").api.statusline.mode.has,
               color = { fg = "#ff9e64" },
             },
+            {
+              "cdate",
+            },
+            {
+              "ctime",
+            },
           },
         },
       })
     end,
     dependencies = {
       "nvim-tree/nvim-web-devicons",
+      "archibate/lualine-time",
       opt = true,
     },
   },
