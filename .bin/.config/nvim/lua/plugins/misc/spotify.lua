@@ -68,7 +68,8 @@ return {
     "nvim-lua/plenary.nvim",
   },
   config = function()
-    require("utils").load_env(".env")
+    require("utils").load_env("~/.config/nvim/.env")
+
     require("spotify").setup({
       client_id = vim.fn.getenv("SPOTIFY_CLIENT_ID"),
       client_secret = vim.fn.getenv("SPOTIFY_CLIENT_SECRET"),

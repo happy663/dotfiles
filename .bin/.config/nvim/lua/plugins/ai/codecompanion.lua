@@ -10,7 +10,7 @@ return {
     config = function()
       local codecompanion = require("codecompanion")
 
-      utils.load_env(".env")
+      utils.load_env("~/.config/nvim/.env")
 
       codecompanion.setup({
         prompt = {},
