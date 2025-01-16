@@ -117,7 +117,10 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     cwd = "-"
   end
 
-  local title = " " .. wezterm.truncate_right(tab.active_pane.title, max_width - 1) .. " [ " .. cwd .. " ] "
+  print(tab.active_pane.title)
+  print(max_width)
+
+  local title = " " .. " [ " .. cwd .. " ] "
 
   return {
     { Background = { Color = edge_background } },
