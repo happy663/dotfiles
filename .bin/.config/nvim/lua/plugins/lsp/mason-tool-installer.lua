@@ -18,7 +18,6 @@ return {
           "pyright",
           "staticcheck",
           "stylua",
-          "textlint",
           -- "typescript-language-server",
         },
       })
