@@ -34,7 +34,7 @@ return {
           dotfiles = false,
           custom = {
             "__pycache__",
-            ".git",
+            "^.git$",
           },
         },
       })
@@ -52,6 +52,7 @@ return {
         api.tree.toggle_gitignore_filter()
       end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
     end,
+
     dependencies = "nvim-tree/nvim-web-devicons",
   },
 }
