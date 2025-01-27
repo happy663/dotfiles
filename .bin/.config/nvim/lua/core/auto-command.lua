@@ -122,3 +122,19 @@ vim.api.nvim_create_autocmd("FileType", {
 --     vim.opt_local.comments:append("b:-")
 --   end,
 -- })
+
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = { "markdown", "text", "tex", "latex" },
+  callback = function()
+    vim.keymap.set("n", "<leader>di", function()
+      vim.diagnostic.open_float({
+        border = "rounded",
+        max_width = 80,
+        source = true,
+        format = function(diagnostic)
+          return string.format("%s [%s]", diagnostic.message, diagnostic.source)
+        end,
+      })
+    end)
+  end,
+})
