@@ -26,7 +26,6 @@ return {
       local codecompanion = require("codecompanion")
 
       codecompanion.setup({
-        prompt = {},
         display = {
           chat = {
             show_settings = true,
@@ -485,6 +484,19 @@ return {
 
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])
+
+      -- インラインリクエストが完了したらバッファをフォーマットする
+      local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
+      vim.api.nvim_create_autocmd({ "User" }, {
+        pattern = "CodeCompanionInline*",
+        group = group,
+        callback = function(request)
+          if request.match == "CodeCompanionInlineFinished" then
+            -- Format the buffer after the inline request has completed
+            vim.lsp.buf.format({ async = false, bufnr = request.bufnr })
+          end
+        end,
+      })
     end,
   },
 }
