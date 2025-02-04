@@ -83,6 +83,22 @@ return {
               },
             })
           end,
+          ollama = function()
+            return require("codecompanion.adapters").extend("ollama", {
+              schema = {
+                model = {
+                  default = "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K",
+                },
+                choices = {
+                  "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
+                  "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K                                                                                                                                     ─╯",
+                },
+              },
+              env = {
+                url = "http://localhost:11434",
+              },
+            })
+          end,
         },
         opts = {
           language = "Japanese",
