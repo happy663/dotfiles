@@ -136,10 +136,6 @@ vim.api.nvim_create_user_command("Help", function(command)
 end, { nargs = 1, complete = "help" })
 vim.api.nvim_set_keymap("n", "<Leader>he", ":Help ", opts)
 
-vim.keymap.set("n", "<C-p>", function()
-  require("telescope").extensions.smart_open.smart_open()
-end, { noremap = true, silent = true })
-
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
 

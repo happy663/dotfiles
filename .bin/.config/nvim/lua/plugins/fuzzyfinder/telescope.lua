@@ -142,7 +142,7 @@ return {
     },
     keys = {
       {
-        "<C-g>",
+        "<Leader>tg",
         "<cmd>lua require('telescope.builtin').live_grep()<CR>",
       },
       {
@@ -158,7 +158,7 @@ return {
         "<cmd>lua require('telescope.builtin').grep_string()<CR>",
       },
       {
-        "<Leader>bf",
+        "<Leader>tb",
         "<cmd>lua require('telescope.builtin').buffers()<CR>",
       },
     },
@@ -227,6 +227,9 @@ return {
     cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").load_extension("smart_open")
+      vim.keymap.set("n", "<Leader>p", function()
+        require("telescope").extensions.smart_open.smart_open()
+      end, { noremap = true, silent = true })
     end,
     dependencies = {
       "kkharji/sqlite.lua",
