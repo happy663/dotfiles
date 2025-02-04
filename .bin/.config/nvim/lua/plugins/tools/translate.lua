@@ -54,19 +54,19 @@ return {
     config = function()
       require("utils").load_env("~/.config/nvim/.env")
       require("pantran").setup({
-        default_engine = "google",
+        default_engine = "deepl",
         engines = {
           google = {
             fallback = {
               default_source = "en",
               default_target = "ja",
             },
-            -- NOTE: must set `DEEPL_AUTH_KEY` env-var
-            deepl = {
-              default_source = "en",
-              default_target = "ja",
-              auth_key = vim.fn.getenv("DEEPL_AUTH_KEY"),
-            },
+          },
+          -- NOTE: must set `DEEPL_AUTH_KEY` env-var
+          deepl = {
+            default_source = "en",
+            default_target = "ja",
+            auth_key = vim.fn.getenv("DEEPL_AUTH_KEY"),
           },
         },
         ui = {
@@ -122,3 +122,6 @@ return {
     end,
   },
 }
+
+
+
