@@ -154,7 +154,6 @@ return {
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-enable-pre",
         callback = function()
-          local cmp = require("cmp")
           cmp.setup.buffer({
             sources = cmp.config.sources({
               { name = "skkeleton", max_item_count = 5 },
@@ -172,7 +171,6 @@ return {
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-disable-pre",
         callback = function()
-          local cmp = require("cmp")
           cmp.setup.buffer({
             debug = true,
             sources = cmp.config.sources({
