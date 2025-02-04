@@ -38,6 +38,7 @@ return {
           },
         },
       })
+      local map = vim.api.nvim_set_keymap
 
       local api = require("nvim-tree.api")
       vim.keymap.set("n", "<leader>ea", function()
@@ -51,6 +52,15 @@ return {
       vim.keymap.set("n", "<leader>ei", function()
         api.tree.toggle_gitignore_filter()
       end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
+
+      map("n", "<C-b>", ":NvimTreeToggle<CR>", {
+        silent = true,
+        noremap = true,
+        desc = "NvimTreeToggle",
+      })
+
+      vim.api.nvim_set_var("loaded_netrw", 1)
+      vim.api.nvim_set_var("loaded_netrwPlugin", 1)
     end,
 
     dependencies = "nvim-tree/nvim-web-devicons",
