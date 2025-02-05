@@ -66,7 +66,7 @@ return {
           deepl = {
             default_source = "en",
             default_target = "ja",
-            auth_key = vim.fn.getenv("DEEPL_AUTH_KEY"),
+            auth_key = vim.fn.getenv("DEEPL_API_KEY"),
           },
         },
         ui = {
@@ -122,6 +122,3 @@ return {
     end,
   },
 }
-
-
-
