@@ -41,7 +41,7 @@ return {
         -- Send deleted files to the trash instead of permanently deleting them (:help oil-trash)
         delete_to_trash = false,
         -- Skip the confirmation popup for simple operations (:help oil.skip_confirm_for_simple_edits)
-        skip_confirm_for_simple_edits = false,
+        skip_confirm_for_simple_edits = true,
         -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
         -- (:help prompt_save_on_select_new_entry)
         prompt_save_on_select_new_entry = true,
@@ -91,7 +91,7 @@ return {
         use_default_keymaps = true,
         view_options = {
           -- Show files and directories that start with "."
-          show_hidden = false,
+          show_hidden = true,
           -- This function defines what is considered a "hidden" file
           is_hidden_file = function(name, bufnr)
             local m = name:match("^%.")
@@ -146,7 +146,7 @@ return {
           -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
           get_win_title = nil,
           -- preview_split: Split direction: "auto", "left", "right", "above", "below".
-          preview_split = "auto",
+          preview_split = "right",
           -- This is the config that will be passed to nvim_open_win.
           -- Change values here to customize the layout
           override = function(conf)
@@ -212,6 +212,10 @@ return {
           border = "rounded",
         },
       })
+
+      -- vim.keymap.set("n", "<leader>-", ":Oil<CR>", { noremap = true, silent = true })
+      -- open_float is a function that opens a floating window with the oil buffer
+      vim.keymap.set("n", "<leader>op", ":lua require('oil').open_float()<CR>", { noremap = true, silent = true })
     end,
   },
 }
