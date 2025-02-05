@@ -142,7 +142,7 @@ return {
     },
     keys = {
       {
-        "<Leader>tg",
+        "<C-g>",
         "<cmd>lua require('telescope.builtin').live_grep()<CR>",
       },
       {
@@ -227,7 +227,7 @@ return {
     cond = vim.g.not_in_vscode,
     config = function()
       require("telescope").load_extension("smart_open")
-      vim.keymap.set("n", "<Leader>p", function()
+      vim.keymap.set("n", "<C-p>", function()
         require("telescope").extensions.smart_open.smart_open()
       end, { noremap = true, silent = true })
     end,
