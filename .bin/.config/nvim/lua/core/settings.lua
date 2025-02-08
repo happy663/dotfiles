@@ -47,7 +47,7 @@ vim.o.encoding = "utf-8"
 vim.o.fileencodings = "utf-8,euc-jp"
 
 -- デフォルトのカラースキームを設定
-vim.cmd("colorscheme ayu-mirage")
+vim.cmd("colorscheme tokyonight-storm")
 
 require("notify").setup({
   background_colour = "#000000",
@@ -185,4 +185,3 @@ vim.cmd([[
 
 -- vim.opt.spell = true
 -- vim.opt.spelllang = { "en", "cjk" }
-
