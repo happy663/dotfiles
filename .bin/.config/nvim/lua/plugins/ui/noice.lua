@@ -67,7 +67,11 @@ return {
           noice_visible = true
         end
       end
-      vim.keymap.set("n", "<Leader>me", toggle_noice, opts)
+      vim.keymap.set("n", "<Leader>me", toggle_noice, {
+        desc = "Toggle Noice",
+        noremap = true,
+        silent = true,
+      })
     end,
     dependencies = {
       "MunifTanjim/nui.nvim",
