@@ -102,7 +102,6 @@ return {
             },
           })
         end,
-
         -- tsserver = function()
         --   lspconfig.tsserver.setup({
         --     on_attach = no_format_on_attach,
@@ -144,7 +143,12 @@ return {
           })
         end,
         typos_lsp = function()
-          lspconfig.typos_lsp.setup({})
+          lspconfig.typos_lsp.setup({
+            init_options = {
+              config = "~/.config/nvim/.typos.toml",
+              diagnosticSeverity = "Warning",
+            },
+          })
         end,
       })
     end,
@@ -154,3 +158,6 @@ return {
     },
   },
 }
+
+
+

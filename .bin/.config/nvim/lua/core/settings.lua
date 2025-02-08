@@ -47,7 +47,7 @@ vim.o.encoding = "utf-8"
 vim.o.fileencodings = "utf-8,euc-jp"
 
 -- デフォルトのカラースキームを設定
-vim.cmd("colorscheme tokyonight-storm")
+vim.cmd("colorscheme tokyonight-moon")
 
 require("notify").setup({
   background_colour = "#000000",
@@ -185,3 +185,5 @@ vim.cmd([[
 
 -- vim.opt.spell = true
 -- vim.opt.spelllang = { "en", "cjk" }
+-- vim.opt.spelloptions:append("camel", "pascal")
+-- vim.opt.spellfile = "~/.config/nvim/spell/en.utf-8.add"

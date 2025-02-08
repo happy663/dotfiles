@@ -4,11 +4,6 @@ return {
     cond = vim.g.not_in_vscode,
     config = function()
       require("noice").setup({
-        view = {
-          mini = {
-            position = "bottom-right",
-          },
-        },
         lsp = {
           override = {
             ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -19,13 +14,40 @@ return {
             enabled = false,
           },
         },
+        views = {
+          my_float = {
+            backend = "popup",
+            relative = "editor",
+            size = {
+              width = "80%",
+              height = 10,
+            },
+            position = {
+              row = 100,
+              col = 40,
+            },
+            border = {
+              style = "rounded",
+            },
+          },
+        },
+        commands = {
+          all = {
+            view = "my_float", -- 独自ビュー名
+            opts = {
+              enter = true,
+              format = "details",
+            },
+            filter = {},
+          },
+        },
         routes = {
           {
             filter = {
               event = "msg_show", -- msg_showイベントのメッセージを対象
               min_height = 1, -- 最小高さが1行のメッセージを対象
             },
-            view = "mini", -- 上で定義したカスタムビューにルーティング
+            view = "mini",
           },
           {
             filter = {

@@ -30,9 +30,9 @@ return {
       end
 
       local default_comparators = {
-        is_lower_priority_comparator,
-        cmp.config.compare.offset,
+        cmp.config.compare.locality,
         cmp.config.compare.exact,
+        cmp.config.compare.offset,
         cmp.config.compare.score,
         cmp.config.compare.kind,
         cmp.config.compare.sort_text,
@@ -53,7 +53,7 @@ return {
           },
         }),
         sorting = {
-          priority_weight = 1,
+          priority_weight = 2,
           comparators = default_comparators,
         },
       })
@@ -151,8 +151,9 @@ return {
             sorting = {
               priority_weight = 1,
               comparators = {
-                cmp.config.compare.offset,
+                cmp.config.compare.locality,
                 cmp.config.compare.exact,
+                cmp.config.compare.offset,
                 cmp.config.compare.score,
               },
             },
@@ -175,12 +176,23 @@ return {
               { name = "codecompanion_variables" },
               { name = "vimtex" },
               { name = "render-markdown" },
+              {
+                name = "spell",
+                option = {
+                  keep_all_entries = false,
+                  enable_in_context = function()
+                    return true
+                  end,
+                  preselect_correct_word = true,
+                },
+              },
             }),
             sorting = {
               priority_weight = 1,
               comparators = {
-                cmp.config.compare.offset,
+                cmp.config.compare.locality,
                 cmp.config.compare.exact,
+                cmp.config.compare.offset,
                 cmp.config.compare.score,
               },
             },
@@ -205,9 +217,7 @@ return {
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
+      "f3fora/cmp-spell",
     },
   },
 }
-
-
-
