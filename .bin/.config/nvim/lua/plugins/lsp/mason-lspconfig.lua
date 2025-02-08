@@ -102,6 +102,7 @@ return {
             },
           })
         end,
+
         -- tsserver = function()
         --   lspconfig.tsserver.setup({
         --     on_attach = no_format_on_attach,
@@ -141,6 +142,9 @@ return {
               },
             },
           })
+        end,
+        typos_lsp = function()
+          lspconfig.typos_lsp.setup({})
         end,
       })
     end,
