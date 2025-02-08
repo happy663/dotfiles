@@ -49,7 +49,6 @@ end
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
-map("n", "<Leader>l", "<cmd>LazyGit<CR>", opts)
 map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
 map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
 map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)

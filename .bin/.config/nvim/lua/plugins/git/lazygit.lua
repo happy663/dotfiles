@@ -44,7 +44,6 @@ return {
         pattern = "term://*lazygit*",
         callback = function()
           setup_lazygit_keymaps()
-          smear_cursor.setup(get_lazygit_smear_config(false))
         end,
       })
 
