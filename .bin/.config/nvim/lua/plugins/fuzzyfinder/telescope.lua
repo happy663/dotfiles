@@ -63,6 +63,8 @@ return {
                 "!*startuptime-logs/",
                 "--glob",
                 "!*.L",
+                "--glob",
+                "!*.plist",
               }
             end,
           },
