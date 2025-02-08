@@ -37,16 +37,6 @@ map("t", "<esc>", [[<C-\><C-n>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
---
-vim.api.nvim_create_autocmd("TermOpen", {
-  pattern = "term://*lazygit*",
-  callback = function()
-    -- normal modeに戻らずlazygitのesc機能を使うための設定
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-    vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
-    vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
-  end,
-})
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 _G.goto_definition_vsplit = function()
@@ -123,7 +113,6 @@ map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 
 map("n", "<Leader>ga", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
-
 
 vim.api.nvim_create_user_command("Help", function(command)
   local current_win_width = vim.api.nvim_win_get_width(0)
