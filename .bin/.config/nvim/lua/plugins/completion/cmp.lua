@@ -13,6 +13,33 @@ return {
       local cmp = require("cmp")
       local lspkind = require("lspkind")
       local luasnip = require("luasnip")
+
+      local function is_lower_priority_comparator(entry1, entry2)
+        local word1, word2 = entry1:get_word(), entry2:get_word()
+        local function is_lower(char)
+          return char:match("%l") ~= nil
+        end
+
+        if is_lower(word1:sub(1, 1)) and not is_lower(word2:sub(1, 1)) then
+          return true
+        elseif not is_lower(word1:sub(1, 1)) and is_lower(word2:sub(1, 1)) then
+          return false
+        end
+
+        return nil
+      end
+
+      local default_comparators = {
+        is_lower_priority_comparator,
+        cmp.config.compare.offset,
+        cmp.config.compare.exact,
+        cmp.config.compare.score,
+        cmp.config.compare.kind,
+        cmp.config.compare.sort_text,
+        cmp.config.compare.length,
+        cmp.config.compare.order,
+      }
+
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
@@ -27,33 +54,10 @@ return {
         }),
         sorting = {
           priority_weight = 1,
-          comparators = {
-            function(entry1, entry2)
-              local word1 = entry1:get_word()
-              local word2 = entry2:get_word()
-              -- 小文字かどうかを判断する関数
-              local function is_lower(char)
-                return char:match("%l") ~= nil
-              end
-              -- 小文字で始まる項目を優先
-              if is_lower(word1:sub(1, 1)) and not is_lower(word2:sub(1, 1)) then
-                return true
-              elseif not is_lower(word1:sub(1, 1)) and is_lower(word2:sub(1, 1)) then
-                return false
-              end
-
-              return nil
-            end,
-            cmp.config.compare.offset,
-            cmp.config.compare.exact,
-            cmp.config.compare.score,
-            cmp.config.compare.kind,
-            cmp.config.compare.sort_text,
-            cmp.config.compare.length,
-            cmp.config.compare.order,
-          },
+          comparators = default_comparators,
         },
       })
+
       cmp.setup.cmdline("/", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = {
@@ -61,38 +65,13 @@ return {
         },
         sorting = {
           priority_weight = 1,
-          comparators = {
-            function(entry1, entry2)
-              local word1 = entry1:get_word()
-              local word2 = entry2:get_word()
-              -- 小文字かどうかを判断する関数
-              local function is_lower(char)
-                return char:match("%l") ~= nil
-              end
-              -- 小文字で始まる項目を優先
-              if is_lower(word1:sub(1, 1)) and not is_lower(word2:sub(1, 1)) then
-                return true
-              elseif not is_lower(word1:sub(1, 1)) and is_lower(word2:sub(1, 1)) then
-                return false
-              end
-
-              return nil
-            end,
-            cmp.config.compare.offset,
-            cmp.config.compare.exact,
-            cmp.config.compare.score,
-            cmp.config.compare.kind,
-            cmp.config.compare.sort_text,
-            cmp.config.compare.length,
-            cmp.config.compare.order,
-          },
+          comparators = default_comparators,
         },
       })
+
       cmp.setup({
         snippet = {
           expand = function(args)
-            -- For vsnip users
-            -- vim.fn["vsnip#anonymous"](args.body)
             luasnip.lsp_expand(args.body)
           end,
         },
@@ -111,7 +90,6 @@ return {
               fallback()
             end
           end, { "i", "s" }),
-
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
@@ -125,9 +103,7 @@ return {
           { name = "vsnip" },
           { name = "path" },
           { name = "buffer" },
-          sources = {
-            { name = "vimtex" },
-          },
+          { name = "vimtex" },
           {
             name = "spell",
             option = {
@@ -140,8 +116,6 @@ return {
           },
         },
         formatting = {
-          -- expandable_indicator = true,
-          -- fields = {},
           format = lspkind.cmp_format({
             mode = "symbol",
             maxwidth = 50,
@@ -156,13 +130,31 @@ return {
         callback = function()
           cmp.setup.buffer({
             sources = cmp.config.sources({
-              { name = "skkeleton", max_item_count = 5 },
+              { name = "skkeleton", max_item_count = 10 },
             }),
+            sorting = {
+              priority_weight = 1,
+              comparators = {
+                cmp.config.compare.offset,
+                cmp.config.compare.exact,
+                cmp.config.compare.score,
+                cmp.config.compare.kind,
+              },
+            },
           })
+
           cmp.setup.cmdline("/", {
             mapping = cmp.mapping.preset.cmdline(),
             sources = {
               { name = "skkeleton" },
+            },
+            sorting = {
+              priority_weight = 1,
+              comparators = {
+                cmp.config.compare.offset,
+                cmp.config.compare.exact,
+                cmp.config.compare.score,
+              },
             },
           })
         end,
@@ -182,8 +174,18 @@ return {
               { name = "codecompanion_tools" },
               { name = "codecompanion_variables" },
               { name = "vimtex" },
+              { name = "render-markdown" },
             }),
+            sorting = {
+              priority_weight = 1,
+              comparators = {
+                cmp.config.compare.offset,
+                cmp.config.compare.exact,
+                cmp.config.compare.score,
+              },
+            },
           })
+
           cmp.setup.cmdline("/", {
             mapping = cmp.mapping.preset.cmdline(),
             sources = {
@@ -203,7 +205,9 @@ return {
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
-      -- "f3fora/cmp-spell",
     },
   },
 }
+
+
+

@@ -124,7 +124,6 @@ map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 map("n", "<Leader>ga", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
-map("n", "<Leader>me", "<CMD>NoiceAll<CR>", opts)
 
 vim.api.nvim_create_user_command("Help", function(command)
   local current_win_width = vim.api.nvim_win_get_width(0)

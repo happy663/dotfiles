@@ -18,6 +18,7 @@ local short_names = {
 return {
   {
     "olimorris/codecompanion.nvim",
+    cond = vim.g.not_in_vscode,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -74,6 +75,7 @@ return {
                 choices = {
                   "o1-mini-2024-09-12",
                   "gpt-4o-mini",
+                  "o3-mini-2025-01-31",
                 },
               },
               env = {
@@ -87,11 +89,12 @@ return {
             return require("codecompanion.adapters").extend("ollama", {
               schema = {
                 model = {
-                  default = "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K",
+                  default = "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
                 },
                 choices = {
                   "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
                   "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K                                                                                                                                     ─╯",
+                  "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
                 },
               },
               env = {
@@ -107,6 +110,8 @@ return {
             return string.format(
               [[あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
               あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
+              特にユーザーがあなたのタスク以外の文脈で回答する場合は、回答は短く、人間味のないものにしましょう。
+              他の文章は最小限にしましょう。
 
               あなたの主な仕事は以下の通りです：
               - 一般的なプログラミングの質問に答える
@@ -122,8 +127,6 @@ return {
 
               必須事項
               - ユーザーの要求に注意深く、忠実に従うこと。
-              - 特にユーザーがあなたのタスク以外の文脈で回答する場合は、回答は短く、人間味のないものにしましょう。
-              - 他の文章は最小限にしましょう。
               - 回答にはMarkdownフォーマットを使用してください。
               - Markdownのコードブロックの最初にプログラミング言語名を入れてください。
               - コードブロックに行番号を含めないようにする。

@@ -56,6 +56,18 @@ return {
           lsp_doc_border = false,
         },
       })
+
+      local noice_visible = false
+      local function toggle_noice()
+        if noice_visible then
+          vim.cmd("quit")
+          noice_visible = false
+        else
+          vim.cmd("NoiceAll")
+          noice_visible = true
+        end
+      end
+      vim.keymap.set("n", "<Leader>me", toggle_noice, opts)
     end,
     dependencies = {
       "MunifTanjim/nui.nvim",
