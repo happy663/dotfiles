@@ -1,3 +1,3 @@
 ;; extends
 (comment) @nospell
-(string)  @spell
+(string)  @nospell
