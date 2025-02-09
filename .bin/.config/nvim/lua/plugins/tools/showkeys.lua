@@ -4,7 +4,7 @@ return {
     cond = vim.g.not_in_vscode,
     cmd = "ShowkeysToggle",
     opts = {
-      timeout = 1,
+      timeout = 5,
       maxkeys = 5,
       -- more opts
     },

@@ -9,16 +9,6 @@ local function format_diagnostics(diagnostics)
   return table.concat(formatted, "\n")
 end
 
-local function copy_all_diagnostic_text(bufnr)
-  local diagnostics = vim.diagnostic.get(bufnr)
-  if #diagnostics == 0 then
-    print("No diagnostics found")
-    return
-  end
-  local diagnostic_text = format_diagnostics(diagnostics)
-  vim.fn.setreg("+", diagnostic_text)
-end
-
 local function copy_diagnostic_text(bufnr)
   local cursor_line = vim.api.nvim_win_get_cursor(0)[1] - 1
   local diagnostics = vim.diagnostic.get(bufnr, { lnum = cursor_line })
@@ -158,6 +148,3 @@ return {
     },
   },
 }
-
-
-

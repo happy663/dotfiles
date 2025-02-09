@@ -1,6 +1,5 @@
 # Project gitignore
 .luarc.json
-after
 coc-settings.json
 colors
 docs
@@ -9,8 +8,6 @@ ginit.vim
 lua/user
 neoconf.json
 plugin
-queries
-spell
 
 # Global gitignore
 # ----------------

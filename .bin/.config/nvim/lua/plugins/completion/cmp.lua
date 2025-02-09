@@ -14,21 +14,6 @@ return {
       local lspkind = require("lspkind")
       local luasnip = require("luasnip")
 
-      local function is_lower_priority_comparator(entry1, entry2)
-        local word1, word2 = entry1:get_word(), entry2:get_word()
-        local function is_lower(char)
-          return char:match("%l") ~= nil
-        end
-
-        if is_lower(word1:sub(1, 1)) and not is_lower(word2:sub(1, 1)) then
-          return true
-        elseif not is_lower(word1:sub(1, 1)) and is_lower(word2:sub(1, 1)) then
-          return false
-        end
-
-        return nil
-      end
-
       local default_comparators = {
         cmp.config.compare.locality,
         cmp.config.compare.exact,

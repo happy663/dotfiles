@@ -44,6 +44,12 @@ return {
             italic = false,
           }
 
+          -- highlights.String = {
+          --   fg = colors.fg,
+          --   bg = "None",
+          -- }
+          highlights["@text.plain"] = { fg = colors.fg } -- Treesitterを使用している場合
+
           highlights["CmpItemKind" .. "Text"] = { fg = colors.blue }
           highlights["CmpItemKind" .. "Method"] = { fg = colors.green }
           highlights["CmpItemKind" .. "Function"] = { fg = colors.blue1 }
@@ -71,14 +77,12 @@ return {
           highlights["CmpItemKind" .. "TypeParameter"] = { fg = colors.yellow2 }
         end,
 
-        -- hogehogehoeg
         cache = true,
         plugins = {
           all = package.loaded.lazy == nil,
           auto = true,
         },
       })
-      vim.cmd([[colorscheme tokyonight]])
     end,
   },
 }

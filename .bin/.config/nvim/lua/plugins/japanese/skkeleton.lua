@@ -1,6 +1,6 @@
 return {
   {
-    "vim-skk/skkeleton", -- skkeleton プラグインの GitHub リポジトリ
+    "vim-skk/skkeleton",
     cond = vim.g.not_in_vscode,
     dependencies = {
       { "vim-denops/denops.vim" },

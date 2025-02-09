@@ -48,6 +48,7 @@ vim.o.fileencodings = "utf-8,euc-jp"
 
 -- デフォルトのカラースキームを設定
 vim.cmd("colorscheme tokyonight-moon")
+-- vim.cmd("colorscheme ayu-mirage")
 
 require("notify").setup({
   background_colour = "#000000",
@@ -56,6 +57,7 @@ require("notify").setup({
 ---- 現在選択中のアイテムのハイライト色を変更
 vim.cmd([[highlight TelescopeSelection guibg=#083747]])
 vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
@@ -183,7 +185,6 @@ vim.cmd([[
   augroup END
 ]])
 
--- vim.opt.spell = true
--- vim.opt.spelllang = { "en", "cjk" }
--- vim.opt.spelloptions:append("camel", "pascal")
--- vim.opt.spellfile = "~/.config/nvim/spell/en.utf-8.add"
+vim.opt.spell = true
+vim.opt.spelllang = { "en", "cjk" }
+vim.opt.spelloptions:append("camel", "pascal")

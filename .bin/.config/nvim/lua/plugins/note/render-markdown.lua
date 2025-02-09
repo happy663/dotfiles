@@ -9,7 +9,7 @@ return {
     opts = {},
     config = function()
       require("render-markdown").setup({
-        file_types = { "markdown", "codecompanion", "Avante" },
+        file_typs = { "markdown", "codecompanion", "Avante" },
         render_modes = true,
         code = {
           width = "full",
