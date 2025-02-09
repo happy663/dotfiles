@@ -67,10 +67,23 @@ return {
                 "!*.plist",
               }
             end,
+            layout_config = {
+              width = 0.9,
+              preview_width = 0.5,
+              height = 0.9,
+            },
           },
           buffers = {
             sort_mru = true,
             default_selection_index = 2, -- 2番目のアイテムを初期選択
+            layout_config = {
+              horizontal = {
+                width = 0.5,
+                preview_width = 0,
+                prompt_position = "top",
+                height = 0.6,
+              },
+            },
             attach_mappings = function()
               return true
             end,
