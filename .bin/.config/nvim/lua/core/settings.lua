@@ -188,3 +188,21 @@ vim.cmd([[
 vim.opt.spell = true
 vim.opt.spelllang = { "en", "cjk" }
 vim.opt.spelloptions:append("camel", "pascal")
+
+vim.g["diagnostics_active"] = true
+function Toggle_diagnostics()
+  if vim.g.diagnostics_active then
+    vim.g.diagnostics_active = false
+    vim.diagnostic.disable()
+  else
+    vim.g.diagnostics_active = true
+    vim.diagnostic.enable()
+  end
+end
+
+vim.keymap.set(
+  "n",
+  "<leader>dt",
+  Toggle_diagnostics,
+  { noremap = true, silent = true, desc = "Toggle vim diagnostics" }
+)
