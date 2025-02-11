@@ -196,4 +196,9 @@ vim.keymap.set("n", "<leader>yy", function()
   vim.cmd("normal! ggVGy")
 end, { noremap = true, silent = true, desc = "copy all sentence from current_file" })
 
+vim.keymap.set("n", "<leader>dd", function()
+  vim.cmd("normal! ggVGd")
+end, { noremap = true, silent = true, desc = "delete all sentence from current_file" })
+
+
 

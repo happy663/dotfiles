@@ -83,6 +83,7 @@
   "skkeleton_indicator.nvim": { "branch": "v2", "commit": "d9b649d734ca7d3871c4f124004771d0213dc747" },
   "smart-open.nvim": { "branch": "0.2.x", "commit": "7770b01ce4d551c143d7ec8589879320796621b9" },
   "smear-cursor.nvim": { "branch": "main", "commit": "110f7d8771fff9dde6b2aa7e20c29bae8bb4d834" },
+  "snacks.nvim": { "branch": "main", "commit": "e6e9123debbe7317112a0889b15468bb6aedf992" },
   "spotify.nvim": { "branch": "main", "commit": "d17bff7b01396fe813e7a1304734bbd000255cb2" },
   "sqlite.lua": { "branch": "master", "commit": "b487fcc8937b683942a1f7d9662fcf50ca5acd58" },
   "swagger-preview.nvim": { "branch": "master", "commit": "9b9bc21096890a1bd0f221a940d04dbab87a38aa" },
