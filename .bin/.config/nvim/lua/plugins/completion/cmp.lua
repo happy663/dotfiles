@@ -14,15 +14,104 @@ return {
       local lspkind = require("lspkind")
       local luasnip = require("luasnip")
 
-      local default_comparators = {
-        cmp.config.compare.locality,
-        cmp.config.compare.exact,
-        cmp.config.compare.offset,
-        cmp.config.compare.score,
-        cmp.config.compare.kind,
-        cmp.config.compare.sort_text,
-        cmp.config.compare.length,
-        cmp.config.compare.order,
+      local lspkind_comparator = function(conf)
+        local lsp_types = require("cmp.types").lsp
+        return function(entry1, entry2)
+          if entry1.source.name ~= "nvim_lsp" then
+            if entry2.source.name == "nvim_lsp" then
+              return false
+            else
+              return nil
+            end
+          end
+          local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
+          local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
+          if kind1 == "Variable" and entry1:get_completion_item().label:match("%w*=") then
+            kind1 = "Parameter"
+          end
+          if kind2 == "Variable" and entry2:get_completion_item().label:match("%w*=") then
+            kind2 = "Parameter"
+          end
+
+          local priority1 = conf.kind_priority[kind1] or 0
+          local priority2 = conf.kind_priority[kind2] or 0
+          if priority1 == priority2 then
+            return nil
+          end
+          return priority2 < priority1
+        end
+      end
+
+      local default_sorting = {
+        priority_weight = 2,
+        comparators = {
+          cmp.config.compare.offset,
+          cmp.config.compare.exact,
+          cmp.config.compare.score,
+          cmp.config.compare.recently_used,
+          cmp.config.compare.locality,
+          -- cmp.config.compare.kind,
+          lspkind_comparator({
+            kind_priority = {
+              Keyword = 14,
+              Parameter = 13,
+              Variable = 12,
+              Field = 11,
+              Property = 11,
+              Constant = 10,
+              Enum = 10,
+              EnumMember = 10,
+              Event = 10,
+              Function = 10,
+              Method = 10,
+              Operator = 10,
+              Reference = 10,
+              Struct = 10,
+              File = 8,
+              Folder = 8,
+              Class = 5,
+              Color = 5,
+              Module = 5,
+              Constructor = 1,
+              Interface = 1,
+              Snippet = 0,
+              Text = 1,
+              TypeParameter = 1,
+              Unit = 1,
+              Value = 1,
+            },
+          }),
+          cmp.config.compare.sort_text,
+          cmp.config.compare.length,
+          cmp.config.compare.order,
+        },
+      }
+
+      local default_sources = {
+        -- {
+        --   name = "copilot",
+        --   group_index = 1,
+        -- },
+        { name = "nvim_lsp", group_index = 1 },
+        { name = "path", group_index = 1 },
+        { name = "buffer", group_index = 1 },
+        { name = "codecompanion_models", group_index = 1 },
+        { name = "codecompanion_slash_commands", group_index = 1 },
+        { name = "codecompanion_tools", group_index = 1 },
+        { name = "codecompanion_variables", group_index = 1 },
+        { name = "vimtex", group_index = 1 },
+        { name = "render-markdown", group_index = 1 },
+        {
+          name = "spell",
+          option = {
+            keep_all_entries = false,
+            enable_in_context = function()
+              return true
+            end,
+            preselect_correct_word = true,
+          },
+          group_index = 2,
+        },
       }
 
       cmp.setup.cmdline(":", {
@@ -37,10 +126,6 @@ return {
             },
           },
         }),
-        sorting = {
-          priority_weight = 2,
-          comparators = default_comparators,
-        },
       })
 
       cmp.setup.cmdline("/", {
@@ -48,10 +133,7 @@ return {
         sources = {
           { name = "buffer" },
         },
-        sorting = {
-          priority_weight = 1,
-          comparators = default_comparators,
-        },
+        default_sorting,
       })
 
       cmp.setup({
@@ -83,29 +165,13 @@ return {
             end
           end, { "i", "s" }),
         },
-        sources = {
-          { name = "nvim_lsp" },
-          { name = "vsnip" },
-          { name = "path" },
-          { name = "buffer" },
-          { name = "vimtex" },
-          {
-            name = "spell",
-            option = {
-              keep_all_entries = false,
-              enable_in_context = function()
-                return true
-              end,
-              preselect_correct_word = true,
-            },
-          },
-        },
+        sources = default_sources,
+        sorting = default_sorting,
         formatting = {
           format = lspkind.cmp_format({
             mode = "symbol",
-            maxwidth = 50,
-            ellipsis_char = "...",
-            show_labelDetails = true,
+            max_width = 50,
+            symbol_map = { Copilot = "" },
           }),
         },
       })
@@ -151,36 +217,8 @@ return {
         callback = function()
           cmp.setup.buffer({
             debug = true,
-            sources = cmp.config.sources({
-              { name = "nvim_lsp" },
-              { name = "path" },
-              { name = "buffer" },
-              { name = "codecompanion_models" },
-              { name = "codecompanion_slash_commands" },
-              { name = "codecompanion_tools" },
-              { name = "codecompanion_variables" },
-              { name = "vimtex" },
-              { name = "render-markdown" },
-              {
-                name = "spell",
-                option = {
-                  keep_all_entries = false,
-                  enable_in_context = function()
-                    return true
-                  end,
-                  preselect_correct_word = true,
-                },
-              },
-            }),
-            sorting = {
-              priority_weight = 1,
-              comparators = {
-                cmp.config.compare.locality,
-                cmp.config.compare.exact,
-                cmp.config.compare.offset,
-                cmp.config.compare.score,
-              },
-            },
+            sources = default_sources,
+            sorting = default_sorting,
           })
 
           cmp.setup.cmdline("/", {
@@ -203,6 +241,13 @@ return {
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
       "f3fora/cmp-spell",
+      {
+        "zbirenbaum/copilot-cmp",
+        cond = vim.g.not_in_vscode,
+        config = function()
+          require("copilot_cmp").setup()
+        end,
+      },
     },
   },
 }
