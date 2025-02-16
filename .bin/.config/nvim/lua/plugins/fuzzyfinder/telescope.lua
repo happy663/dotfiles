@@ -151,6 +151,9 @@ return {
 
       vim.api.nvim_set_keymap("n", "<Leader>td", "<cmd>Telescope diagnostics<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "<Leader>th", "<cmd>Telescope help_tags<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>tn", function()
+        builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
+      end)
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
