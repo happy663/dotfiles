@@ -168,10 +168,15 @@ return {
         sources = default_sources,
         sorting = default_sorting,
         formatting = {
+          fields = {
+            "abbr",
+            "kind",
+            "menu",
+          },
+          expandable_indicator = true,
           format = lspkind.cmp_format({
-            mode = "symbol",
-            max_width = 50,
-            symbol_map = { Copilot = "" },
+            mode = "symbol_text",
+            maxwidth = 50,
           }),
         },
       })
