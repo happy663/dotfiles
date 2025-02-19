@@ -7,6 +7,30 @@ return {
       local state = require("telescope.actions.state")
       local builtin = require("telescope.builtin")
 
+      local function highlight_search_term(search_term)
+        vim.fn.setreg("/", search_term)
+        vim.cmd("set hlsearch")
+      end
+
+      local custom_actions = {}
+
+      function custom_actions.select_with_highlight()
+        return function(prompt_bufnr)
+          local search_term = state.get_current_line()
+          actions.select_default(prompt_bufnr)
+          highlight_search_term(search_term)
+        end
+      end
+
+      function custom_actions.qf_and_highlight()
+        return function(prompt_bufnr)
+          actions.send_to_qflist(prompt_bufnr)
+          actions.open_qflist(prompt_bufnr)
+          local search_term = state.get_current_line()
+          highlight_search_term(search_term)
+        end
+      end
+
       require("telescope").setup({
         defaults = {
           sorting_strategy = "ascending",
@@ -26,7 +50,7 @@ return {
               ["<C-Tab>"] = actions.move_selection_next,
               ["<C-S-Tab>"] = actions.move_selection_previous,
               ["<C-J>"] = false, -- to support skkeleton.vim
-              ["<C-o>"] = actions.send_to_qflist + actions.open_qflist,
+              ["<C-o>"] = custom_actions.qf_and_highlight(),
             },
             n = {
               ["<C-Tab>"] = actions.move_selection_next,
@@ -71,6 +95,16 @@ return {
               width = 0.9,
               preview_width = 0.5,
               height = 0.9,
+            },
+            mappings = {
+              i = {
+                -- 検索した単語をハイライトする
+                ["<CR>"] = custom_actions.select_with_highlight(),
+              },
+              n = {
+                -- 検索した単語をハイライトする
+                ["<CR>"] = custom_actions.select_with_highlight(),
+              },
             },
           },
           buffers = {
