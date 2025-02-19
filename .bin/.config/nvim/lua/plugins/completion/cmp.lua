@@ -45,8 +45,8 @@ return {
       local default_sorting = {
         priority_weight = 2,
         comparators = {
-          cmp.config.compare.offset,
           cmp.config.compare.exact,
+          cmp.config.compare.offset,
           cmp.config.compare.score,
           cmp.config.compare.recently_used,
           cmp.config.compare.locality,
@@ -178,6 +178,12 @@ return {
             mode = "symbol_text",
             maxwidth = 50,
           }),
+        },
+        -- 自動選択はしない
+        preselect = cmp.PreselectMode.None,
+        -- 補完候補が多すぎると邪魔なので制限
+        performance = {
+          max_view_entries = 10,
         },
       })
 
