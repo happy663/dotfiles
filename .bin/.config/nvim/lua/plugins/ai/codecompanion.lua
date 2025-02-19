@@ -491,7 +491,7 @@ return {
           { "v", "<leader>cce", string.format("<cmd>CodeCompanion /%s<cr>", short_names.EXPLAIN_CHAT) },
           { modes, "<leader>ccc", "<cmd>CodeCompanionChat<cr>" },
           { modes, "<leader>cca", "<cmd>CodeCompanionActions<cr>" },
-          { modes, "<C-n>", "<cmd>CodeCompanionChat Toggle<cr>" },
+          { modes, "<leader>w", "<cmd>CodeCompanionChat Toggle<cr>" },
           { "v", "ga", "<cmd>CodeCompanionChat Add<cr>" },
         }
 

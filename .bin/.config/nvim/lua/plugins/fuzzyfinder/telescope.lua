@@ -7,8 +7,7 @@ return {
       local state = require("telescope.actions.state")
       local builtin = require("telescope.builtin")
 
-      local function highlight_search_term(search_term)
-        vim.fn.setreg("/", search_term)
+      local function highlight_search_term(search_term) vim.fn.setreg("/", search_term)
         vim.cmd("set hlsearch")
       end
 
