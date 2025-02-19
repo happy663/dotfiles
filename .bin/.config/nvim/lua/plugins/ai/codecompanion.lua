@@ -294,7 +294,7 @@ return {
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = "lsp",
+              short_name = short_names.LSP_CHAT,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
