@@ -23,7 +23,7 @@ return {
     },
     keys = {
       {
-        "<leader>mm",
+        "<leader>.",
         function()
           Snacks.scratch({ ft = "markdown" })
         end,
@@ -40,7 +40,7 @@ return {
 
       {
 
-        "<leader>.",
+        "<leader>sc",
         function()
           Snacks.scratch()
         end,

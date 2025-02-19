@@ -89,7 +89,7 @@ return {
           noice_visible = true
         end
       end
-      vim.keymap.set("n", "<Leader>me", toggle_noice, {
+      vim.keymap.set("n", "<C-.>", toggle_noice, {
         desc = "Toggle Noice",
         noremap = true,
         silent = true,

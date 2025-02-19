@@ -200,5 +200,5 @@ vim.keymap.set("n", "<leader>dd", function()
   vim.cmd("normal! ggVGd")
 end, { noremap = true, silent = true, desc = "delete all sentence from current_file" })
 
-
-
+vim.keymap.set("n", "q", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>mq", "q", { noremap = true, silent = true })
