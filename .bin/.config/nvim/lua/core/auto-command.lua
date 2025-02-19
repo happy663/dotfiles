@@ -27,7 +27,8 @@ autocmd({ "BufLeave", "BufUnload", "CursorHold" }, {
   pattern = "*",
   callback = function()
     local filetype = vim.bo.filetype
-    if filetype ~= "markdown" then
+    local buftype = vim.bo.buftype
+    if filetype ~= "markdown" and buftype ~= "quickfix" then
       vim.cmd("silent! update")
     end
   end,
