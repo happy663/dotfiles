@@ -7,7 +7,8 @@ return {
       local state = require("telescope.actions.state")
       local builtin = require("telescope.builtin")
 
-      local function highlight_search_term(search_term) vim.fn.setreg("/", search_term)
+      local function highlight_search_term(search_term)
+        vim.fn.setreg("/", search_term)
         vim.cmd("set hlsearch")
       end
 
@@ -50,6 +51,8 @@ return {
               ["<C-S-Tab>"] = actions.move_selection_previous,
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = custom_actions.qf_and_highlight(),
+              ["<M-Down>"] = require("telescope.actions").cycle_history_next,
+              ["<M-Up>"] = require("telescope.actions").cycle_history_prev,
             },
             n = {
               ["<C-Tab>"] = actions.move_selection_next,

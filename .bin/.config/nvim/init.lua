@@ -61,6 +61,7 @@ if vim.g.not_in_vscode then
   require("core.settings")
   require("core.keymaps")
   require("discord")
+  require("livegrep-history")
 else
   require("self-vscode")
 end
