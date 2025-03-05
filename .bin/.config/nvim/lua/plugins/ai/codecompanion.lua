@@ -13,6 +13,7 @@ local short_names = {
   LSP_CHAT = "lspChat",
   LSP_INLINE = "lspInline",
   EXPLAIN_CHAT = "explainChat",
+  ADD_COMMENT_INLINE = "addCommentInline",
 }
 
 return {
@@ -29,7 +30,7 @@ return {
       codecompanion.setup({
         display = {
           chat = {
-            show_settings = true,
+            show_settings = false,
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
@@ -48,6 +49,10 @@ return {
               schema = {
                 model = {
                   default = "claude-3-5-haiku-20241022",
+                },
+                choices = {
+                  "claude-3-7-sonnet-20250219",
+                  "claude-3-5-haiku-20241022",
                 },
               },
               env = {
@@ -245,6 +250,10 @@ return {
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
+              adapter = {
+                name = "anthropic",
+                model = "claude-3-7-sonnet-20250219",
+              },
             },
             prompts = {
               {
@@ -382,6 +391,10 @@ return {
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
+              adapter = {
+                name = "anthropic",
+                model = "claude-3-7-sonnet-20250219",
+              },
             },
             prompts = {
               {
@@ -501,6 +514,8 @@ return {
       end
 
       setup_code_companion_keymaps()
+
+      vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
 
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])

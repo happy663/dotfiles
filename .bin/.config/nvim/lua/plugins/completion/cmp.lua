@@ -195,7 +195,7 @@ return {
               { name = "skkeleton", max_item_count = 10 },
             }),
             sorting = {
-              priority_weight = 1,
+              priority_weight = 2,
               comparators = {
                 cmp.config.compare.offset,
                 cmp.config.compare.exact,
@@ -203,6 +203,12 @@ return {
                 cmp.config.compare.kind,
               },
             },
+            -- performance = {
+            --   debounce = 10,
+            --   throttle = 20,
+            --   max_view_entries = 10,
+            --   fetching_timeout = 50, -- ソースからの補完取得タイムアウト(ms)
+            -- },
           })
 
           cmp.setup.cmdline("/", {

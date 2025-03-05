@@ -13,6 +13,8 @@ automatic_backups/
 .env
 .spotify_tokens.json
 
+yarn
+crossnote
 
 
 

@@ -10,13 +10,22 @@ local function format_diagnostics(diagnostics)
 end
 
 local function copy_diagnostic_text(bufnr)
+  -- カーソル行を取得（0から始まるインデックスに調整）
   local cursor_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+  -- 現在の行の診断情報を取得
   local diagnostics = vim.diagnostic.get(bufnr, { lnum = cursor_line })
+
+  -- 診断情報が存在しない場合はメッセージを表示して終了
   if #diagnostics == 0 then
     print("No diagnostics found on current line")
     return
   end
+
+  -- 診断情報をフォーマットして文字列に変換
   local diagnostic_text = format_diagnostics(diagnostics)
+
+  -- クリップボードにコピー
   vim.fn.setreg("+", diagnostic_text)
 end
 
@@ -97,6 +106,11 @@ return {
         --     on_attach = no_format_on_attach,
         --   })
         -- end,
+        tailwindcss = function()
+          lspconfig.tailwindcss.setup({
+            on_attach = no_format_on_attach,
+          })
+        end,
         vtsls = function()
           lspconfig.vtsls.setup({
             on_attach = no_format_on_attach,

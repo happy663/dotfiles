@@ -10,7 +10,10 @@ return {
         pattern = "skkeleton-initialize-pre",
         callback = function()
           vim.fn["skkeleton#config"]({
-            globalDictionaries = { { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" } },
+            globalDictionaries = {
+              { "~/.config/skk/dictionary/SKK-JISYO.emoji.utf8", "utf-8" },
+              { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" },
+            },
             eggLikeNewline = true,
             userDictionary = "~/.config/skk/dictionary/userDict",
             globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },

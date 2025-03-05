@@ -7,7 +7,7 @@ function M.apply(config)
   config.color_scheme = "AdventureTime"
 
   config.window_background_opacity = 1
-  config.macos_window_background_blur = 0
+  config.macos_window_background_blur = 1
   config.initial_cols = 120
   config.initial_rows = 60
   config.window_background_image_hsb = {

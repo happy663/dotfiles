@@ -1,0 +1,72 @@
+return {
+  -- {
+  --   "nvim-neo-tree/neo-tree.nvim",
+  --   branch = "v3.x",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-tree/nvim-web-devicons",
+  --     "MunifTanjim/nui.nvim",
+  --   },
+  --   config = function()
+  --     require("neo-tree").setup({
+  --       filesystem = {
+  --         filtered_items = {
+  --           visible = false,
+  --           hide_dotfiles = false,
+  --           hide_gitignored = true,
+  --           hide_hidden = true,
+  --           hide_by_name = {
+  --             ".DS_Store",
+  --             "thumbs.db",
+  --           },
+  --           hide_by_pattern = {},
+  --           always_show = {},
+  --           always_show_by_pattern = {},
+  --           never_show = {},
+  --           never_show_by_pattern = {},
+  --         },
+  --       },
+  --     })
+  --
+  --     vim.keymap.set("n", "-", function()
+  --       local reveal_file = vim.fn.expand("%:p")
+  --       if reveal_file == "" then
+  --         reveal_file = vim.fn.getcwd()
+  --       else
+  --         local f = io.open(reveal_file, "r")
+  --         if f then
+  --           f.close(f)
+  --         else
+  --           reveal_file = vim.fn.getcwd()
+  --         end
+  --       end
+  --       require("neo-tree.command").execute({
+  --         action = "focus", -- OPTIONAL, this is the default value
+  --         source = "filesystem", -- OPTIONAL, this is the default value
+  --         position = "left", -- OPTIONAL, this is the default value
+  --         reveal_file = reveal_file, -- path to file or folder to reveal
+  --         reveal_force_cwd = true, -- change cwd without asking if needed
+  --       })
+  --     end, { desc = "Open neo-tree at current file or working directory" })
+  --
+  --     vim.api.nvim_create_autocmd("BufReadPost", {
+  --       callback = function()
+  --         local file_path = vim.fn.expand("%:p")
+  --         if file_path ~= "" then
+  --           -- 少し遅延させてバッファが完全に読み込まれた後に実行
+  --           vim.defer_fn(function()
+  --             require("neo-tree.command").execute({
+  --               action = "focus",
+  --               source = "filesystem",
+  --               position = "left",
+  --               reveal_file = file_path,
+  --               reveal_force_cwd = true,
+  --             })
+  --           end, 100)
+  --         end
+  --       end,
+  --       group = vim.api.nvim_create_augroup("NeoTreeAutoFocus", { clear = true }),
+  --     })
+  --   end,
+  -- },
+}

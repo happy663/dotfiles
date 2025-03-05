@@ -27,7 +27,7 @@ function M.setup()
   wezterm.on("toggle-opacity-and-remove-background-image", function(window)
     local overrides = window:get_config_overrides() or {}
     if not overrides.window_background_opacity then
-      overrides.window_background_opacity = 0.5
+      overrides.window_background_opacity = 0.8
       overrides.window_background_image = ""
     else
       overrides.window_background_opacity = nil
