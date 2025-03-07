@@ -8,7 +8,9 @@ return {
     opts = {
       -- add any opts here
       -- for example
-      provider = "openai",
+      -- provider = "openai",
+      provider = "copilot", -- copilotを使用
+      auto_suggestions_provider = "copilot",
       openai = {
         endpoint = "https://api.openai.com/v1",
         model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
@@ -16,6 +18,14 @@ return {
         temperature = 0, -- adjust if needed
         max_tokens = 4096,
       },
+      copilot = {
+        endpoint = "https://api.githubcopilot.com",
+        model = "claude-3.7-sonnet", -- ここでClaudeモデルを指定
+        timeout = 30000,
+        temperature = 0,
+        max_tokens = 4096,
+      },
+
       behaviour = {
         auto_suggestions = false, -- Experimental stage
         auto_set_highlight_group = true,

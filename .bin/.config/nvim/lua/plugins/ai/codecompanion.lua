@@ -66,7 +66,12 @@ return {
             return require("codecompanion.adapters").extend("copilot", {
               schema = {
                 model = {
-                  default = "gpt-4o-2024-08-06",
+                  default = "claude-3.5-sonnet",
+                },
+                choices = {
+                  "claude-3.5-sonnet",
+                  "claude-3.7-sonnet",
+                  "gpt-4o-2024-08-06",
                 },
               },
             })
@@ -154,7 +159,7 @@ return {
         },
         strategies = {
           chat = {
-            adapter = "anthropic",
+            adapter = "copilot",
             slash_commands = {
               ["buffer"] = {
                 callback = "strategies.chat.slash_commands.buffer",
@@ -175,7 +180,7 @@ return {
               },
             },
           },
-          inline = { adapter = "anthropic" },
+          inline = { adapter = "copilot" },
           keymaps = {
             send = {
               modes = {
@@ -250,10 +255,10 @@ return {
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
-              adapter = {
-                name = "anthropic",
-                model = "claude-3-7-sonnet-20250219",
-              },
+              -- adapter = {
+              --   name = "anthropic",
+              --   model = "claude-3-7-sonnet-20250219",
+              -- },
             },
             prompts = {
               {
@@ -391,10 +396,10 @@ return {
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
-              adapter = {
-                name = "anthropic",
-                model = "claude-3-7-sonnet-20250219",
-              },
+              -- adapter = {
+              --   name = "anthropic",
+              --   model = "claude-3-7-sonnet-20250219",
+              -- },
             },
             prompts = {
               {
@@ -516,6 +521,8 @@ return {
       setup_code_companion_keymaps()
 
       vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+
+      vim.g.codecompanion_auto_tool_mode = "true"
 
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])
