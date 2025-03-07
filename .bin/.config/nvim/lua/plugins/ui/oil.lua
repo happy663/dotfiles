@@ -213,9 +213,33 @@ return {
         },
       })
 
-      -- vim.keymap.set("n", "<leader>-", ":Oil<CR>", { noremap = true, silent = true })
-      -- open_float is a function that opens a floating window with the oil buffer
-      vim.keymap.set("n", "<leader>op", ":lua require('oil').open_float()<CR>", { noremap = true, silent = true })
+      -- nvim-tree上でOilを開く
+      local function open_oil_from_tree()
+        local node = require("nvim-tree.api").tree.get_node_under_cursor()
+        if node then
+          local path = node.absolute_path
+          print(path)
+          if node.type == "directory" then
+            -- ディレクトリの場合はそのまま開く
+            require("oil").open_float(path)
+          else
+            -- ファイルの場合は親ディレクトリを開く
+            local parent_path = vim.fn.fnamemodify(path, ":h")
+            require("oil").open_float(parent_path)
+          end
+        else
+          -- 現在のファイルpathを開く
+          local path = vim.fn.expand("%:p:h")
+          print(path)
+          require("oil").open_float(path)
+        end
+      end
+
+      vim.keymap.set("n", "<leader>op", open_oil_from_tree, {
+        noremap = true,
+        silent = true,
+        desc = "Open Oil in nvim-tree",
+      })
     end,
   },
 }
