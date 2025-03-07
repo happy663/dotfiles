@@ -112,6 +112,10 @@ return {
           },
           group_index = 2,
         },
+        {
+          name = "rg",
+          group_index = 1,
+        },
       }
 
       cmp.setup.cmdline(":", {
@@ -165,7 +169,33 @@ return {
             end
           end, { "i", "s" }),
         },
-        sources = default_sources,
+
+        sources = {
+          -- {
+          --   name = "copilot",
+          --   group_index = 1,
+          -- },
+          { name = "nvim_lsp", group_index = 1 },
+          { name = "path", group_index = 1 },
+          { name = "buffer", group_index = 1 },
+          { name = "vimtex", group_index = 1 },
+          { name = "render-markdown", group_index = 1 },
+          {
+            name = "spell",
+            option = {
+              keep_all_entries = false,
+              enable_in_context = function()
+                return true
+              end,
+              preselect_correct_word = true,
+            },
+            group_index = 2,
+          },
+          {
+            name = "rg",
+            group_index = 1,
+          },
+        },
         sorting = default_sorting,
         formatting = {
           fields = {
@@ -258,6 +288,7 @@ return {
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
       "f3fora/cmp-spell",
+      "lukas-reineke/cmp-rg",
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
