@@ -216,24 +216,32 @@ return {
       -- nvim-tree上でOilを開く
       local function open_oil_from_tree()
         local node = require("nvim-tree.api").tree.get_node_under_cursor()
+        local preview_opts = {
+          preview = {
+            vertical = true,
+          },
+        }
+
         if node then
           local path = node.absolute_path
-          print(path)
           if node.type == "directory" then
             -- ディレクトリの場合はそのまま開く
-            require("oil").open_float(path)
+            require("oil").open_float(path, preview_opts)
           else
             -- ファイルの場合は親ディレクトリを開く
             local parent_path = vim.fn.fnamemodify(path, ":h")
-            require("oil").open_float(parent_path)
+            require("oil").open_float(parent_path, preview_opts)
           end
         else
           -- 現在のファイルpathを開く
           local path = vim.fn.expand("%:p:h")
-          print(path)
-          require("oil").open_float(path)
+          require("oil").open_float(path, preview_opts)
         end
       end
+
+      -- vim.keymap.set("n", "<leader>-", function()
+      --   require("oil").open_float(nil, { preview = { vertical = true } })
+      -- end, { desc = "Open oil float with preview" })
 
       vim.keymap.set("n", "<leader>op", open_oil_from_tree, {
         noremap = true,
