@@ -199,3 +199,9 @@ fkill() {
   fi
 }
 
+
+# FindItFaster の依存関係へのパスを追加
+export PATH=$PATH:/usr/local/bin
+alias bat=bat
+alias rg=rg
+alias fzf=fzf

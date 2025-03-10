@@ -417,6 +417,7 @@
 あつm /集/
 あたらs /新/
 あたe /与/
+あそn /遊/
 あそb /遊/
 あさt /漁/
 あかr /明/
@@ -468,12 +469,14 @@ classmethod /classmethod/
 click /クリック/
 clm /クラスメソッド/
 code /コード/
+codebase /コードベース/
 codeing /codeing/
 coding /コーディング/
 color /カラー/
 command /コマンド/
 comment /コメント/
 commentout /コメントアウト;comment out/
+commit /コミット/
 communication /コミュニケーション/
 community /コミュニティ/
 component /コンポーネント/
@@ -702,6 +705,7 @@ throw /スロー/
 tiltle /tiltle/
 timing /タイミング/
 title /タイトル/
+token /トークン/
 tool /ツール/
 topic /トピック/
 tree /ツリー/
@@ -1130,6 +1134,7 @@ windows /ウィンドウズ/
 かぶしき /株式/
 かぷせるか /カプセル化/
 かぶってる /被ってる/
+かまいません /構いません/
 かまわない /構わない/
 かみのけ /髪の毛/
 かようび /火曜日/
@@ -1402,8 +1407,9 @@ windows /ウィンドウズ/
 けんとうれい /検討例/
 げんまい /玄米/
 げんりょうひ /原料費/
-こ /子/個/
+こ /個/子/
 ご /後/
+こ> /古;(old) 古伊万里/
 こう /項/考;考案/
 ごう /合/
 こうい /行為/
