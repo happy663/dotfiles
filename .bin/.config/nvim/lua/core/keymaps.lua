@@ -13,7 +13,7 @@ map("n", "<C-k>", "<C-w>k", opts)
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 -- fuzzy-motion
-map("n", "<Leader>f", "<CMD>HopWord<CR>", opts)
+map("n", "f", "<CMD>HopWord<CR>", opts)
 
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
 map("n", "x", '"_x', opts)
