@@ -205,3 +205,5 @@ export PATH=$PATH:/usr/local/bin
 alias bat=bat
 alias rg=rg
 alias fzf=fzf
+
+export PATH=~/.nix-profile/bin:$PATH
