@@ -145,6 +145,16 @@ return {
               },
             },
           })
+          nil_ls = function()
+            lspconfig.nil_ls.setup({
+              on_attach = on_attach,
+              sources = {
+                lspconfig.sources.shellcheck,
+                lspconfig.sources.markdownlint,
+                lspconfig.sources.vale,
+              },
+            })
+          end
         end,
         typos_lsp = function()
           lspconfig.typos_lsp.setup({
