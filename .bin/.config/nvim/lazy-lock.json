@@ -1,7 +1,7 @@
 {
   "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
-  "CopilotChat.nvim": { "branch": "main", "commit": "335b3eaf3bcb5446e4d9439b240d12fcd7d2fd13" },
   "LuaSnip": { "branch": "master", "commit": "c9b9a22904c97d0eb69ccb9bab76037838326817" },
+  "accelerated-jk.nvim": { "branch": "main", "commit": "8fb5dad4ccc1811766cebf16b544038aeeb7806f" },
   "actions-preview.nvim": { "branch": "master", "commit": "8119874b38666e3ef9fe22096c1657a492b4af0c" },
   "avante.nvim": { "branch": "main", "commit": "c60dc6c316414c2adf5bb61624719d76accab22f" },
   "bufferline.nvim": { "branch": "main", "commit": "655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3" },
@@ -19,7 +19,6 @@
   "colorful-winsep.nvim": { "branch": "alpha", "commit": "0070484536ea55ec64a8453d41e3badace04a61a" },
   "copilot-cmp": { "branch": "master", "commit": "15fc12af3d0109fa76b60b5cffa1373697e261d1" },
   "copilot.lua": { "branch": "master", "commit": "30321e33b03cb924fdcd6a806a0dc6fa0b0eafb9" },
-  "copilot.vim": { "branch": "release", "commit": "5015939f131627a6a332c9e3ecad9a7cb4c2e549" },
   "dashboard-nvim": { "branch": "master", "commit": "000448d837f6e7a47f8f342f29526c4d7e49e9ce" },
   "denops.vim": { "branch": "main", "commit": "4ff8f353ee54ee67288c1099242444ccb0ab5b69" },
   "dial.nvim": { "branch": "master", "commit": "34bbd9c387c358190e61ce71017faad3dffa7a74" },
