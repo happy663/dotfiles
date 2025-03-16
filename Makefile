@@ -3,12 +3,12 @@ all: init link brew
 
 # Set initial preference.
 init:
-	.bin/init.sh
+	scripts/init.sh
 
 # Link dotfiles.
 link:
-	.bin/link.sh
+	scripts/link.sh
 
 # Install macOS applications.
 brew:
-	.bin/brew.sh
+	scripts/brew.sh
