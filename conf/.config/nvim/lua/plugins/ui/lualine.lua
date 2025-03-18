@@ -7,7 +7,35 @@ return {
         options = {
           theme = "ayu_mirage",
         },
+        winbar = {
+          -- lualine_a = {
+          --   { require("conf.config.nvim.lua.plugins.ui.lualine.cc-component") },
+          -- },
+          -- lualine_b = {
+          --   { "filename", file_status = false, newfile_status = false, path = 1 },
+          -- },
+          -- lualine_c = {
+          --   { "diff", symbols = { added = " ", modified = " ", removed = " " } },
+          -- },
+          -- lualine_x = { { "diagnostics", sources = { "nvim_lsp" } } },
+          -- lualine_y = {
+          --   { "filetype", icon_only = true },
+          -- },
+          -- lualine_z = {
+          --   {
+          --     "filename",
+          --     newfile_status = true,
+          --     symbols = {
+          --       modified = " ",
+          --       readonly = "󰌾 ",
+          --     },
+          --   },
+          -- },
+        },
         sections = {
+          lualine_a = {
+            { require("plugins.ui.lualine.cc-component") },
+          },
           lualine_x = {
             {
               require("noice").api.statusline.mode.get,
@@ -31,3 +59,7 @@ return {
     },
   },
 }
+
+
+
+
