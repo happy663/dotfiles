@@ -7,7 +7,7 @@ gtk-2.0/
 gh/
 ghc/
 automatic_backups/
-.bin/.config/lazygit/state.yml
+conf/.config/lazygit/state.yml
 .bin/.config/zed
 .bin/.config/raycast/
 .env
