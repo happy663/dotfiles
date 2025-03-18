@@ -25,7 +25,6 @@ return {
         temperature = 0,
         max_tokens = 4096,
       },
-
       behaviour = {
         auto_suggestions = false, -- Experimental stage
         auto_set_highlight_group = true,
@@ -35,6 +34,7 @@ return {
         minimize_diff = true, -- Whether to remove unchanged lines when applying a code block
         enable_token_counting = true, -- Whether to enable token counting. Default to true.
       },
+      hints = { enabled = false },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
     build = "make",
