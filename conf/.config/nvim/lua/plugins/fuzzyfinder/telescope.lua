@@ -287,4 +287,31 @@ return {
       { "nvim-telescope/telescope-fzy-native.nvim" },
     },
   },
+  {
+    "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+    config = function()
+      -- Telescopeの拡張機能設定を更新
+      require("telescope").setup({
+        extensions = {
+          livegrep_history = {
+            mappings = {
+              up_key = "<C-p>",
+              down_key = "<C-n>",
+              confirm_key = "<CR>",
+            },
+            max_history = 100,
+          },
+        },
+      })
+
+      -- 拡張機能を読み込む
+      require("telescope").load_extension("livegrep_history")
+
+      -- キーマッピングを設定
+      vim.keymap.set("n", "<leader>gg", require("telescope").extensions.livegrep_history.live_grep_with_history)
+    end,
+  },
 }
