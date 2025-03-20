@@ -290,6 +290,7 @@ return {
   {
     "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
     -- dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
+    cond = vim.g.not_in_vscode,
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
