@@ -15,6 +15,7 @@
       paths = [
         nixpkgs.legacyPackages.aarch64-darwin.git
         nixpkgs.legacyPackages.aarch64-darwin.curl
+        nixpkgs.legacyPackages.aarch64-darwin.ldd
       ];
     };
 
