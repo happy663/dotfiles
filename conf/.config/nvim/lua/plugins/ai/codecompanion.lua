@@ -152,14 +152,14 @@ return {
               2.関連するコードだけを返すように注意しながら、コードを1つのコードブロックで出力する。
               3.各会話ターンに対して1つの返答しかできません
                 ]],
-              language
+              "English"
             )
           end,
           -- log_level = "DEBUG",
         },
         strategies = {
           chat = {
-            adapter = "copilot",
+            adapter = "anthropic",
             slash_commands = {
               ["buffer"] = {
                 callback = "strategies.chat.slash_commands.buffer",
@@ -180,7 +180,7 @@ return {
               },
             },
           },
-          inline = { adapter = "copilot" },
+          inline = { adapter = "anthropic" },
           keymaps = {
             send = {
               modes = {

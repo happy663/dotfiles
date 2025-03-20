@@ -289,6 +289,7 @@ return {
   },
   {
     "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
+    -- dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
