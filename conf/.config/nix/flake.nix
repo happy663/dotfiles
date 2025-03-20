@@ -3,30 +3,32 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, neovim-nightly-overlay }:
+  outputs = { self, nixpkgs, home-manager } @ inputs:
     let
       system = "aarch64-darwin";
-      pkgs = nixpkgs.legacyPackages.${system}.extend (
-        neovim-nightly-overlay.overlays.default
-      );
+      pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-
-      packages.${system}.my-package = pkgs.buildEnv {
-        name = "my-package-list";
-        paths = with pkgs;
-          [
-            hello
-            curl
-          ]
-          ++ [
-            neovim
-          ];
-      };
-
+      packages.${system}.my-package =
+        let
+          customPkgs = import nixpkgs {
+            inherit system;
+          };
+        in
+        customPkgs.buildEnv {
+          name = "my-package-list";
+          paths = with customPkgs;
+            [
+              hello
+              curl
+            ];
+        };
 
       apps.${system}.update = {
         type = "app";
@@ -42,6 +44,21 @@
           '');
 
       };
+
+      homeConfigurations = {
+        myHomeConfig = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+          };
+          extraSpecialArgs = {
+            inherit inputs;
+          };
+          modules = [
+            ./.config/home-manager/home.nix
+          ];
+        };
+      };
+
     };
 
 }
