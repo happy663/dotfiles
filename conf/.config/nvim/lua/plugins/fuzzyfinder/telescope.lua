@@ -12,9 +12,14 @@ return {
         vim.cmd("set hlsearch")
       end
 
+
       local custom_actions = {}
 
       function custom_actions.select_with_highlight()
+      local function highlight_search_term(search_term)
+        vim.fn.setreg("/", search_term)
+        vim.cmd("set hlsearch")
+      end
         return function(prompt_bufnr)
           local search_term = state.get_current_line()
           actions.select_default(prompt_bufnr)
@@ -288,8 +293,8 @@ return {
     },
   },
   {
-    "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
-    -- dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
+    -- "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
+    dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
     cond = vim.g.not_in_vscode,
     dependencies = {
       "nvim-telescope/telescope.nvim",
@@ -300,8 +305,8 @@ return {
         extensions = {
           livegrep_history = {
             mappings = {
-              up_key = "<C-p>",
-              down_key = "<C-n>",
+              up_key = "<Up>",
+              down_key = "<Down>",
               confirm_key = "<CR>",
             },
             max_history = 100,
@@ -313,7 +318,7 @@ return {
       require("telescope").load_extension("livegrep_history")
 
       -- キーマッピングを設定
-      vim.keymap.set("n", "<leader>gg", require("telescope").extensions.livegrep_history.live_grep_with_history)
+      vim.keymap.set("n", "<C-g>", require("telescope").extensions.livegrep_history.live_grep_with_history)
     end,
   },
 }
