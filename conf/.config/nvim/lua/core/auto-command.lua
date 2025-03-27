@@ -57,12 +57,12 @@ local function memo_commit_async()
   )
 end
 
--- 自動コマンドを設定
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true }),
-  pattern = "*/.memolist/memo/*.md",
-  callback = memo_commit_async,
-})
+-- -- 自動コマンドを設定
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   group = vim.api.nvim_create_augroup("MemoAutoCommit", { clear = true }),
+--   pattern = "*/.memolist/memo/*.md",
+--   callback = memo_commit_async,
+-- })
 
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
