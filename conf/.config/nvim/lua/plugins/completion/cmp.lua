@@ -101,6 +101,7 @@ return {
         { name = "codecompanion_variables", group_index = 1 },
         { name = "vimtex", group_index = 1 },
         { name = "render-markdown", group_index = 1 },
+        { name = "calc", group_index = 1 },
         {
           name = "spell",
           option = {
@@ -180,6 +181,7 @@ return {
           { name = "buffer", group_index = 1 },
           { name = "vimtex", group_index = 1 },
           { name = "render-markdown", group_index = 1 },
+          { name = "calc", group_index = 1 },
           {
             name = "spell",
             option = {
@@ -282,6 +284,7 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
+      "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
       "uga-rosa/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
