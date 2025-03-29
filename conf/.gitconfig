@@ -30,3 +30,4 @@
   smudge = cat
 [core]
 	editor = nvim
+	excludesfile = ~/.gitignore

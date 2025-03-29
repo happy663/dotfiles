@@ -155,7 +155,6 @@ export PATH="$PATH:$HOME/.roswell/bin"
 ghcr() {
   gh repo create "$@" # 全引数をそのままghに渡す
   ghq get "git@github.com:happy663/$1.git" # 最初の引数のみ使用
-  nvim "/Users/toyama/src/github.com/happy663/$1"
 }
 
 
@@ -232,3 +231,6 @@ function __prompt_preexec() {
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
+
+
+eval "$(zoxide init zsh)"
