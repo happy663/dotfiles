@@ -3,7 +3,8 @@ git:
     colorArg: always
     pager: delta --dark --paging=never
 gui:
-  windowSize: "nomarl"
+  screenMode: "nomarl"
+  showBottomLine: false
   nerdFontsVersion: "3"
   sidePanelWidth: 0.25
   theme:
