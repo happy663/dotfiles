@@ -7,9 +7,13 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin } @ inputs:
     let
       system = "aarch64-darwin";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -39,6 +43,10 @@
             nix flake update
             echo "Update profile"
             nix profile upgrade my-packages
+            echo "Updating home-manager..."
+            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig
+            echo "Updating darwin..."
+            nix run nixpkgs#nix-darwin -- switch --flake .#toyama-darwin
             echo "Update complete"
 
           '');
@@ -49,6 +57,7 @@
         myHomeConfig = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
+            config.allowUnfree = true;
           };
           extraSpecialArgs = {
             inherit inputs;
@@ -57,6 +66,11 @@
             ../home-manager/home.nix
           ];
         };
+      };
+
+      darwinConfigurations.toyama-darwin = nix-darwin.lib.darwinSystem {
+        system = system;
+        modules = [ ./nix-darwin/default.nix ];
       };
 
     };
