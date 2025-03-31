@@ -69,7 +69,7 @@ in
       extraConfig = {
         core = {
           editor = "nvim";
-          excludesfile = "~/.gitignore";
+          excludesfile = "~/.config/git/ignore";
         };
         ghq.root = "~/src";
         http.postBuffer = 524288000;
@@ -366,4 +366,65 @@ in
   xdg.configFile."git/attributes".text = ''
     **/SKK-JISYO.L linguist-vendored
   '';
+
+  # gitignore config
+  xdg.configFile."git/ignore".text = ''
+    # macOS
+    .DS_Store
+    .AppleDouble
+    .LSOverride
+    ._*
+    
+    # Thumbnails
+    ._*
+    
+    # Files that might appear in the root of a volume
+    .DocumentRevisions-V100
+    .fseventsd
+    .Spotlight-V100
+    .TemporaryItems
+    .Trashes
+    .VolumeIcon.icns
+    .com.apple.timemachine.donotpresent
+    
+    # Directories potentially created on remote AFP share
+    .AppleDB
+    .AppleDesktop
+    Network Trash Folder
+    Temporary Items
+    .apdisk
+    
+    # Node
+    node_modules
+    npm-debug.log
+    
+    # Python
+    __pycache__/
+    *.py[cod]
+    *$py.class
+    .pytest_cache/
+    .coverage
+    htmlcov/
+    
+    # IDE
+    .idea/
+    .vscode/
+    *.swp
+    *.swo
+    
+    # Env
+    .env
+    .env.local
+    .env.development.local
+    .env.test.local
+    .env.production.local
+    
+    # Build
+    dist/
+    build/
+    *.egg-info/
+  '';
+
+  # gitignore_global
+  home.file.".gitignore_global" = lib.mkForce null;
 }
