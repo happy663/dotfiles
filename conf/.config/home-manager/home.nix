@@ -425,6 +425,6 @@ in
     *.egg-info/
   '';
 
-  # gitignore_global
-  home.file.".gitignore_global" = lib.mkForce null;
+  # gitignore_globalを削除する
+  home.file.".gitignore_global".enable = false;
 }
