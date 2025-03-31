@@ -1,6 +1,6 @@
 { inputs, lib, config, pkgs, ... }:
 let
-  username = "toyama";
+  username = "happy";
 in
 {
   nixpkgs = {
