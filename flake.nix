@@ -46,7 +46,7 @@
             echo "Updating home-manager..."
             nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig
             echo "Updating darwin..."
-            nix run nixpkgs#nix-darwin -- switch --flake .#toyama-darwin
+            nix run nix-darwin -- switch --flake .#toyama-darwin
             echo "Update complete"
 
           '');
