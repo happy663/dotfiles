@@ -63,14 +63,14 @@
             inherit inputs;
           };
           modules = [
-            ../home-manager/home.nix
+            ./conf/.config/nix/home-manager/default.nix
           ];
         };
       };
 
       darwinConfigurations.toyama-darwin = nix-darwin.lib.darwinSystem {
         system = system;
-        modules = [ ./nix-darwin/default.nix ];
+        modules = [ ./conf/.config/nix/nix-darwin/default.nix ];
       };
 
     };
