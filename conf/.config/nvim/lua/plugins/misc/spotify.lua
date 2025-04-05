@@ -63,38 +63,38 @@ local function pause()
 end
 
 return {
-  "mmuldo/spotify.nvim",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
-  config = function()
-    require("utils").load_env("~/.config/nvim/.env")
-
-    require("spotify").setup({
-      client_id = vim.fn.getenv("SPOTIFY_CLIENT_ID"),
-      client_secret = vim.fn.getenv("SPOTIFY_CLIENT_SECRET"),
-    })
-
-    vim.keymap.set(
-      "n",
-      "<leader>spm",
-      play_produced_by_neputunes_playlist,
-      { noremap = true, silent = true, desc = "Play 'Produced by: The Neptunes' playlist" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>spc",
-      require("spotify.api").currently_playing,
-      { noremap = true, silent = true, desc = "Currently playing" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>spl",
-      require("spotify.api").like_current_track,
-      { noremap = true, silent = true, desc = "Like current track" }
-    )
-    vim.keymap.set("n", "<leader>spn", next_track, { noremap = true, silent = true, desc = "Next track" })
-    vim.keymap.set("n", "<leader>spp", previous_track, { noremap = true, silent = true, desc = "Previous track" })
-    vim.keymap.set("n", "<leader>spa", pause, { noremap = true, silent = true, desc = "Pause" })
-  end,
+  -- "mmuldo/spotify.nvim",
+  -- dependencies = {
+  --   "nvim-lua/plenary.nvim",
+  -- },
+  -- config = function()
+  --   require("utils").load_env("~/.config/nvim/.env")
+  --
+  --   require("spotify").setup({
+  --     client_id = vim.fn.getenv("SPOTIFY_CLIENT_ID"),
+  --     client_secret = vim.fn.getenv("SPOTIFY_CLIENT_SECRET"),
+  --   })
+  --
+  --   vim.keymap.set(
+  --     "n",
+  --     "<leader>spm",
+  --     play_produced_by_neputunes_playlist,
+  --     { noremap = true, silent = true, desc = "Play 'Produced by: The Neptunes' playlist" }
+  --   )
+  --   vim.keymap.set(
+  --     "n",
+  --     "<leader>spc",
+  --     require("spotify.api").currently_playing,
+  --     { noremap = true, silent = true, desc = "Currently playing" }
+  --   )
+  --   vim.keymap.set(
+  --     "n",
+  --     "<leader>spl",
+  --     require("spotify.api").like_current_track,
+  --     { noremap = true, silent = true, desc = "Like current track" }
+  --   )
+  --   vim.keymap.set("n", "<leader>spn", next_track, { noremap = true, silent = true, desc = "Next track" })
+  --   vim.keymap.set("n", "<leader>spp", previous_track, { noremap = true, silent = true, desc = "Previous track" })
+  --   vim.keymap.set("n", "<leader>spa", pause, { noremap = true, silent = true, desc = "Pause" })
+  -- end,
 }

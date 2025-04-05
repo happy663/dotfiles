@@ -27,7 +27,7 @@ in
       coreutils
       zoxide
       delta
-
+      cargo
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -72,7 +72,7 @@ in
           editor = "nvim";
           excludesfile = "~/.config/git/ignore";
         };
-        ghq.root = "~/src";
+        ghq.root = "~/";
         http.postBuffer = 524288000;
         pull.rebase = false;
         pager = {
@@ -136,6 +136,7 @@ in
         bindkey '^xb' anyframe-widget-cdr
         bindkey '^xr' anyframe-widget-execute-history
         bindkey '^x^b' anyframe-widget-checkout-git-branch
+        bindkey -e
 
         # mise
         eval "$(mise activate zsh)"
@@ -268,7 +269,7 @@ in
 
       shellAliases = {
         g = "cd $(ghq root)/$(ghq list | peco)";
-        ls = "gls --color=auto";
+        # ls = "gls --color=auto";
         cat = "bat";
         find = "fd";
         ".." = "cd ..";
@@ -429,3 +430,6 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
+
+
+

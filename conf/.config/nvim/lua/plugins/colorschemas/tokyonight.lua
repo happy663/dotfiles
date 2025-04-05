@@ -6,7 +6,7 @@ return {
     opts = {},
     config = function()
       require("tokyonight").setup({
-        transparent = false,
+        transparent = true,
         style = "moon",
         light_style = "day",
         terminal_colors = true,

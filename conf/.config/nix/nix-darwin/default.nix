@@ -62,7 +62,17 @@
         launchanim = true; # 起動アニメーション
         show-process-indicators = true; # 実行中インジケータを表示
         static-only = false; # 開いているアプリのみ表示
-        # persistent-app = [ ]; # 常駐アプリなし
+        persistent-apps = [
+          {
+            app = "/Applications/Google Chrome.app";
+          }
+          {
+            app = "/Applications/WezTerm.app";
+          }
+          {
+            app = "/Applications/Slack.app";
+          }
+        ]; # 常駐アプリなし
         mru-spaces = false; # 最近使用したスペースを並べ替えない
         expose-animation-duration = 0.1; # Exposéアニメーション速度
         # expose-group-by-app = false; # アプリケーションごとにグループ化しない
@@ -95,18 +105,6 @@
         IsAnalog = false; # デジタル表示
       };
 
-      # Safari設定
-      # Safari = {
-      #   AutoOpenSafeDownloads = false; # 「安全な」ファイルのダウンロード後に自動的に開かない
-      #   ShowFullURLInSmartSearchField = true; # スマート検索フィールドにフルURLを表示
-      #   HomePage = "about:blank"; # ホームページを空白に設定
-      #   AutoFillPasswords = false; # パスワードの自動入力を無効化
-      #   AutoFillCreditCardData = false; # クレジットカードの自動入力を無効化
-      #   IncludeDevelopMenu = true; # 開発メニューを有効化
-      #   WebKitDeveloperExtrasEnabledPreferenceKey = true; # 開発者機能を有効化
-      #   WebKitPreferences.developerExtrasEnabled = true;
-      #   WebContinuousSpellCheckingEnabled = true; # スペルチェック機能を有効化
-      # };
 
       # コントロールセンター設定
       # ControlCenter = {
@@ -147,21 +145,20 @@
       autoUpdate = true;
       # cleanup = "zap";
     };
+    brews = [
+      "sqlite"
+    ];
     taps = [
-      "homebrew/bundle"
-      "homebrew/cask-fonts"
+      # "homebrew/bundle"
     ];
     casks = [
       "alacritty"
-      "aerospace"
+      # "aerospace"
       "alt-tab"
       "figma"
       "visual-studio-code"
-      "wezterm"
+      "wezterm@nightly"
       "discord"
-      "font-hack-nerd-font"
-      "font-hackgen"
-      "font-hackgen-nerd"
       "raycast"
       "slack"
       "google-chrome"
@@ -169,6 +166,7 @@
       "macskk"
       "postman"
       "scroll-reverser"
+      "karabiner-elements"
     ];
   };
 

@@ -19,6 +19,8 @@ return {
           "staticcheck",
           "stylua",
           -- "typescript-language-server",
+          "nil",
+          "nixpkgs-fmt",
         },
       })
     end,
