@@ -9,7 +9,6 @@ ghc/
 automatic_backups/
 conf/.config/lazygit/state.yml
 .bin/.config/zed
-.bin/.config/raycast/
 .env
 .spotify_tokens.json
 
@@ -18,6 +17,6 @@ crossnote
 
 .wrangler
 
-conf/.config/raycast
+conf/.config/raycast/extensions
 conf/.config/shareedit
 

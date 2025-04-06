@@ -34,7 +34,7 @@
         NSScrollAnimationEnabled = true; # スクロールアニメーションを有効化
         AppleScrollerPagingBehavior = true; # ページ単位スクロールを有効化
         NSTableViewDefaultSizeMode = 2; # サイドバー項目のサイズ
-        AppleInterfaceStyleSwitchesAutomatically = false; # 自動ダークモード切替を無効化
+        AppleInterfaceStyleSwitchesAutomatically = true; # 自動ダークモード切替を無効化
       };
 
       finder = {
@@ -110,6 +110,22 @@
       # ControlCenter = {
       #   BatteryShowPercentage = true; # バッテリー残量をパーセントで表示
       # };
+
+
+      # CustomUserPreferences = {
+      #   "com.apple.symbolichotkeys" = {
+      #     AppleSymbolicHotKeys = {
+      #       # Disable 'Cmd + Space' for Spotlight Search
+      #       "64" = {
+      #         enabled = false;
+      #       };
+      #       # Disable 'Cmd + Alt + Space' for Finder search window
+      #       "65" = {
+      #         enabled = false;
+      #       };
+      #     };
+      #   };
+      # };
     };
 
     keyboard = {
@@ -167,6 +183,8 @@
       "postman"
       "scroll-reverser"
       "karabiner-elements"
+      "vivaldi"
+      "bitwarden"
     ];
   };
 

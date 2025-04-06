@@ -72,7 +72,12 @@ in
           editor = "nvim";
           excludesfile = "~/.config/git/ignore";
         };
-        ghq.root = "~/";
+        ghq = {
+          root = [
+            "~/.local/share"
+            "~/github.com"
+          ];
+        };
         http.postBuffer = 524288000;
         pull.rebase = false;
         pager = {
@@ -430,6 +435,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
-
-

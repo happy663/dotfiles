@@ -90,7 +90,7 @@ wezterm.on("update-status", function(window, pane)
   if process_info then
     local cwd = process_info.cwd
     local rm_home = string.gsub(cwd, os.getenv("HOME") or "", "")
-    local prj = string.gsub(rm_home, "/src/github.com", "")
+    local prj = string.gsub(rm_home, "/github.com", "")
     local dirs = split(prj, "/")
     local root_dir = dirs[2]
     title_cache[pane_id] = root_dir

@@ -1,5 +1,5 @@
 {
-  
+
   description = "A very basic flake";
 
   inputs = {
@@ -35,6 +35,7 @@
             ];
         };
 
+
       apps.${system}.update = {
         type = "app";
         program = toString
@@ -49,9 +50,7 @@
             echo "Updating darwin..."
             nix run nix-darwin -- switch --flake .#toyama-darwin
             echo "Update complete"
-
           '');
-
       };
 
       homeConfigurations = {
