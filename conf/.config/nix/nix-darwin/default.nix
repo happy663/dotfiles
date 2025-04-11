@@ -77,7 +77,7 @@
         ]; # 常駐アプリなし
         mru-spaces = false; # 最近使用したスペースを並べ替えない
         expose-animation-duration = 0.1; # Exposéアニメーション速度
-        # expose-group-by-app = false; # アプリケーションごとにグループ化しない
+        expose-group-apps = true; # アプリケーションごとにウィンドウをグループ化
         mouse-over-hilite-stack = true; # スタックにカーソルを合わせたときハイライト
         wvous-tl-corner = 2; # 左上ホットコーナー：Mission Control
         wvous-tr-corner = 4; # 右上ホットコーナー：デスクトップ
@@ -168,10 +168,11 @@
     ];
     taps = [
       # "homebrew/bundle"
+      "nikitabobko/AeroSpace"
     ];
     casks = [
       "alacritty"
-      # "aerospace"
+      "aerospace"
       "alt-tab"
       "figma"
       "visual-studio-code"
@@ -187,6 +188,7 @@
       "karabiner-elements"
       "vivaldi"
       "bitwarden"
+
     ];
   };
 

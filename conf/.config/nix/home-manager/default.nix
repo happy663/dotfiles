@@ -76,8 +76,7 @@ in
         ghq = {
           root = [
             "~/.local/share"
-            "~/src/github.com"
-            # "~/src"
+            "~/src"
           ];
         };
         http.postBuffer = 524288000;
