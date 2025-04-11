@@ -28,6 +28,7 @@ in
       zoxide
       delta
       cargo
+      uv
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -75,7 +76,8 @@ in
         ghq = {
           root = [
             "~/.local/share"
-            "~/github.com"
+            "~/src/github.com"
+            # "~/src"
           ];
         };
         http.postBuffer = 524288000;
