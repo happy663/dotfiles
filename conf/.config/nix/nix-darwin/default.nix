@@ -35,7 +35,7 @@
         AppleScrollerPagingBehavior = true; # ページ単位スクロールを有効化
         NSTableViewDefaultSizeMode = 2; # サイドバー項目のサイズ
         AppleInterfaceStyleSwitchesAutomatically = true; # 自動ダークモード切替を無効化
-        _HIHideMenuBar = true; # メニューバーを隠す
+        _HIHideMenuBar = false; # メニューバーを隠す
         "com.apple.sound.beep.feedback" = 0; # 警告音を無効化
         "com.apple.sound.beep.volume" = 0.0; # 警告音の音量を0に設定
       };
@@ -51,6 +51,7 @@
         ShowStatusBar = true; # ステータスバーを表示
         FXPreferredViewStyle = "Nlsv"; # リスト表示をデフォルトに設定
         CreateDesktop = true; # デスクトップアイコンを表示
+        NewWindowTarget = "Home";
       };
 
       dock = {
@@ -87,7 +88,7 @@
       };
 
       screencapture = {
-        location = "~/Pictures/Screenshots"; # スクリーンショットの保存先
+        location = "~/screencapture"; # スクリーンショットの保存先
         type = "png"; # スクリーンショットの形式
         disable-shadow = true; # ウィンドウのスクリーンショットで影を表示
         include-date = true; # ファイル名に日付を含める

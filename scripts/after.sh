@@ -4,3 +4,4 @@ cp ../conf/.config/skk/macskk/kana-rule.conf ~/Library/Containers/net.mtgto.inpu
 
 mise install
 
+mkdir ~/screencapture
