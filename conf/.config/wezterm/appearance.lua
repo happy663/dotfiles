@@ -6,7 +6,7 @@ function M.apply(config)
   config.font = wezterm.font("HackGen Console NF", { weight = "Regular", stretch = "Normal", style = "Normal" })
   config.color_scheme = "AdventureTime"
 
-  config.window_background_opacity = 1
+  config.window_background_opacity = 0.6
   config.macos_window_background_blur = 1
   config.initial_cols = 120
   config.initial_rows = 60
@@ -34,7 +34,7 @@ function M.apply(config)
   }
 
   -- 背景画像の設定
-  M.setup_background_image(config)
+  -- M.setup_background_image(config)
 end
 
 function M.setup_background_image(config)

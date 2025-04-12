@@ -35,6 +35,7 @@
         AppleScrollerPagingBehavior = true; # ページ単位スクロールを有効化
         NSTableViewDefaultSizeMode = 2; # サイドバー項目のサイズ
         AppleInterfaceStyleSwitchesAutomatically = true; # 自動ダークモード切替を無効化
+        _HIHideMenuBar = true; # メニューバーを隠す
         "com.apple.sound.beep.feedback" = 0; # 警告音を無効化
         "com.apple.sound.beep.volume" = 0.0; # 警告音の音量を0に設定
       };
@@ -146,6 +147,7 @@
   security = {
     # pam.enableSudoTouchIdAuth = true; # TouchIDでのsudo認証を有効化
     pam.services.sudo_local.touchIdAuth = true; # sudoでのTouchID認証を有効化
+    pam.services.sudo_local.watchIdAuth = true; # sudoでのapple watchでの認証を有効化
   };
 
   # スクリーンセーバー関連の設定
@@ -163,12 +165,15 @@
       autoUpdate = true;
       # cleanup = "zap";
     };
-    brews = [
-      "sqlite"
-    ];
     taps = [
       # "homebrew/bundle"
       "nikitabobko/AeroSpace"
+      "FelixKratz/formulae"
+    ];
+    brews = [
+      "sqlite"
+      "borders"
+      "sketchybar"
     ];
     casks = [
       "alacritty"
@@ -188,7 +193,7 @@
       "karabiner-elements"
       "vivaldi"
       "bitwarden"
-
+      "claude"
     ];
   };
 

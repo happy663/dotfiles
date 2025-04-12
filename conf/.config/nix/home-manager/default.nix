@@ -368,6 +368,7 @@ in
     neovim = "0.10.2"
     ghc = "9.6.5"
     deno = "latest"
+    pnpm = "latest"
   '';
 
   # gitattributes config
