@@ -196,6 +196,8 @@ in
         export PATH=~/.nix-profile/bin:$PATH
         export XDG_CONFIG_HOME="$HOME/.config"
         export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+        export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
+
 
         # OS固有の設定
         if [[ "$OSTYPE" == "darwin"* ]]; then
