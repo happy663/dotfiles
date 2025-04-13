@@ -21,6 +21,11 @@ vim.g.not_in_vscode = vim.g.vscode == nil
 
 require("lazy").setup({
   performance = {
+    cache = {
+      enabled = true,
+      path = vim.fn.stdpath("cache") .. "/lazy",
+      ttl = 86400, -- 24 hours
+    },
     rtp = {
       disabled_plugins = {
         "netrw",
