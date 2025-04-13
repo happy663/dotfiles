@@ -44,7 +44,7 @@ key-mapping.preset = 'qwerty'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
-# Gaps between windows (inner-*) and between monitor edges (outer-*).
+# Gaps between windows (inner-*) and between monitor edges (outer-*).aero
 # Possible values:
 # - Constant:     gaps.outer.top = 8
 # - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
@@ -56,7 +56,8 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
 outer.bottom =     10
-outer.top =        10
+outer.top =        [{ monitor.VG258 = 30 }, 10 ]
+
 outer.right =      10
 
 # 'main' binding mode declaration
@@ -137,11 +138,11 @@ alt-y = 'workspace Y'
 alt-z = 'workspace Z'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1'
-alt-shift-2 = 'move-node-to-workspace 2'
-alt-shift-3 = 'move-node-to-workspace 3'
-alt-shift-4 = 'move-node-to-workspace 4'
-alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-1 = [ 'move-node-to-workspace 1', 'workspace 1' ]
+alt-shift-2 = [ 'move-node-to-workspace 2', 'workspace 2' ]
+alt-shift-3 = [ 'move-node-to-workspace 3', 'workspace 3' ]
+alt-shift-4 = [ 'move-node-to-workspace 4', 'workspace 4' ]
+alt-shift-5 = [ 'move-node-to-workspace 5', 'workspace 5' ]
 alt-shift-6 = 'move-node-to-workspace 6'
 alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'

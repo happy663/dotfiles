@@ -75,7 +75,6 @@ in
         };
         ghq = {
           root = [
-            "~/.local/share"
             "~/src"
           ];
         };
