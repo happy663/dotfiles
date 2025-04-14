@@ -21,6 +21,7 @@ return {
           -- "typescript-language-server",
           "nil",
           "nixpkgs-fmt",
+          "vtsls",
         },
       })
     end,
