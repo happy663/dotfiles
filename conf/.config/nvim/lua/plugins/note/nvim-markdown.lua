@@ -3,7 +3,7 @@ return {
     "ixru/nvim-markdown",
     cond = vim.g.not_in_vscode,
     config = function()
-      -- vim.g.vim_markdown_no_default_key_mappings = 1
+      vim.g.vim_markdown_no_default_key_mappings = 1
       -- vim.keymap.set("n", "<Plug>Markdown_FollowLink", "<Plug>", {})
       -- Normal mode
       -- vim.keymap.set("n", "]]", "<Plug>Markdown_MoveToNextHeader")
@@ -12,8 +12,8 @@ return {
       -- vim.keymap.set("n", "[]", "<Plug>Markdown_MoveToPreviousSiblingHeader")
       -- vim.keymap.set("n", "]c", "<Plug>Markdown_MoveToCurHeader")
       -- vim.keymap.set("n", "]u", "<Plug>Markdown_MoveToParentHeader")
-      -- vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
-      -- vim.keymap.set("n", "<Tab>", "<Plug>Markdown_Fold")
+      vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
+      vim.keymap.set("n", "<Tab>", "<Plug>Markdown_Fold")
       -- vim.keymap.set("n", "<CR>", "<Plug>Markdown_FollowLink")
       --
       -- -- Insert mode
