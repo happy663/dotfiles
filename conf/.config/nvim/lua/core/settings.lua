@@ -186,7 +186,7 @@ vim.cmd([[
   augroup END
 ]])
 
-vim.opt.spell = true
+vim.opt.spell = false
 vim.opt.spelllang = { "en", "cjk" }
 vim.opt.spelloptions:append("camel", "pascal")
 
