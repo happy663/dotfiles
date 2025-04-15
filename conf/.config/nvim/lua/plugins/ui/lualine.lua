@@ -38,6 +38,9 @@ return {
           },
           lualine_x = {
             {
+              "copilot",
+            },
+            {
               require("noice").api.statusline.mode.get,
               cond = require("noice").api.statusline.mode.has,
               color = { fg = "#ff9e64" },
@@ -55,11 +58,8 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       "archibate/lualine-time",
+      "leisurelicht/lualine-copilot.nvim",
       opt = true,
     },
   },
 }
-
-
-
-
