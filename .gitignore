@@ -20,3 +20,9 @@ crossnote
 conf/.config/raycast/extensions
 conf/.config/shareedit
 
+conf/.config/colima
+conf/.config/git/attributes
+conf/.config/git/config
+conf/.config/git/ignore
+conf/.config/mise/config.toml
+conf/.config/tmux/tmux.conf
