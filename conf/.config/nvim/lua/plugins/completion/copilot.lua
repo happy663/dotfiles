@@ -15,6 +15,7 @@ return {
           local function disabled()
             vim.cmd("Copilot disable")
           end
+
           -- エラーを表示を回避する
           pcall(disabled)
           vim.notify("Copilot disabled", vim.log.levels.INFO)
@@ -34,10 +35,13 @@ return {
             next = "<M-CR>",
           },
         },
+        -- filetypesはトップレベルに設定
         filetypes = {
+          -- デフォルト設定に追加
           gitcommit = true,
           tex = false,
-          markdown = true,
+          markdown = false,
+          -- ["copilot-chat"] = true, -- copilot-chatを明示的に有効化
         },
       })
 
