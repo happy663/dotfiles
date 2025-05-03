@@ -73,9 +73,9 @@
           {
             app = "/Applications/WezTerm.app";
           }
-          {
-            app = "/Applications/Slack.app";
-          }
+          # {
+          #   app = "/Applications/Slack.app";
+          # }
         ]; # 常駐アプリなし
         mru-spaces = false; # 最近使用したスペースを並べ替えない
         expose-animation-duration = 0.1; # Exposéアニメーション速度
@@ -170,6 +170,7 @@
       # "homebrew/bundle"
       "nikitabobko/AeroSpace"
       "FelixKratz/formulae"
+      "kayac/tap/ecspresso"
     ];
     brews = [
       "sqlite"
@@ -177,6 +178,7 @@
       "sketchybar"
     ];
     casks = [
+      "meetingbar"
       "alacritty"
       "aerospace"
       "alt-tab"
@@ -195,6 +197,8 @@
       "vivaldi"
       "bitwarden"
       "claude"
+      "aws-vault"
+      "spotify"
     ];
   };
 

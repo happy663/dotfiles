@@ -29,6 +29,11 @@ in
       delta
       cargo
       uv
+      docker
+      docker-compose
+      colima
+      awscli
+      fastfetch
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -272,6 +277,8 @@ in
         }
 
         [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+        export AWS_SESSION_TOKEN_TTL=12h
       '';
 
       shellAliases = {
