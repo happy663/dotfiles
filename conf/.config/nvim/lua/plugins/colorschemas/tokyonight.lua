@@ -5,8 +5,7 @@ return {
     priority = 1000,
     opts = {},
     config = function()
-      require("tokyonight").setup({
-        transparent = false,
+      local base_config = {
         style = "moon",
         light_style = "day",
         terminal_colors = true,
@@ -82,7 +81,39 @@ return {
           all = package.loaded.lazy == nil,
           auto = true,
         },
+      }
+
+      local merged_config = vim.tbl_deep_extend("force", base_config, {
+        transparent = true,
       })
+
+      require("tokyonight").setup(merged_config)
+
+      vim.g.tokyonight_transparent_toggle = true
+      function _G.toggle_transparent()
+        print("toggle_transparent")
+        print(vim.g.tokyonight_transparent_toggle)
+        if vim.g.tokyonight_transparent_toggle then
+          require("tokyonight").setup(vim.tbl_deep_extend("force", merged_config, {
+            transparent = false,
+          }))
+          vim.g.tokyonight_transparent_toggle = false
+        else
+          require("tokyonight").setup(vim.tbl_deep_extend("force", merged_config, {
+            transparent = true,
+          }))
+          vim.g.tokyonight_transparent_toggle = true
+        end
+
+        vim.cmd("colorscheme tokyonight")
+      end
+
+      vim.keymap.set(
+        "n",
+        "<leader>ta",
+        ":lua toggle_transparent()<CR>",
+        { noremap = true, silent = true, desc = "Toggle transparent" }
+      )
     end,
   },
 }
