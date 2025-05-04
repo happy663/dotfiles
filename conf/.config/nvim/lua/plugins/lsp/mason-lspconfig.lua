@@ -114,6 +114,25 @@ return {
         vtsls = function()
           lspconfig.vtsls.setup({
             on_attach = no_format_on_attach,
+            root_dir = lspconfig.util.root_pattern("package.json"),
+          })
+        end,
+        denols = function()
+          lspconfig.denols.setup({
+            root_dir = lspconfig.util.root_pattern("deno.json"),
+            init_options = {
+              lint = true,
+              unstable = true,
+              suggest = {
+                imports = {
+                  hosts = {
+                    ["https://deno.land"] = true,
+                    ["https://cdn.nest.land"] = true,
+                    ["https://crux.land"] = true,
+                  },
+                },
+              },
+            },
           })
         end,
         eslint = function()
