@@ -17,6 +17,7 @@ return {
 
       -- Optional: Set up keymaps
       vim.keymap.set("n", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
+      vim.keymap.set("v", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
     end,
   },
 }
