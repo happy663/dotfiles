@@ -34,6 +34,7 @@ in
       colima
       awscli
       fastfetch
+      # neovim-remote
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";

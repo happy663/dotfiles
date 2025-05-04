@@ -70,6 +70,7 @@ else
   require("self-vscode")
 end
 
-if vim.fn.has("nvim") == 1 and vim.fn.executable("nvr") == 1 then
-  vim.env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe' +'normal! 7G' +'startinsert'"
-end
+-- 必要になった戻す
+-- if vim.fn.has("nvim") == 1 and vim.fn.executable("nvr") == 1 then
+--   vim.env.GIT_EDITOR = "nvr --remote-wait +'set bufhidden=wipe' +'normal! 7G' +'startinsert'"
+-- end

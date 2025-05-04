@@ -139,3 +139,11 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     end)
   end,
 })
+
+-- commit messageのテンプレートを開いたときにカーソルを7行目に移動
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "gitcommit",
+  callback = function()
+    vim.fn.setpos(".", { 0, 7, 1, 0 })
+  end,
+})
