@@ -10,10 +10,29 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "markdown",
         callback = function()
-          vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
-          vim.keymap.set("n", "<Tab>", "<Plug>Markdown_Fold")
-          vim.keymap.set("n", "O", "<Plug>Markdown_NewLineAbove")
-          vim.keymap.set("n", "o", "<Plug>Markdown_NewLineBelow")
+          vim.api.nvim_buf_set_keymap(0, "n", "<C-c>", "<Plug>Markdown_Checkbox", {
+            noremap = true,
+            silent = true,
+            desc = "Markdown: Toggle checkbox",
+          })
+
+          vim.api.nvim_buf_set_keymap(0, "n", "<Tab>", "<Plug>Markdown_Fold", {
+            noremap = true,
+            silent = true,
+            desc = "Markdown: Fold",
+          })
+
+          vim.api.nvim_buf_set_keymap(0, "n", "O", "<Plug>Markdown_NewLineAbove", {
+            noremap = true,
+            silent = true,
+            desc = "Markdown: New line above",
+          })
+
+          vim.api.nvim_buf_set_keymap(0, "n", "o", "<Plug>Markdown_NewLineBelow", {
+            noremap = true,
+            silent = true,
+            desc = "Markdown: New line below",
+          })
         end,
       })
 
