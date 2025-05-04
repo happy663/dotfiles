@@ -175,6 +175,7 @@
       "sqlite"
       "borders"
       "sketchybar"
+      "gnupg"
     ];
     casks = [
       "meetingbar"
