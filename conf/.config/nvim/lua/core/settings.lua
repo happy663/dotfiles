@@ -201,13 +201,6 @@ function Toggle_diagnostics()
   end
 end
 
-vim.keymap.set(
-  "n",
-  "<leader>dt",
-  Toggle_diagnostics,
-  { noremap = true, silent = true, desc = "Toggle vim diagnostics" }
-)
-
 vim.opt.foldmethod = "indent" -- インデントで折りたたみ
 vim.opt.foldlevel = 99 -- 折りたたみの初期レベルを99に設定
 

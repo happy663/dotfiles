@@ -53,6 +53,10 @@ return {
             false
           )
           vim.fn["skkeleton#register_keymap"]("henkan", "<C-a>", "henkanForward")
+
+          vim.keymap.set("t", "<C-y>", function()
+            vim.fn.feedkeys(vim.fn.input("Input: "), "n")
+          end, { noremap = true })
         end,
       })
     end,

@@ -200,6 +200,7 @@
       "aws-vault"
       "spotify"
       "jordanbaird-ice"
+      "spotify"
     ];
   };
 
