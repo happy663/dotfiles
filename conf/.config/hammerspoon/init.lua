@@ -1,24 +1,12 @@
 -- Enable Spotlight search for applications
 hs.application.enableSpotlightForNameSearches(true)
 
--- Function to focus the GhostText window in WezTerm
-local function focusWezTermGhostTextWindow()
-  local app = hs.application.find("WezTerm")
-  if app then
-    local window = app:findWindow("GhostText")
-    if window then
-      window:focus()
-      hs.alert.show("Focused GhostText Window")
-    else
-      local windows = hs.window.allWindows()
-      for _, win in ipairs(windows) do
-        print(win:title())
-      end
-    end
-  else
-    hs.alert.show("WezTerm not found")
-  end
-end
+-- ~/.hammerspoon/init.lua
+dofile(hs.configdir .. "/modules/ghost.lua")
+-- dofile(hs.configdir .. "/modules/test.lua")
+dofile(hs.configdir .. "/modules/google-docs.lua")
+-- dofile(hs.configdir .. "/modules/macskk.lua")
 
--- Bind Alt+4 to the focus function
-hs.hotkey.bind({ "alt" }, "4", focusWezTermGhostTextWindow)
+local log = hs.logger.new("myLogger", "debug")
+
+hs.alert.show("メイン設定ファイルを読み込みました")

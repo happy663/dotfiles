@@ -151,14 +151,13 @@
     pam.services.sudo_local.watchIdAuth = true; # sudoでのapple watchでの認証を有効化
   };
 
-  # スクリーンセーバー関連の設定
+  # スクリーンセーバー関連の設定とアプリケーション固有の設定
   # システムコマンドを使用して設定する例
-  # system.activationScripts.postActivation.text = ''
-  #   # スクリーンセーバー後にパスワードを要求
-  #   defaults write com.apple.screensaver askForPassword -int 1
-  #   # パスワード要求までの遅延（秒）
-  #   defaults write com.apple.screensaver askForPasswordDelay -int 5
-  # '';
+  system.activationScripts.postActivation.text = ''
+    # Hammerspoon設定ファイルのパスを設定
+    defaults write org.hammerspoon.Hammerspoon MJConfigFile "$HOME/.config/hammerspoon/init.lua"
+    echo "Hammerspoon configuration has been set to use $HOME/.config/hammerspoon/init.lua"
+  '';
 
   homebrew = {
     enable = true;
@@ -201,6 +200,7 @@
       "spotify"
       "jordanbaird-ice"
       "spotify"
+      "hammerspoon"
     ];
   };
 

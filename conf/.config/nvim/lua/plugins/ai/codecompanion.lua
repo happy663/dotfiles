@@ -159,7 +159,7 @@ return {
         },
         strategies = {
           chat = {
-            adapter = "anthropic",
+            adapter = "copilot",
             slash_commands = {
               ["buffer"] = {
                 callback = "strategies.chat.slash_commands.buffer",
