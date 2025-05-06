@@ -18,7 +18,7 @@ gui:
 refresher:
   refreshInterval: 3
 os:
-  editCommand: "nvim"
+  edit: nvim
 customCommands:
   - key: "C"
     context: "files"
@@ -105,3 +105,17 @@ customCommands:
               rm -f "$COMMIT_MSG_FILE"'
     context: files
     subprocess: true
+keybinding:
+  universal:
+    prevItem: "<c-p>" # Navigate up with Ctrl+p
+    nextItem: "<c-n>" # Navigate down with Ctrl+n
+    quit: "<esc>" # Quit with Escape
+
+  # You can also customize keys for specific panels
+  commits:
+    moveDownCommit: "<c-n>"
+    moveUpCommit: "<c-p>"
+
+  files:
+    nextFile: "<c-n>"
+    prevFile: "<c-p>"

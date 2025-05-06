@@ -1,3 +1,6 @@
+vim.o.timeout = true
+vim.o.timeoutlen = 200 -- タイムアウトを300msに設定 (デフォルトは1000ms)
+
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
@@ -18,3 +21,15 @@ autocmd("TextYankPost", {
     end
   end,
 })
+
+vim.keymap.set("n", "<leader>", function()
+  vim.fn["VSCodeCall"]("whichkey.show")
+end, { noremap = true, silent = true })
+
+vim.keymap.set("n", "<leader>l", function()
+  vim.fn["VSCodeCall"]("lazygit-vscode.toggle")
+end, { noremap = true, silent = true })
+--
+vim.keymap.set("n", "<leader><leader>", function()
+  vim.fn["VSCodeCall"]("workbench.action.showCommands")
+end, { noremap = true, silent = true })
