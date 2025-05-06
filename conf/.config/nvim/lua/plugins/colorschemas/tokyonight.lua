@@ -84,7 +84,7 @@ return {
       }
 
       local merged_config = vim.tbl_deep_extend("force", base_config, {
-        transparent = true,
+        transparent = false,
       })
 
       require("tokyonight").setup(merged_config)
