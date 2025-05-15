@@ -232,10 +232,9 @@ return {
             sorting = {
               priority_weight = 2,
               comparators = {
-                cmp.config.compare.offset,
                 cmp.config.compare.exact,
                 cmp.config.compare.score,
-                cmp.config.compare.kind,
+                cmp.config.compare.length,
               },
             },
             -- performance = {
