@@ -17,7 +17,7 @@
       NSGlobalDomain = {
         AppleShowAllExtensions = true;
         ApplePressAndHoldEnabled = false; # キーリピートを有効にする（長押しの特殊文字入力を無効化）
-        InitialKeyRepeat = 15; # キーリピート開始までの時間（デフォルトは25、小さいほど速く開始）
+        InitialKeyRepeat = 10; # キーリピート開始までの時間（デフォルトは25、小さいほど速く開始）
         KeyRepeat = 1; # キーリピートの速度（デフォルトは6、小さいほど速い）
         NSAutomaticCapitalizationEnabled = false; # 自動大文字化を無効
         NSAutomaticDashSubstitutionEnabled = false; # 自動ダッシュ置換を無効

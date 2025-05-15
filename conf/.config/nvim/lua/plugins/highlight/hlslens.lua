@@ -1,7 +1,6 @@
 return {
   {
     "kevinhwang91/nvim-hlslens",
-    cond = vim.g.not_in_vscode,
     config = function()
       require("hlslens").setup()
 

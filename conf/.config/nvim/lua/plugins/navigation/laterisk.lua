@@ -1,7 +1,6 @@
 return {
   {
     "rapan931/lasterisk.nvim",
-    cond = vim.g.not_in_vscode,
     config = function()
       vim.keymap.set("n", "*", function()
         require("lasterisk").search()

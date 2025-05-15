@@ -22,9 +22,9 @@ autocmd("TextYankPost", {
   end,
 })
 
-vim.keymap.set("n", "<leader>", function()
-  vim.fn["VSCodeCall"]("whichkey.show")
-end, { noremap = true, silent = true })
+-- vim.keymap.set("n", "<leader>", function()
+--   vim.fn["VSCodeCall"]("whichkey.show")
+-- end, { noremap = true, silent = true })
 
 vim.keymap.set("n", "<leader>l", function()
   vim.fn["VSCodeCall"]("lazygit-vscode.toggle")
@@ -32,4 +32,8 @@ end, { noremap = true, silent = true })
 --
 vim.keymap.set("n", "<leader><leader>", function()
   vim.fn["VSCodeCall"]("workbench.action.showCommands")
+end, { noremap = true, silent = true })
+
+vim.keymap.set("n", "<leader>qq", function()
+  vim.fn["VSCodeCall"]("workbench.action.closeActiveEditor")
 end, { noremap = true, silent = true })
