@@ -135,6 +135,21 @@ return {
             },
           })
         end,
+        intelephense = function()
+          lspconfig.intelephense.setup({
+            on_attach = no_format_on_attach,
+            capabilities = vim.lsp.protocol.make_client_capabilities(),
+            settings = {
+              intelephense = {
+                format = {
+                  -- これがないと、PHPのintelephenseが無効化されない
+                  -- no_format_on_attachでは無効化されない
+                  enable = false, -- 明示的にフォーマットを無効化
+                },
+              },
+            },
+          })
+        end,
         eslint = function()
           lspconfig.eslint.setup({
             on_attach = function(client, bufnr)
