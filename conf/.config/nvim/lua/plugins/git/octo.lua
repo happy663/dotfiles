@@ -9,7 +9,13 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
-      require("octo").setup()
+      require("octo").setup({
+        mappings = {
+          issue = {
+            add_comment = { lhs = "<leader>oa", desc = "add comment" },
+          },
+        },
+      })
     end,
   },
 }
