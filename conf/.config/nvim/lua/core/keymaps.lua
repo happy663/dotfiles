@@ -217,3 +217,5 @@ vim.keymap.set(
   "<Cmd>let @+ = expand('%:p')<CR>",
   { noremap = true, silent = true, desc = "Copy absolute path" }
 )
+
+vim.keymap.set("i", "<C-v>", "<C-r>+", { noremap = true, silent = true, desc = "Paste from clipboard" })
