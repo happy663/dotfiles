@@ -60,6 +60,9 @@ return {
           --null_ls.builtins.completion.spell,
           null_ls.builtins.formatting.prettierd,
           null_ls.builtins.formatting.nixpkgs_fmt,
+          null_ls.builtins.formatting.phpcsfixer.with({
+            extra_args = { "--rules=@PSR2" },
+          }),
           --null_ls.builtins.code_actions.eslint_d,
           -- null_ls.builtins.formatting.latexindent,
           --null_ls.builtins.diagnostics.luacheck.with({
