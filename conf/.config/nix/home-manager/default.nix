@@ -1,4 +1,4 @@
-{ inputs, lib, config, pkgs, ... }:
+{ inputs, lib, config, pkgs, phps, ... }:
 let
   username = "happy";
 in
@@ -46,6 +46,7 @@ in
         };
       }))
       deno
+      phps.packages.${pkgs.system}.php74
     ];
 
     sessionVariables = {
