@@ -8,7 +8,7 @@ return {
       vim.g.vim_markdown_no_default_key_mappings = 1
 
       vim.api.nvim_create_autocmd("FileType", {
-        pattern = "markdown",
+        pattern = { "markdown", "octo" },
         callback = function()
           vim.api.nvim_buf_set_keymap(0, "n", "<C-c>", "<Plug>Markdown_Checkbox", {
             noremap = true,
@@ -33,6 +33,12 @@ return {
             silent = true,
             desc = "Markdown: New line below",
           })
+
+          vim.api.nvim_buf_set_keymap(0, "i", "<C-k>", "<Plug>Markdown_CreateLink", {
+            noremap = true,
+            silent = true,
+            desc = "Markdown: Create link",
+          })
         end,
       })
 
@@ -45,10 +51,10 @@ return {
       -- vim.keymap.set("n", "]c", "<Plug>Markdown_MoveToCurHeader")
       -- vim.keymap.set("n", "]u", "<Plug>Markdown_MoveToParentHeader")
       vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
+      vim.keymap.set("n", "gx", "<Plug>Markdown_FollowLink")
       -- vim.keymap.set("n", "<Tab>", "<Plug>Markdown_Fold")
       -- vim.keymap.set("n", "O", "<Plug>Markdown_NewLineAbove")
       -- vim.keymap.set("n", "o", "<Plug>Markdown_NewLineBelow")
-      -- vim.keymap.set("n", "<CR>", "<Plug>Markdown_FollowLink")
       --
       -- -- Insert mode
       -- vim.keymap.set("i", "<Tab>", "<Plug>Markdown_Jump")
@@ -56,7 +62,6 @@ return {
       -- vim.keymap.set("i", "<CR>", "<Plug>Markdown_NewLineBelow")
       --
       -- -- Visual mode
-      -- vim.keymap.set("x", "<C-k>", "<Plug>Markdown_CreateLink")
     end,
   },
 }
