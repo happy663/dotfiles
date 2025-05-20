@@ -201,3 +201,19 @@ end, { noremap = true, silent = true, desc = "delete all sentence from current_f
 
 vim.keymap.set("n", "q", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>mq", "q", { noremap = true, silent = true })
+
+-- 相対パスをコピー
+vim.keymap.set(
+  "n",
+  "<leader>pc",
+  "<Cmd>let @+ = expand('%')<CR>",
+  { noremap = true, silent = true, desc = "Copy relative path" }
+)
+
+-- 絶対パスをコピー
+vim.keymap.set(
+  "n",
+  "<leader>pa",
+  "<Cmd>let @+ = expand('%:p')<CR>",
+  { noremap = true, silent = true, desc = "Copy absolute path" }
+)
