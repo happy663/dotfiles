@@ -92,6 +92,7 @@ return {
         --   name = "copilot",
         --   group_index = 1,
         -- },
+        { name = "emoji", group_index = 1 },
         { name = "nvim_lsp", group_index = 1 },
         { name = "path", group_index = 1 },
         { name = "buffer", group_index = 1 },
@@ -179,6 +180,7 @@ return {
           --   name = "copilot",
           --   group_index = 1,
           -- },
+          { name = "emoji", group_index = 1 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "path", group_index = 1 },
           { name = "buffer", group_index = 1 },
@@ -294,6 +296,7 @@ return {
       "micangl/cmp-vimtex",
       "f3fora/cmp-spell",
       "lukas-reineke/cmp-rg",
+      "hrsh7th/cmp-emoji",
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
