@@ -1,4 +1,7 @@
 { pkgs, ... }: {
+  # primaryUserの設定（darwin-rebuildを実行するユーザー）
+  system.primaryUser = "happy";
+
   # nix自体の設定
   nix = {
     optimise.automatic = true;
@@ -176,6 +179,7 @@
       "gnupg"
     ];
     casks = [
+      "emacs"
       "meetingbar"
       "alacritty"
       "aerospace"
