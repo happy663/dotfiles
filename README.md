@@ -1,4 +1,4 @@
-# Toyama Dotfiles
+# Dotfiles
 
 主にmacOS環境をメインに設定ファイルを管理している
 
