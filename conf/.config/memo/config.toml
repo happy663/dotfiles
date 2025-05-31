@@ -1,4 +1,4 @@
-memodir = "~/.memolist/memo" # memolist.vimの設定を揃える
+memodir = "~/src/github.com/happy663/memo/memo" # memolist.vimの設定を揃える
 editor = "nvim"
 column = 20
 width = 0

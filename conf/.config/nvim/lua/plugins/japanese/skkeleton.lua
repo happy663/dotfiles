@@ -56,7 +56,7 @@ return {
 
           vim.keymap.set("t", "<C-y>", function()
             vim.fn.feedkeys(vim.fn.input("Input: "), "n")
-          end, { noremap = true })
+          end)
         end,
       })
     end,
