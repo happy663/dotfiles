@@ -22,7 +22,10 @@ return {
           "nil",
           "nixpkgs-fmt",
           "vtsls",
-        },
+          "intelephense",
+          "php-cs-fixer",
+          "denols",
+        }
       })
     end,
     dependencies = {

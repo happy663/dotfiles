@@ -53,6 +53,11 @@ local function set_lsp_keymaps(bufnr)
         return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
       end,
     },
+    vertical_lines = {
+      format = function(diagnostic)
+        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
+      end,
+    },
   })
   vim.keymap.set("n", "<leader>dcc", function()
     copy_diagnostic_text(bufnr)
@@ -83,117 +88,111 @@ return {
     cond = vim.g.not_in_vscode,
     config = function()
       local lspconfig = require("lspconfig")
-      require("mason-lspconfig").setup_handlers({
-        function(server_name)
-          lspconfig[server_name].setup({
-            on_attach = on_attach,
-          })
-        end,
-        lua_ls = function()
-          lspconfig.lua_ls.setup({
-            on_attach = no_format_on_attach,
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { "vim", "use" },
-                },
+      -- デフォルト設定（その他のサーバー向け）
+      vim.lsp.config("*", {
+        on_attach = on_attach,
+        -- capabilities = require('cmp_nvim_lsp').default_capabilities(),
+      })
+      -- Lua設定
+      vim.lsp.config("lua_ls", {
+        on_attach = no_format_on_attach,
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim", "use" },
+            },
+          },
+        },
+      })
+      -- Tailwind CSS設定
+      vim.lsp.config("tailwindcss", {
+        on_attach = no_format_on_attach,
+      })
+      -- TypeScript Server設定
+      vim.lsp.config("vtsls", {
+        on_attach = no_format_on_attach,
+        root_markers = {
+          "tsconfig.json",
+          "package.json",
+        },
+        workspace_required = true,
+      })
+      -- Deno設定
+      vim.lsp.config("denols", {
+        root_markers = {
+          "deno.json",
+          "deno.jsonc",
+        },
+        workspace_required = true,
+        on_attach = no_format_on_attach,
+        init_options = {
+          lint = true,
+          unstable = true,
+          suggest = {
+            imports = {
+              hosts = {
+                ["https://deno.land"] = true,
+                ["https://cdn.nest.land"] = true,
+                ["https://crux.land"] = true,
               },
             },
-          })
-        end,
-        -- tsserver = function()
-        --   lspconfig.tsserver.setup({
-        --     on_attach = no_format_on_attach,
-        --   })
-        -- end,
-        tailwindcss = function()
-          lspconfig.tailwindcss.setup({
-            on_attach = no_format_on_attach,
-          })
-        end,
-        vtsls = function()
-          lspconfig.vtsls.setup({
-            on_attach = no_format_on_attach,
-            root_dir = lspconfig.util.root_pattern("package.json"),
-          })
-        end,
-        denols = function()
-          lspconfig.denols.setup({
-            root_dir = lspconfig.util.root_pattern("deno.json"),
-            init_options = {
-              lint = true,
-              unstable = true,
-              suggest = {
-                imports = {
-                  hosts = {
-                    ["https://deno.land"] = true,
-                    ["https://cdn.nest.land"] = true,
-                    ["https://crux.land"] = true,
-                  },
-                },
-              },
+          },
+        },
+      })
+      -- PHP設定
+      vim.lsp.config("intelephense", {
+        on_attach = no_format_on_attach,
+        capabilities = vim.lsp.protocol.make_client_capabilities(),
+        settings = {
+          intelephense = {
+            format = {
+              -- これがないと、PHPのintelephenseが無効化されない
+              -- no_format_on_attachでは無効化されない
+              enable = false, -- 明示的にフォーマットを無効化
             },
-          })
-        end,
-        intelephense = function()
-          lspconfig.intelephense.setup({
-            on_attach = no_format_on_attach,
-            capabilities = vim.lsp.protocol.make_client_capabilities(),
-            settings = {
-              intelephense = {
-                format = {
-                  -- これがないと、PHPのintelephenseが無効化されない
-                  -- no_format_on_attachでは無効化されない
-                  enable = false, -- 明示的にフォーマットを無効化
-                },
-              },
-            },
-          })
-        end,
-        eslint = function()
-          lspconfig.eslint.setup({
-            on_attach = function(client, bufnr)
-              vim.api.nvim_create_autocmd("BufWritePre", {
-                buffer = bufnr,
-                command = "EslintFixAll",
-              })
-            end,
-          })
-        end,
-        pylsp = function()
-          lspconfig.pylsp.setup({
-            on_attach = no_format_on_attach,
-          })
-        end,
-        texlab = function()
-          lspconfig.texlab.setup({
-            on_attach = on_attach,
-            root_dir = lspconfig.util.root_pattern(".texlabroot", ".git", ".latexmkrc", "texlabroot", "Tectonic.toml"),
-            settings = {
-              texlab = {
-                build = {
-                  executable = "latexmk",
-                  args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
-                  onSave = true,
-                },
-              },
-            },
-          })
-          nil_ls = function()
-            lspconfig.nil_ls.setup({
-              on_attach = on_attach,
-            })
-          end
-        end,
-        typos_lsp = function()
-          lspconfig.typos_lsp.setup({
-            init_options = {
-              config = "~/.config/nvim/.typos.toml",
-              diagnosticSeverity = "Warning",
-            },
+          },
+        },
+      })
+      -- ESLint設定
+      vim.lsp.config("eslint", {
+        on_attach = function(client, bufnr)
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            command = "EslintFixAll",
           })
         end,
       })
+      -- Python設定
+      vim.lsp.config("pylsp", {
+        on_attach = no_format_on_attach,
+      })
+      -- LaTeX設定
+      vim.lsp.config("texlab", {
+        on_attach = on_attach,
+        root_dir = lspconfig.util.root_pattern(".texlabroot", ".git", ".latexmkrc", "texlabroot", "Tectonic.toml"),
+        settings = {
+          texlab = {
+            build = {
+              executable = "latexmk",
+              args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+              onSave = true,
+            },
+          },
+        },
+      })
+      -- Nix設定
+      vim.lsp.config("nil_ls", {
+        on_attach = on_attach,
+      })
+      -- Typos設定
+      vim.lsp.config("typos_lsp", {
+        init_options = {
+          config = "~/.config/nvim/.typos.toml",
+          diagnosticSeverity = "Warning",
+        },
+      })
+      -- Mason-LSPConfigの設定
+      require("mason-lspconfig").setup()
     end,
     dependencies = {
       "neovim/nvim-lspconfig",

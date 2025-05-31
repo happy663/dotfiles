@@ -39,6 +39,7 @@ in
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
         src = fetchFromGitHub {
+
           owner = "jesseduffield";
           repo = "lazygit";
           rev = "v0.40.2";
@@ -376,7 +377,7 @@ in
     node = "latest"
     python = "3.12.2"
     yarn = "1.22.19"
-    neovim = "0.10.2"
+    neovim = "latest"
     ghc = "9.6.5"
     deno = "latest"
     pnpm = "latest"
@@ -448,3 +449,6 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
+
+
+
