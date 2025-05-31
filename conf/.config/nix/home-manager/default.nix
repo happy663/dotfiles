@@ -204,6 +204,7 @@ in
         export XDG_CONFIG_HOME="$HOME/.config"
         export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
         export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
+        export LIMA_HOME="$HOME/.colima_lima"
 
 
         # OS固有の設定
