@@ -57,7 +57,7 @@ return {
           button = "",
           -- Enables / disables diagnostic symbols
           diagnostics = {
-            [vim.diagnostic.severity.ERROR] = { enabled = true, icon = "ﬀ" },
+            [vim.diagnostic.severity.ERROR] = { enabled = true, icon = " " },
             [vim.diagnostic.severity.WARN] = { enabled = false },
             [vim.diagnostic.severity.INFO] = { enabled = false },
             [vim.diagnostic.severity.HINT] = { enabled = true },
@@ -168,4 +168,3 @@ return {
     version = "^1.0.0", -- optional: only update when a new 1.x version is released
   },
 }
-
