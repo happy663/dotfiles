@@ -89,7 +89,7 @@ return {
 
       require("tokyonight").setup(merged_config)
 
-      vim.g.tokyonight_transparent_toggle = true
+      vim.g.tokyonight_transparent_toggle = false
       function _G.toggle_transparent()
         print("toggle_transparent")
         print(vim.g.tokyonight_transparent_toggle)
