@@ -153,6 +153,7 @@
     pam.services.sudo_local.watchIdAuth = true; # sudoでのapple watchでの認証を有効化
   };
 
+
   # スクリーンセーバー関連の設定とアプリケーション固有の設定
   # システムコマンドを使用して設定する例
   system.activationScripts.postActivation.text = ''
@@ -204,6 +205,7 @@
       "jordanbaird-ice"
       "spotify"
       "hammerspoon"
+      "cursor"
     ];
   };
 
@@ -226,6 +228,3 @@
     # 不要なサービスの無効化など
   };
 }
-
-
-
