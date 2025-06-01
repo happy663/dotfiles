@@ -1,23 +1,37 @@
 return {
   {
-    "ramilito/winbar.nvim",
-    event = "VimEnter", -- Alternatively, BufReadPre if we don't care about the empty file when starting with 'nvim'
+    "fgheng/winbar.nvim",
     cond = vim.g.not_in_vscode,
-    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("winbar").setup({
-        -- your configuration comes here, for example:
-        icons = true,
-        diagnostics = true,
-        buf_modified = true,
-        buf_modified_symbol = "M",
-        -- or use an icon
-        -- buf_modified_symbol = "●"
-        dim_inactive = {
-          enabled = false,
-          highlight = "WinbarNC",
-          icons = true, -- whether to dim the icons
-          name = true, -- whether to dim the name
+        enabled = true,
+        show_file_path = true,
+        show_symbols = true,
+        colors = {
+          path = "", -- You can customize colors like #c946fd
+          file_name = "",
+          symbols = "",
+        },
+        icons = {
+          file_icon_default = "",
+          seperator = ">",
+          editor_state = "●",
+          lock_icon = "",
+        },
+        exclude_filetype = {
+          "help",
+          "startify",
+          "dashboard",
+          "packer",
+          "neogitstatus",
+          "NvimTree",
+          "Trouble",
+          "alpha",
+          "lir",
+          "Outline",
+          "spectre_panel",
+          "toggleterm",
+          "qf",
         },
       })
     end,
