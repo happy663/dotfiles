@@ -23,8 +23,6 @@ return {
         pattern = "term://*lazygit*",
         callback = function()
           local opts = { noremap = true, silent = true }
-          vim.api.nvim_buf_set_keymap(0, "t", "<C-n>", "<Down>", opts)
-          vim.api.nvim_buf_set_keymap(0, "t", "<C-p>", "<Up>", opts)
           vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
         end,
       })
