@@ -1,30 +1,30 @@
 -- settings.lua
 
 -- UI設定
-vim.o.number = true         -- 行番号を表示
+vim.o.number = true -- 行番号を表示
 vim.o.relativenumber = true -- 現在行からの相対的な行番号表示
-vim.o.cursorline = true     -- カーソル位置の行をハイライト
-vim.o.showmatch = true      -- 括弧のマッチング部分を表示
+vim.o.cursorline = true -- カーソル位置の行をハイライト
+vim.o.showmatch = true -- 括弧のマッチング部分を表示
 vim.o.foldmethod = "marker" -- 折りたたみの方法をマーカーに設定
-vim.o.colorcolumn = "80"    -- 80文字目に縦線を表示
-vim.o.splitright = true     -- 垂直分割時に新しいウィンドウを右側に表示
-vim.o.splitbelow = true     -- 水平分割時に新しいウィンドウを下側に表示
-vim.o.termguicolors = true  -- True color support
+vim.o.colorcolumn = "80" -- 80文字目に縦線を表示
+vim.o.splitright = true -- 垂直分割時に新しいウィンドウを右側に表示
+vim.o.splitbelow = true -- 水平分割時に新しいウィンドウを下側に表示
+vim.o.termguicolors = true -- True color support
 
 -- エディタ設定
-vim.o.expandtab = true   -- タブをスペースに変換
+vim.o.expandtab = true -- タブをスペースに変換
 
-vim.o.tabstop = 2        -- タブの幅を2スペースに設定
+vim.o.tabstop = 2 -- タブの幅を2スペースに設定
 -- Add the keymap for <C-n> in henkan mode
-vim.o.shiftwidth = 2     -- インデントの幅を2スペースに設定
+vim.o.shiftwidth = 2 -- インデントの幅を2スペースに設定
 vim.o.smartindent = true -- 自動インデント機能を有効化
-vim.o.wrap = false       -- 長い行を折り返さない
+vim.o.wrap = false -- 長い行を折り返さない
 
 -- 検索設定
-vim.o.hlsearch = true   -- 検索結果をハイライト
-vim.o.incsearch = true  -- インクリメンタル検索を有効化
+vim.o.hlsearch = true -- 検索結果をハイライト
+vim.o.incsearch = true -- インクリメンタル検索を有効化
 vim.o.ignorecase = true -- 検索時に大文字と小文字を区別しない
-vim.o.smartcase = true  -- 検索クエリに大文字が含まれている場合のみ大文字と小文字を区別
+vim.o.smartcase = true -- 検索クエリに大文字が含まれている場合のみ大文字と小文字を区別
 
 -- バックアップとスワップファイルを無効化
 vim.o.backup = false
@@ -151,10 +151,10 @@ vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = tr
 
 -- カーソルの設定
 vim.opt.guicursor = {
-  "n-v:block-Cursor",                             -- ノーマル・ビジュアルモード: ブロックカーソル
-  "i-c-ci-ve:ver25-Cursor",                       -- インサート・コマンドモード: 25%幅の縦線カーソル
-  "r-cr:hor20-Cursor",                            -- 置換モード: 20%高さの横線カーソル
-  "o:hor50-Cursor",                               -- オペレータ待機モード: 50%高さの横線カーソル
+  "n-v:block-Cursor", -- ノーマル・ビジュアルモード: ブロックカーソル
+  "i-c-ci-ve:ver25-Cursor", -- インサート・コマンドモード: 25%幅の縦線カーソル
+  "r-cr:hor20-Cursor", -- 置換モード: 20%高さの横線カーソル
+  "o:hor50-Cursor", -- オペレータ待機モード: 50%高さの横線カーソル
   "a:blinkwait500-blinkoff200-blinkon200-Cursor", -- 0.5秒待機、0.2秒オン/オフ
 }
 
@@ -202,7 +202,7 @@ function Toggle_diagnostics()
 end
 
 vim.opt.foldmethod = "indent" -- インデントで折りたたみ
-vim.opt.foldlevel = 99        -- 折りたたみの初期レベルを99に設定
+vim.opt.foldlevel = 99 -- 折りたたみの初期レベルを99に設定
 
 vim.keymap.set("n", "<Tab>", "zo", { noremap = true, silent = true, desc = "Fold open" })
 vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
@@ -232,7 +232,8 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.diagnostic.config({
-  virtual_lines = true,
-  -- virtual_text = true,
-})
+-- tiny-inline-diagnostic.nvimの設定するためコメントアウト
+-- vim.diagnostic.config({
+-- virtual_lines = true,
+-- virtual_text = true,
+-- })
