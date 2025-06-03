@@ -207,7 +207,7 @@ in
         export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
         export LIMA_HOME="$HOME/.colima_lima"
         export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
-        export PATH="$JAVA_HOME/bin:$PATH
+        export PATH="$JAVA_HOME/bin:$PATH"
 
 
         # OS固有の設定
@@ -285,6 +285,7 @@ in
         [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
         export AWS_SESSION_TOKEN_TTL=12h
+
       '';
 
       shellAliases = {
@@ -451,4 +452,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-

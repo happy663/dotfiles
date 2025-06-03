@@ -207,6 +207,7 @@
       "hammerspoon"
       "temurin@8"
       "cursor"
+      "ghostty"
     ];
   };
 
