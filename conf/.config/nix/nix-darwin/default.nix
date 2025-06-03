@@ -205,6 +205,7 @@
       "jordanbaird-ice"
       "spotify"
       "hammerspoon"
+      "temurin@8"
       "cursor"
     ];
   };
