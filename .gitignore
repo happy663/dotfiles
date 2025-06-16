@@ -26,3 +26,7 @@ conf/.config/git/config
 conf/.config/git/ignore
 conf/.config/mise/config.toml
 conf/.config/tmux/tmux.conf
+conf/.config/.claude/todos
+conf/.claude/statsig
+conf/.claude/projects
+conf/.claude/todos

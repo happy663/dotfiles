@@ -178,6 +178,7 @@
       "borders"
       "sketchybar"
       "gnupg"
+      "coursier"
     ];
     casks = [
       "emacs"
@@ -230,3 +231,4 @@
     # 不要なサービスの無効化など
   };
 }
+

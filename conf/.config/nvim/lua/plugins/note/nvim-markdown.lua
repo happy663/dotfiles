@@ -1,8 +1,6 @@
 return {
   {
-
     "ixru/nvim-markdown",
-
     cond = vim.g.not_in_vscode,
     config = function()
       vim.g.vim_markdown_no_default_key_mappings = 1
