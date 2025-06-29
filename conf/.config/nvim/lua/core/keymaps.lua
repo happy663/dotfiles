@@ -30,7 +30,6 @@ map("i", "<C-b>", "<Left>", opts)
 map("v", "<leader>/", "gcc", { noremap = false, silent = true })
 -- terminal mode
 -- escapeでnormal modeに戻る
-map("t", "<esc>", [[<C-\><C-n>]], opts)
 map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
 map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
@@ -217,3 +216,7 @@ vim.keymap.set(
 )
 
 vim.keymap.set("i", "<C-v>", "<C-r>+", { noremap = true, silent = true, desc = "Paste from clipboard" })
+
+-- map("t", "<Esc>", "<Esc>", opts)
+-- map("t", "<C-w>", "<C-\\><C-n><C-w>", opts)
+map("t", "<esc>", [[<C-\><C-n>]], opts)

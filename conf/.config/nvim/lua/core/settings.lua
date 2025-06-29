@@ -47,10 +47,10 @@ vim.o.encoding = "utf-8"
 vim.o.fileencodings = "utf-8,euc-jp"
 
 -- デフォルトのカラースキームを設定
-vim.cmd("colorscheme tokyonight-moon")
--- vim.cmd("colorscheme ayu-mirage")
 -- vim.cmd("colorscheme tokyonight-moon")
 vim.cmd("colorscheme ayu-mirage")
+-- vim.cmd("colorscheme tokyonight-moon")
+-- vim.cmd("colorscheme ayu-mirage")
 -- vim.cmd("colorscheme everforest")
 
 require("notify").setup({

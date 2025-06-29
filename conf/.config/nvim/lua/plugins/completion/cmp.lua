@@ -106,6 +106,7 @@ return {
         { name = "vimtex", group_index = 1 },
         { name = "render-markdown", group_index = 1 },
         { name = "calc", group_index = 1 },
+        { name = "git", group_index = 1 },
         {
           name = "spell",
           option = {
@@ -209,6 +210,7 @@ return {
             name = "rg",
             group_index = 1,
           },
+          { name = "git", group_index = 1 },
         },
         sorting = default_sorting,
         formatting = {
