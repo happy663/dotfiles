@@ -209,6 +209,7 @@
       "temurin@8"
       "cursor"
       "ghostty"
+      "superwhisper"
     ];
   };
 
@@ -231,4 +232,3 @@
     # 不要なサービスの無効化など
   };
 }
-

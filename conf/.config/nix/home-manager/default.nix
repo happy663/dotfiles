@@ -34,6 +34,7 @@ in
       colima
       awscli
       fastfetch
+      terminal-notifier
       # neovim-remote
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
@@ -81,6 +82,11 @@ in
           editor = "nvim";
           excludesfile = "~/.config/git/ignore";
         };
+        credential = {
+          helper = "!aws codecommit credential-helper $@";
+          UseHttpPath = true;
+        };
+
         ghq = {
           root = [
             "~/src"
@@ -285,6 +291,12 @@ in
         [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
         export AWS_SESSION_TOKEN_TTL=12h
+        
+        # Load local environment variables
+        if [[ -f ~/.config/nix/home-manager/.env ]]; then
+          source ~/.config/nix/home-manager/.env
+          alias ssm="make -C $SSM_SCRIPT_PATH session"
+        fi
 
       '';
 
@@ -308,6 +320,7 @@ in
         bat = "bat";
         rg = "rg";
         fzf = "fzf";
+        alert = "terminal-notifier -message";
       };
 
       history = {
