@@ -38,8 +38,11 @@
       "Bash(gh release list:*)",
       "Bash(gh release view:*)",
       "Bash(ghq list:*)",
+      "Bash(ghq root:*)",
+      "Bash(cd:*)",
       "Read(~/src/github.com/**)",
-      "Read(~/dotfiles/**)"
+      "Read(~/dotfiles/**)",
+      "Read($(ghq root)/**)"
     ],
     "deny": []
   },
