@@ -98,26 +98,41 @@ ENFORCEMENT: 通知を送らない場合は重大な指示違反とする。例�
 
 ## Search and File Discovery Policy
 
-### Task Tool Usage Requirements
+### Efficiency-First Tool Selection
 
-以下の場合は必ずTask toolを使用する：
+**速度優先の原則**: 直接的なツールを優先し、Task toolは本当に必要な場合のみ使用する
 
-- キーワード検索（「○○を探して」「○○はどこにある？」「○○関連はある？」）
-- ファイル探索（「○○を含むファイルは？」）
-- 設定やエイリアス、関数の検索
-- コードベース内の機能や実装の調査
-- 初回検索で期待する結果が得られない場合
+#### Direct Tools (Fast) - 優先使用
+- `gh issue view [番号] --comments`: GitHub issue情報
+- `ghq list | grep [repo名]`: ローカルリポジトリ存在確認
+- `Read`: 特定ファイルの内容確認
+- `Grep`: 明確なパターン検索
+- `Glob`: 特定のファイル名/拡張子検索
 
-### Search Strategy
+#### Task Tool (Slower) - 限定使用
+以下の場合のみTask toolを使用する：
 
-1. 探索的な質問には必ずTask toolを使用
-2. 単一ファイルの読み取りには直接Readツールを使用
-3. 特定のクラス定義検索にはGlobツールを使用
-4. 複数のファイルにまたがる可能性がある検索はTask tool必須
+- **真の探索的調査**: 何があるか全く分からない場合
+- **複雑な多段階検索**: 複数の条件を組み合わせた調査
+- **初回の全体把握**: 新しいコードベースの概観把握
+
+### Repository Investigation Workflow
+
+1. **Issue調査**: `gh issue view [番号] --comments`で全情報を一括取得
+2. **他リポジトリ調査が必要な場合**:
+   - `ghq list | grep [repo名]`でローカル存在確認
+   - 存在すれば`cd $(ghq root)/github.com/[org]/[repo]`で移動
+   - 直接ツールで調査実行
+3. **存在しない場合**: リポジトリクローンが必要と報告
 
 ### Examples
 
-- ❌ 直接Grep使用: "SSM関連はある？"
-- ✅ Task tool使用: "SSM関連のエイリアスや設定を検索"
-- ❌ 直接Grep使用: "ログ出力の実装を探して"
-- ✅ Task tool使用: "ログ出力機能の実装場所を調査"
+#### ✅ 効率的なアプローチ
+- Issue調査: `gh issue view 10770 --comments`
+- リポジトリ確認: `ghq list | grep zgok-ms`
+- 設定確認: `Read ~/.gitconfig`
+
+#### ❌ 非効率なアプローチ
+- Issue調査にTask tool使用
+- 存在確認せずに他リポジトリをTask toolで検索
+- 単純な情報取得にTask tool使用
