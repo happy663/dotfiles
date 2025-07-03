@@ -65,12 +65,9 @@ return {
             if data and #data > 0 then
               for _, line in ipairs(data) do
                 if line ~= "" then
-                  -- エラーかどうかを判定
+                  -- エラーのみ通知
                   if line:match("❌") or line:match("エラー") or line:match("Error") or line:match("失敗") then
                     vim.notify(line, vim.log.levels.ERROR)
-                  else
-                    -- 正常な進行状況ログは INFO レベルで表示
-                    vim.notify(line, vim.log.levels.INFO)
                   end
                 end
               end

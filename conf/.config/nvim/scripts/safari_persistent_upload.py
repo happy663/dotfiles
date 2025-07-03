@@ -80,11 +80,11 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
     
     async with async_playwright() as p:
         try:
-            # 永続的なコンテキストでSafariを起動
+            # 永続的なコンテキストでSafariを起動（最高速度）
             browser = await p.webkit.launch_persistent_context(
                 user_data_dir=user_data_dir,
-                headless=False,
-                slow_mo=500
+                headless=False
+                # slow_mo削除で最高速度化
             )
             
             # 新しいページを作成
@@ -179,25 +179,36 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
             print(f"画像をアップロード中: {image_path}", file=sys.stderr)
             await file_input.set_input_files(image_path)
             
-            # アップロードプログレスを監視（より効率的）
+            # アップロードプログレスを監視（超高速化）
             print("アップロード完了を待機中...", file=sys.stderr)
             
-            # まず短時間で様子を見る
-            for wait_attempt in range(10):  # 1秒間、0.1秒ごとにチェック
+            # まず短時間で様子を見る（超高速化 + 早期検出）
+            for wait_attempt in range(5):  # 0.5秒間、0.1秒ごとにチェック
                 markdown_content = await comment_textarea.input_value()
                 if markdown_content and (markdown_content.strip() != ""):
+                    # 画像URLかHTMLタグが既に挿入されていないかチェック
+                    markdown_match = re.search(r'!\[[Ii]mage\]\([^)]+\)', markdown_content)
+                    html_match = re.search(r'<img[^>]*src="([^"]*)"[^>]*/?>', markdown_content)
+                    if markdown_match or html_match:
+                        # 既に完了している場合は即座に返す
+                        print("早期検出: アップロード完了を確認", file=sys.stderr)
+                        match = markdown_match or html_match
+                        image_markdown = match.group(0)
+                        print(image_markdown)
+                        await browser.close()
+                        return image_markdown
                     # 何かしら内容が挿入されたら次のステップへ
                     break
                 await page.wait_for_timeout(100)
             
-            # 追加で1秒待機（アップロード完了を確実にする）
-            await page.wait_for_timeout(1000)
+            # 追加で0.5秒待機（最小限の確認時間）
+            await page.wait_for_timeout(500)
             
             # コメント欄でmarkdown形式の画像URLが挿入されるのを待機
             print("Markdown URL生成を待機中...", file=sys.stderr)
             
-            # ポーリングでmarkdown URLの生成を待機
-            for attempt in range(40):  # 40回試行（8秒間）
+            # ポーリングでmarkdown URLの生成を待機（超高速化）
+            for attempt in range(50):  # 50回試行（5秒間）
                 try:
                     # テキストエリアからmarkdown URLを取得
                     markdown_content = await comment_textarea.input_value()
@@ -214,12 +225,12 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
                         await browser.close()
                         return image_markdown
                     
-                    # 0.2秒待機してから再試行（高速化）
-                    await page.wait_for_timeout(200)
+                    # 0.1秒待機してから再試行（超高速化）
+                    await page.wait_for_timeout(100)
                     
                 except Exception as e:
                     print(f"試行 {attempt + 1}: エラー - {e}", file=sys.stderr)
-                    await page.wait_for_timeout(200)
+                    await page.wait_for_timeout(100)
             
             # タイムアウト後の最終確認
             try:
