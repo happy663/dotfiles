@@ -179,6 +179,7 @@
       "sketchybar"
       "gnupg"
       "coursier"
+      "pngpaste"
     ];
     casks = [
       "emacs"
@@ -232,3 +233,5 @@
     # 不要なサービスの無効化など
   };
 }
+
+
