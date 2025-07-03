@@ -40,6 +40,7 @@
       "Bash(ghq list:*)",
       "Bash(ghq root:*)",
       "Bash(cd:*)",
+      "Bash(echo:*)",
       "Read(~/src/github.com/**)",
       "Read(~/dotfiles/**)",
       "Read($(ghq root)/**)"
