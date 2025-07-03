@@ -30,3 +30,6 @@ conf/.config/.claude/todos
 conf/.claude/statsig
 conf/.claude/projects
 conf/.claude/todos
+
+# Safari GitHub profile (contains personal auth data)
+conf/.config/nvim/safari-github-profile/
