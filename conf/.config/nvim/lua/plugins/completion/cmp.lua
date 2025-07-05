@@ -168,14 +168,18 @@ return {
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
           ["<Tab>"] = cmp.mapping(function(fallback)
-            if luasnip.locally_jumpable(1) then
-              luasnip.jump(1)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
             else
               fallback()
             end
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if luasnip.locally_jumpable(-1) then
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
               luasnip.jump(-1)
             else
               fallback()
@@ -188,6 +192,7 @@ return {
           --   name = "copilot",
           --   group_index = 1,
           -- },
+          { name = "luasnip", group_index = 1 },
           { name = "emoji", group_index = 1 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "path", group_index = 1 },
@@ -306,6 +311,7 @@ return {
       "f3fora/cmp-spell",
       "lukas-reineke/cmp-rg",
       "hrsh7th/cmp-emoji",
+      "saadparwaiz1/cmp_luasnip",
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
