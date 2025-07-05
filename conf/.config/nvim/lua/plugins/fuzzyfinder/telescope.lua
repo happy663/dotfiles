@@ -238,6 +238,8 @@ return {
   {
     "nvim-telescope/telescope-frecency.nvim",
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: frecency機能使用時のみ
+    cmd = { "Telescope frecency" },
     config = function()
       require("telescope").load_extension("frecency")
     end,
@@ -245,6 +247,8 @@ return {
   {
     "nvim-telescope/telescope-file-browser.nvim",
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: file_browser使用時のみ
+    cmd = { "Telescope file_browser" },
     dependencies = {
       "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
@@ -261,10 +265,15 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: Memoコマンド使用時のみロード
+    cmd = { "Memo" },
     config = function()
       require("telescope").load_extension("memo")
+      -- Memoコマンドを定義
+      vim.api.nvim_create_user_command('Memo', function()
+        require('telescope').extensions.memo.memo()
+      end, {})
     end,
-    key = {},
   },
   {
     cond = vim.g.not_in_vscode,

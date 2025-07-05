@@ -13,6 +13,10 @@ return {
       local cmp = require("cmp")
       local lspkind = require("lspkind")
       local luasnip = require("luasnip")
+      
+      -- パフォーマンス最適化設定
+      vim.opt.completeopt = { "menu", "menuone", "noselect" }
+      vim.opt.shortmess:append("c")
 
       local lspkind_comparator = function(conf)
         local lsp_types = require("cmp.types").lsp
@@ -322,3 +326,4 @@ return {
     },
   },
 }
+

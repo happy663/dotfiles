@@ -2,6 +2,8 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: NvimTreeコマンド使用時のみ
+    cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
     config = function()
       require("nvim-tree").setup({
         sort_by = "case_sensitive",

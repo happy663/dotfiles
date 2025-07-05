@@ -2,8 +2,9 @@ return {
   {
     "yetone/avante.nvim",
     cond = vim.g.not_in_vscode,
-    event = "VeryLazy",
-    lazy = false,
+    -- 完全遅延ロード: Avanteコマンド使用時のみ
+    cmd = { "AvanteAsk", "AvanteChat", "AvanteToggle", "AvanteEdit", "AvanteFocus" },
+    lazy = true,
     version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
     opts = {
       -- add any opts here
