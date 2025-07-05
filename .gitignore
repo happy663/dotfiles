@@ -33,3 +33,4 @@ conf/.claude/todos
 
 # Safari GitHub profile (contains personal auth data)
 conf/.config/nvim/safari-github-profile/
+conf/.config/google-chrome/Default
