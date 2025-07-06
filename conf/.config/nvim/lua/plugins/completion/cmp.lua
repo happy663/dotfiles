@@ -29,7 +29,7 @@ return {
             else
               return nil
             end
-         end
+          end
           local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
           local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
           if kind1 == "Variable" and entry1:get_completion_item().label:match("%w*=") then
@@ -341,7 +341,3 @@ return {
     },
   },
 }
-
-
-
-

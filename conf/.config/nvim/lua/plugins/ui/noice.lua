@@ -2,8 +2,9 @@ return {
   {
     "folke/noice.nvim",
     cond = vim.g.not_in_vscode,
-    -- 遅延ロード: 通知やコマンドライン使用時のみ
-    event = { "VeryLazy" },
+    lazy = true,
+    -- より厳密な遅延ロード: UIイベント時のみ
+    event = { "UIEnter" },
     config = function()
       require("noice").setup({
         lsp = {
