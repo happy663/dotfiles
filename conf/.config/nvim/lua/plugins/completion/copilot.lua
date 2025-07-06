@@ -2,7 +2,9 @@ return {
   {
     "zbirenbaum/copilot.lua",
     cmd = { "Copilot" },
-    event = { "InsertEnter" },
+    keys = {
+      { "<leader>tc", desc = "Toggle Copilot" },
+    },
     cond = vim.g.not_in_vscode,
     config = function()
       local setup_config = {

@@ -57,10 +57,15 @@ require("notify").setup({
   background_colour = "#000000",
 })
 
----- 現在選択中のアイテムのハイライト色を変更
-vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
-vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+---- 現在選択中のアイテムのハイライト色を変更（Telescope読み込み時に実行）
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TelescopePreviewerLoaded",
+  callback = function()
+    vim.cmd([[highlight TelescopeSelection guibg=#083747]])
+    vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+    vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+  end,
+})
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })

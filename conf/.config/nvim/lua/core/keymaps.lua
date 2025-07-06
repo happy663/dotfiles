@@ -45,9 +45,17 @@ end
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
-map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
-map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
-map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
+-- Telescopeキーマップ（遅延ロード対応）
+vim.keymap.set("n", "<Leader>tf", function()
+  require("telescope").load_extension("frecency")
+  vim.cmd("Telescope frecency")
+end, opts)
+vim.keymap.set("n", "<Leader>tr", function()
+  vim.cmd("Telescope resume")
+end, opts)
+vim.keymap.set("n", "<Leader>tt", function()
+  vim.cmd("Telescope pickers")
+end, opts)
 map("n", "<Leader>tq", "<CMD>Telescope quickfix<CR>", opts)
 
 -- windows用

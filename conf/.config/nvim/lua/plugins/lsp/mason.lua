@@ -2,6 +2,8 @@ return {
   {
     "williamboman/mason.nvim",
     cond = vim.g.not_in_vscode,
+    cmd = "Mason",
+    lazy = true,
     config = function()
       require("mason").setup({
         ui = {

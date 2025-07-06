@@ -2,6 +2,8 @@ return {
   {
     "hrsh7th/nvim-cmp",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = { "InsertEnter", "CmdlineEnter" },
     opts = function(_, opts)
       opts.sources = opts.sources or {}
       table.insert(opts.sources, {
@@ -12,8 +14,8 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
-      local luasnip = require("luasnip")
-      
+      -- LuaSnipを遅延ロード
+      local luasnip
       -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
@@ -27,7 +29,7 @@ return {
             else
               return nil
             end
-          end
+         end
           local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
           local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
           if kind1 == "Variable" and entry1:get_completion_item().label:match("%w*=") then
@@ -160,6 +162,9 @@ return {
         -- end,
         snippet = {
           expand = function(args)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             luasnip.lsp_expand(args.body)
           end,
         },
@@ -174,19 +179,29 @@ return {
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
             else
-              fallback()
+              if not luasnip then
+                luasnip = require("luasnip")
+              end
+              if luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+              else
+                fallback()
+              end
             end
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
             else
-              fallback()
+              if not luasnip then
+                luasnip = require("luasnip")
+              end
+              if luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+              else
+                fallback()
+              end
             end
           end, { "i", "s" }),
         },
@@ -326,4 +341,7 @@ return {
     },
   },
 }
+
+
+
 

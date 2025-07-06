@@ -1,6 +1,7 @@
 return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
+    lazy = true,
     dependencies = {
       -- サジェストが二重に表示されるのでコメントアウト
       -- { "github/copilot.vim" }, -- or zbirenbaum/copilot.lua
@@ -15,8 +16,11 @@ return {
         },
       })
       -- Optional: Set up keymaps
-      vim.keymap.set("n", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
-      vim.keymap.set("v", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
+      -- vim.keymap.set("n", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
+      -- vim.keymap.set("v", "<leader>ss", "<cmd>CopilotChatToggle<cr>", { desc = "Copilot Chat" })
     end,
+    keys = {
+      { "<leader>ss", "<cmd>CopilotChatToggle<cr>", mode = { "n", "v" }, desc = "Copilot Chat" },
+    },
   },
 }

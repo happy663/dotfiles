@@ -2,6 +2,8 @@ return {
   {
     "L3MON4D3/LuaSnip",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = { "InsertEnter" },
     dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       local ls = require("luasnip")

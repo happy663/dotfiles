@@ -2,6 +2,8 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     cond = vim.g.not_in_vscode,
+    cmd = { "Telescope" },
+    lazy = true,
     config = function()
       local actions = require("telescope.actions")
       local state = require("telescope.actions.state")
@@ -286,11 +288,19 @@ return {
     "danielfalk/smart-open.nvim",
     branch = "0.2.x",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-p>",
+        function()
+          require("telescope").load_extension("smart_open")
+          require("telescope").extensions.smart_open.smart_open()
+        end,
+        desc = "Smart Open",
+      },
+    },
     config = function()
       require("telescope").load_extension("smart_open")
-      vim.keymap.set("n", "<C-p>", function()
-        require("telescope").extensions.smart_open.smart_open()
-      end, { noremap = true, silent = true })
     end,
     dependencies = {
       "kkharji/sqlite.lua",
@@ -304,6 +314,17 @@ return {
     "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
     -- dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-g>",
+        function()
+          require("telescope").load_extension("livegrep_history")
+          require("telescope").extensions.livegrep_history.live_grep_with_history()
+        end,
+        desc = "Live Grep with History",
+      },
+    },
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
@@ -324,9 +345,6 @@ return {
 
       -- 拡張機能を読み込む
       require("telescope").load_extension("livegrep_history")
-
-      -- キーマッピングを設定
-      vim.keymap.set("n", "<C-g>", require("telescope").extensions.livegrep_history.live_grep_with_history)
     end,
   },
 }

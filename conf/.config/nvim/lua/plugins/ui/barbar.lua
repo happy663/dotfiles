@@ -9,7 +9,8 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     init = function()
       vim.g.barbar_auto_setup = false
-
+    end,
+    config = function()
       local barbar = require("barbar")
       barbar.setup({
         -- Enable/disable animations
