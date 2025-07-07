@@ -334,6 +334,8 @@ return {
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
+        lazy = true,
+        event = "InsertEnter",
         config = function()
           require("copilot_cmp").setup()
         end,

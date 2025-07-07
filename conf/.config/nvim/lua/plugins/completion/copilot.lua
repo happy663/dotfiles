@@ -1,6 +1,8 @@
 return {
   {
     "zbirenbaum/copilot.lua",
+    lazy = true,
+    event = "InsertEnter",
     cmd = { "Copilot" },
     keys = {
       { "<leader>tc", desc = "Toggle Copilot" },

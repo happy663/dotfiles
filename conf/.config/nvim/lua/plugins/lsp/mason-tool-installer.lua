@@ -2,6 +2,8 @@ return {
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = "VeryLazy",
     config = function()
       require("mason-tool-installer").setup({
         ensure_installed = {

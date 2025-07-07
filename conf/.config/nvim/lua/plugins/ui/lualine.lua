@@ -39,6 +39,10 @@ return {
           lualine_x = {
             {
               "copilot",
+              cond = function()
+                -- Copilotが読み込まれている場合のみ表示
+                return pcall(require, "copilot")
+              end,
             },
             {
               require("noice").api.statusline.mode.get,
@@ -58,7 +62,14 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       "archibate/lualine-time",
-      "leisurelicht/lualine-copilot.nvim",
+      {
+        "leisurelicht/lualine-copilot.nvim",
+        lazy = true,
+        -- Copilotが読み込まれた時のみ読み込む
+        cond = function()
+          return pcall(require, "copilot")
+        end,
+      },
       opt = true,
     },
   },

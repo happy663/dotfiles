@@ -231,6 +231,10 @@ return {
   },
   {
     "LukasPietzschmann/telescope-tabs",
+    lazy = true,
+    keys = {
+      { "<leader>ft", "<cmd>Telescope telescope-tabs list_tabs<cr>", desc = "List tabs" },
+    },
     config = true,
     cond = vim.g.not_in_vscode,
     dependencies = {
@@ -240,8 +244,11 @@ return {
   {
     "nvim-telescope/telescope-frecency.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
     -- 遅延ロード: frecency機能使用時のみ
-    cmd = { "Telescope frecency" },
+    keys = {
+      { "<leader>fr", "<cmd>Telescope frecency<cr>", desc = "Frecency" },
+    },
     config = function()
       require("telescope").load_extension("frecency")
     end,

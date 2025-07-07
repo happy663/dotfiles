@@ -1,4 +1,5 @@
 return {
+
   "petertriho/cmp-git",
   lazy = true,
   event = { "InsertEnter", "CmdlineEnter" },

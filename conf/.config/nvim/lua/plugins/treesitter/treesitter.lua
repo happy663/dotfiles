@@ -1,6 +1,8 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
     build = function()
       local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
       ts_update()
@@ -10,7 +12,7 @@ return {
         ensure_installed = "all",
         sync_install = false,
         auto_install = false,
-        ignore_install = {},
+        ignore_install = { "ipkg" }, -- ipkgパーサーを除外（Idris用で通常不要）
         highlight = {
           enable = true,
           disable = function(lang)
