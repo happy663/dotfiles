@@ -229,30 +229,30 @@ return {
     --   },
     -- },
   },
-  {
-    "LukasPietzschmann/telescope-tabs",
-    lazy = true,
-    keys = {
-      { "<leader>ft", "<cmd>Telescope telescope-tabs list_tabs<cr>", desc = "List tabs" },
-    },
-    config = true,
-    cond = vim.g.not_in_vscode,
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-    },
-  },
-  {
-    "nvim-telescope/telescope-frecency.nvim",
-    cond = vim.g.not_in_vscode,
-    lazy = true,
-    -- 遅延ロード: frecency機能使用時のみ
-    keys = {
-      { "<leader>fr", "<cmd>Telescope frecency<cr>", desc = "Frecency" },
-    },
-    config = function()
-      require("telescope").load_extension("frecency")
-    end,
-  },
+  -- {
+  --   "LukasPietzschmann/telescope-tabs",
+  --   lazy = true,
+  --   keys = {
+  --     { "<leader>ft", "<cmd>Telescope telescope-tabs list_tabs<cr>", desc = "List tabs" },
+  --   },
+  --   config = true,
+  --   cond = vim.g.not_in_vscode,
+  --   dependencies = {
+  --     "nvim-telescope/telescope.nvim",
+  --   },
+  -- },
+  -- {
+  --   "nvim-telescope/telescope-frecency.nvim",
+  --   cond = vim.g.not_in_vscode,
+  --   lazy = true,
+  --   -- 遅延ロード: frecency機能使用時のみ
+  --   keys = {
+  --     { "<leader>fr", "<cmd>Telescope frecency<cr>", desc = "Frecency" },
+  --   },
+  --   config = function()
+  --     require("telescope").load_extension("frecency")
+  --   end,
+  -- },
   {
     "nvim-telescope/telescope-file-browser.nvim",
     cond = vim.g.not_in_vscode,
@@ -279,8 +279,8 @@ return {
     config = function()
       require("telescope").load_extension("memo")
       -- Memoコマンドを定義
-      vim.api.nvim_create_user_command('Memo', function()
-        require('telescope').extensions.memo.memo()
+      vim.api.nvim_create_user_command("Memo", function()
+        require("telescope").extensions.memo.memo()
       end, {})
     end,
   },

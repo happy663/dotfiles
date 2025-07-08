@@ -2,6 +2,11 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = {
+      "InsertEnter",
+      -- "BufEnter",
+    },
     config = function()
       require("lualine").setup({
         options = {
@@ -65,10 +70,6 @@ return {
       {
         "leisurelicht/lualine-copilot.nvim",
         lazy = true,
-        -- Copilotが読み込まれた時のみ読み込む
-        cond = function()
-          return pcall(require, "copilot")
-        end,
       },
       opt = true,
     },
