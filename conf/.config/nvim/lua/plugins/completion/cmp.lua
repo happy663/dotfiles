@@ -177,33 +177,53 @@ return {
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
           ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
+            if luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
             else
-              if not luasnip then
-                luasnip = require("luasnip")
-              end
-              if luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-              else
-                fallback()
-              end
+              fallback()
             end
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
+            if luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
             else
-              if not luasnip then
-                luasnip = require("luasnip")
-              end
-              if luasnip.jumpable(-1) then
-                luasnip.jump(-1)
-              else
-                fallback()
-              end
+              fallback()
             end
           end, { "i", "s" }),
+          -- ["<Tab>"] = cmp.mapping(function(fallback)
+          --   -- luasnipが有効な場合のみcmpでTabキーを処理
+          --   if not luasnip then
+          --     luasnip = require("luasnip")
+          --   end
+          --   if luasnip.expand_or_jumpable() then
+          --     luasnip.expand_or_jump()
+          --   elseif cmp.visible() then
+          --     cmp.select_next_item()
+          --   else
+          --     -- luasnipが無効な場合はcopilotにfallback
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
+          -- ["<S-Tab>"] = cmp.mapping(function(fallback)
+          --   if cmp.visible() then
+          --     cmp.select_prev_item()
+          --   else
+          --     if not luasnip then
+          --       luasnip = require("luasnip")
+          --     end
+          --     if luasnip.jumpable(-1) then
+          --       luasnip.jump(-1)
+          --     else
+          --       fallback()
+          --     end
+          --   end
+          -- end, { "i", "s" }),
         },
 
         sources = {
@@ -343,3 +363,5 @@ return {
     },
   },
 }
+
+
