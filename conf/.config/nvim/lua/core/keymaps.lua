@@ -139,6 +139,18 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Lazyプラグインマネージャーのウィンドウでのキーマップを無効化
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "lazy",
+  callback = function()
+    -- C-h, C-j, C-k, C-lのキーマップを無効化
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-h>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-j>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-k>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-l>", "", { noremap = true, silent = true, nowait = true })
+  end,
+})
+
 _G.toggle_cwindow = function()
   local qf_exists = false
   for _, win in pairs(vim.fn.getwininfo()) do
@@ -227,4 +239,13 @@ vim.keymap.set("i", "<C-v>", "<C-r>+", { noremap = true, silent = true, desc = "
 
 -- map("t", "<Esc>", "<Esc>", opts)
 -- map("t", "<C-w>", "<C-\\><C-n><C-w>", opts)
-map("t", "<esc>", [[<C-\><C-n>]], opts)
+-- map("t", "<esc>", [[<C-\><C-n>]], opts)
+-- lazygitプロセスが実行中でない場合のみjjキーマップを有効にする
+vim.api.nvim_create_autocmd("TermOpen", {
+  callback = function()
+    local buf_name = vim.api.nvim_buf_get_name(0)
+    if not string.match(buf_name, "lazygit") then
+      vim.keymap.set("t", "jj", [[<C-\><C-n>]], { buffer = true, noremap = true, silent = true })
+    end
+  end,
+})
