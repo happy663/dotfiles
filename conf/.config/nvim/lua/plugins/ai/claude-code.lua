@@ -1,11 +1,29 @@
-return {
-  "greggh/claude-code.nvim",
-  lazy = true,
-  event = "VeryLazy",
-  dependencies = {
-    "nvim-lua/plenary.nvim", -- Required for git operations
-  },
-  config = function()
-    require("claude-code").setup()
-  end,
-}
+-- return {
+--   "greggh/claude-code.nvim",
+--   lazy = true,
+--   event = "VeryLazy",
+--   dependencies = {
+--     "nvim-lua/plenary.nvim", -- Required for git operations
+--   },
+--   config = function()
+--     require("claude-code").setup({
+--       window = {
+--         position = "float",
+--         float = {
+--           width = "90%", -- Take up 90% of the editor width
+--           height = "90%", -- Take up 90% of the editor height
+--           row = "center", -- Center vertically
+--           col = "center", -- Center horizontally
+--           relative = "editor",
+--           border = "double", -- Use double border style
+--         },
+--       },
+--       keymaps = {
+--         window_navigation = false, -- Disable window navigation keymaps (<C-h/j/k/l>)
+--         scrolling = true,         -- Keep scrolling keymaps (<C-f/b>) enabled
+--       }
+--     })
+--   end,
+-- }
+
+return {}
