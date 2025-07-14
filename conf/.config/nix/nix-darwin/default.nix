@@ -205,12 +205,10 @@
       "aws-vault"
       "spotify"
       "jordanbaird-ice"
-      "spotify"
-      "hammerspoon"
-      "temurin@8"
       "cursor"
       "ghostty"
       "superwhisper"
+      "homerow"
     ];
   };
 
@@ -233,5 +231,3 @@
     # 不要なサービスの無効化など
   };
 }
-
-
