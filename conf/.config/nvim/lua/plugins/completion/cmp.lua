@@ -113,6 +113,7 @@ return {
         { name = "render-markdown", group_index = 1 },
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
+        { name = "luasnip", group_index = 1 },
         {
           name = "spell",
           option = {
@@ -282,7 +283,7 @@ return {
         callback = function()
           cmp.setup.buffer({
             sources = cmp.config.sources({
-              { name = "skkeleton", max_item_count = 10 },
+              { name = "skkeleton", max_item_count = 20 },
             }),
             sorting = {
               priority_weight = 2,
