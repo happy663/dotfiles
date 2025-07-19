@@ -2,6 +2,11 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = {
+      "InsertEnter",
+      -- "BufEnter",
+    },
     config = function()
       require("lualine").setup({
         options = {
@@ -39,6 +44,10 @@ return {
           lualine_x = {
             {
               "copilot",
+              cond = function()
+                -- Copilotが読み込まれている場合のみ表示
+                return pcall(require, "copilot")
+              end,
             },
             {
               require("noice").api.statusline.mode.get,
@@ -58,7 +67,10 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       "archibate/lualine-time",
-      "leisurelicht/lualine-copilot.nvim",
+      {
+        "leisurelicht/lualine-copilot.nvim",
+        lazy = true,
+      },
       opt = true,
     },
   },

@@ -86,6 +86,8 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = "LspAttach",
     config = function()
       local lspconfig = require("lspconfig")
       -- デフォルト設定（その他のサーバー向け）

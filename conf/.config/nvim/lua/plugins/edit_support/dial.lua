@@ -1,6 +1,13 @@
 return {
   {
     "monaqa/dial.nvim",
+    -- 遅延ロード: キーマップ使用時のみ
+    keys = {
+      { "<C-a>", mode = { "n", "v" } },
+      { "<C-x>", mode = { "n", "v" } },
+      { "g<C-a>", mode = { "n", "v" } },
+      { "g<C-x>", mode = { "n", "v" } },
+    },
     config = function()
       local augend = require("dial.augend")
       require("dial.config").augends:register_group({

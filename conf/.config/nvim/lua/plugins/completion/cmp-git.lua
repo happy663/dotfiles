@@ -1,13 +1,16 @@
 return {
+
   "petertriho/cmp-git",
+  lazy = true,
+  event = { "InsertEnter", "CmdlineEnter" },
   dependencies = { "hrsh7th/nvim-cmp" },
-  opts = {
-    -- options go here
-  },
-  init = function()
-    table.insert(require("cmp").get_config().sources, { name = "git" })
-  end,
   config = function()
+    -- sourcesの追加をconfig関数内で実行（cmp読み込み後）
+    local cmp = require("cmp")
+    local current_config = cmp.get_config()
+    if current_config.sources then
+      table.insert(current_config.sources, { name = "git" })
+    end
     local format = require("cmp_git.format")
     local sort = require("cmp_git.sort")
 

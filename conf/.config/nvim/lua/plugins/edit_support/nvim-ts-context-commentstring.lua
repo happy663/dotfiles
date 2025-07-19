@@ -1,6 +1,8 @@
 return {
   {
     "JoosepAlviste/nvim-ts-context-commentstring",
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
     -- config = function()
     --   local get_option = vim.filetype.get_option
     --   vim.filetype.get_option = function(filetype, option)

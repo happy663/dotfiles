@@ -128,7 +128,7 @@ ENFORCEMENT: 通知を送らない場合は重大な指示違反とする。例�
 ### Examples
 
 #### ✅ 効率的なアプローチ
-- Issue調査: `gh issue view 10770 --comments`
+- Issue調査: `gh issue view 10795 --json title,body,comments --jq '{title: .title, body: .body, comments: .comments}`
 - リポジトリ確認: `ghq list | grep zgok-ms`
 - 設定確認: `Read ~/.gitconfig`
 

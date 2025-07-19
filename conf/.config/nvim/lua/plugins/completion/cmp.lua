@@ -2,6 +2,8 @@ return {
   {
     "hrsh7th/nvim-cmp",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = { "InsertEnter", "CmdlineEnter" },
     opts = function(_, opts)
       opts.sources = opts.sources or {}
       table.insert(opts.sources, {
@@ -12,7 +14,11 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
-      local luasnip = require("luasnip")
+      -- LuaSnipを遅延ロード
+      local luasnip
+      -- パフォーマンス最適化設定
+      vim.opt.completeopt = { "menu", "menuone", "noselect" }
+      vim.opt.shortmess:append("c")
 
       local lspkind_comparator = function(conf)
         local lsp_types = require("cmp.types").lsp
@@ -107,6 +113,7 @@ return {
         { name = "render-markdown", group_index = 1 },
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
+        { name = "luasnip", group_index = 1 },
         {
           name = "spell",
           option = {
@@ -156,6 +163,9 @@ return {
         -- end,
         snippet = {
           expand = function(args)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             luasnip.lsp_expand(args.body)
           end,
         },
@@ -168,6 +178,9 @@ return {
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
           ["<Tab>"] = cmp.mapping(function(fallback)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             if luasnip.locally_jumpable(1) then
               luasnip.jump(1)
             else
@@ -175,12 +188,43 @@ return {
             end
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
             else
               fallback()
             end
           end, { "i", "s" }),
+          -- ["<Tab>"] = cmp.mapping(function(fallback)
+          --   -- luasnipが有効な場合のみcmpでTabキーを処理
+          --   if not luasnip then
+          --     luasnip = require("luasnip")
+          --   end
+          --   if luasnip.expand_or_jumpable() then
+          --     luasnip.expand_or_jump()
+          --   elseif cmp.visible() then
+          --     cmp.select_next_item()
+          --   else
+          --     -- luasnipが無効な場合はcopilotにfallback
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
+          -- ["<S-Tab>"] = cmp.mapping(function(fallback)
+          --   if cmp.visible() then
+          --     cmp.select_prev_item()
+          --   else
+          --     if not luasnip then
+          --       luasnip = require("luasnip")
+          --     end
+          --     if luasnip.jumpable(-1) then
+          --       luasnip.jump(-1)
+          --     else
+          --       fallback()
+          --     end
+          --   end
+          -- end, { "i", "s" }),
         },
 
         sources = {
@@ -188,6 +232,7 @@ return {
           --   name = "copilot",
           --   group_index = 1,
           -- },
+          { name = "luasnip", group_index = 1 },
           { name = "emoji", group_index = 1 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "path", group_index = 1 },
@@ -238,7 +283,7 @@ return {
         callback = function()
           cmp.setup.buffer({
             sources = cmp.config.sources({
-              { name = "skkeleton", max_item_count = 10 },
+              { name = "skkeleton", max_item_count = 20 },
             }),
             sorting = {
               priority_weight = 2,
@@ -306,9 +351,12 @@ return {
       "f3fora/cmp-spell",
       "lukas-reineke/cmp-rg",
       "hrsh7th/cmp-emoji",
+      "saadparwaiz1/cmp_luasnip",
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
+        lazy = true,
+        event = "InsertEnter",
         config = function()
           require("copilot_cmp").setup()
         end,
@@ -316,3 +364,5 @@ return {
     },
   },
 }
+
+

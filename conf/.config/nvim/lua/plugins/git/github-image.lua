@@ -2,6 +2,9 @@ return {
   {
     "pwntester/octo.nvim",
     optional = true,
+    -- 遅延ロード: Octoコマンド使用時のみ
+    cmd = { "Octo" },
+    ft = { "octo" },
     opts = function(_, opts)
       -- GitHub画像アップロード機能を追加
 

@@ -2,6 +2,8 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     cond = vim.g.not_in_vscode,
+    cmd = { "Telescope" },
+    lazy = true,
     config = function()
       local actions = require("telescope.actions")
       local state = require("telescope.actions.state")
@@ -227,24 +229,35 @@ return {
     --   },
     -- },
   },
-  {
-    "LukasPietzschmann/telescope-tabs",
-    config = true,
-    cond = vim.g.not_in_vscode,
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-    },
-  },
-  {
-    "nvim-telescope/telescope-frecency.nvim",
-    cond = vim.g.not_in_vscode,
-    config = function()
-      require("telescope").load_extension("frecency")
-    end,
-  },
+  -- {
+  --   "LukasPietzschmann/telescope-tabs",
+  --   lazy = true,
+  --   keys = {
+  --     { "<leader>ft", "<cmd>Telescope telescope-tabs list_tabs<cr>", desc = "List tabs" },
+  --   },
+  --   config = true,
+  --   cond = vim.g.not_in_vscode,
+  --   dependencies = {
+  --     "nvim-telescope/telescope.nvim",
+  --   },
+  -- },
+  -- {
+  --   "nvim-telescope/telescope-frecency.nvim",
+  --   cond = vim.g.not_in_vscode,
+  --   lazy = true,
+  --   -- 遅延ロード: frecency機能使用時のみ
+  --   keys = {
+  --     { "<leader>fr", "<cmd>Telescope frecency<cr>", desc = "Frecency" },
+  --   },
+  --   config = function()
+  --     require("telescope").load_extension("frecency")
+  --   end,
+  -- },
   {
     "nvim-telescope/telescope-file-browser.nvim",
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: file_browser使用時のみ
+    cmd = { "Telescope file_browser" },
     dependencies = {
       "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
@@ -261,10 +274,15 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     cond = vim.g.not_in_vscode,
+    -- 遅延ロード: Memoコマンド使用時のみロード
+    cmd = { "Memo" },
     config = function()
       require("telescope").load_extension("memo")
+      -- Memoコマンドを定義
+      vim.api.nvim_create_user_command("Memo", function()
+        require("telescope").extensions.memo.memo()
+      end, {})
     end,
-    key = {},
   },
   {
     cond = vim.g.not_in_vscode,
@@ -277,11 +295,19 @@ return {
     "danielfalk/smart-open.nvim",
     branch = "0.2.x",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-p>",
+        function()
+          require("telescope").load_extension("smart_open")
+          require("telescope").extensions.smart_open.smart_open()
+        end,
+        desc = "Smart Open",
+      },
+    },
     config = function()
       require("telescope").load_extension("smart_open")
-      vim.keymap.set("n", "<C-p>", function()
-        require("telescope").extensions.smart_open.smart_open()
-      end, { noremap = true, silent = true })
     end,
     dependencies = {
       "kkharji/sqlite.lua",
@@ -295,6 +321,17 @@ return {
     "happy663/telescope-livegrep-history.nvim", -- ローカルプラグインの名前
     -- dir = "~/src/github.com/happy663/telescope-livegrep-history.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-g>",
+        function()
+          require("telescope").load_extension("livegrep_history")
+          require("telescope").extensions.livegrep_history.live_grep_with_history()
+        end,
+        desc = "Live Grep with History",
+      },
+    },
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
@@ -315,9 +352,6 @@ return {
 
       -- 拡張機能を読み込む
       require("telescope").load_extension("livegrep_history")
-
-      -- キーマッピングを設定
-      vim.keymap.set("n", "<C-g>", require("telescope").extensions.livegrep_history.live_grep_with_history)
     end,
   },
 }

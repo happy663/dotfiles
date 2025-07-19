@@ -45,9 +45,17 @@ end
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
-map("n", "<Leader>tf", "<CMD>Telescope frecency<CR>", opts)
-map("n", "<Leader>tr", "<CMD>Telescope resume<CR>", opts)
-map("n", "<Leader>tt", "<CMD>Telescope pickers<CR>", opts)
+-- Telescopeキーマップ（遅延ロード対応）
+vim.keymap.set("n", "<Leader>tf", function()
+  require("telescope").load_extension("frecency")
+  vim.cmd("Telescope frecency")
+end, opts)
+vim.keymap.set("n", "<Leader>tr", function()
+  vim.cmd("Telescope resume")
+end, opts)
+vim.keymap.set("n", "<Leader>tt", function()
+  vim.cmd("Telescope pickers")
+end, opts)
 map("n", "<Leader>tq", "<CMD>Telescope quickfix<CR>", opts)
 
 -- windows用
@@ -128,6 +136,18 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "qf",
   callback = function()
     vim.api.nvim_buf_set_keymap(0, "n", "<CR>", "<CR>", { noremap = true, silent = true, nowait = true })
+  end,
+})
+
+-- Lazyプラグインマネージャーのウィンドウでのキーマップを無効化
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "lazy",
+  callback = function()
+    -- C-h, C-j, C-k, C-lのキーマップを無効化
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-h>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-j>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-k>", "", { noremap = true, silent = true, nowait = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<C-l>", "", { noremap = true, silent = true, nowait = true })
   end,
 })
 
@@ -219,4 +239,13 @@ vim.keymap.set("i", "<C-v>", "<C-r>+", { noremap = true, silent = true, desc = "
 
 -- map("t", "<Esc>", "<Esc>", opts)
 -- map("t", "<C-w>", "<C-\\><C-n><C-w>", opts)
-map("t", "<esc>", [[<C-\><C-n>]], opts)
+-- map("t", "<esc>", [[<C-\><C-n>]], opts)
+-- lazygitプロセスが実行中でない場合のみjjキーマップを有効にする
+vim.api.nvim_create_autocmd("TermOpen", {
+  callback = function()
+    local buf_name = vim.api.nvim_buf_get_name(0)
+    if not string.match(buf_name, "lazygit") then
+      vim.keymap.set("t", "jj", [[<C-\><C-n>]], { buffer = true, noremap = true, silent = true })
+    end
+  end,
+})

@@ -47,8 +47,8 @@ vim.o.encoding = "utf-8"
 vim.o.fileencodings = "utf-8,euc-jp"
 
 -- デフォルトのカラースキームを設定
--- vim.cmd("colorscheme tokyonight-moon")
-vim.cmd("colorscheme ayu-mirage")
+vim.cmd("colorscheme tokyonight-moon")
+-- vim.cmd("colorscheme ayu-mirage")
 -- vim.cmd("colorscheme tokyonight-moon")
 -- vim.cmd("colorscheme ayu-mirage")
 -- vim.cmd("colorscheme everforest")
@@ -57,10 +57,15 @@ require("notify").setup({
   background_colour = "#000000",
 })
 
----- 現在選択中のアイテムのハイライト色を変更
-vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
-vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+---- 現在選択中のアイテムのハイライト色を変更（Telescope読み込み時に実行）
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TelescopePreviewerLoaded",
+  callback = function()
+    vim.cmd([[highlight TelescopeSelection guibg=#083747]])
+    vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+    vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+  end,
+})
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
@@ -233,9 +238,3 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.cinoptions = "j1,(0,ws,Ws,g0,{s,>s,e-s,n-s,+s"
   end,
 })
-
--- tiny-inline-diagnostic.nvimの設定するためコメントアウト
--- vim.diagnostic.config({
--- virtual_lines = true,
--- virtual_text = true,
--- })

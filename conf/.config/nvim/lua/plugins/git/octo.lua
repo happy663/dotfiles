@@ -1,7 +1,9 @@
 return {
   {
     "pwntester/octo.nvim",
-    requires = {
+    lazy = true,
+    cmd = { "Octo" },
+    dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
       -- OR 'ibhagwan/fzf-lua',
@@ -49,7 +51,7 @@ return {
         user_icon = " ", -- user icon
         ghost_icon = "󰊠 ", -- ghost icon
         timeline_marker = " ", -- timeline marker
-        timeline_indent = "2", -- timeline indentation
+        timeline_indent = 2, -- timeline indentation
         use_timeline_icons = true, -- toggle timeline icons
         timeline_icons = { -- the default icons based on timelineItems
           commit = "  ",

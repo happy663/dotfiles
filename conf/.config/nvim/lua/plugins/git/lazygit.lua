@@ -10,14 +10,16 @@ return {
       "LazyGitFilterCurrentFile",
     },
     dependencies = {
-      "nvim-telescope/telescope.nvim",
       "nvim-lua/plenary.nvim",
     },
     keys = {
       { "<Leader>l", "<cmd>LazyGit<CR>" },
     },
     config = function()
-      require("telescope").load_extension("lazygit")
+      -- telescopeがロードされている場合のみ拡張をロード
+      if pcall(require, "telescope") then
+        require("telescope").load_extension("lazygit")
+      end
 
       vim.api.nvim_create_autocmd("TermOpen", {
         pattern = "term://*lazygit*",
