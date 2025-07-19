@@ -16,9 +16,14 @@ return {
       local lspkind = require("lspkind")
       -- LuaSnipを遅延ロード
       local luasnip
-      -- パフォーマンス最適化設定
+
+      -- -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
+
+      -- skkeleton候補選択追跡用のグローバル変数
+      local skkeleton_last_selected = nil
+      local skkeleton_last_registered = nil
 
       local lspkind_comparator = function(conf)
         local lsp_types = require("cmp.types").lsp
@@ -170,8 +175,48 @@ return {
           end,
         },
         mapping = {
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
-          ["<C-n>"] = cmp.mapping.select_next_item(),
+          -- ["<C-p>"] = cmp.mapping.select_prev_item(),
+          -- ["<C-n>"] = cmp.mapping.select_next_item(),
+          ["<C-p>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              -- print("DEBUG: <C-p> pressed, cmp visible")
+              cmp.select_prev_item()
+              -- skkeleton候補選択を追跡
+              vim.schedule(function()
+                local entry = cmp.get_selected_entry()
+                -- print(
+                --   "DEBUG: selected entry =",
+                --   vim.inspect(entry and { source = entry.source.name, label = entry.completion_item.label })
+                -- )
+                if entry and entry.source.name == "skkeleton" then
+                  skkeleton_last_selected = entry.completion_item
+                  -- print("DEBUG: stored skkeleton selection:", entry.completion_item.label)
+                end
+              end)
+            else
+              fallback()
+            end
+          end, { "i" }),
+          ["<C-n>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              -- print("DEBUG: <C-n> pressed, cmp visible")
+              cmp.select_next_item()
+              -- skkeleton候補選択を追跡
+              vim.schedule(function()
+                local entry = cmp.get_selected_entry()
+                -- print(
+                --   "DEBUG: selected entry =",
+                --   vim.inspect(entry and { source = entry.source.name, label = entry.completion_item.label })
+                -- )
+                if entry and entry.source.name == "skkeleton" then
+                  skkeleton_last_selected = entry.completion_item
+                  -- print("DEBUG: stored skkeleton selection:", entry.completion_item.label)
+                end
+              end)
+            else
+              fallback()
+            end
+          end, { "i" }),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
@@ -197,34 +242,6 @@ return {
               fallback()
             end
           end, { "i", "s" }),
-          -- ["<Tab>"] = cmp.mapping(function(fallback)
-          --   -- luasnipが有効な場合のみcmpでTabキーを処理
-          --   if not luasnip then
-          --     luasnip = require("luasnip")
-          --   end
-          --   if luasnip.expand_or_jumpable() then
-          --     luasnip.expand_or_jump()
-          --   elseif cmp.visible() then
-          --     cmp.select_next_item()
-          --   else
-          --     -- luasnipが無効な場合はcopilotにfallback
-          --     fallback()
-          --   end
-          -- end, { "i", "s" }),
-          -- ["<S-Tab>"] = cmp.mapping(function(fallback)
-          --   if cmp.visible() then
-          --     cmp.select_prev_item()
-          --   else
-          --     if not luasnip then
-          --       luasnip = require("luasnip")
-          --     end
-          --     if luasnip.jumpable(-1) then
-          --       luasnip.jump(-1)
-          --     else
-          --       fallback()
-          --     end
-          --   end
-          -- end, { "i", "s" }),
         },
 
         sources = {
@@ -274,8 +291,46 @@ return {
         preselect = cmp.PreselectMode.None,
         -- 補完候補が多すぎると邪魔なので制限
         performance = {
-          max_view_entries = 10,
+          max_view_entries = 20,
         },
+      })
+
+      -- skkeleton候補選択登録ヘルパー関数
+      local function register_skkeleton_selection()
+        -- print("DEBUG: register_skkeleton_selection called")
+        -- print("DEBUG: skkeleton_last_selected =", vim.inspect(skkeleton_last_selected))
+        -- print("DEBUG: skkeleton#is_enabled =", vim.fn["skkeleton#is_enabled"]())
+
+        -- skkeleton#is_enabled のチェックを削除（InsertLeave時に無効化されるため）
+        if skkeleton_last_selected then
+          local kana = skkeleton_last_selected.filterText
+          local word = skkeleton_last_selected.label
+          local key = kana .. "->" .. word
+
+          -- print("DEBUG: attempting to register", key)
+
+          -- 重複登録防止
+          if skkeleton_last_registered ~= key then
+            vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
+            -- print(string.format("skkeleton: registered %s -> %s", kana, word))
+            skkeleton_last_registered = key
+          else
+            -- print("DEBUG: duplicate registration prevented for", key)
+          end
+
+          skkeleton_last_selected = nil
+        end
+      end
+
+      -- skkeleton候補選択確定の追跡
+      vim.api.nvim_create_autocmd({ "TextChangedI", "InsertLeave" }, {
+        callback = function(ev)
+          -- print("DEBUG: autocmd triggered:", ev.event, "cmp.visible():", cmp.visible())
+          -- 補完メニューが閉じられた場合、選択していた候補を登録
+          if not cmp.visible() then
+            register_skkeleton_selection()
+          end
+        end,
       })
 
       vim.api.nvim_create_autocmd("User", {
@@ -285,20 +340,6 @@ return {
             sources = cmp.config.sources({
               { name = "skkeleton", max_item_count = 20 },
             }),
-            sorting = {
-              priority_weight = 2,
-              comparators = {
-                cmp.config.compare.exact,
-                cmp.config.compare.score,
-                cmp.config.compare.length,
-              },
-            },
-            -- performance = {
-            --   debounce = 10,
-            --   throttle = 20,
-            --   max_view_entries = 10,
-            --   fetching_timeout = 50, -- ソースからの補完取得タイムアウト(ms)
-            -- },
           })
 
           cmp.setup.cmdline("/", {
@@ -344,7 +385,8 @@ return {
       "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
-      "uga-rosa/cmp-skkeleton",
+      { dir = "/Users/happy/src/github.com/rinx/cmp-skkeleton" },
+      -- "uga-rosa/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
@@ -364,5 +406,3 @@ return {
     },
   },
 }
-
-
