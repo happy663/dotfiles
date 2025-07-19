@@ -12,7 +12,6 @@ map("n", "<C-k>", "<C-w>k", opts)
 --
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
--- fuzzy-motion
 map("n", "<leader>f", "<CMD>HopWord<CR>", opts)
 
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
@@ -114,7 +113,7 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
 map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
 map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
 
-map("n", "<Leader>ga", "<CMD>FuzzyMotion<CR>", opts)
+map("n", "<Leader>h", "<CMD>FuzzyMotion<CR>", opts)
 vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
 vim.api.nvim_create_user_command("Help", function(command)
@@ -124,7 +123,7 @@ vim.api.nvim_create_user_command("Help", function(command)
     vim.api.nvim_err_writeln(msg)
   end
 end, { nargs = 1, complete = "help" })
-vim.api.nvim_set_keymap("n", "<Leader>he", ":Help ", opts)
+vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
 
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
@@ -248,4 +247,10 @@ vim.api.nvim_create_autocmd("TermOpen", {
       vim.keymap.set("t", "jj", [[<C-\><C-n>]], { buffer = true, noremap = true, silent = true })
     end
   end,
+})
+
+vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Open Octo issues assigned to happy663",
 })
