@@ -16,7 +16,6 @@ return {
       local lspkind = require("lspkind")
       -- LuaSnipを遅延ロード
       local luasnip
-
       -- -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
@@ -179,18 +178,12 @@ return {
           -- ["<C-n>"] = cmp.mapping.select_next_item(),
           ["<C-p>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              -- print("DEBUG: <C-p> pressed, cmp visible")
               cmp.select_prev_item()
               -- skkeleton候補選択を追跡
               vim.schedule(function()
                 local entry = cmp.get_selected_entry()
-                -- print(
-                --   "DEBUG: selected entry =",
-                --   vim.inspect(entry and { source = entry.source.name, label = entry.completion_item.label })
-                -- )
                 if entry and entry.source.name == "skkeleton" then
                   skkeleton_last_selected = entry.completion_item
-                  -- print("DEBUG: stored skkeleton selection:", entry.completion_item.label)
                 end
               end)
             else
@@ -199,18 +192,12 @@ return {
           end, { "i" }),
           ["<C-n>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              -- print("DEBUG: <C-n> pressed, cmp visible")
               cmp.select_next_item()
               -- skkeleton候補選択を追跡
               vim.schedule(function()
                 local entry = cmp.get_selected_entry()
-                -- print(
-                --   "DEBUG: selected entry =",
-                --   vim.inspect(entry and { source = entry.source.name, label = entry.completion_item.label })
-                -- )
                 if entry and entry.source.name == "skkeleton" then
                   skkeleton_last_selected = entry.completion_item
-                  -- print("DEBUG: stored skkeleton selection:", entry.completion_item.label)
                 end
               end)
             else
@@ -297,37 +284,37 @@ return {
 
       -- skkeleton候補選択登録ヘルパー関数
       local function register_skkeleton_selection()
-        -- print("DEBUG: register_skkeleton_selection called")
-        -- print("DEBUG: skkeleton_last_selected =", vim.inspect(skkeleton_last_selected))
-        -- print("DEBUG: skkeleton#is_enabled =", vim.fn["skkeleton#is_enabled"]())
-
         -- skkeleton#is_enabled のチェックを削除（InsertLeave時に無効化されるため）
         if skkeleton_last_selected then
           local kana = skkeleton_last_selected.filterText
           local word = skkeleton_last_selected.label
           local key = kana .. "->" .. word
 
-          -- print("DEBUG: attempting to register", key)
-
           -- 重複登録防止
           if skkeleton_last_registered ~= key then
             vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
-            -- print(string.format("skkeleton: registered %s -> %s", kana, word))
             skkeleton_last_registered = key
           else
-            -- print("DEBUG: duplicate registration prevented for", key)
           end
 
           skkeleton_last_selected = nil
         end
       end
 
-      -- skkeleton候補選択確定の追跡
-      vim.api.nvim_create_autocmd({ "TextChangedI", "InsertLeave" }, {
-        callback = function(ev)
-          -- print("DEBUG: autocmd triggered:", ev.event, "cmp.visible():", cmp.visible())
-          -- 補完メニューが閉じられた場合、選択していた候補を登録
-          if not cmp.visible() then
+      -- skkeleton候補選択確定の追跡（条件付き実行でラグ防止）
+      vim.api.nvim_create_autocmd("TextChangedI", {
+        callback = function()
+          -- 候補が選択されている場合のみ処理（ラグ防止）
+          if skkeleton_last_selected and not cmp.visible() then
+            register_skkeleton_selection()
+          end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("InsertLeave", {
+        callback = function()
+          -- フォールバック処理
+          if skkeleton_last_selected then
             register_skkeleton_selection()
           end
         end,
