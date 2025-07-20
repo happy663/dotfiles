@@ -1,6 +1,8 @@
 return {
   {
-    "vim-skk/skkeleton",
+    "happy663/skkeleton",
+    -- dir = "/Users/happy/src/github.com/vim-skk/skkeleton/",
+    -- dir = "/Users/happy/src/github.com/happy663/skkeleton",
     cond = vim.g.not_in_vscode,
     dependencies = {
       { "vim-denops/denops.vim" },
@@ -24,6 +26,7 @@ return {
               "google_japanese_input",
             },
             keepState = true,
+            debug = false,
           })
 
           vim.fn["skkeleton#register_kanatable"]("rom", {

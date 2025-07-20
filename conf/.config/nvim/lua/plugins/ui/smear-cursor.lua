@@ -1,6 +1,8 @@
 return {
   {
     "sphamba/smear-cursor.nvim",
+    lazy = true,
+    event = { "CursorMoved", "CursorMovedI" },
     config = function()
       local smear_cursor = require("smear_cursor")
 

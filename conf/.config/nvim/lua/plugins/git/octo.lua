@@ -1,7 +1,9 @@
 return {
   {
     "pwntester/octo.nvim",
-    requires = {
+    lazy = true,
+    cmd = { "Octo" },
+    dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
       -- OR 'ibhagwan/fzf-lua',
@@ -49,7 +51,7 @@ return {
         user_icon = " ", -- user icon
         ghost_icon = "󰊠 ", -- ghost icon
         timeline_marker = " ", -- timeline marker
-        timeline_indent = "2", -- timeline indentation
+        timeline_indent = 2, -- timeline indentation
         use_timeline_icons = true, -- toggle timeline icons
         timeline_icons = { -- the default icons based on timelineItems
           commit = "  ",
@@ -283,6 +285,87 @@ return {
             unsubscribe = { lhs = "<localleader>nu", desc = "unsubscribe from notifications" },
           },
         },
+      })
+
+      -- issueバッファ名のカスタマイズ: 番号の代わりにissueタイトルを使用
+      -- UTF-8対応の安全な文字列処理を実装
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufEnter" }, {
+        pattern = "octo://*",
+        callback = function(event)
+          local bufname = vim.api.nvim_buf_get_name(event.buf)
+
+          -- 既に処理済みかチェック
+          if vim.b[event.buf].octo_title_processed then
+            return
+          end
+
+          -- バッファ名からリポジトリ、種類、番号を抽出
+          local repo, kind, number = bufname:match("octo://([^/]+/[^/]+)/([^/]+)/([^/]+)")
+
+          if repo and kind == "issue" and number and tonumber(number) then
+            -- UTF-8対応の安全な文字列切り取り関数
+            local function utf8_safe_truncate(str, max_chars)
+              local chars = {}
+              -- UTF-8文字をパターンマッチングで1文字ずつ抽出
+              for char in str:gmatch("([^\128-\191][\128-\191]*)") do
+                table.insert(chars, char)
+                if #chars >= max_chars then
+                  break
+                end
+              end
+              return table.concat(chars)
+            end
+
+            -- バッファコンテンツの読み込み待機と再試行
+            local function try_extract_title(attempt)
+              attempt = attempt or 1
+              local lines = vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)
+
+              if #lines <= 1 or (#lines == 1 and lines[1] == "") then
+                if attempt < 10 then
+                  vim.defer_fn(function()
+                    try_extract_title(attempt + 1)
+                  end, 100 * attempt)
+                  return
+                end
+                return
+              end
+
+              -- issueタイトルを抽出
+              local title = nil
+              for _, line in ipairs(lines) do
+                if line:match("^%s*[^#%s]") then
+                  title = line:gsub("^%s+", ""):gsub("%s+$", "")
+                  break
+                end
+              end
+
+              if title and title ~= "" then
+                -- ファイルシステム禁止文字のみ置換、日本語は保持
+                local clean_title = title:gsub('[/\\:*?"<>|]', "_")
+                clean_title = clean_title:gsub("%s+", "_")
+                clean_title = clean_title:gsub("_+", "_")
+                clean_title = clean_title:gsub("^[_%s]+", "")
+                clean_title = clean_title:gsub("[_%s]+$", "")
+
+                -- UTF-8対応の安全な長さ制限
+                local max_chars = 30
+                if vim.fn.strchars(clean_title) > max_chars then
+                  clean_title = utf8_safe_truncate(clean_title, max_chars - 3) .. "..."
+                end
+
+                -- 新しいバッファ名を設定
+                local new_bufname = string.format("octo://%s/%s/%s", repo, kind, clean_title)
+                vim.api.nvim_buf_set_name(event.buf, new_bufname)
+                vim.b[event.buf].octo_title_processed = true
+              end
+            end
+
+            vim.schedule(function()
+              try_extract_title(1)
+            end)
+          end
+        end,
       })
     end,
   },

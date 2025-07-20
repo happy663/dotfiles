@@ -2,6 +2,10 @@ return {
   {
     "aznhe21/actions-preview.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      { "<Leader>ca", mode = { "v", "n" }, desc = "Code Actions" },
+    },
     config = function()
       vim.keymap.set({ "v", "n" }, "<Leader>ca", require("actions-preview").code_actions, {
         noremap = true,

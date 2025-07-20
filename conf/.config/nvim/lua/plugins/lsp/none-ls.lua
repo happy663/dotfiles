@@ -2,6 +2,8 @@ return {
   {
     "nvimtools/none-ls.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = "LspAttach",
     config = function()
       local null_ls = require("null-ls")
 

@@ -2,6 +2,7 @@ return {
   {
     "nvim-zh/colorful-winsep.nvim",
     config = true,
-    event = { "WinLeave" },
+    event = { "WinLeave", "WinNew" },
+    lazy = true,
   },
 }

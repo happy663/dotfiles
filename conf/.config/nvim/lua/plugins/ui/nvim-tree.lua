@@ -2,6 +2,15 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-b>",
+        "<cmd>NvimTreeToggle<CR>",
+        desc = "NvimTreeToggle",
+      },
+    },
+    cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
     config = function()
       require("nvim-tree").setup({
         sort_by = "case_sensitive",
@@ -53,11 +62,7 @@ return {
         api.tree.toggle_gitignore_filter()
       end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
 
-      map("n", "<C-b>", ":NvimTreeToggle<CR>", {
-        silent = true,
-        noremap = true,
-        desc = "NvimTreeToggle",
-      })
+      -- キーマップはkeysで定義済み
 
       vim.api.nvim_set_var("loaded_netrw", 1)
       vim.api.nvim_set_var("loaded_netrwPlugin", 1)

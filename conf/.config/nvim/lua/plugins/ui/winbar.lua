@@ -2,6 +2,8 @@ return {
   {
     "fgheng/winbar.nvim",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
     config = function()
       require("winbar").setup({
         enabled = true,

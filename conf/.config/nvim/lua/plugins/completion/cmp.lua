@@ -2,6 +2,8 @@ return {
   {
     "hrsh7th/nvim-cmp",
     cond = vim.g.not_in_vscode,
+    lazy = true,
+    event = { "InsertEnter", "CmdlineEnter" },
     opts = function(_, opts)
       opts.sources = opts.sources or {}
       table.insert(opts.sources, {
@@ -12,7 +14,15 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
-      local luasnip = require("luasnip")
+      -- LuaSnipを遅延ロード
+      local luasnip
+      -- -- パフォーマンス最適化設定
+      vim.opt.completeopt = { "menu", "menuone", "noselect" }
+      vim.opt.shortmess:append("c")
+
+      -- skkeleton候補選択追跡用のグローバル変数
+      local skkeleton_last_selected = nil
+      local skkeleton_last_registered = nil
 
       local lspkind_comparator = function(conf)
         local lsp_types = require("cmp.types").lsp
@@ -107,6 +117,7 @@ return {
         { name = "render-markdown", group_index = 1 },
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
+        { name = "luasnip", group_index = 1 },
         {
           name = "spell",
           option = {
@@ -156,18 +167,52 @@ return {
         -- end,
         snippet = {
           expand = function(args)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             luasnip.lsp_expand(args.body)
           end,
         },
         mapping = {
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
-          ["<C-n>"] = cmp.mapping.select_next_item(),
+          -- ["<C-p>"] = cmp.mapping.select_prev_item(),
+          -- ["<C-n>"] = cmp.mapping.select_next_item(),
+          ["<C-p>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+              -- skkeleton候補選択を追跡
+              vim.schedule(function()
+                local entry = cmp.get_selected_entry()
+                if entry and entry.source.name == "skkeleton" then
+                  skkeleton_last_selected = entry.completion_item
+                end
+              end)
+            else
+              fallback()
+            end
+          end, { "i" }),
+          ["<C-n>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+              -- skkeleton候補選択を追跡
+              vim.schedule(function()
+                local entry = cmp.get_selected_entry()
+                if entry and entry.source.name == "skkeleton" then
+                  skkeleton_last_selected = entry.completion_item
+                end
+              end)
+            else
+              fallback()
+            end
+          end, { "i" }),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
           ["<Tab>"] = cmp.mapping(function(fallback)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             if luasnip.locally_jumpable(1) then
               luasnip.jump(1)
             else
@@ -175,6 +220,9 @@ return {
             end
           end, { "i", "s" }),
           ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if not luasnip then
+              luasnip = require("luasnip")
+            end
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
             else
@@ -188,6 +236,7 @@ return {
           --   name = "copilot",
           --   group_index = 1,
           -- },
+          { name = "luasnip", group_index = 1 },
           { name = "emoji", group_index = 1 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "path", group_index = 1 },
@@ -229,8 +278,46 @@ return {
         preselect = cmp.PreselectMode.None,
         -- 補完候補が多すぎると邪魔なので制限
         performance = {
-          max_view_entries = 10,
+          max_view_entries = 20,
         },
+      })
+
+      -- skkeleton候補選択登録ヘルパー関数
+      local function register_skkeleton_selection()
+        -- skkeleton#is_enabled のチェックを削除（InsertLeave時に無効化されるため）
+        if skkeleton_last_selected then
+          local kana = skkeleton_last_selected.filterText
+          local word = skkeleton_last_selected.label
+          local key = kana .. "->" .. word
+
+          -- 重複登録防止
+          if skkeleton_last_registered ~= key then
+            vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
+            skkeleton_last_registered = key
+          else
+          end
+
+          skkeleton_last_selected = nil
+        end
+      end
+
+      -- skkeleton候補選択確定の追跡（条件付き実行でラグ防止）
+      vim.api.nvim_create_autocmd("TextChangedI", {
+        callback = function()
+          -- 候補が選択されている場合のみ処理（ラグ防止）
+          if skkeleton_last_selected and not cmp.visible() then
+            register_skkeleton_selection()
+          end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("InsertLeave", {
+        callback = function()
+          -- フォールバック処理
+          if skkeleton_last_selected then
+            register_skkeleton_selection()
+          end
+        end,
       })
 
       vim.api.nvim_create_autocmd("User", {
@@ -238,22 +325,14 @@ return {
         callback = function()
           cmp.setup.buffer({
             sources = cmp.config.sources({
-              { name = "skkeleton", max_item_count = 10 },
+              { name = "skkeleton", max_item_count = 20 },
             }),
             sorting = {
-              priority_weight = 2,
+              priority_weight = 1,
               comparators = {
-                cmp.config.compare.exact,
-                cmp.config.compare.score,
-                cmp.config.compare.length,
+                cmp.config.compare.sort_text,
               },
             },
-            -- performance = {
-            --   debounce = 10,
-            --   throttle = 20,
-            --   max_view_entries = 10,
-            --   fetching_timeout = 50, -- ソースからの補完取得タイムアウト(ms)
-            -- },
           })
 
           cmp.setup.cmdline("/", {
@@ -264,10 +343,7 @@ return {
             sorting = {
               priority_weight = 1,
               comparators = {
-                cmp.config.compare.locality,
-                cmp.config.compare.exact,
-                cmp.config.compare.offset,
-                cmp.config.compare.score,
+                cmp.config.compare.sort_text,
               },
             },
           })
@@ -299,16 +375,20 @@ return {
       "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
-      "uga-rosa/cmp-skkeleton",
+      -- "uga-rosa/cmp-skkeleton",
+      "happy663/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
       "f3fora/cmp-spell",
       "lukas-reineke/cmp-rg",
       "hrsh7th/cmp-emoji",
+      "saadparwaiz1/cmp_luasnip",
       {
         "zbirenbaum/copilot-cmp",
         cond = vim.g.not_in_vscode,
+        lazy = true,
+        event = "InsertEnter",
         config = function()
           require("copilot_cmp").setup()
         end,
@@ -316,3 +396,5 @@ return {
     },
   },
 }
+
+
