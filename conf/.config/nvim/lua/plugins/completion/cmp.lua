@@ -375,8 +375,8 @@ return {
       "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
-      { dir = "/Users/happy/src/github.com/rinx/cmp-skkeleton" },
       -- "uga-rosa/cmp-skkeleton",
+      "happy663/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
@@ -396,3 +396,5 @@ return {
     },
   },
 }
+
+
