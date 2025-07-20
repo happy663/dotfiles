@@ -327,6 +327,12 @@ return {
             sources = cmp.config.sources({
               { name = "skkeleton", max_item_count = 20 },
             }),
+            sorting = {
+              priority_weight = 1,
+              comparators = {
+                cmp.config.compare.sort_text,
+              },
+            },
           })
 
           cmp.setup.cmdline("/", {
@@ -337,10 +343,7 @@ return {
             sorting = {
               priority_weight = 1,
               comparators = {
-                cmp.config.compare.locality,
-                cmp.config.compare.exact,
-                cmp.config.compare.offset,
-                cmp.config.compare.score,
+                cmp.config.compare.sort_text,
               },
             },
           })
