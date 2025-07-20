@@ -249,8 +249,14 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
-vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Open Octo issues assigned to happy663",
-})
+-- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
+--   noremap = true,
+--   silent = true,
+--   desc = "Open Octo issues assigned to happy663",
+-- })
+--
+-- vim.keymap.set("n", "<leader>oll", ":Octo issue list<CR>", {
+--   noremap = true,
+--   silent = true,
+--   desc = "Open Octo issues assigned to happy663",
+-- })
