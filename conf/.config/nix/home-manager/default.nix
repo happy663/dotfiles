@@ -334,53 +334,177 @@ in
 
     tmux = {
       enable = true;
-      shell = "${pkgs.zsh}/bin/zsh";
-      terminal = "screen-256color";
-      prefix = "C-q";
-      baseIndex = 1;
-      mouse = true;
-      escapeTime = 0;
+      # home-managerのデフォルト設定を使用せず、カスタム設定のみ使用
       extraConfig = ''
-        # ステータスバーをトップに配置する
-        set-option -g status-position top
-
-        # ステータスバーの長さを設定
-        set-option -g status-left-length 90
-        set-option -g status-right-length 90
-
-        # ステータスバーの表示
-        set-option -g status-left '#H:[#P]'
-        set-option -g status-right '[%Y-%m-%d(%a) %H:%M]'
-        set-option -g status-interval 1
-        set-option -g status-justify centre
-
-        # ステータスバーの色設定
-        set-option -g status-bg "colour238"
-        set-option -g status-fg "colour255"
-
-        # vim keybindings
+        # =============================================================================
+        # WezTerm Complete Replication Configuration
+        # =============================================================================
+        
+        # 基本設定を最初に設定（home-manager上書き）
+        # 基本設定を最初に設定（home-manager上書き）
+        unbind-key -a
+        
+        # home-manager設定を上書き
+        unbind C-b
+        
+        # マウスとコピーモード設定
+        set -g mouse on
+        setw -g mode-keys vi
+        
+        # =============================================================================
+        # 基本設定
+        # =============================================================================
+        set -g base-index 1
+        setw -g pane-base-index 1
+        set -g renumber-windows on
+        set -g escape-time 0
+        
+        # =============================================================================
+        # プレフィックスキー設定
+        # =============================================================================
+        set -g prefix C-q
+        bind C-q send-prefix
+        
+        # =============================================================================
+        # ウィンドウ（タブ）管理 - WezTerm互換
+        # =============================================================================
+        bind t new-window
+        bind w confirm-before -p "kill-window #W? (y/n)" kill-window
+        bind -n M-[ previous-window
+        bind -n M-] next-window
+        
+        # =============================================================================
+        # ペイン管理 - WezTerm互換
+        # =============================================================================
+        bind d split-window -v -c "#{pane_current_path}"
+        bind v split-window -h -c "#{pane_current_path}"
+        bind x confirm-before -p "kill-pane #P? (y/n)" kill-pane
+        
+        # ペイン移動 - vim風
         bind h select-pane -L
         bind j select-pane -D
         bind k select-pane -U
         bind l select-pane -R
-
-        bind -r H resize-pane -L 5
-        bind -r J resize-pane -D 5
-        bind -r K resize-pane -U 5
-        bind -r L resize-pane -R 5
-
-        # split windows
-        bind | split-window -h
-        bind - split-window -v
-
-        # copy mode
-        setw -g mode-keys vi
-        bind -T copy-mode-vi v send -X begin-selection
-        bind -T copy-mode-vi V send -X select-line
-        bind -T copy-mode-vi C-v send -X rectangle-toggle
-        bind -T copy-mode-vi y send -X copy-selection
-        bind -T copy-mode-vi Y send -X copy-line
-        bind-key C-p paste-buffer
+        
+        # リサイズモード
+        bind e switch-client -T resize
+        bind -T resize h resize-pane -L 1
+        bind -T resize j resize-pane -D 1
+        bind -T resize k resize-pane -U 1
+        bind -T resize l resize-pane -R 1
+        bind -T resize Enter switch-client -T root
+        bind -T resize Escape switch-client -T root
+        
+        # =============================================================================
+        # セッション（ワークスペース）管理 - WezTerm互換
+        # =============================================================================
+        bind s choose-session
+        bind '$' command-prompt -I "#S" "rename-session -- '%%'"
+        bind S command-prompt -p "New session name: " "new-session -d -s '%%'"
+        
+        # =============================================================================
+        # コピーモード - WezTerm完全互換
+        # =============================================================================
+        bind '[' copy-mode
+        
+        # 基本移動
+        bind -T copy-mode-vi h send-keys -X cursor-left
+        bind -T copy-mode-vi j send-keys -X cursor-down
+        bind -T copy-mode-vi k send-keys -X cursor-up
+        bind -T copy-mode-vi l send-keys -X cursor-right
+        
+        # 行移動
+        bind -T copy-mode-vi '^' send-keys -X start-of-line
+        bind -T copy-mode-vi '$' send-keys -X end-of-line
+        bind -T copy-mode-vi '0' send-keys -X back-to-indentation
+        
+        # 単語移動
+        bind -T copy-mode-vi w send-keys -X next-word
+        bind -T copy-mode-vi b send-keys -X previous-word
+        bind -T copy-mode-vi e send-keys -X next-word-end
+        
+        # 文字ジャンプ
+        bind -T copy-mode-vi f command-prompt -1 -p "jump forward" "send -X jump-forward '%%'"
+        bind -T copy-mode-vi F command-prompt -1 -p "jump backward" "send -X jump-backward '%%'"
+        bind -T copy-mode-vi t command-prompt -1 -p "jump to forward" "send -X jump-to-forward '%%'"
+        bind -T copy-mode-vi T command-prompt -1 -p "jump to backward" "send -X jump-to-backward '%%'"
+        bind -T copy-mode-vi ';' send-keys -X jump-again
+        bind -T copy-mode-vi ',' send-keys -X jump-reverse
+        
+        # ページ移動
+        bind -T copy-mode-vi C-f send-keys -X page-down
+        bind -T copy-mode-vi C-b send-keys -X page-up
+        bind -T copy-mode-vi C-d send-keys -X halfpage-down
+        bind -T copy-mode-vi C-u send-keys -X halfpage-up
+        
+        # スクロール位置
+        bind -T copy-mode-vi g send-keys -X history-top
+        bind -T copy-mode-vi G send-keys -X history-bottom
+        bind -T copy-mode-vi H send-keys -X top-line
+        bind -T copy-mode-vi M send-keys -X middle-line
+        bind -T copy-mode-vi L send-keys -X bottom-line
+        
+        # 選択モード
+        bind -T copy-mode-vi v send-keys -X begin-selection
+        bind -T copy-mode-vi V send-keys -X select-line
+        bind -T copy-mode-vi C-v send-keys -X rectangle-toggle
+        
+        # コピーと終了
+        bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+        bind -T copy-mode-vi Enter send-keys -X copy-selection-and-cancel
+        bind -T copy-mode-vi Escape send-keys -X cancel
+        bind -T copy-mode-vi q send-keys -X cancel
+        bind -T copy-mode-vi C-c send-keys -X cancel
+        
+        # その他の移動
+        bind -T copy-mode-vi o send-keys -X other-end
+        
+        # =============================================================================
+        # 自動リネーム設定 - WezTerm互換
+        # =============================================================================
+        set -g automatic-rename on
+        set -g automatic-rename-format \"#{?#{==:#{pane_current_path},#{HOME}},~,#{b:pane_current_path}}\""
+        
+        # =============================================================================
+        # 外観設定 - AdventureTimeテーマ
+        # =============================================================================
+        set -g status-position top
+        set -g status-justify left
+        set -g status-style "bg=#1e1e1e,fg=#f8f8f2"
+        
+        # ウィンドウリスト設定
+        set -g window-status-format " #I: #W "
+        set -g window-status-current-format " #I: #W "
+        set -g window-status-style "bg=#5c6d74,fg=#ffffff"
+        set -g window-status-current-style "bg=#ae8b2d,fg=#ffffff,bold"
+        set -g window-status-separator ""
+        
+        # ペインボーダー
+        set -g pane-border-style "fg=#5c6d74"
+        set -g pane-active-border-style "fg=#ae8b2d"
+        
+        # ステータスバー表示
+        set -g status-left-length 90
+        set -g status-right-length 90
+        set -g status-left "#[bg=#ae8b2d,fg=#1e1e1e,bold] #S #[bg=#1e1e1e,fg=#ae8b2d]"
+        set -g status-right "#[fg=#5c6d74]#[bg=#5c6d74,fg=#ffffff] %Y-%m-%d(%a) %H:%M "
+        set -g status-interval 1
+        
+        # メッセージ設定
+        set -g message-style "bg=#ae8b2d,fg=#1e1e1e,bold"
+        set -g message-command-style "bg=#5c6d74,fg=#ffffff"
+        
+        # モード設定
+        set -g mode-style "bg=#ae8b2d,fg=#1e1e1e"
+        
+        # =============================================================================
+        # その他の設定
+        # =============================================================================
+        bind r source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded!"
+        bind '?' list-keys
+        
+        # システムクリップボード連携
+        bind C-p paste-buffer
       '';
     };
 
