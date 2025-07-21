@@ -147,3 +147,48 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.fn.setpos(".", { 0, 7, 1, 0 })
   end,
 })
+
+local M = {}
+
+function M.update_progress()
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  print("Updating progress for TODOs...")
+
+  for i, line in ipairs(lines) do
+    if line:match("^%* TODO") then
+      -- このTODO見出しのサブタスクを探す
+      local total = 0
+      local done = 0
+
+      -- 次の行から検索開始
+      for j = i + 1, #lines do
+        local subline = lines[j]
+        if subline:match("^%*%* ") then -- サブタスク発見
+          total = total + 1
+          if subline:match("^%*%* DONE") then -- 完了サブタスク
+            done = done + 1
+          end
+        elseif subline:match("^%* ") then -- 次のメイン見出し
+          break -- このTODOセクション終了
+        end
+      end
+      print("total: " .. total .. ", done: " .. done)
+
+      -- 進捗更新（サブタスクがある場合のみ）
+      if total > 0 then
+        local progress = math.floor((done / total) * 100)
+        local new_line = line:gsub("%s*%[%d+%%?%]", "") .. string.format(" [%d%%]", progress)
+        -- 行を更新（i-1 because 0-indexed）
+        vim.api.nvim_buf_set_lines(0, i - 1, i, false, { new_line })
+      end
+    end
+  end
+end
+
+-- ファイル保存時に全体を自動更新
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  pattern = "*.org",
+  callback = M.update_progress,
+})
+
+return M
