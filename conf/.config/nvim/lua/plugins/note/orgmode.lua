@@ -10,7 +10,7 @@ return {
       -- Setup orgmode
       require("orgmode").setup({
         win_split_mode = "vertical",
-        torg_agenda_files = {
+        org_agenda_files = {
           "~/src/github.com/happy663/org-memo/org/work.org",
           "~/src/github.com/happy663/org-memo/org/private.org",
           "~/src/github.com/happy663/org-memo/org/dev.org",
@@ -168,6 +168,12 @@ return {
               },
             },
           },
+        },
+
+        -- TODO/DOINGの個別色設定
+        org_todo_keyword_faces = {
+          DOING = ":foreground orange :weight bold",
+          DONE = ":foreground green :weight bold",
         },
 
         -- よく使うキーマップ
