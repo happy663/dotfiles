@@ -14,26 +14,29 @@ return {
           "~/src/github.com/happy663/org-memo/org/work.org",
           "~/src/github.com/happy663/org-memo/org/private.org",
           "~/src/github.com/happy663/org-memo/org/dev.org",
+          "~/src/github.com/happy663/org-memo/org/daily.org",
         },
         org_default_notes_file = "~/src/github.com/happy663/org-memo/org/private.org", -- デフォルトのタスクファイル
         org_capture_templates = {
           w = {
             description = "仕事タスク",
-            template = "** TODO [#C] %?",
+            template = "* TODO [#C] %? [/] :work:",
             target = "~/src/github.com/happy663/org-memo/org/work.org",
-            headline = "開発・技術",
           },
           p = {
             description = "プライベートタスク",
-            template = "** TODO [#C] %?",
+            template = "* TODO [#C] %? [/] :private:",
             target = "~/src/github.com/happy663/org-memo/org/private.org",
-            headline = "開発・設定",
           },
           d = {
             description = "開発環境タスク",
-            template = "** TODO [#C] %?",
+            template = "* TODO [#C] %? [/] :dev:",
             target = "~/src/github.com/happy663/org-memo/org/dev.org",
-            headline = "Neovim設定",
+          },
+          n = {
+            description = "日次報告",
+            template = "* %<%Y/%m/%d (%a)>\n\n** TODO 朝会,夕会\n\n*** やったこと\n- \n\n*** 今日やること\n- [ ] \n\n** TODO %?",
+            target = "~/src/github.com/happy663/org-memo/org/daily.org",
           },
         },
         -- 初心者向けの簡単な設定
@@ -186,6 +189,8 @@ return {
             org_todo = "t", -- TODO状態を切り替え
             org_priority = "<leader>jp", -- 優先度を設定
             org_set_tags_command = "<leader>jt", -- タグを設定
+            org_priority_up = "+", -- 優先度を上げる
+            org_priority_down = "-", -- 優先度を下げる
           },
         },
       })
