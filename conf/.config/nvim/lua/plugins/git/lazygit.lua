@@ -24,13 +24,30 @@ return {
       vim.api.nvim_create_autocmd("TermOpen", {
         pattern = "term://*lazygit*",
         callback = function()
+          print("Lazygit terminal opened")
           local opts = { noremap = true, silent = true }
           vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
+
+          vim.schedule(function()
+            -- 直接関数を呼び出してCopilotをリセット
+            if _G.toggle_copilot then
+              print("Toggling Copilot (disable)...")
+              _G.toggle_copilot() -- 1回目：無効化
+              -- サーバーが確実に停止するまで待機してから再有効化
+              vim.defer_fn(function()
+                print("Toggling Copilot (enable)...")
+                _G.toggle_copilot() -- 2回目：有効化（コンテキストリセット）
+              end, 500) -- 500ms待機
+            else
+              print("toggle_copilot function not available")
+            end
+          end)
         end,
       })
 
       -- lazygit終了時のコールバック設定
       vim.g.lazygit_on_exit_callback = function()
+        print("Lazygit has exited")
         -- ウィンドウレイアウトの修復
         vim.schedule(function()
           -- フローティングウィンドウやターミナルバッファをクリーンアップ
