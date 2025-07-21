@@ -10,6 +10,11 @@ return {
       -- OR 'folke/snacks.nvim',
       "nvim-tree/nvim-web-devicons",
     },
+    keys = {
+      { "<leader>olh", "<cmd>Octo issue list assignee=happy663<CR>", desc = "Open Octo issues assigned to happy663" },
+      { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
+      { "<leader>olc", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
+    },
     config = function()
       require("octo").setup({
         use_local_fs = false, -- use local files on right side of reviews
@@ -51,7 +56,7 @@ return {
         user_icon = " ", -- user icon
         ghost_icon = "󰊠 ", -- ghost icon
         timeline_marker = " ", -- timeline marker
-        timeline_indent = 2, -- timeline indentation
+        timeline_indent = "  ", -- timeline indentation
         use_timeline_icons = true, -- toggle timeline icons
         timeline_icons = { -- the default icons based on timelineItems
           commit = "  ",
@@ -370,3 +375,6 @@ return {
     end,
   },
 }
+
+
+

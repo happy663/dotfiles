@@ -132,6 +132,66 @@ return {
         }),
       })
 
+      -- -- org-mode用のスニペットを追加
+      ls.add_snippets("org", {
+        -- 開発環境TODO
+        s("td", {
+          t("* TODO [#"),
+          i(1, "C"),
+          t("] "),
+          i(2, "タスク内容"),
+          t(" :"),
+          i(3, "dev"),
+          t(":"),
+        }),
+
+        -- work TODO
+        s("tw", {
+          t("* TODO [#"),
+          i(1, "C"),
+          t("] "),
+          i(2, "タスク内容"),
+          t(" :work:"),
+        }),
+
+        -- private TODO
+        s("tp", {
+          t("* TODO [#"),
+          i(1, "C"),
+          t("] "),
+          i(2, "タスク内容"),
+          t(" :private:"),
+        }),
+
+        -- 期限付きタスク
+        s("tpd", {
+          t("* TODO [#"),
+          i(1, "C"),
+          t("] "),
+          i(2, "タスク内容"),
+          t(" :"),
+          i(3, "private"),
+          t(":"),
+          t({ "", "   DEADLINE: <" }),
+          i(4, "2025-01-20 月"),
+          t(">"),
+        }),
+
+        -- スケジュール付きタスク
+        s("ts", {
+          t("* TODO [#"),
+          i(1, "C"),
+          t("] "),
+          i(2, "タスク内容"),
+          t(" :"),
+          i(3, "private"),
+          t(":"),
+          t({ "", "   SCHEDULED: <" }),
+          i(4, "2025-01-20 月"),
+          t(">"),
+        }),
+      })
+
       -- friendly-snippetsを読み込み
       require("luasnip.loaders.from_vscode").lazy_load()
     end,

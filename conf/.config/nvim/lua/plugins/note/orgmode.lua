@@ -7,23 +7,33 @@ return {
     config = function()
       -- Load treesitter grammar for org
       -- require("orgmode").setup_ts_grammar()
-
       -- Setup orgmode
       require("orgmode").setup({
-        org_agenda_files = { "~/dotfiles/org/*" },
-        org_default_notes_file = "~/dotfiles/org/tasks.org", -- デフォルトのタスクファイル
+        win_split_mode = "vertical",
+        org_agenda_files = {
+          "~/src/github.com/happy663/org-memo/org/work.org",
+          "~/src/github.com/happy663/org-memo/org/private.org",
+          "~/src/github.com/happy663/org-memo/org/dev.org",
+        },
+        org_default_notes_file = "~/src/github.com/happy663/org-memo/org/private.org", -- デフォルトのタスクファイル
         org_capture_templates = {
-          t = {
-            description = "タスク",
-            template = "** TODO %?\n   %u", -- %?はカーソル位置、%uは日時
-            target = "~/dotfiles/org/tasks.org",
-            headline = "タスク一覧",
-          },
           w = {
-            description = "仕事のタスク",
-            template = "** TODO [#B] %? :仕事:\n   %u",
-            target = "~/dotfiles/org/tasks.org",
-            headline = "タスク一覧",
+            description = "仕事タスク",
+            template = "** TODO [#C] %?",
+            target = "~/src/github.com/happy663/org-memo/org/work.org",
+            headline = "開発・技術",
+          },
+          p = {
+            description = "プライベートタスク",
+            template = "** TODO [#C] %?",
+            target = "~/src/github.com/happy663/org-memo/org/private.org",
+            headline = "開発・設定",
+          },
+          d = {
+            description = "開発環境タスク",
+            template = "** TODO [#C] %?",
+            target = "~/src/github.com/happy663/org-memo/org/dev.org",
+            headline = "Neovim設定",
           },
         },
         -- 初心者向けの簡単な設定
@@ -31,49 +41,139 @@ return {
         org_priority_highest = "A", -- 最高優先度
         org_priority_default = "C", -- デフォルト優先度
         org_priority_lowest = "C", -- 最低優先度
+        -- 統計クッキー（チェックリスト%表示）の自動更新を有効化
+        org_startup_folded = "showeverything",
+        org_log_done = "time", -- DONE時にタイムスタンプを追加
         -- カスタムアジェンダコマンド
         org_agenda_custom_commands = {
           -- wキー: 仕事のタスクだけ
           w = {
-            description = "仕事のタスク",
-            template = function()
-              return {
-                {
-                  type = "tags-todo",
-                  match = "+仕事",
-                  order = 10,
-                },
-              }
-            end,
+            description = "Combined view", -- Description shown in the prompt for the shortcut
+            types = {
+              {
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                org_agenda_overriding_header = "High priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
+              },
+              {
+                type = "agenda",
+                org_agenda_overriding_header = "My daily agenda",
+                org_agenda_span = "day", -- can be any value as org_agenda_span
+              },
+              {
+                type = "tags",
+                match = "work", --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                org_agenda_overriding_header = "My work todos",
+                org_agenda_todo_ignore_scheduled = "all", -- Ignore all headlines that are scheduled. Possible values: past | future | all
+              },
+              {
+                type = "agenda",
+                org_agenda_overriding_header = "Whole week overview",
+                org_agenda_span = "week", -- 'week' is default, so it's not necessary here, just an example
+                org_agenda_start_on_weekday = 1, -- Start on Monday
+                org_agenda_remove_tags = true, -- Do not show tags only for this view
+              },
+            },
           },
-
-          -- pキー: プライベートのタスクだけ
           p = {
             description = "プライベートのタスク",
-            template = function()
-              return {
-                {
-                  type = "tags-todo",
-                  match = "+プライベート",
-                  order = 10,
-                },
-              }
-            end,
+            types = {
+              {
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                org_agenda_overriding_header = "High priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
+              },
+              {
+                type = "tags_todo",
+                org_agenda_overriding_header = "My private todos",
+                match = "+private",
+                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                order = 10,
+              },
+              {
+                type = "agenda",
+                org_agenda_overriding_header = "Whole week overview",
+                org_agenda_span = "week", -- 'week' is default, so it's not necessary here, just an example
+                org_agenda_start_on_weekday = 1, -- Start on Monday
+                org_agenda_remove_tags = true, -- Do not show tags only for this view
+              },
+            },
           },
-
-          -- hキー: 優先度Aのタスクだけ
+          d = {
+            description = "開発のタスク",
+            types = {
+              {
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                org_agenda_overriding_header = "High priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
+              },
+              {
+                type = "tags_todo",
+                org_agenda_overriding_header = "My dev todos",
+                match = "+dev",
+                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                order = 10,
+              },
+              {
+                type = "agenda",
+                org_agenda_overriding_header = "Whole week overview",
+                org_agenda_span = "week", -- 'week' is default, so it's not necessary here, just an example
+                org_agenda_start_on_weekday = 1, -- Start on Monday
+                org_agenda_remove_tags = true, -- Do not show tags only for this view
+              },
+            },
+          },
+          a = {
+            description = "開発のタスク",
+            types = {
+              {
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                org_agenda_overriding_header = "High priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
+              },
+              {
+                type = "tags_todo",
+                org_agenda_overriding_header = "My private todos",
+                match = "+private",
+                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                order = 10,
+              },
+              {
+                type = "tags_todo",
+                org_agenda_overriding_header = "My dev todos",
+                match = "+dev",
+                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                order = 10,
+              },
+              {
+                type = "agenda",
+                org_agenda_overriding_header = "Whole week overview",
+                org_agenda_span = "week", -- 'week' is default, so it's not necessary here, just an example
+                org_agenda_start_on_weekday = 1, -- Start on Monday
+                org_agenda_remove_tags = true, -- Do not show tags only for this view
+              },
+            },
+          },
           h = {
             description = "高優先度タスク",
-            template = function()
-              return {
-                {
-                  type = "tags-todo",
-                  match = '+PRIORITY="A"',
-                  order = 10,
-                },
-              }
-            end,
+            types = {
+              {
+                type = "tags_todo",
+                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                order = 10,
+              },
+            },
           },
+        },
+
+        -- TODO/DOINGの個別色設定
+        org_todo_keyword_faces = {
+          DOING = ":foreground orange :weight bold",
+          DONE = ":foreground green :weight bold",
         },
 
         -- よく使うキーマップ
@@ -89,6 +189,26 @@ return {
           },
         },
       })
+
+      -- ファイル直接アクセス用キーマップ
+      vim.keymap.set(
+        "n",
+        "<leader>jw",
+        ":e ~/src/github.com/happy663/org-memo/org/work.org<CR>",
+        { desc = "Open work.org" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>jp",
+        ":e ~/src/github.com/happy663/org-memo/org/private.org<CR>",
+        { desc = "Open private.org" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>jd",
+        ":e ~/src/github.com/happy663/org-memo/org/dev.org<CR>",
+        { desc = "Open dev.org" }
+      )
     end,
   },
 }

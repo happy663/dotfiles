@@ -35,7 +35,7 @@ in
       awscli
       fastfetch
       terminal-notifier
-      # neovim-remote
+      neovim-remote
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
