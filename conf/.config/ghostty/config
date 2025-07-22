@@ -1,2 +1,16 @@
-keybind = ctrl+j=ignore
-keybind = shift+enter=text:\
+# Font configuration
+font-family = HackGen Console NF
+
+# Appearance settings (similar to Wezterm)
+background-opacity = 0.6
+
+# Window settings
+window-height = 60
+window-width = 120
+
+# Keybindings
+keybind = cmd+shift+f=toggle_fullscreen
+
+
+
+
