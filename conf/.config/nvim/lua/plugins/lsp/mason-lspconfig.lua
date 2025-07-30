@@ -193,6 +193,28 @@ return {
           diagnosticSeverity = "Warning",
         },
       })
+      -- Kotlin設定
+      vim.lsp.config("kotlin_language_server", {
+        on_attach = on_attach,
+        settings = {
+          kotlin = {
+            compiler = {
+              jvm = {
+                target = "17", -- JVMターゲットバージョン
+              },
+            },
+            completion = {
+              snippets = {
+                enabled = true,
+              },
+            },
+            externalSources = {
+              autoConvertToKotlin = true,
+              useKlsScheme = true,
+            },
+          },
+        },
+      })
       -- Mason-LSPConfigの設定
       require("mason-lspconfig").setup()
     end,
