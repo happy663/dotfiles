@@ -45,12 +45,91 @@
       "Read(~/dotfiles/**)",
       "Read($(ghq root)/**)"
     ],
-    "deny": []
+    "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
   },
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
     "DISABLE_COST_WARNINGS": "1",
     "BASH_DEFAULT_TIMEOUT_MS": "9600000",
     "BASH_MAX_TIMEOUT_MS": "9600000"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'permission needed - file modification pending' -title 'edit approval' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'permission needed - command execution pending' -title 'command approval' -sound 'Blow'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Read|Grep|Glob|LS",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - file operation' -title 'task complete' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - file modified' -title 'edit complete' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - command executed' -title 'bash complete' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - web operation' -title 'web complete' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - task operation' -title 'task complete' -sound 'Blow'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -message 'completed - response finished' -title 'claude code' -sound 'Blow'"
+          }
+        ]
+      }
+    ]
   }
 }
