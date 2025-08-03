@@ -7,10 +7,9 @@ background-opacity = 0.6
 # Window settings
 window-height = 60
 window-width = 120
-
 # Keybindings
 keybind = cmd+shift+f=toggle_fullscreen
 
-
-
+macos-option-as-alt=true
+macos-non-native-fullscreen = true
 
