@@ -2,13 +2,16 @@
 font-family = HackGen Console NF
 
 # Appearance settings (similar to Wezterm)
-background-opacity = 0.6
+background-opacity = 1
 
 # Window settings
 window-height = 60
 window-width = 120
 # Keybindings
 keybind = cmd+shift+f=toggle_fullscreen
+# Ctrl+Tab and Ctrl+Shift+Tab for buffer navigation in Neovim
+keybind = ctrl+tab=text:\u001b[27;5;9~
+keybind = ctrl+shift+tab=text:\u001b[27;6;9~
 
 macos-option-as-alt=true
 macos-non-native-fullscreen = true
