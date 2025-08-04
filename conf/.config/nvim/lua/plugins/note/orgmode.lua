@@ -15,6 +15,7 @@ return {
           "~/src/github.com/happy663/org-memo/org/private.org",
           "~/src/github.com/happy663/org-memo/org/dev.org",
           "~/src/github.com/happy663/org-memo/org/daily.org",
+          "~/src/github.com/happy663/org-memo/org/calendar-beorg.org",
         },
         org_default_notes_file = "~/src/github.com/happy663/org-memo/org/private.org", -- デフォルトのタスクファイル
         org_capture_templates = {
@@ -213,6 +214,12 @@ return {
         "<leader>jd",
         ":e ~/src/github.com/happy663/org-memo/org/dev.org<CR>",
         { desc = "Open dev.org" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>jb",
+        ":e ~/src/github.com/happy663/org-memo/org/calendar-beorg.org<CR>",
+        { desc = "Open calendar-beorg.org" }
       )
     end,
   },
