@@ -2,10 +2,10 @@ return {
   {
     "ruifm/gitlinker.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
-    lazy = true,
-    keys = {
-      { "<leader>gn", desc = "Copy git link" },
-    },
+    -- lazy = true,
+    -- keys = {
+    --   { "<leader>gn", desc = "Copy git link" },
+    -- },
     config = function()
       require("gitlinker").setup({
         opts = {
