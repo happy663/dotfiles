@@ -36,7 +36,6 @@ return {
           },
           n = {
             description = "日次報告",
-            template = "* %<%Y/%m/%d (%a)>\n\n** TODO 朝会,夕会\n\n*** やったこと\n- \n\n*** 今日やること\n- [ ] \n\n** TODO %?",
             target = "~/src/github.com/happy663/org-memo/org/daily.org",
           },
         },
@@ -274,3 +273,4 @@ return {
     end,
   },
 }
+

@@ -1,6 +1,6 @@
 {
   "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
-  "CopilotChat.nvim": { "branch": "main", "commit": "16d897fd43d07e3b54478ccdb2f8a16e4df4f45a" },
+  "CopilotChat.nvim": { "branch": "main", "commit": "831db05de8ba7a9211ae40ccffb2c8a978202c3d" },
   "LuaSnip": { "branch": "master", "commit": "faf3c94a44508cec1b961406d36cc65113ff3b98" },
   "accelerated-jk.nvim": { "branch": "main", "commit": "8fb5dad4ccc1811766cebf16b544038aeeb7806f" },
   "actions-preview.nvim": { "branch": "master", "commit": "36513ad213855d497b7dd3391a24d1d75d58e36f" },
@@ -87,7 +87,6 @@
   "nvim-web-devicons": { "branch": "master", "commit": "1fb58cca9aebbc4fd32b086cb413548ce132c127" },
   "octo.nvim": { "branch": "master", "commit": "53a424b7432d97f3ef0b5cf7a08972d7c9974f5a" },
   "oil.nvim": { "branch": "master", "commit": "685cdb4ffa74473d75a1b97451f8654ceeab0f4a" },
-  "org-modern.nvim": { "branch": "main", "commit": "c024900b7ee78a0274036025569b47001ef3e6aa" },
   "orgmode": { "branch": "master", "commit": "468570f42d7b0a402d407a993344e29dcb6f2c8e" },
   "pantran.nvim": { "branch": "main", "commit": "b87c3ae48cba4659587fb75abd847e5b7a7c9ca0" },
   "plenary.nvim": { "branch": "master", "commit": "857c5ac632080dba10aae49dba902ce3abf91b35" },
@@ -108,6 +107,7 @@
   "telescope-livegrep-history.nvim": { "branch": "main", "commit": "f714efc5a227955409b9b794df90d39a38b8d324" },
   "telescope-memo.nvim": { "branch": "main", "commit": "48f720e7841cc2fcb38776d84476538869bd4caf" },
   "telescope-recent-files.nvim": { "branch": "main", "commit": "23b29aa701cd07c723282b3094e1a4dfc231f557" },
+  "telescope-ui-select.nvim": { "branch": "master", "commit": "6e51d7da30bd139a6950adf2a47fda6df9fa06d2" },
   "telescope.nvim": { "branch": "master", "commit": "d90956833d7c27e73c621a61f20b29fdb7122709" },
   "tiny-inline-diagnostic.nvim": { "branch": "main", "commit": "b6ed8038dfd256eb963a2c79cb30f0f4683551a0" },
   "todo-comments.nvim": { "branch": "main", "commit": "304a8d204ee787d2544d8bc23cd38d2f929e7cc5" },

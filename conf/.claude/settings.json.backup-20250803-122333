@@ -45,29 +45,12 @@
       "Read(~/dotfiles/**)",
       "Read($(ghq root)/**)"
     ],
-    "deny": [
-      "Bash(rm:*)",
-      "Bash(rm -rf:*)"
-    ]
+    "deny": []
   },
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
     "DISABLE_COST_WARNINGS": "1",
     "BASH_DEFAULT_TIMEOUT_MS": "9600000",
     "BASH_MAX_TIMEOUT_MS": "9600000"
-  },
-  "hooks": {
-    "PreToolUse": [],
-    "PostToolUse": [],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "terminal-notifier -message 'completed - response finished' -title 'claude code' -sound 'Blow'"
-          }
-        ]
-      }
-    ]
   }
 }

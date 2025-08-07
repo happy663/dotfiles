@@ -1,8 +1,22 @@
 {
-  "enableAllProjectMcpServers": false,
   "permissions": {
     "allow": [
-      "Bash(ls:*)"
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:ghostty.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:unix.stackexchange.com)",
+      "Bash(true)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude code settings path)",
+      "mcp__gemini-cli__googleSearch",
+      "mcp__serena__list_dir",
+      "mcp__serena__replace_regex",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__find_file",
+      "Bash(grep:*)",
+      "Bash(git clone:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false
 }
