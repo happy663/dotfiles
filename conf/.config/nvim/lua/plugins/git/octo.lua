@@ -56,7 +56,7 @@ return {
         user_icon = " ", -- user icon
         ghost_icon = "󰊠 ", -- ghost icon
         timeline_marker = " ", -- timeline marker
-        timeline_indent = "  ", -- timeline indentation
+        timeline_indent = 0, -- timeline indentation
         use_timeline_icons = true, -- toggle timeline icons
         timeline_icons = { -- the default icons based on timelineItems
           commit = "  ",
@@ -201,7 +201,7 @@ return {
             add_label = { lhs = "<localleader>la", desc = "add label" },
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
-            add_comment = { lhs = "<localleader>ca", desc = "add comment" },
+            add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
             prev_comment = { lhs = "[c", desc = "go to previous comment" },
@@ -375,6 +375,3 @@ return {
     end,
   },
 }
-
-
-

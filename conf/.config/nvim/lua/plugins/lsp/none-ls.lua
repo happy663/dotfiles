@@ -65,6 +65,11 @@ return {
           null_ls.builtins.formatting.phpcsfixer.with({
             extra_args = { "--rules=@PSR2" },
           }),
+          null_ls.builtins.formatting.ktlint,
+          -- null_ls.builtins.diagnostics.ktlint,
+          -- null_ls.builtins.formatting.ktfmt.with({
+          --   extra_args = { "--kotlinlang-style" }, -- Kotlin公式スタイル
+          -- }),
           --null_ls.builtins.code_actions.eslint_d,
           -- null_ls.builtins.formatting.latexindent,
           --null_ls.builtins.diagnostics.luacheck.with({
