@@ -76,7 +76,49 @@
   },
   "model": "opus",
   "hooks": {
-    "Stop": "terminal-notifier -message 'タスク完了' -title 'Claude Code' -sound 'Blow'",
-    "Notification": "terminal-notifier -message '確認が必要です' -title 'Claude Code' -sound 'Blow'"
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code: $(jq -r '.tool_name')\" | terminal-notifier -title 'Claude Code' -sound 'Blow'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code: $(jq -r '.tool_name')\" | terminal-notifier -title 'Claude Code' -sound 'Blow'"
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path | select(endswith(\".lua\"))' | xargs -r stylua"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code: $(jq -r '.hook_event_name')\" | terminal-notifier -title 'Claude Code' -sound 'Blow'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Claude Code: $(jq -r '.message')\" | terminal-notifier -title 'Claude Code'"
+          }
+        ]
+      }
+    ]
   }
 }
