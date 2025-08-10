@@ -1,8 +1,7 @@
 #!/bin/bash
 
-
-# Claude Code シンプルステータスライン
-# フォーマット: model/dir/branch/ccusage_info
+# Claude Code ステータスライン
+# フォーマット: model | dir | branch | costs
 # echo '{"session_id": "...", "model": {...}}' | bash ~/.claude/statusline-script.sh
 
 # JSONデータを取得
@@ -38,31 +37,35 @@ if command -v npx >/dev/null 2>&1; then
             session_cost=$(echo "$full_ccusage" | grep -oE '\$[0-9]+\.[0-9]+ session' | grep -oE '\$[0-9]+\.[0-9]+' || echo "")
             today_cost=$(echo "$full_ccusage" | grep -oE '\$[0-9]+\.[0-9]+ today' | grep -oE '\$[0-9]+\.[0-9]+' || echo "")
             
-            # N/A sessionの場合の処理
+            # N/A sessionの場合の処理とコスト表示の構築
             if echo "$full_ccusage" | grep -q "N/A session"; then
-                session_cost="N/A"
-            fi
-            
-            # 短縮形式で出力
-            if [ -n "$session_cost" ] && [ -n "$today_cost" ]; then
-                ccusage_info="${session_cost}/${today_cost}"
-            elif [ -n "$today_cost" ]; then
-                ccusage_info="${today_cost}"
+                # セッションがN/Aの場合は今日の料金のみ表示
+                if [ -n "$today_cost" ]; then
+                    ccusage_info="${today_cost}/day"
+                fi
+            else
+                # セッション料金がある場合
+                if [ -n "$session_cost" ] && [ -n "$today_cost" ]; then
+                    ccusage_info="${session_cost}/${today_cost}"
+                elif [ -n "$session_cost" ]; then
+                    ccusage_info="${session_cost}"
+                elif [ -n "$today_cost" ]; then
+                    ccusage_info="${today_cost}/day"
+                fi
             fi
         fi
     fi
 fi
 
-# 出力を構築
-output="$model_name/$dir_name"
+# 出力を構築（区切り文字は " | "）
+output="$model_name | $dir_name"
 
 if [ -n "$git_branch" ]; then
-    output="$output/$git_branch"
-
+    output="$output | $git_branch"
 fi
 
 if [ -n "$ccusage_info" ]; then
-    output="$output/$ccusage_info"
+    output="$output | $ccusage_info"
 fi
 
 echo "$output"
