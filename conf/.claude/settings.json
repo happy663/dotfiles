@@ -14,6 +14,7 @@
       "Bash(rg:*)",
       "Bash(mv:*)",
       "Bash(cp:*)",
+      "Bash(cat:*)",
       "Bash(find:*)",
       "Bash(terminal-notifier:*)",
       "Bash(git status:*)",
@@ -49,9 +50,29 @@
       "Bash(echo:*)",
       "Read(~/src/github.com/**)",
       "Read(~/dotfiles/**)",
-      "Read($(ghq root)/**)"
+      "Read($(ghq root)/**)",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__list_dir",
+      "mcp__serena__find_file",
+      "mcp__serena__find_symbol",
+      "mcp__serena__replace_regex",
+      "Bash(rustc --version)",
+      "Bash(rustup toolchain:*)",
+      "Bash(cargo clean:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo --version)",
+      "Bash(brew list:*)",
+      "Bash(mise list:*)",
+      "Bash(mise plugin:*)",
+      "Bash(mise use:*)",
+      "Bash(mise exec rust@nightly:*)",
+      "Bash(mise bin-paths:*)",
+      "Bash(nvim:*)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)"
+    ]
   },
   "model": "opus"
 }
