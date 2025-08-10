@@ -9,7 +9,11 @@
     "allow": [
       "List(*)",
       "Fetch(https://*)",
+      "Read(*)",
       "Read(~/.zshrc)",
+      "Read(~/src/github.com/**)",
+      "Read(~/dotfiles/**)",
+      "Read($(ghq root)/**)",
       "Bash(ls:*)",
       "Bash(rg:*)",
       "Bash(mv:*)",
@@ -48,9 +52,15 @@
       "Bash(ghq root:*)",
       "Bash(cd:*)",
       "Bash(echo:*)",
-      "Read(~/src/github.com/**)",
-      "Read(~/dotfiles/**)",
-      "Read($(ghq root)/**)",
+      "Bash(date:*)",
+      "Bash(hostname:*)",
+      "Bash(vm_stat:*)",
+      "Bash(basename:*)",
+      "Bash(dirname:*)",
+      "Bash(wc:*)",
+      "Bash(tr:*)",
+      "Bash(awk:*)",
+      "Bash(grep:*)",
       "mcp__serena__search_for_pattern",
       "mcp__serena__list_dir",
       "mcp__serena__find_file",
@@ -69,10 +79,7 @@
       "Bash(mise bin-paths:*)",
       "Bash(nvim:*)"
     ],
-    "deny": [
-      "Bash(rm:*)",
-      "Bash(rm -rf:*)"
-    ]
+    "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
   },
   "model": "opus",
   "hooks": {
@@ -120,5 +127,9 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-script.sh"
   }
 }
