@@ -36,3 +36,6 @@ conf/.config/nvim/safari-github-profile/
 conf/.config/google-chrome/Default
 conf/.claude/shell-snapshots
 conf/.config/composer
+conf/.claude/ide/51260.lock
+conf/.claude/ide
+.serena
