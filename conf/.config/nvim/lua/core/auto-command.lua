@@ -147,3 +147,12 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.fn.setpos(".", { 0, 7, 1, 0 })
   end,
 })
+
+-- ファイルが外部で変更されたら自動的に読み込む
+vim.opt.autoread = true
+
+-- フォーカスやバッファ切り替え時に自動チェック
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  pattern = "*",
+  command = "if mode() != 'c' | checktime | endif",
+})
