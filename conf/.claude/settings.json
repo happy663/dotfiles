@@ -74,5 +74,9 @@
       "Bash(rm -rf:*)"
     ]
   },
-  "model": "opus"
+  "model": "opus",
+  "hooks": {
+    "Stop": "terminal-notifier -message 'タスク完了' -title 'Claude Code' -sound 'Blow'",
+    "Notification": "terminal-notifier -message '確認が必要です' -title 'Claude Code' -sound 'Blow'"
+  }
 }

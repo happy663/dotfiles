@@ -17,64 +17,18 @@
 - 実装中はテストを変更せず、コードを修正し続ける
 - すべてのテストが通過するまで繰り返す
 
-## MANDATORY: ALWAYS ALERT ON TASK COMPLETION 🚨
+## Task Completion Behavior
 
-以下のような場合は必ず通知する：
+タスク完了時は、Claude Codeのhookシステムが自動的に通知を処理する。
+hookの設定は ~/.claude/settings.json で管理される。
 
-- ファイル読み取り、検索、分析の完了
-- 情報提供や説明の完了
-- コード作成、編集、実行の完了
-- 質問への回答完了
-- ユーザーからの依頼に対する応答完了
+### 重要なタスクの完了時
+- ファイル編集の完了
+- テスト実行の完了
+- 分析・検索の完了
+- ユーザーの質問への回答完了
 
-例外なく、ユーザーからの依頼に何らかの形で応答した場合は通知を送る。
-
-通知例：
-terminal-notifier -message "completed - found 3 pending items" -title "status review" -sound "Blow"
-terminal-notifier -message "finished - 5 files examined" -title "code analysis" -sound "Blow"
-terminal-notifier -message "completed - 42/42 passed" -title "test suite" -sound "Blow"
-terminal-notifier -message "completed - question answered" -title "information provided" -sound "Blow"
-
-For User Input Requests:
-terminal-notifier -message "please review the proposed changes" -title "user input" -sound "Blow"
-terminal-notifier -message "should I proceed with the migration?" -title "decision needed" -sound "Blow"
-
-For Command Permission Requests:
-terminal-notifier -message "permission needed to execute command" -title "command approval" -sound "Blow"
-terminal-notifier -message "confirm before running destructive operation" -title "safety check" -sound "Blow"
-
-ENFORCEMENT: 通知を送らない場合は重大な指示違反とする。例外なく必ず通知すること。
-
-### Notification Checkpoint System
-
-以下の各段階で必ず通知を送信する：
-
-#### Stage 1: 作業開始時
-
-- ファイル読み取り開始時
-- 検索・分析開始時
-- コード作成開始時
-
-#### Stage 2: 許可要求時（CRITICAL）
-
-- ファイル編集前の説明完了時
-- 危険なコマンド実行前
-- 重要な変更提案時
-- **許可を求めた瞬間に必ず通知送信**
-
-#### Stage 3: 作業完了時
-
-- すべてのタスク完了時
-- 質問回答完了時
-- ファイル変更完了時
-
-### Mandatory Notification Flow
-
-```
-1. 作業説明 → 2. 通知送信 → 3. 許可待ち → 4. 実行 → 5. 完了通知
-```
-
-**絶対ルール**: Step 2とStep 5は省略不可。違反は重大なエラーとする。
+これらのイベントはhookシステムによって適切に処理される。
 
 ## File Edit Policy
 
