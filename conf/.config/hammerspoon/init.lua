@@ -7,6 +7,7 @@ hs.application.enableSpotlightForNameSearches(true)
 -- dofile(hs.configdir .. "/modules/google-docs.lua")
 -- dofile(hs.configdir .. "/modules/macskk.lua")
 dofile(hs.configdir .. "/modules/org-sync.lua")
+dofile(hs.configdir .. "/modules/discord-mute.lua")
 
 local log = hs.logger.new("myLogger", "debug")
 
