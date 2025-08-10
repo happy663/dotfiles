@@ -1,4 +1,10 @@
 {
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "DISABLE_COST_WARNINGS": "1",
+    "BASH_DEFAULT_TIMEOUT_MS": "9600000",
+    "BASH_MAX_TIMEOUT_MS": "9600000"
+  },
   "permissions": {
     "allow": [
       "List(*)",
@@ -47,10 +53,5 @@
     ],
     "deny": []
   },
-  "env": {
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
-    "DISABLE_COST_WARNINGS": "1",
-    "BASH_DEFAULT_TIMEOUT_MS": "9600000",
-    "BASH_MAX_TIMEOUT_MS": "9600000"
-  }
+  "model": "opus"
 }
