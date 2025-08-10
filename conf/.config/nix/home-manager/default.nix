@@ -397,6 +397,7 @@ in
     ghc = "9.6.5"
     deno = "latest"
     pnpm = "latest"
+    rust = "nightly"
   '';
 
   # gitattributes config

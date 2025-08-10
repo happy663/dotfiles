@@ -43,11 +43,6 @@ end
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
 map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
--- Telescopeキーマップ（遅延ロード対応）
-vim.keymap.set("n", "<Leader>tf", function()
-  require("telescope").load_extension("frecency")
-  vim.cmd("Telescope frecency")
-end, opts)
 vim.keymap.set("n", "<Leader>tr", function()
   vim.cmd("Telescope resume")
 end, opts)
