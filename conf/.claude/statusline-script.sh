@@ -1,8 +1,16 @@
 #!/bin/bash
 
 # Claude Code ステータスライン
-# フォーマット: model | dir | branch | costs
+# フォーマット: dir | branch | model | costs (色付き)
 # echo '{"session_id": "...", "model": {...}}' | bash ~/.claude/statusline-script.sh
+
+# カラーコード定義
+BLUE='\033[34m'      # モデル名用
+CYAN='\033[36m'      # ディレクトリ名用
+GREEN='\033[32m'     # Gitブランチ用
+YELLOW='\033[33m'    # 料金情報用
+GRAY='\033[90m'      # 区切り文字用
+RESET='\033[0m'      # リセット
 
 # JSONデータを取得
 input=$(cat)
@@ -57,15 +65,19 @@ if command -v npx >/dev/null 2>&1; then
     fi
 fi
 
-# 出力を構築（区切り文字は " | "）
-output="$model_name | $dir_name"
+# 出力を構築（色付き、区切り文字は " | "）
+# 順序: dir | branch | model | costs
+output="${CYAN}${dir_name}${RESET}"
 
 if [ -n "$git_branch" ]; then
-    output="$output | $git_branch"
+    output="$output${GRAY}:${RESET}${GREEN}${git_branch}${RESET}"
 fi
+
+output="$output ${GRAY}|${RESET} ${BLUE}${model_name}${RESET}"
 
 if [ -n "$ccusage_info" ]; then
-    output="$output | $ccusage_info"
+    output="$output ${GRAY}|${RESET} ${YELLOW}${ccusage_info}${RESET}"
 fi
 
-echo "$output"
+# echo -e で色を有効化
+echo -e "$output"
