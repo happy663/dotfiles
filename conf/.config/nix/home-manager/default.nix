@@ -334,54 +334,54 @@ in
 
     tmux = {
       enable = true;
-      shell = "${pkgs.zsh}/bin/zsh";
-      terminal = "screen-256color";
-      prefix = "C-q";
-      baseIndex = 1;
-      mouse = true;
-      escapeTime = 0;
-      extraConfig = ''
-        # ステータスバーをトップに配置する
-        set-option -g status-position top
-
-        # ステータスバーの長さを設定
-        set-option -g status-left-length 90
-        set-option -g status-right-length 90
-
-        # ステータスバーの表示
-        set-option -g status-left '#H:[#P]'
-        set-option -g status-right '[%Y-%m-%d(%a) %H:%M]'
-        set-option -g status-interval 1
-        set-option -g status-justify centre
-
-        # ステータスバーの色設定
-        set-option -g status-bg "colour238"
-        set-option -g status-fg "colour255"
-
-        # vim keybindings
-        bind h select-pane -L
-        bind j select-pane -D
-        bind k select-pane -U
-        bind l select-pane -R
-
-        bind -r H resize-pane -L 5
-        bind -r J resize-pane -D 5
-        bind -r K resize-pane -U 5
-        bind -r L resize-pane -R 5
-
-        # split windows
-        bind | split-window -h
-        bind - split-window -v
-
-        # copy mode
-        setw -g mode-keys vi
-        bind -T copy-mode-vi v send -X begin-selection
-        bind -T copy-mode-vi V send -X select-line
-        bind -T copy-mode-vi C-v send -X rectangle-toggle
-        bind -T copy-mode-vi y send -X copy-selection
-        bind -T copy-mode-vi Y send -X copy-line
-        bind-key C-p paste-buffer
-      '';
+      # shell = "${pkgs.zsh}/bin/zsh";
+      # terminal = "screen-256color";
+      # prefix = "C-q";
+      # baseIndex = 1;
+      # mouse = true;
+      # escapeTime = 0;
+      # extraConfig = ''
+      #   # ステータスバーをトップに配置する
+      #   set-option -g status-position top
+      #
+      #   # ステータスバーの長さを設定
+      #   set-option -g status-left-length 90
+      #   set-option -g status-right-length 90
+      #
+      #   # ステータスバーの表示
+      #   set-option -g status-left '#H:[#P]'
+      #   set-option -g status-right '[%Y-%m-%d(%a) %H:%M]'
+      #   set-option -g status-interval 1
+      #   set-option -g status-justify centre
+      #
+      #   # ステータスバーの色設定
+      #   set-option -g status-bg "colour238"
+      #   set-option -g status-fg "colour255"
+      #
+      #   # vim keybindings
+      #   bind h select-pane -L
+      #   bind j select-pane -D
+      #   bind k select-pane -U
+      #   bind l select-pane -R
+      #
+      #   bind -r H resize-pane -L 5
+      #   bind -r J resize-pane -D 5
+      #   bind -r K resize-pane -U 5
+      #   bind -r L resize-pane -R 5
+      #
+      #   # split windows
+      #   bind | split-window -h
+      #   bind - split-window -v
+      #
+      #   # copy mode
+      #   setw -g mode-keys vi
+      #   bind -T copy-mode-vi v send -X begin-selection
+      #   bind -T copy-mode-vi V send -X select-line
+      #   bind -T copy-mode-vi C-v send -X rectangle-toggle
+      #   bind -T copy-mode-vi y send -X copy-selection
+      #   bind -T copy-mode-vi Y send -X copy-line
+      #   bind-key C-p paste-buffer
+      # '';
     };
 
   };
