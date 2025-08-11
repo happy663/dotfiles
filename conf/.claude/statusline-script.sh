@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Claude Code ステータスライン
-# フォーマット: dir | branch | model | costs (色付き)
+# フォーマット: dir | branch | model | tokens | costs (色付き)
 # echo '{"session_id": "...", "model": {...}}' | bash ~/.claude/statusline-script.sh
 
 # カラーコード定義
@@ -10,6 +10,7 @@ CYAN='\033[36m'      # ディレクトリ名用
 GREEN='\033[32m'     # Gitブランチ用
 YELLOW='\033[33m'    # 料金情報用
 GRAY='\033[90m'      # 区切り文字用
+RED='\033[31m'       # 高使用率警告用
 RESET='\033[0m'      # リセット
 
 # JSONデータを取得
@@ -24,6 +25,30 @@ dir_name=$(basename "$current_dir")
 git_branch=""
 if [ -d "$current_dir" ]; then
     git_branch=$(cd "$current_dir" 2>/dev/null && git branch --show-current 2>/dev/null || echo "")
+fi
+
+# トークン使用量情報取得
+token_info=""
+if [ -f "$(dirname "$0")/calculate-tokens.js" ]; then
+    # calculate-tokens.jsを使用してトークン情報を取得
+    token_result=$(echo "$input" | node "$(dirname "$0")/calculate-tokens.js" 2>/dev/null || echo "")
+    if [ -n "$token_result" ]; then
+        # フォーマット: tokens|percentage
+        token_display=$(echo "$token_result" | cut -d'|' -f1)
+        percentage=$(echo "$token_result" | cut -d'|' -f2)
+        
+        if [ -n "$token_display" ] && [ -n "$percentage" ]; then
+            # 使用率に応じて色を設定
+            if [ "$percentage" -ge 90 ]; then
+                token_color="$RED"
+            elif [ "$percentage" -ge 70 ]; then
+                token_color="$YELLOW"
+            else
+                token_color="$GREEN"
+            fi
+            token_info="${token_display} (${token_color}${percentage}%${RESET})"
+        fi
+    fi
 fi
 
 # ccusage情報取得（必要なフィールドがある場合のみ）
@@ -67,7 +92,7 @@ if command -v npx >/dev/null 2>&1; then
 fi
 
 # 出力を構築（色付き、区切り文字は " | "）
-# 順序: dir | branch | model | costs
+# 順序: dir | branch | model | tokens | costs
 output="${CYAN}${dir_name}${RESET}"
 
 if [ -n "$git_branch" ]; then
@@ -75,6 +100,10 @@ if [ -n "$git_branch" ]; then
 fi
 
 output="$output ${GRAY}|${RESET} ${BLUE}${model_name}${RESET}"
+
+if [ -n "$token_info" ]; then
+    output="$output ${GRAY}|${RESET} ${token_info}"
+fi
 
 if [ -n "$ccusage_info" ]; then
     output="$output ${GRAY}|${RESET} ${YELLOW}${ccusage_info}${RESET}"
