@@ -77,7 +77,8 @@
       "Bash(mise use:*)",
       "Bash(mise exec rust@nightly:*)",
       "Bash(mise bin-paths:*)",
-      "Bash(nvim:*)"
+      "Bash(nvim:*)",
+      "Bash(npx ccusage:*)"
     ],
     "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
   },
@@ -103,6 +104,11 @@
           {
             "type": "command",
             "command": "jq -r '.tool_input.file_path | select(endswith(\".lua\"))' | xargs -r stylua"
+          },
+
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path | select(endswith(\".json\"))' | xargs -r npx prettier --write "
           }
         ]
       }
