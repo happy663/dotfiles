@@ -38,7 +38,8 @@ if command -v npx >/dev/null 2>&1; then
     
     # すべての必須フィールドが存在する場合のみccusageを実行
     if [ -n "$session_id" ] && [ -n "$transcript_path" ] && [ -n "$cwd" ] && [ -n "$model_id" ] && [ -n "$project_dir" ]; then
-        full_ccusage=$(echo "$input" | npx ccusage statusline 2>/dev/null || echo "")
+        # ローカルの修正版ccusageを使用
+        full_ccusage=$(echo "$input" | node $(ghq root)/github.com/ryoppippi/ccusage/dist/index.js statusline 2>/dev/null || echo "")
         # sessionとtodayの料金だけを抽出
         if [ -n "$full_ccusage" ]; then
             # $記号を含む数値を抽出（例: "N/A session / $16.03 today" から "$16.03" を取得）
