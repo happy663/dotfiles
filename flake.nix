@@ -53,7 +53,7 @@
             echo "Updating home-manager..."
             nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig
             echo "Updating darwin..."
-            sudo nix run nix-darwin -- switch --flake .#toyama-darwin
+            sudo nix run nix-darwin -- switch --flake .#happy-darwin
             echo "Update complete"
           '');
       };
@@ -75,7 +75,7 @@
         };
       };
 
-      darwinConfigurations.toyama-darwin = nix-darwin.lib.darwinSystem {
+      darwinConfigurations.happy-darwin = nix-darwin.lib.darwinSystem {
         system = system;
         modules = [ ./conf/.config/nix/nix-darwin/default.nix ];
       };
