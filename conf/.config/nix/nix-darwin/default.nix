@@ -155,11 +155,14 @@
 
 
   # スクリーンセーバー関連の設定とアプリケーション固有の設定
+
   # システムコマンドを使用して設定する例
   system.activationScripts.postActivation.text = ''
     # Hammerspoon設定ファイルのパスを設定
-    defaults write org.hammerspoon.Hammerspoon MJConfigFile "$HOME/.config/hammerspoon/init.lua"
-    echo "Hammerspoon configuration has been set to use $HOME/.config/hammerspoon/init.lua"
+    # TODO: ユーザーの環境に依存させたくないので修正したい
+    # この部分ちゃんとわからないが~/.hammerspoonを削除する必要があるまたは手動でコマンドを打つ必要があるかもしれない
+    defaults write org.hammerspoon.Hammerspoon MJConfigFile "/Users/happy/.config/hammerspoon/init.lua"
+    echo "Hammerspoon configuration has been set to use /Users/happy/.config/hammerspoon/init.lua"
   '';
 
   homebrew = {
