@@ -13,10 +13,14 @@ GRAY='\033[90m'      # 区切り文字用
 RED='\033[31m'       # 高使用率警告用
 RESET='\033[0m'      # リセット
 
+# 定数
+COMPACTION_THRESHOLD=160000  # 200000 * 0.8
+
 # JSONデータを取得
 input=$(cat)
 model_name=$(echo "$input" | jq -r '.model.display_name')
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
+session_id=$(echo "$input" | jq -r '.session_id // empty')
 
 # 現在のディレクトリ名のみ取得
 dir_name=$(basename "$current_dir")
@@ -27,11 +31,73 @@ if [ -d "$current_dir" ]; then
     git_branch=$(cd "$current_dir" 2>/dev/null && git branch --show-current 2>/dev/null || echo "")
 fi
 
+# トークン計算関数
+calculate_tokens() {
+    local session_id="$1"
+    local projects_dir="$HOME/.claude/projects"
+    
+    if [ -z "$session_id" ] || [ ! -d "$projects_dir" ]; then
+        echo "0|0"
+        return
+    fi
+    
+    # セッションファイルを検索
+    local transcript_file=""
+    for project_dir in "$projects_dir"/*; do
+        if [ -d "$project_dir" ]; then
+            local file="$project_dir/${session_id}.jsonl"
+            if [ -f "$file" ]; then
+                transcript_file="$file"
+                break
+            fi
+        fi
+    done
+    
+    if [ -z "$transcript_file" ] || [ ! -f "$transcript_file" ]; then
+        echo "0|0"
+        return
+    fi
+    
+    # 最後のassistantメッセージのusageを取得
+    local total_tokens=0
+    local last_usage=$(tac "$transcript_file" 2>/dev/null | while IFS= read -r line; do
+        # JSONとして解析を試みる
+        if echo "$line" | jq -e '.type == "assistant" and .message.usage' >/dev/null 2>&1; then
+            echo "$line" | jq -r '.message.usage | @json'
+            break
+        fi
+    done)
+    
+    if [ -n "$last_usage" ]; then
+        # トークン数を計算
+        local input_tokens=$(echo "$last_usage" | jq -r '.input_tokens // 0')
+        local output_tokens=$(echo "$last_usage" | jq -r '.output_tokens // 0')
+        local cache_creation=$(echo "$last_usage" | jq -r '.cache_creation_input_tokens // 0')
+        local cache_read=$(echo "$last_usage" | jq -r '.cache_read_input_tokens // 0')
+        
+        total_tokens=$((input_tokens + output_tokens + cache_creation + cache_read))
+    fi
+    
+    # トークン数をフォーマット
+    local token_display=""
+    if [ "$total_tokens" -ge 1000000 ]; then
+        token_display=$(awk "BEGIN {printf \"%.1fM\", $total_tokens/1000000}")
+    elif [ "$total_tokens" -ge 1000 ]; then
+        token_display=$(awk "BEGIN {printf \"%.1fK\", $total_tokens/1000}")
+    else
+        token_display="$total_tokens"
+    fi
+    
+    # パーセンテージを計算
+    local percentage=$(awk "BEGIN {p = int(($total_tokens / $COMPACTION_THRESHOLD) * 100); print (p > 100) ? 100 : p}")
+    
+    echo "${token_display}|${percentage}"
+}
+
 # トークン使用量情報取得
 token_info=""
-if [ -f "$(dirname "$0")/calculate-tokens.js" ]; then
-    # calculate-tokens.jsを使用してトークン情報を取得
-    token_result=$(echo "$input" | node "$(dirname "$0")/calculate-tokens.js" 2>/dev/null || echo "")
+if [ -n "$session_id" ]; then
+    token_result=$(calculate_tokens "$session_id")
     if [ -n "$token_result" ]; then
         # フォーマット: tokens|percentage
         token_display=$(echo "$token_result" | cut -d'|' -f1)
@@ -46,7 +112,13 @@ if [ -f "$(dirname "$0")/calculate-tokens.js" ]; then
             else
                 token_color="$GREEN"
             fi
-            token_info="${token_display} (${token_color}${percentage}%${RESET})"
+            
+            # 0でも表示する（初期表示）
+            if [ "$token_display" = "0" ]; then
+                token_info="${GRAY}0 tokens (0%)${RESET}"
+            else
+                token_info="${token_display} (${token_color}${percentage}%${RESET})"
+            fi
         fi
     fi
 fi
@@ -64,7 +136,7 @@ if command -v npx >/dev/null 2>&1; then
     # すべての必須フィールドが存在する場合のみccusageを実行
     if [ -n "$session_id" ] && [ -n "$transcript_path" ] && [ -n "$cwd" ] && [ -n "$model_id" ] && [ -n "$project_dir" ]; then
         # ローカルの修正版ccusageを使用
-        full_ccusage=$(echo "$input" | node $(ghq root)/github.com/ryoppippi/ccusage/dist/index.js statusline 2>/dev/null || echo "")
+        full_ccusage=$(echo "$input" | npx ccusage statusline 2>/dev/null || echo "")
         # sessionとtodayの料金だけを抽出
         if [ -n "$full_ccusage" ]; then
             # $記号を含む数値を抽出（例: "N/A session / $16.03 today" から "$16.03" を取得）
