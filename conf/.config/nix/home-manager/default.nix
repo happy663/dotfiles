@@ -212,8 +212,11 @@ in
         export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
         export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
         export LIMA_HOME="$HOME/.colima_lima"
-        export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
-        export PATH="$JAVA_HOME/bin:$PATH"
+        # export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
+        # export PATH="$JAVA_HOME/bin:$PATH"
+        eval "$(coursier java --jvm temurin:17 --env)"
+
+
 
 
         # OS固有の設定
