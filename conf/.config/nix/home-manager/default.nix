@@ -337,6 +337,9 @@ in
 
     tmux = {
       enable = true;
+      extraConfig = ''
+        source-file ~/.config/tmux/tmux-wezterm.conf
+      '';
       # shell = "${pkgs.zsh}/bin/zsh";
       # terminal = "screen-256color";
       # prefix = "C-q";
