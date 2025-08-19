@@ -86,15 +86,6 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Bash|Read|Glob|Grep",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo \"Claude Code: $(jq -r '.tool_name')\" | terminal-notifier -title 'Claude Code' -sound 'Blow'"
-          }
-        ]
-      },
-      {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
@@ -105,7 +96,6 @@
             "type": "command",
             "command": "jq -r '.tool_input.file_path | select(endswith(\".lua\"))' | xargs -r stylua"
           },
-
           {
             "type": "command",
             "command": "jq -r '.tool_input.file_path | select(endswith(\".json\"))' | xargs -r npx prettier --write "
