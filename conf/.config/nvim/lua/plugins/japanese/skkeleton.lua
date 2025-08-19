@@ -17,9 +17,9 @@ return {
               { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" },
             },
             eggLikeNewline = true,
-            userDictionary = "~/.config/skk/dictionary/userDict",
+            userDictionary = "~/src/github.com/ppha3260-web/my-skk-dict/userDict",
             globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
-            completionRankFile = "~/.config/skk/dictionary/userCompletionRankFile.json",
+            completionRankFile = "~/src/github.com/ppha3260-web/my-skk-dict/userCompletionRankFile.json",
             immediatelyOkuriConvert = true,
             sources = {
               "skk_dictionary",
@@ -60,8 +60,11 @@ return {
           vim.keymap.set("t", "<C-y>", function()
             vim.fn.feedkeys(vim.fn.input("Input: "), "n")
           end)
+
         end,
       })
     end,
   },
 }
+
+

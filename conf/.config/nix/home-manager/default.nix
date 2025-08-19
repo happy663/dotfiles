@@ -77,6 +77,13 @@ in
       userName = "happy663";
       userEmail = "tatu2425@gmail.com";
       delta.enable = true;
+      includes = [
+        # 別ディレクトリ用の設定を読み込む
+        {
+          condition = "gitdir:~/src/github.com/ppha3260-web/";
+          path = "~/.config/git/gitconfig_sub";
+        }
+      ];
       extraConfig = {
         core = {
           editor = "nvim";
