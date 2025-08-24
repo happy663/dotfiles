@@ -11,43 +11,42 @@ return {
       require("orgmode").setup({
         win_split_mode = "vertical",
         org_agenda_files = {
-          "~/src/github.com/happy663/org-memo/org/work.org",
-          "~/src/github.com/happy663/org-memo/org/private.org",
-          "~/src/github.com/happy663/org-memo/org/dev.org",
-          "~/src/github.com/happy663/org-memo/org/daily.org",
+          "~/src/github.com/happy663/org-memo/org/todo.org",
           "~/src/github.com/happy663/org-memo/org/calendar-beorg.org",
         },
-        org_default_notes_file = "~/src/github.com/happy663/org-memo/org/private.org", -- デフォルトのタスクファイル
+        org_default_notes_file = "~/src/github.com/happy663/org-memo/org/todo.org", -- デフォルトのタスクファイル
         org_capture_templates = {
-          w = {
-            description = "仕事タスク",
-            template = "* TODO [#C] %? [/] :work:",
-            target = "~/src/github.com/happy663/org-memo/org/work.org",
+          t = {
+            description = "タスク追加",
+            template = "** TODO [#C] %? [/] :%^{タグ|work|dev|private}:",
+            target = "~/src/github.com/happy663/org-memo/org/todo.org",
+            headline = "%^{カテゴリ|Work|Dev|Private}",
           },
-          p = {
-            description = "プライベートタスク",
-            template = "* TODO [#C] %? [/] :private:",
-            target = "~/src/github.com/happy663/org-memo/org/private.org",
+          q = {
+            description = "クイックメモ",
+            template = "* [%<%Y-%m-%d %a %H:%M>] %?\n",
+            target = "~/src/github.com/happy663/org-memo/org/logs/quick.org",
           },
-          d = {
-            description = "開発環境タスク",
-            template = "* TODO [#C] %? [/] :dev:",
-            target = "~/src/github.com/happy663/org-memo/org/dev.org",
-          },
-          n = {
-            description = "日次報告",
-            template = "* %<%Y/%m/%d (%a)>\n\n** TODO 朝会,夕会\n\n*** やったこと\n- \n\n*** 今日やること\n- [ ] \n\n** TODO %?",
-            target = "~/src/github.com/happy663/org-memo/org/daily.org",
+          l = {
+            description = "作業ログ付きタスク",
+            template = [[** TODO [#C] %? [/] :%^{タグ|work|dev|private}:
+   :LOGBOOK:
+   - Note taken on [%U] \\
+     開始: 
+  :END:]],
+            target = "~/src/github.com/happy663/org-memo/org/todo.org",
+            headline = "%^{カテゴリ|Work|Dev|Private}",
           },
         },
-        -- 初心者向けの簡単な設定
-        org_todo_keywords = { "TODO", "DOING", "|", "DONE" }, -- タスクの状態
+        -- タスク状態（作業ログ対応）
+        org_todo_keywords = { "TODO(t)", "DOING(s!)", "WAITING(w@)", "|", "DONE(d!)", "CANCELLED(c@)" }, -- ! = タイムスタンプ記録, @ = ノート記録
         org_priority_highest = "A", -- 最高優先度
         org_priority_default = "C", -- デフォルト優先度
         org_priority_lowest = "C", -- 最低優先度
-        -- 統計クッキー（チェックリスト%表示）の自動更新を有効化
-        org_startup_folded = "showeverything",
+        -- ログ機能の設定
+        org_log_into_drawer = "LOGBOOK", -- ログをLOGBOOKドローワに収納
         org_log_done = "time", -- DONE時にタイムスタンプを追加
+        org_clock_into_drawer = "CLOCKING", -- クロック情報を専用ドローワに
         -- カスタムアジェンダコマンド
         org_agenda_custom_commands = {
           -- wキー: 仕事のタスクだけ
@@ -174,10 +173,12 @@ return {
           },
         },
 
-        -- TODO/DOINGの個別色設定
+        -- TODO状態の色設定
         org_todo_keyword_faces = {
           DOING = ":foreground orange :weight bold",
+          WAITING = ":foreground yellow :weight bold",
           DONE = ":foreground green :weight bold",
+          CANCELLED = ":foreground red :weight bold",
         },
 
         -- よく使うキーマップ
@@ -192,6 +193,10 @@ return {
             org_set_tags_command = "<leader>jt", -- タグを設定
             org_priority_up = "+", -- 優先度を上げる
             org_priority_down = "-", -- 優先度を下げる
+            org_add_note = "<leader>jn", -- ノート追加
+            org_clock_in = "<leader>ji", -- クロック開始
+            org_clock_out = "<leader>jo", -- クロック終了
+            org_clock_cancel = "<leader>jq", -- クロックキャンセル
           },
         },
       })
@@ -235,35 +240,23 @@ return {
       end
 
       -- orgファイル保存時の自動更新設定
-      vim.api.nvim_create_autocmd("BufWritePost", {
-        pattern = {
-          "*/org-memo/org/*.org",
-        },
-        callback = function()
-          -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
-          vim.defer_fn(org_git_update, 500)
-        end,
-        desc = "Auto update git for org files",
-      })
+      -- vim.api.nvim_create_autocmd("BufWritePost", {
+      --   pattern = {
+      --     "*/org-memo/org/*.org",
+      --   },
+      --   callback = function()
+      --     -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
+      --     vim.defer_fn(org_git_update, 500)
+      --   end,
+      --   desc = "Auto update git for org files",
+      -- })
 
-      -- ファイル直接アクセス用キーマップ
+      -- ファイル直接アクセス用キーマップ（シンプル化）
       vim.keymap.set(
         "n",
-        "<leader>jw",
-        ":e ~/src/github.com/happy663/org-memo/org/work.org<CR>",
-        { desc = "Open work.org" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>jp",
-        ":e ~/src/github.com/happy663/org-memo/org/private.org<CR>",
-        { desc = "Open private.org" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>jd",
-        ":e ~/src/github.com/happy663/org-memo/org/dev.org<CR>",
-        { desc = "Open dev.org" }
+        "<leader>jt",
+        ":e ~/src/github.com/happy663/org-memo/org/todo.org<CR>",
+        { desc = "Open todo.org" }
       )
       vim.keymap.set(
         "n",
@@ -271,6 +264,252 @@ return {
         ":e ~/src/github.com/happy663/org-memo/org/calendar-beorg.org<CR>",
         { desc = "Open calendar-beorg.org" }
       )
+
+      -- ログディレクトリ作成
+      vim.fn.system("mkdir -p ~/src/github.com/happy663/org-memo/org/logs/tasks")
+
+      -- ============================================
+      -- タスク・ログ管理システム
+      -- ============================================
+
+      -- ID生成用の関数
+      local function get_next_task_id()
+        local max_id = 0
+        local files =
+          vim.fn.glob(vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/tasks/task-*.org"), false, true)
+        for _, file in ipairs(files) do
+          local num = tonumber(file:match("task%-(%d+)"))
+          if num and num > max_id then
+            max_id = num
+          end
+        end
+        return string.format("task-%03d", max_id + 1)
+      end
+
+      -- タスクからログを開く/作成する機能
+      vim.keymap.set("n", "<leader>tl", function()
+        local line = vim.fn.getline(".")
+
+        -- デバッグ出力
+        print("Current line: " .. line)
+
+        -- より柔軟なパターンマッチング
+        local task_name = nil
+
+        -- org-modeの特殊表示を考慮（todo: プレフィックスがある場合）
+        if line:match("^%s*todo:") or line:match("^%s*done:") then
+          -- org表示モードのパターン
+          task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)%s+%[")
+          if not task_name then
+            task_name = line:match(":%s*%w+%s+(.-)%s+%[")
+          end
+          if not task_name then
+            task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)$")
+          end
+          if not task_name then
+            task_name = line:match(":%s*%w+%s+(.-)$")
+          end
+        else
+          -- 通常のorgファイル形式
+          -- パターン1: 優先度付き with タグ
+          task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)%s+:")
+
+          -- パターン2: 優先度なし with タグ
+          if not task_name then
+            task_name = line:match("%*+ %w+ (.-)%s+:")
+          end
+
+          -- パターン3: タグなし（行末まで）
+          if not task_name then
+            task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)$")
+          end
+
+          if not task_name then
+            task_name = line:match("%*+ %w+ (.-)$")
+          end
+        end
+
+        if not task_name or task_name == "" then
+          print("Not on a task line or cannot parse task name")
+          print("Line pattern not matched: " .. line)
+          return
+        end
+
+        -- タスク名のクリーンアップ（[/]やタグを除去）
+        task_name = task_name:gsub("%[.-%]", ""):gsub(":%w+:", ""):gsub("^%s+", ""):gsub("%s+$", "")
+        print("Task name found: " .. task_name)
+
+        -- IDプロパティを確認
+        local id = nil
+        local current_line = vim.fn.line(".")
+        for i = current_line, current_line + 10 do
+          local prop_line = vim.fn.getline(i)
+          if prop_line:match(":END:") then
+            break
+          end
+          local found_id = prop_line:match(":ID:%s*([%w%-]+)")
+          if found_id then
+            id = found_id
+            break
+          end
+        end
+
+        -- IDがなければ作成
+        if not id then
+          id = get_next_task_id()
+          -- タスクの下にPROPERTIESを挿入
+          local indent = line:match("^(%*+)") or "*"
+          local properties = {
+            "   :PROPERTIES:",
+            "   :ID: " .. id,
+            "   :END:",
+          }
+
+          -- 一時的にmodifiableを有効にする
+          local was_modifiable = vim.bo.modifiable
+          vim.bo.modifiable = true
+
+          -- プロパティを挿入
+          local success, err = pcall(function()
+            vim.fn.append(vim.fn.line("."), properties)
+          end)
+
+          -- modifiableを元に戻す
+          vim.bo.modifiable = was_modifiable
+
+          if success then
+            print("Created ID: " .. id)
+          else
+            print("Failed to create ID: " .. tostring(err))
+            print("Please add manually: :ID: " .. id)
+          end
+        end
+
+        -- ログファイルを開く/作成
+        local log_pattern =
+          vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s-*.org", id))
+        local files = vim.fn.glob(log_pattern, false, true)
+
+        if #files > 0 then
+          vim.cmd("e " .. files[1])
+        else
+          -- 新規作成
+          local default_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 30)
+          local title = vim.fn.input("Log file name: ", default_name)
+          if title == "" then
+            return
+          end
+
+          local filename = string.format("%s-%s.org", id, title)
+          local filepath =
+            vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s", filename))
+
+          vim.cmd("e " .. filepath)
+
+          -- テンプレート挿入
+          local template = {
+            "#+TITLE: " .. task_name:sub(1, 50),
+            "#+ID: " .. id,
+            "#+CREATED: " .. os.date("%Y-%m-%d"),
+            "#+STATUS: TODO",
+            "",
+            "* Description",
+            task_name,
+            "",
+            "* Log",
+            "** " .. os.date("[%Y-%m-%d %a %H:%M]"),
+            "Task created",
+            "",
+          }
+          vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
+          print("Created log file: " .. filename)
+        end
+      end, { desc = "Open or create log for current task" })
+
+      -- タスクログ検索（Telescope）
+      vim.keymap.set("n", "<leader>ft", function()
+        require("telescope.builtin").find_files({
+          prompt_title = "Find Task Log",
+          cwd = vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/tasks/"),
+        })
+      end, { desc = "Find task log with Telescope" })
+
+      -- タスク内容検索（Telescope）
+      vim.keymap.set("n", "<leader>st", function()
+        require("telescope.builtin").live_grep({
+          prompt_title = "Search in Task Logs",
+          cwd = vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/"),
+        })
+      end, { desc = "Search task log content" })
+
+      -- 時刻ヘッダー挿入機能
+      vim.keymap.set("n", "<leader>jm", function()
+        local time = os.date("** [%Y-%m-%d %a %H:%M]")
+        vim.api.nvim_put({ time, "" }, "l", true, true)
+        vim.cmd("startinsert!")
+      end, { desc = "Insert timestamp header" })
+
+      -- シンプルなタスクログ作成（ID自動挿入なし）
+      vim.keymap.set("n", "<leader>tL", function()
+        local line = vim.fn.getline(".")
+        local task_name = nil
+
+        -- org表示モードのパターン
+        if line:match("^%s*todo:") or line:match("^%s*done:") then
+          task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)%s+%[")
+          if not task_name then
+            task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)$")
+          end
+        else
+          task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)%s+:")
+          if not task_name then
+            task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)$")
+          end
+        end
+
+        if not task_name then
+          print("Cannot parse task name")
+          return
+        end
+
+        -- タスク名をクリーンアップ
+        task_name = task_name:gsub("%[.-%]", ""):gsub(":%w+:", ""):gsub("^%s+", ""):gsub("%s+$", "")
+
+        -- ファイル名を入力
+        local default_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 30)
+        local filename = vim.fn.input("Log file name: ", default_name)
+        if filename == "" then
+          return
+        end
+
+        -- IDを自動生成
+        local id = get_next_task_id()
+
+        -- ログファイルを作成
+        local full_filename = string.format("%s-%s.org", id, filename)
+        local filepath =
+          vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s", full_filename))
+
+        vim.cmd("e " .. filepath)
+
+        -- テンプレート挿入
+        local template = {
+          "#+TITLE: " .. task_name:sub(1, 50),
+          "#+ID: " .. id,
+          "#+CREATED: " .. os.date("%Y-%m-%d"),
+          "#+STATUS: TODO",
+          "",
+          "* Description",
+          task_name,
+          "",
+          "* Log",
+          "** " .. os.date("[%Y-%m-%d %a %H:%M]"),
+          "Task created",
+          "",
+        }
+        vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
+        print("Created: " .. full_filename .. " (ID: " .. id .. " - add to task manually)")
+      end, { desc = "Create task log (simple)" })
     end,
   },
 }
