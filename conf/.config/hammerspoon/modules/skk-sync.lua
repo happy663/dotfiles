@@ -1,12 +1,13 @@
 -- SKK辞書自動同期モジュール
-logger = hs.logger.new("skk-sync", "info")
+SkkSync = {}
+SkkSync.logger = hs.logger.new("skk-sync", "info")
 
 -- デバッグ用：モジュール読み込み時にアラートを表示
 hs.alert.show("SKK-syncモジュールを読み込みました")
 
 -- SKK辞書のリポジトリパス
 local skkRepoPath = os.getenv("HOME") .. "/src/github.com/ppha3260-web/my-skk-dict"
-logger.i("SKK dictionary repository path: " .. skkRepoPath)
+SkkSync.logger.i("SKK dictionary repository path: " .. skkRepoPath)
 
 -- Git操作用のヘルパー関数
 local function executeGitCommand(args, callback)
@@ -27,7 +28,7 @@ local function hasChanges(callback)
       local hasModifications = stdOut and stdOut ~= ""
       callback(hasModifications)
     else
-      logger.e("Failed to check git status: " .. (stdErr or ""))
+      SkkSync.logger.e("Failed to check git status: " .. (stdErr or ""))
       callback(false)
     end
   end)
@@ -41,7 +42,7 @@ local function commitAndPush()
   -- まず add を実行
   executeGitCommand({ "add", "userDict", "userCompletionRankFile.json" }, function(exitCode, stdOut, stdErr)
     if exitCode ~= 0 then
-      logger.e("Failed to add files: " .. (stdErr or ""))
+      SkkSync.logger.e("Failed to add files: " .. (stdErr or ""))
       hs.notify
         .new({
           title = "SKK辞書同期エラー",
@@ -55,7 +56,7 @@ local function commitAndPush()
     -- 次に commit を実行
     executeGitCommand({ "commit", "-m", commitMessage }, function(exitCode, stdOut, stdErr)
       if exitCode ~= 0 then
-        logger.e("Failed to commit: " .. (stdErr or ""))
+        SkkSync.logger.e("Failed to commit: " .. (stdErr or ""))
         hs.notify
           .new({
             title = "SKK辞書同期エラー",
@@ -66,7 +67,7 @@ local function commitAndPush()
         return
       end
 
-      logger.i("Commit successful, now pushing...")
+      SkkSync.logger.i("Commit successful, now pushing...")
 
       -- 最後に push を実行
       executeGitCommand({ "push" }, function(exitCode, stdOut, stdErr)
@@ -78,7 +79,7 @@ local function commitAndPush()
               soundName = hs.notify.defaultNotificationSound,
             })
             :send()
-          logger.i("Push completed successfully")
+          SkkSync.logger.i("Push completed successfully")
         else
           hs.notify
             .new({
@@ -87,7 +88,7 @@ local function commitAndPush()
               soundName = hs.notify.defaultNotificationSound,
             })
             :send()
-          logger.w("Push failed (will retry on next wake): " .. (stdErr or ""))
+          SkkSync.logger.w("Push failed (will retry on next wake): " .. (stdErr or ""))
         end
       end)
     end)
@@ -105,7 +106,7 @@ local function pullChanges()
           soundName = hs.notify.defaultNotificationSound,
         })
         :send()
-      logger.i("Pull completed successfully")
+      SkkSync.logger.i("Pull completed successfully")
     else
       if stdErr and stdErr:match("conflict") then
         hs.notify
@@ -115,7 +116,7 @@ local function pullChanges()
             soundName = hs.notify.defaultNotificationSound,
           })
           :send()
-        logger.e("Merge conflict detected: " .. stdErr)
+        SkkSync.logger.e("Merge conflict detected: " .. stdErr)
       else
         hs.notify
           .new({
@@ -124,41 +125,41 @@ local function pullChanges()
             soundName = hs.notify.defaultNotificationSound,
           })
           :send()
-        logger.e("Pull failed: " .. (stdErr or ""))
+        SkkSync.logger.e("Pull failed: " .. (stdErr or ""))
       end
     end
   end)
 end
 
 -- スリープ/復帰イベントの監視
-watcher = hs.caffeinate.watcher.new(function(eventType)
-  logger.i("Caffeinate event received: " .. tostring(eventType))
+SkkSync.watcher = hs.caffeinate.watcher.new(function(eventType)
+  SkkSync.logger.i("Caffeinate event received: " .. tostring(eventType))
 
   if eventType == hs.caffeinate.watcher.systemWillSleep then
-    logger.i("System will sleep, checking for changes...")
+    SkkSync.logger.i("System will sleep, checking for changes...")
     hs.alert.show("スリープ前: SKK辞書の変更をチェック中...")
 
     hasChanges(function(hasModifications)
       if hasModifications then
-        logger.i("Changes detected, committing and pushing...")
+        SkkSync.logger.i("Changes detected, committing and pushing...")
         hs.alert.show("変更を検出: コミット＆プッシュ中...")
         commitAndPush()
       else
-        logger.i("No changes detected")
+        SkkSync.logger.i("No changes detected")
         hs.alert.show("変更なし: スキップ")
       end
     end)
   elseif eventType == hs.caffeinate.watcher.systemDidWake then
-    logger.i("System woke up, pulling latest changes...")
+    SkkSync.logger.i("System woke up, pulling latest changes...")
     hs.alert.show("システム復帰: 最新の辞書を取得中...")
 
     -- まず未プッシュのコミットがあるかチェック
     executeGitCommand({ "status", "-sb" }, function(exitCode, stdOut, stdErr)
       if stdOut and stdOut:match("ahead") then
-        logger.i("Unpushed commits detected, pushing first...")
+        SkkSync.logger.i("Unpushed commits detected, pushing first...")
         executeGitCommand({ "push" }, function(exitCode, stdOut, stdErr)
           if exitCode == 0 then
-            logger.i("Push completed, now pulling...")
+            SkkSync.logger.i("Push completed, now pulling...")
           end
           pullChanges()
         end)
@@ -169,8 +170,8 @@ watcher = hs.caffeinate.watcher.new(function(eventType)
   end
 end)
 
-watcher:start()
-logger.i("SKK dictionary sync watcher started")
+SkkSync.watcher:start()
+SkkSync.logger.i("SKK dictionary sync watcher started")
 
 -- 手動同期用のホットキー（Cmd+Ctrl+S）
 hs.hotkey.bind({ "cmd", "ctrl" }, "S", function()
