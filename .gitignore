@@ -39,3 +39,4 @@ conf/.config/composer
 conf/.claude/ide/51260.lock
 conf/.claude/ide
 .serena
+.claude/logs

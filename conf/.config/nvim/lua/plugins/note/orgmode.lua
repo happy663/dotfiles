@@ -13,6 +13,7 @@ return {
         org_agenda_files = {
           "~/src/github.com/happy663/org-memo/org/todo.org",
           "~/src/github.com/happy663/org-memo/org/calendar-beorg.org",
+          "~/src/github.com/happy663/org-memo/org/logs/quick.org",
         },
         org_default_notes_file = "~/src/github.com/happy663/org-memo/org/todo.org", -- デフォルトのタスクファイル
         org_capture_templates = {
@@ -286,8 +287,8 @@ return {
         return string.format("task-%03d", max_id + 1)
       end
 
-      -- タスクからログを開く/作成する機能
-      vim.keymap.set("n", "<leader>tl", function()
+      -- タスクからログを開く/作成する機能（古いバージョン - 無効化）
+      --[[ vim.keymap.set("n", "<leader>tl", function()
         local line = vim.fn.getline(".")
 
         -- デバッグ出力
@@ -424,18 +425,18 @@ return {
           vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
           print("Created log file: " .. filename)
         end
-      end, { desc = "Open or create log for current task" })
+      end, { desc = "Open or create log for current task" }) --]]
 
-      -- タスクログ検索（Telescope）
-      vim.keymap.set("n", "<leader>ft", function()
+      -- タスクログ検索（Telescope）- jlプレフィックスに変更
+      vim.keymap.set("n", "<leader>jl", function()
         require("telescope.builtin").find_files({
           prompt_title = "Find Task Log",
           cwd = vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/tasks/"),
         })
       end, { desc = "Find task log with Telescope" })
 
-      -- タスク内容検索（Telescope）
-      vim.keymap.set("n", "<leader>st", function()
+      -- タスク内容検索（Telescope）- jsプレフィックスに変更
+      vim.keymap.set("n", "<leader>js", function()
         require("telescope.builtin").live_grep({
           prompt_title = "Search in Task Logs",
           cwd = vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/"),
@@ -449,8 +450,8 @@ return {
         vim.cmd("startinsert!")
       end, { desc = "Insert timestamp header" })
 
-      -- シンプルなタスクログ作成（ID自動挿入なし）
-      vim.keymap.set("n", "<leader>tL", function()
+      -- タスクログ作成（改良版 - ファイル直接編集でID保存）
+      vim.keymap.set("n", "<leader>tl", function()
         local line = vim.fn.getline(".")
         local task_name = nil
 
@@ -474,16 +475,113 @@ return {
 
         -- タスク名をクリーンアップ
         task_name = task_name:gsub("%[.-%]", ""):gsub(":%w+:", ""):gsub("^%s+", ""):gsub("%s+$", "")
+        local search_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 20)
 
-        -- ファイル名を入力
-        local default_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 30)
-        local filename = vim.fn.input("Log file name: ", default_name)
+        -- 現在の行番号を保存（todo.orgでの位置）
+        local current_line_num = vim.fn.line(".")
+
+        -- まずIDがすでにあるか確認
+        local existing_id = nil
+        for i = current_line_num, current_line_num + 10 do
+          local prop_line = vim.fn.getline(i)
+          if prop_line:match(":END:") then
+            break
+          end
+          local found_id = prop_line:match(":ID:%s*([%w%-]+)")
+          if found_id then
+            existing_id = found_id
+            break
+          end
+        end
+
+        if existing_id then
+          -- 既存IDでログファイルを探す
+          local log_pattern =
+            vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s-*.org", existing_id))
+          local files = vim.fn.glob(log_pattern, false, true)
+          if #files > 0 then
+            vim.cmd("e " .. files[1])
+            print("Opened existing log with ID: " .. existing_id)
+            return
+          end
+        end
+
+        -- 既存のログファイルを検索（タスク名ベース）
+        local logs_dir = vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/tasks/")
+        local all_files = vim.fn.glob(logs_dir .. "*.org", false, true)
+        local matching_files = {}
+
+        for _, file in ipairs(all_files) do
+          local basename = vim.fn.fnamemodify(file, ":t"):lower()
+          if basename:match(search_name:sub(1, 10)) then
+            table.insert(matching_files, file)
+          end
+        end
+
+        if #matching_files > 0 then
+          if #matching_files == 1 then
+            vim.cmd("e " .. matching_files[1])
+            print("Opened existing log: " .. vim.fn.fnamemodify(matching_files[1], ":t"))
+            return
+          else
+            print("Multiple logs found. Opening telescope...")
+            require("telescope.builtin").find_files({
+              prompt_title = "Select Task Log",
+              cwd = logs_dir,
+              default_text = search_name,
+            })
+            return
+          end
+        end
+
+        -- 新規作成
+        local filename = vim.fn.input("Create new log file: ", search_name)
         if filename == "" then
           return
         end
 
-        -- IDを自動生成
         local id = get_next_task_id()
+
+        -- todo.orgにIDを保存（ファイル直接編集）
+        local todo_file = vim.fn.expand("~/src/github.com/happy663/org-memo/org/todo.org")
+        print("Reading todo.org from: " .. todo_file)
+
+        local todo_lines = vim.fn.readfile(todo_file)
+        print("File has " .. #todo_lines .. " lines, current line in buffer: " .. current_line_num)
+
+        -- org-modeの表示行とファイルの実際の行は異なる可能性があるので、タスクのテキストで検索
+        local actual_line_num = nil
+
+        -- 現在表示されているタスク名で検索
+        for i, line in ipairs(todo_lines) do
+          -- タスク名の一部でマッチを試みる
+          if line:find(task_name:sub(1, 20), 1, true) then
+            actual_line_num = i
+            print("Found task at actual line " .. i .. ": " .. line:sub(1, 60))
+            break
+          end
+        end
+
+        if not actual_line_num then
+          print("ERROR: Could not find task '" .. task_name:sub(1, 30) .. "' in todo.org")
+          print("Will use buffer line number as fallback: " .. current_line_num)
+          actual_line_num = current_line_num
+        end
+
+        -- プロパティブロックを挿入（0ベースではなく1ベースのインデックス）
+        table.insert(todo_lines, actual_line_num + 1, "   :PROPERTIES:")
+        table.insert(todo_lines, actual_line_num + 2, "   :ID: " .. id)
+        table.insert(todo_lines, actual_line_num + 3, "   :END:")
+
+        print("Inserting ID after line " .. actual_line_num)
+
+        -- ファイルに書き戻す
+        local success = vim.fn.writefile(todo_lines, todo_file)
+        if success == 0 then
+          print("Successfully wrote ID to todo.org: " .. id)
+        else
+          print("ERROR: Failed to write to todo.org, code: " .. success)
+        end
 
         -- ログファイルを作成
         local full_filename = string.format("%s-%s.org", id, filename)
@@ -508,7 +606,17 @@ return {
           "",
         }
         vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
-        print("Created: " .. full_filename .. " (ID: " .. id .. " - add to task manually)")
+        print("Created new log: " .. full_filename)
+
+        -- todo.orgバッファが開いていれば再読み込み
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_get_name(buf):match("todo%.org$") then
+            vim.api.nvim_buf_call(buf, function()
+              vim.cmd("edit!")
+            end)
+            break
+          end
+        end
       end, { desc = "Create task log (simple)" })
     end,
   },
