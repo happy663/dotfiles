@@ -276,6 +276,122 @@ return {
       vim.fn.system("mkdir -p ~/src/github.com/happy663/org-memo/org/logs/tasks")
 
       -- ============================================
+      -- ステータス同期機能（ログ → todo.org）
+      -- ============================================
+
+      -- ログファイルからtodo.orgへのステータス同期
+      local function sync_status_from_log()
+        local filename = vim.fn.expand("%:t")
+        print("Checking file: " .. filename)
+        -- task-XXX-*.org形式のファイルのみ処理
+        if not filename:match("^task%-") then
+          print("Not a task file, skipping")
+          return
+        end
+
+        -- ログファイルからIDとステータスを取得
+        local lines = vim.api.nvim_buf_get_lines(0, 0, 10, false)
+        local id, status
+
+        for _, line in ipairs(lines) do
+          id = id or line:match("^#%+ID:%s*(.+)")
+          status = status or line:match("^#%+STATUS:%s*(.+)")
+          if id and status then
+            break
+          end
+        end
+
+        print(string.format("Found ID: %s, Status: %s", id or "nil", status or "nil"))
+
+        if not id or not status then
+          print("Missing ID or STATUS")
+          return
+        end
+
+        -- ステータスの正規化（大文字に統一、空白除去）
+        status = status:gsub("^%s+", ""):gsub("%s+$", ""):upper()
+
+        -- 有効なステータスかチェック
+        local valid_statuses = { TODO = true, DOING = true, DONE = true, CANCELLED = true }
+        if not valid_statuses[status] then
+          print("Invalid status: " .. status)
+          return
+        end
+
+        -- todo.orgを読み込んで更新
+        local todo_file = vim.fn.expand("~/src/github.com/happy663/org-memo/org/todo.org")
+        local todo_lines = vim.fn.readfile(todo_file)
+        local updated = false
+
+        print("Searching for ID in todo.org: " .. id)
+
+        -- IDでタスクを検索
+        print("Total lines in todo.org: " .. #todo_lines)
+        for i, line in ipairs(todo_lines) do
+          -- デバッグ：ID行の周辺のみ表示
+          if line:match(":ID:") then
+            print("Line " .. i .. " contains ID: " .. line)
+            -- IDを抽出して比較
+            local found_id = line:match(":ID:%s*([%w%-]+)")
+            if found_id then
+              print("  Extracted ID: '" .. found_id .. "', Looking for: '" .. id .. "'")
+              if found_id == id then
+                print("✓ Found matching ID at line " .. i .. ": " .. line)
+                -- IDが見つかったら、その上のタスク行を探す
+                for j = i - 1, math.max(1, i - 10), -1 do
+                  if todo_lines[j]:match("^%*+%s+%w+") then
+                    -- タスク行のステータスを更新
+                    local old_line = todo_lines[j]
+                    local old_status = old_line:match("^%*+%s+(%w+)")
+                    print(string.format("Found task at line %d: %s", j, old_line))
+                    print(string.format("Changing status from %s to %s", old_status, status))
+                    todo_lines[j] = todo_lines[j]:gsub("^(%*+%s+)%w+", "%1" .. status)
+                    updated = true
+                    print(string.format("✅ Status synced to todo.org: %s -> %s (ID: %s)", old_status, status, id))
+                    break
+                  end
+                end
+                break
+              end
+            end
+          end
+        end
+
+        if not updated then
+          print("❌ Failed to update status - ID not found or task line not found")
+        end
+
+        -- 変更があれば保存
+        if updated then
+          vim.fn.writefile(todo_lines, todo_file)
+
+          -- todo.orgが開いているバッファがあれば再読み込み
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_get_name(buf):match("todo%.org$") then
+              vim.api.nvim_buf_call(buf, function()
+                -- 現在のカーソル位置を保存
+                local cursor = vim.api.nvim_win_get_cursor(0)
+                vim.cmd("edit!")
+                -- カーソル位置を復元
+                vim.api.nvim_win_set_cursor(0, cursor)
+              end)
+              break
+            end
+          end
+        end
+      end
+
+      -- ログファイル保存時のautocmd
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = "*/org/logs/tasks/task-*.org",
+        callback = function()
+          print("Syncing status from log to todo.org...")
+          sync_status_from_log()
+        end,
+        desc = "Sync status from log file to todo.org",
+      })
+
+      -- ============================================
       -- タスク・ログ管理システム
       -- ============================================
 
