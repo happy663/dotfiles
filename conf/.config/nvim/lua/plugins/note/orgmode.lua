@@ -40,7 +40,8 @@ return {
           },
         },
         -- タスク状態（作業ログ対応）
-        org_todo_keywords = { "TODO(t)", "DOING(s!)", "WAITING(w@)", "|", "DONE(d!)", "CANCELLED(c@)" }, -- ! = タイムスタンプ記録, @ = ノート記録
+        -- org_todo_keywords = { "TODO(t)", "DOING(s!)", "WAITING(w@)", "|", "DONE(d!)", "CANCELLED(c@)" }, -- ! = タイムスタンプ記録, @ = ノート記録
+        org_todo_keywords = { "TODO", "DOING", "|", "DONE" }, -- タスクの状態
         org_priority_highest = "A", -- 最高優先度
         org_priority_default = "C", -- デフォルト優先度
         org_priority_lowest = "C", -- 最低優先度
@@ -188,8 +189,13 @@ return {
             org_agenda = "<leader>ja", -- アジェンダを開く
             org_capture = "<leader>jc", -- 新しいタスクを追加
           },
+          agenda = {
+            -- bキーをvimのデフォルト動作（前の単語）に戻す
+            org_agenda_earlier = {}, -- bキーのマッピングを無効化（空の配列で無効化）
+            -- org_agenda_later = "f", -- 次の期間に進む（デフォルトのまま）
+          },
           org = {
-            org_todo = "t", -- TODO状態を切り替え
+            org_todo = "t", -- todo状態を切り替え
             org_priority = "<leader>jp", -- 優先度を設定
             org_set_tags_command = "<leader>jt", -- タグを設定
             org_priority_up = "+", -- 優先度を上げる
@@ -286,146 +292,6 @@ return {
         end
         return string.format("task-%03d", max_id + 1)
       end
-
-      -- タスクからログを開く/作成する機能（古いバージョン - 無効化）
-      --[[ vim.keymap.set("n", "<leader>tl", function()
-        local line = vim.fn.getline(".")
-
-        -- デバッグ出力
-        print("Current line: " .. line)
-
-        -- より柔軟なパターンマッチング
-        local task_name = nil
-
-        -- org-modeの特殊表示を考慮（todo: プレフィックスがある場合）
-        if line:match("^%s*todo:") or line:match("^%s*done:") then
-          -- org表示モードのパターン
-          task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)%s+%[")
-          if not task_name then
-            task_name = line:match(":%s*%w+%s+(.-)%s+%[")
-          end
-          if not task_name then
-            task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)$")
-          end
-          if not task_name then
-            task_name = line:match(":%s*%w+%s+(.-)$")
-          end
-        else
-          -- 通常のorgファイル形式
-          -- パターン1: 優先度付き with タグ
-          task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)%s+:")
-
-          -- パターン2: 優先度なし with タグ
-          if not task_name then
-            task_name = line:match("%*+ %w+ (.-)%s+:")
-          end
-
-          -- パターン3: タグなし（行末まで）
-          if not task_name then
-            task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)$")
-          end
-
-          if not task_name then
-            task_name = line:match("%*+ %w+ (.-)$")
-          end
-        end
-
-        if not task_name or task_name == "" then
-          print("Not on a task line or cannot parse task name")
-          print("Line pattern not matched: " .. line)
-          return
-        end
-
-        -- タスク名のクリーンアップ（[/]やタグを除去）
-        task_name = task_name:gsub("%[.-%]", ""):gsub(":%w+:", ""):gsub("^%s+", ""):gsub("%s+$", "")
-        print("Task name found: " .. task_name)
-
-        -- IDプロパティを確認
-        local id = nil
-        local current_line = vim.fn.line(".")
-        for i = current_line, current_line + 10 do
-          local prop_line = vim.fn.getline(i)
-          if prop_line:match(":END:") then
-            break
-          end
-          local found_id = prop_line:match(":ID:%s*([%w%-]+)")
-          if found_id then
-            id = found_id
-            break
-          end
-        end
-
-        -- IDがなければ作成
-        if not id then
-          id = get_next_task_id()
-          -- タスクの下にPROPERTIESを挿入
-          local indent = line:match("^(%*+)") or "*"
-          local properties = {
-            "   :PROPERTIES:",
-            "   :ID: " .. id,
-            "   :END:",
-          }
-
-          -- 一時的にmodifiableを有効にする
-          local was_modifiable = vim.bo.modifiable
-          vim.bo.modifiable = true
-
-          -- プロパティを挿入
-          local success, err = pcall(function()
-            vim.fn.append(vim.fn.line("."), properties)
-          end)
-
-          -- modifiableを元に戻す
-          vim.bo.modifiable = was_modifiable
-
-          if success then
-            print("Created ID: " .. id)
-          else
-            print("Failed to create ID: " .. tostring(err))
-            print("Please add manually: :ID: " .. id)
-          end
-        end
-
-        -- ログファイルを開く/作成
-        local log_pattern =
-          vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s-*.org", id))
-        local files = vim.fn.glob(log_pattern, false, true)
-
-        if #files > 0 then
-          vim.cmd("e " .. files[1])
-        else
-          -- 新規作成
-          local default_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 30)
-          local title = vim.fn.input("Log file name: ", default_name)
-          if title == "" then
-            return
-          end
-
-          local filename = string.format("%s-%s.org", id, title)
-          local filepath =
-            vim.fn.expand(string.format("~/src/github.com/happy663/org-memo/org/logs/tasks/%s", filename))
-
-          vim.cmd("e " .. filepath)
-
-          -- テンプレート挿入
-          local template = {
-            "#+TITLE: " .. task_name:sub(1, 50),
-            "#+ID: " .. id,
-            "#+CREATED: " .. os.date("%Y-%m-%d"),
-            "#+STATUS: TODO",
-            "",
-            "* Description",
-            task_name,
-            "",
-            "* Log",
-            "** " .. os.date("[%Y-%m-%d %a %H:%M]"),
-            "Task created",
-            "",
-          }
-          vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
-          print("Created log file: " .. filename)
-        end
-      end, { desc = "Open or create log for current task" }) --]]
 
       -- タスクログ検索（Telescope）- jlプレフィックスに変更
       vim.keymap.set("n", "<leader>jl", function()
