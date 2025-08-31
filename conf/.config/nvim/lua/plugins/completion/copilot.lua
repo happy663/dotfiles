@@ -21,6 +21,7 @@ return {
           gitcommit = true,
           tex = false,
           markdown = false,
+          org = false,
         },
       }
 
