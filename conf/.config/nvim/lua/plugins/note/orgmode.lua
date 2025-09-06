@@ -14,14 +14,15 @@ return {
           "~/src/github.com/happy663/org-memo/org/todo.org",
           "~/src/github.com/happy663/org-memo/org/calendar-beorg.org",
           "~/src/github.com/happy663/org-memo/org/logs/quick.org",
+          "~/src/github.com/happy663/org-memo/org/weekly-notes.org",
         },
         org_default_notes_file = "~/src/github.com/happy663/org-memo/org/todo.org", -- デフォルトのタスクファイル
         org_capture_templates = {
           t = {
             description = "タスク追加",
-            template = "** TODO [#C] %? [/] :%^{タグ|work|dev|private}:",
+            template = "* TODO [#D] %? [/] :%^{タグ|work|dev|private}:",
             target = "~/src/github.com/happy663/org-memo/org/todo.org",
-            headline = "%^{カテゴリ|Work|Dev|Private}",
+            -- headline = "%^{カテゴリ|Work|Dev|Private}", -- nvim-orgmodeではプロンプト構文は使えない
           },
           q = {
             description = "クイックメモ",
@@ -30,21 +31,28 @@ return {
           },
           l = {
             description = "作業ログ付きタスク",
-            template = [[** TODO [#C] %? [/] :%^{タグ|work|dev|private}:
+            template = [[* TODO [#D] %? [/] :%^{タグ|work|dev|private}:
    :LOGBOOK:
    - Note taken on [%U] \\
      開始: 
   :END:]],
             target = "~/src/github.com/happy663/org-memo/org/todo.org",
-            headline = "%^{カテゴリ|Work|Dev|Private}",
+            -- headline = "%^{カテゴリ|Work|Dev|Private}", -- nvim-orgmodeではプロンプト構文は使えない
+          },
+          n = {
+            description = "週次注意事項",
+            template = "* %? :weekly:",
+            target = "~/src/github.com/happy663/org-memo/org/weekly-notes.org",
           },
         },
         -- タスク状態（作業ログ対応）
         -- org_todo_keywords = { "TODO(t)", "DOING(s!)", "WAITING(w@)", "|", "DONE(d!)", "CANCELLED(c@)" }, -- ! = タイムスタンプ記録, @ = ノート記録
-        org_todo_keywords = { "TODO", "DOING", "|", "DONE" }, -- タスクの状態
+        org_todo_keywords = { "TODO", "DOING", "WAITING", "|", "DONE" }, -- タスクの状態
         org_priority_highest = "A", -- 最高優先度
-        org_priority_default = "C", -- デフォルト優先度
-        org_priority_lowest = "C", -- 最低優先度
+        org_priority_default = "D", -- デフォルト優先度
+        org_priority_lowest = "D", -- 最低優先度
+        -- フォールディング（折りたたみ）の設定
+        org_startup_folded = "showeverything", -- フォールディングを完全に無効にする
         -- ログ機能の設定
         org_log_into_drawer = "LOGBOOK", -- ログをLOGBOOKドローワに収納
         org_log_done = "time", -- DONE時にタイムスタンプを追加
@@ -56,9 +64,20 @@ return {
             description = "Combined view", -- Description shown in the prompt for the shortcut
             types = {
               {
+                type = "tags",
+                match = "weekly",
+                org_agenda_overriding_header = "📌 今週気をつけたいこと",
+              },
+              {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
-                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                match = '+PRIORITY="A"|work+PRIORITY="B"|private+PRIORITY="B"', -- 高優先度のタスク
                 org_agenda_overriding_header = "High priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
+              },
+              {
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = 'work+PRIORITY="C"', -- 高優先度のタスク
+                org_agenda_overriding_header = "Middle priority todos",
                 org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
               },
               {
@@ -67,10 +86,14 @@ return {
                 org_agenda_span = "day", -- can be any value as org_agenda_span
               },
               {
-                type = "tags",
-                match = "work", --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
-                org_agenda_overriding_header = "My work todos",
-                org_agenda_todo_ignore_scheduled = "all", -- Ignore all headlines that are scheduled. Possible values: past | future | all
+                type = "tags_todo",
+                match = 'work+PRIORITY="D"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                org_agenda_overriding_header = "Low priority work tasks",
+              },
+              {
+                type = "tags_todo",
+                match = 'work+TODO="DONE"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                org_agenda_overriding_header = "DONE work tasks",
               },
               {
                 type = "agenda",
@@ -84,6 +107,11 @@ return {
           p = {
             description = "プライベートのタスク",
             types = {
+              {
+                type = "tags",
+                match = "weekly",
+                org_agenda_overriding_header = "📌 今週気をつけたいこと",
+              },
               {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
                 match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
@@ -110,6 +138,11 @@ return {
             description = "開発のタスク",
             types = {
               {
+                type = "tags",
+                match = "weekly",
+                org_agenda_overriding_header = "📌 今週気をつけたいこと",
+              },
+              {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
                 match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
                 org_agenda_overriding_header = "High priority todos",
@@ -132,8 +165,13 @@ return {
             },
           },
           a = {
-            description = "開発のタスク",
+            description = "全タスク",
             types = {
+              {
+                type = "tags",
+                match = "weekly",
+                org_agenda_overriding_header = "📌 今週気をつけたいこと",
+              },
               {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
                 match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
@@ -183,6 +221,8 @@ return {
           CANCELLED = ":foreground red :weight bold",
         },
 
+        -- 優先度の色設定（nvim-orgmodeでは直接ハイライトグループを設定）
+
         -- よく使うキーマップ
         mappings = {
           global = {
@@ -193,6 +233,7 @@ return {
             -- bキーをvimのデフォルト動作（前の単語）に戻す
             org_agenda_earlier = {}, -- bキーのマッピングを無効化（空の配列で無効化）
             -- org_agenda_later = "f", -- 次の期間に進む（デフォルトのまま）
+            org_agenda_todo = "t", -- todo状態を順方向に切り替え
           },
           org = {
             org_todo = "t", -- todo状態を切り替え
@@ -247,16 +288,16 @@ return {
       end
 
       -- orgファイル保存時の自動更新設定
-      -- vim.api.nvim_create_autocmd("BufWritePost", {
-      --   pattern = {
-      --     "*/org-memo/org/*.org",
-      --   },
-      --   callback = function()
-      --     -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
-      --     vim.defer_fn(org_git_update, 500)
-      --   end,
-      --   desc = "Auto update git for org files",
-      -- })
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = {
+          "*/org-memo/org/*.org",
+        },
+        callback = function()
+          -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
+          vim.defer_fn(org_git_update, 500)
+        end,
+        desc = "Auto update git for org files",
+      })
 
       -- ファイル直接アクセス用キーマップ（シンプル化）
       vim.keymap.set(
@@ -270,6 +311,12 @@ return {
         "<leader>jb",
         ":e ~/src/github.com/happy663/org-memo/org/calendar-beorg.org<CR>",
         { desc = "Open calendar-beorg.org" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>jn",
+        ":e ~/src/github.com/happy663/org-memo/org/weekly-notes.org<CR>",
+        { desc = "Open weekly-notes.org" }
       )
 
       -- ログディレクトリ作成
@@ -312,7 +359,7 @@ return {
         status = status:gsub("^%s+", ""):gsub("%s+$", ""):upper()
 
         -- 有効なステータスかチェック
-        local valid_statuses = { TODO = true, DOING = true, DONE = true, CANCELLED = true }
+        local valid_statuses = { TODO = true, DOING = true, WAITING = true, DONE = true, CANCELLED = true }
         if not valid_statuses[status] then
           print("Invalid status: " .. status)
           return
@@ -600,6 +647,22 @@ return {
           end
         end
       end, { desc = "Create task log (simple)" })
+
+      -- アジェンダで逆方向のTODOトグル機能を追加
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "orgagenda",
+        callback = function()
+          vim.keymap.set("n", "T", function()
+            local orgmode = require("orgmode")
+            local agenda = orgmode.agenda
+            -- _remote_editを直接呼び出して逆方向のTODOトグルを実行
+            agenda:_remote_edit({
+              action = "org_mappings.todo_prev_state",
+              update_in_place = true,
+            })
+          end, { buffer = true, desc = "逆方向TODO状態切り替え" })
+        end,
+      })
     end,
   },
 }
