@@ -194,7 +194,7 @@ return {
               {
                 type = "tags_todo",
                 org_agenda_overriding_header = "My private todos",
-                match = '+private',
+                match = "+private",
                 -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
                 order = 10,
               },
@@ -256,42 +256,42 @@ return {
       })
 
       -- Git更新関数（非同期）
-      local function org_git_update()
-        local org_memo_dir = vim.fn.expand("~/src/github.com/happy663/org-memo")
-
-        local commands = {
-          { "git", "add", "." },
-          { "git", "commit", "-m", "auto update from nvim" },
-          { "git", "push", "origin", "main" },
-        }
-
-        local function run_commands(cmd_list, index)
-          if index > #cmd_list then
-            print("Org files updated and pushed to git!")
-            return
-          end
-
-          local cmd = cmd_list[index]
-          vim.system(cmd, {
-            cwd = org_memo_dir,
-            text = true,
-          }, function(result)
-            if result.code == 0 then
-              -- 成功時は次のコマンドを実行
-              run_commands(cmd_list, index + 1)
-            else
-              -- エラー時は処理を停止してエラーメッセージを表示
-              print(string.format("Git command failed: %s (exit code: %d)", table.concat(cmd, " "), result.code))
-              if result.stderr and result.stderr ~= "" then
-                print("Error: " .. result.stderr)
-              end
-            end
-          end)
-        end
-
-        -- 最初のコマンドから開始
-        run_commands(commands, 1)
-      end
+      -- local function org_git_update()
+      --   local org_memo_dir = vim.fn.expand("~/src/github.com/happy663/org-memo")
+      --
+      --   local commands = {
+      --     { "git", "add", "." },
+      --     { "git", "commit", "-m", "auto update from nvim" },
+      --     { "git", "push", "origin", "main" },
+      --   }
+      --
+      --   local function run_commands(cmd_list, index)
+      --     if index > #cmd_list then
+      --       print("Org files updated and pushed to git!")
+      --       return
+      --     end
+      --
+      --     local cmd = cmd_list[index]
+      --     vim.system(cmd, {
+      --       cwd = org_memo_dir,
+      --       text = true,
+      --     }, function(result)
+      --       if result.code == 0 then
+      --         -- 成功時は次のコマンドを実行
+      --         run_commands(cmd_list, index + 1)
+      --       else
+      --         -- エラー時は処理を停止してエラーメッセージを表示
+      --         print(string.format("Git command failed: %s (exit code: %d)", table.concat(cmd, " "), result.code))
+      --         if result.stderr and result.stderr ~= "" then
+      --           print("Error: " .. result.stderr)
+      --         end
+      --       end
+      --     end)
+      --   end
+      --
+      --   -- 最初のコマンドから開始
+      --   run_commands(commands, 1)
+      -- end
 
       -- orgファイル保存時の自動更新設定
       vim.api.nvim_create_autocmd("BufWritePost", {
@@ -548,10 +548,14 @@ return {
 
         for _, file in ipairs(all_files) do
           local basename = vim.fn.fnamemodify(file, ":t"):lower()
+          print("Checking file: " .. basename)
           if basename:match(search_name:sub(1, 10)) then
             table.insert(matching_files, file)
           end
         end
+
+        print("matching_files count: " .. #matching_files)
+        print(vim.inspect(matching_files))
 
         if #matching_files > 0 then
           if #matching_files == 1 then
