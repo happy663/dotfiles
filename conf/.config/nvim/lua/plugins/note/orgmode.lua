@@ -448,19 +448,9 @@ return {
       -- タスク・ログ管理システム
       -- ============================================
 
-      -- ID生成用の関数
-      local function get_next_task_id()
-        local max_id = 0
-        local files =
-          vim.fn.glob(vim.fn.expand("~/src/github.com/happy663/org-memo/org/logs/tasks/task-*.org"), false, true)
-        for _, file in ipairs(files) do
-          local num = tonumber(file:match("task%-(%d+)"))
-          if num and num > max_id then
-            max_id = num
-          end
-        end
-        return string.format("task-%03d", max_id + 1)
-      end
+      -- ID生成用の関数（モジュールから読み込み）
+      local get_next_task_id_module = require("utils.get_next_task_id")
+      local get_next_task_id = get_next_task_id_module.get_next_task_id
 
       -- タスクログ検索（Telescope）- jlプレフィックスに変更
       vim.keymap.set("n", "<leader>jl", function()
@@ -486,27 +476,9 @@ return {
       end, { desc = "Insert timestamp header" })
 
       -- タスクログ作成（改良版 - ファイル直接編集でID保存）
-      -- タスク名をパースする関数
-      local function parse_task_name(line)
-        local task_name = nil
-
-        -- org表示モードのパターン
-        if line:match("^%s*todo:") or line:match("^%s*done:") then
-          task_name = line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)%s+%[") or line:match(":%s*%w+%s+%[#[A-C]%]%s+(.-)$")
-        else
-          task_name = line:match("%*+ %w+ %[#[A-C]%] (.-)%s+:") or line:match("%*+ %w+ %[#[A-C]%] (.-)$")
-        end
-
-        if not task_name then
-          return nil
-        end
-
-        -- タスク名をクリーンアップ
-        task_name = task_name:gsub("%[.-%]", ""):gsub(":%w+:", ""):gsub("^%s+", ""):gsub("%s+$", "")
-        local search_name = task_name:gsub("[^%w%s]", ""):gsub("%s+", "-"):lower():sub(1, 20)
-
-        return task_name, search_name
-      end
+      -- タスク名をパースする関数（改良版を使用）
+      local parse_task_name_module = require("utils.parse_task_name_improved")
+      local parse_task_name = parse_task_name_module.parse_task_name
 
       -- 既存のIDをチェックする関数
       local function check_existing_id(current_line_num)
