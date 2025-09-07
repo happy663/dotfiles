@@ -165,7 +165,7 @@ return {
             },
           },
           a = {
-            description = "全タスク",
+            description = "devとprivateのタスク",
             types = {
               {
                 type = "tags",
@@ -179,16 +179,22 @@ return {
                 org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
               },
               {
-                type = "tags_todo",
-                org_agenda_overriding_header = "My private todos",
-                match = "+private",
-                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
-                order = 10,
+                type = "tags_todo", -- Type can be agenda | tags | tags_todo
+                match = 'private+PRIORITY="C"|dev+PRIORITY="C"',
+                org_agenda_overriding_header = "Middle priority todos",
+                org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
               },
               {
                 type = "tags_todo",
                 org_agenda_overriding_header = "My dev todos",
                 match = "+dev",
+                -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
+                order = 10,
+              },
+              {
+                type = "tags_todo",
+                org_agenda_overriding_header = "My private todos",
+                match = '+private',
                 -- match = '+PRIORITY="B"', --Same as providing a "Match:" for tags view <leader>oa + m, See: https://orgmode.org/manual/Matching-tags-and-properties.html
                 order = 10,
               },
