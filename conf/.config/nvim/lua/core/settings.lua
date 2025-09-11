@@ -238,3 +238,6 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.cinoptions = "j1,(0,ws,Ws,g0,{s,>s,e-s,n-s,+s"
   end,
 })
+
+vim.o.grepprg = "git grep -n --no-color"
+vim.opt.grepformat = "%f:%l:%m"
