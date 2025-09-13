@@ -9,18 +9,15 @@ return {
       local state = require("telescope.actions.state")
       local builtin = require("telescope.builtin")
 
+      -- Utility functions
       local function highlight_search_term(search_term)
         vim.fn.setreg("/", search_term)
         vim.cmd("set hlsearch")
       end
 
+      -- Custom actions
       local custom_actions = {}
-
       function custom_actions.select_with_highlight()
-        local function highlight_search_term(search_term)
-          vim.fn.setreg("/", search_term)
-          vim.cmd("set hlsearch")
-        end
         return function(prompt_bufnr)
           local search_term = state.get_current_line()
           actions.select_default(prompt_bufnr)
