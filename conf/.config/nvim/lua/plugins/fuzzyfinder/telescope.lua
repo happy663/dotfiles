@@ -141,16 +141,23 @@ return {
           smart_open = {
             open_buffer_indicators = { previous = "👀", others = "🙈" },
           },
+          livegrep_history = {
+            mappings = {
+              up_key = "<Up>",
+              down_key = "<Down>",
+              confirm_key = "<CR>",
+            },
+            max_history = 100,
+          },
         },
       })
-      -- バッファ切り替え用の関数
+
+      -- Helper functions
       _G.cycle_buffers = function(direction)
         local picker = state.get_current_picker()
         if picker == nil then
-          -- Telescope buffersが開いていない場合は開く
           builtin.buffers()
         else
-          -- 既に開いている場合は選択を移動
           if direction == "next" then
             actions.move_selection_next(picker)
           else
@@ -159,36 +166,23 @@ return {
         end
       end
 
-      -- キーマッピング（変更なし）
-      vim.api.nvim_set_keymap(
-        "n",
-        "<C-Tab>",
-        [[<cmd>lua _G.cycle_buffers('next')<CR>]],
-        { noremap = true, silent = true }
-      )
-      vim.api.nvim_set_keymap(
-        "n",
-        "<C-S-Tab>",
-        [[<cmd>lua _G.cycle_buffers('previous')<CR>]],
-        { noremap = true, silent = true }
-      )
+      -- Key mappings
+      local keymaps = {
+        -- Buffer cycling
+        { "n", "<C-Tab>", [[<cmd>lua _G.cycle_buffers('next')<CR>]] },
+        { "n", "<C-S-Tab>", [[<cmd>lua _G.cycle_buffers('previous')<CR>]] },
+        -- Wezterm specific key sequences
+        { "n", "<esc>[27;5;9~", [[<cmd>lua _G.cycle_buffers('next')<CR>]] },
+        { "n", "<esc>[27;6;9~", [[<cmd>lua _G.cycle_buffers('previous')<CR>]] },
+        -- Telescope commands
+        { "n", "<Leader>td", "<cmd>Telescope diagnostics<CR>" },
+        { "n", "<Leader>th", "<cmd>Telescope help_tags<CR>" },
+      }
 
-      -- Weztermからの特殊なキー入力に対応（変更なし）
-      vim.api.nvim_set_keymap(
-        "n",
-        "<esc>[27;5;9~",
-        [[<cmd>lua _G.cycle_buffers('next')<CR>]],
-        { noremap = true, silent = true }
-      )
-      vim.api.nvim_set_keymap(
-        "n",
-        "<esc>[27;6;9~",
-        [[<cmd>lua _G.cycle_buffers('previous')<CR>]],
-        { noremap = true, silent = true }
-      )
+      for _, keymap in ipairs(keymaps) do
+        vim.api.nvim_set_keymap(keymap[1], keymap[2], keymap[3], { noremap = true, silent = true })
+      end
 
-      vim.api.nvim_set_keymap("n", "<Leader>td", "<cmd>Telescope diagnostics<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<Leader>th", "<cmd>Telescope help_tags<CR>", { noremap = true, silent = true })
       vim.keymap.set("n", "<leader>tn", function()
         builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
       end)
@@ -334,21 +328,6 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     config = function()
-      -- Telescopeの拡張機能設定を更新
-      require("telescope").setup({
-        extensions = {
-          livegrep_history = {
-            mappings = {
-              up_key = "<Up>",
-              down_key = "<Down>",
-              confirm_key = "<CR>",
-            },
-            max_history = 100,
-          },
-        },
-      })
-
-      -- 拡張機能を読み込む
       require("telescope").load_extension("livegrep_history")
     end,
   },
