@@ -44,7 +44,7 @@ return {
           layout_config = {
             horizontal = {
               width = 0.9,
-              preview_width = 0.5,
+              preview_width = 0.4,
               prompt_position = "top",
             },
           },
@@ -57,6 +57,7 @@ return {
               ["<C-S-Tab>"] = actions.move_selection_previous,
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = custom_actions.qf_and_highlight(),
+              ["<C-f>"] = require("telescope.actions.layout").toggle_preview,
             },
             n = {
               ["<C-Tab>"] = actions.move_selection_next,
