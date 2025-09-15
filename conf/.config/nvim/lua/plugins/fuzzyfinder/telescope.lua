@@ -148,6 +148,7 @@ return {
               confirm_key = "<CR>",
             },
             max_history = 100,
+            confirm_action = custom_actions.select_with_highlight(),
           },
         },
       })
@@ -191,10 +192,6 @@ return {
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      {
-        "<C-g>",
-        "<cmd>lua require('telescope.builtin').live_grep()<CR>",
-      },
       {
         "<Leader>bg",
         "<cmd>lua require('telescope.builtin').live_grep({grep_open_files = true})<CR>",
