@@ -183,6 +183,7 @@
       "gnupg"
       "coursier"
       "pngpaste"
+      "luarocks"
     ];
     casks = [
       "emacs"
