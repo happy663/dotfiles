@@ -294,16 +294,16 @@ return {
       -- end
 
       -- orgファイル保存時の自動更新設定
-      vim.api.nvim_create_autocmd("BufWritePost", {
-        pattern = {
-          "*/org-memo/org/*.org",
-        },
-        callback = function()
-          -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
-          vim.defer_fn(org_git_update, 500)
-        end,
-        desc = "Auto update git for org files",
-      })
+      -- vim.api.nvim_create_autocmd("BufWritePost", {
+      --   pattern = {
+      --     "*/org-memo/org/*.org",
+      --   },
+      --   callback = function()
+      --     -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
+      --     vim.defer_fn(org_git_update, 500)
+      --   end,
+      --   desc = "Auto update git for org files",
+      -- })
 
       -- ファイル直接アクセス用キーマップ（シンプル化）
       vim.keymap.set(
