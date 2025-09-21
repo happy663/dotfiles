@@ -19,4 +19,4 @@ local function focusWezTermGhostTextWindow()
 end
 
 -- Bind Alt+4 to the focus function
--- hs_application.hotkey.bind({ "alt" }, "4", focusWezTermGhostTextWindow)
+hs.hotkey.bind({ "alt" }, "4", focusWezTermGhostTextWindow)
