@@ -9,6 +9,7 @@ dofile(hs.configdir .. "/modules/ghost.lua")
 dofile(hs.configdir .. "/modules/org-sync.lua")
 dofile(hs.configdir .. "/modules/skk-sync.lua")
 dofile(hs.configdir .. "/modules/discord-mute.lua")
+dofile(hs.configdir .. "/modules/octo.lua")
 
 local log = hs.logger.new("myLogger", "debug")
 
