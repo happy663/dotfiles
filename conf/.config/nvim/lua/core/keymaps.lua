@@ -12,7 +12,6 @@ map("n", "<C-k>", "<C-w>k", opts)
 --
 map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
-
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
 map("n", "x", '"_x', opts)
 map("n", "-", "<CMD>split<CR>", opts)
@@ -228,7 +227,7 @@ vim.keymap.set(
   { noremap = true, silent = true, desc = "Copy absolute path" }
 )
 
-vim.keymap.set("i", "<C-v>", "<C-r>+", { noremap = true, silent = true, desc = "Paste from clipboard" })
+vim.keymap.set("i", "<C-v>", '<C-o>"+p', { noremap = true, silent = true, desc = "Paste from clipboard" })
 
 -- map("t", "<Esc>", "<Esc>", opts)
 -- map("t", "<C-w>", "<C-\\><C-n><C-w>", opts)
