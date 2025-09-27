@@ -39,7 +39,7 @@
             echo "Updating home-manager..."
             nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
             echo "Update complete"
-            sudo nix run nix-darwin -- switch --falake .#happy-darwin
+            sudo nix run nix-darwin -- switch --flake .#happy-darwin
           '');
       };
 
