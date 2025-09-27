@@ -70,7 +70,7 @@
             inherit phps;
           };
           modules = [
-            ./conf/.config/nix/home-manager/default.nix
+            ./conf/.config/nix/home-manager/darwin.nix
           ];
         };
 
