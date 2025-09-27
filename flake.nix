@@ -91,7 +91,7 @@
       };
 
       darwinConfigurations.happy-darwin = nix-darwin.lib.darwinSystem {
-        system = system;
+        system = system.darwin;
         modules = [ ./conf/.config/nix/nix-darwin/default.nix ];
       };
 
