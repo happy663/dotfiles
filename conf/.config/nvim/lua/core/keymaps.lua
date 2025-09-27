@@ -121,7 +121,7 @@ vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
 
-vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
 
 -- クイックフィックスウィンドウでマッピングを上書きする
 vim.api.nvim_create_autocmd("FileType", {
@@ -253,3 +253,25 @@ vim.api.nvim_create_autocmd("TermOpen", {
 --   silent = true,
 --   desc = "Open Octo issues assigned to happy663",
 -- })
+
+vim.keymap.set("n", "<Leader>py", function()
+  local clipboard_content = vim.fn.getreg("+")
+  local lines = vim.split(clipboard_content, "\n", { plain = true })
+
+  table.insert(lines, 1, "```") -- 先頭に空行を追加
+  table.insert(lines, "```") -- 末尾に空行を追加
+
+  vim.api.nvim_put(lines, "l", true, true)
+end)
+
+vim.keymap.set("n", "<Leader>pd", function()
+  local clipboard_content = vim.fn.getreg("+")
+  local lines = vim.split(clipboard_content, "\n", { plain = true })
+
+  table.insert(lines, 1, "```") -- 先頭に空行を追加
+  table.insert(lines, 1, "<details>") -- 先頭に空行を追加
+  table.insert(lines, "```") -- 先頭に空行を追加
+  table.insert(lines, "</details>") -- 先頭に空行を追加
+
+  vim.api.nvim_put(lines, "l", true, true)
+end)
