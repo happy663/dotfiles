@@ -37,6 +37,7 @@ in
       awscli
       fastfetch
       neovim-remote
+      firefox
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
