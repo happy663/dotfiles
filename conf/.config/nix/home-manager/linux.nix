@@ -1,19 +1,28 @@
 { inputs, lib, config, pkgs, phps, ... }:
 
-
-let
-  username = "happy";
-in
 {
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-  };
-
   imports = [
     ./common.nix
   ];
+  home.homeDirectory = "/home/${config.home.username}";
 
+  home.packages = with pkgs; [
+    gcc
+    hackgen-font
+    hackgen-nf-font
+  ];
+
+  # home.file.".xsessionrc" = {
+  #   text = ''
+  #     xset r rate 150 50
+  #   '';
+  #   excutable = true;
+  # };
+
+  # home.file.".xprofile" = {
+  #   text = ''
+  #     xset r rate 150 50
+  #   '';
+  # };
 
 }

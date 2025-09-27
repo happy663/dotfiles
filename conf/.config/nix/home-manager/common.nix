@@ -14,7 +14,6 @@ in
 
   home = {
     username = username;
-    homeDirectory = "/home/${username}";
 
     packages = with pkgs; [
       # CLI tools
@@ -38,9 +37,6 @@ in
       awscli
       fastfetch
       neovim-remote
-      gcc
-      hackgen-font
-      hackgen-nf-font
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
