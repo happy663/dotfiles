@@ -20,10 +20,8 @@ NixとHome Managerを使用して開発環境を宣言的に管理している�
 # Nixのインストール
 sh <(curl -L https://nixos.org/nix/install)
 
-# Home Managerの設定適用
-home-manager switch --flake .#myHomeConfig
-# Nix darwinの設定適用
-sudo nix run nix-darwin -- switch --flake .#happy-darwin
+# nixpkgのinstallとupdate
+nix run .#update
 
 ```
 
