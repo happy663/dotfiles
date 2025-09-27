@@ -25,12 +25,6 @@ nix run .#update
 
 ```
 
-### 主な設定ファイル
-
-- `flake.nix` - Nixの設定のエントリーポイント
-- `home.nix` - Home Managerの設定ファイル
-- `flake.lock` - 依存関係のロックファイル
-
 ## Neovim
 
 Neovimのプラグインマネージャーにはlazy.nvimを使用している．
