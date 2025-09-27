@@ -21,47 +21,47 @@
 
   outputs = { self, nixpkgs, home-manager, nix-darwin, phps } @ inputs:
     let
-      system = "aarch64-darwin";
-      pkgs = nixpkgs.legacyPackages.${system};
+      system = {
+        darwin = "aarch64-darwin";
+        linux = "x86_64-linux";
+      };
+      darwinPkgs = nixpkgs.legacyPackages.${system.darwin};
+      linuxPkgs = nixpkgs.legacyPackages.${system.linux};
     in
     {
-      packages.${system}.my-package =
-        let
-          customPkgs = import nixpkgs {
-            inherit system;
-          };
-        in
-        customPkgs.buildEnv {
-          name = "my-package-list";
-          paths = with customPkgs;
-            [
-              hello
-              curl
-            ];
-        };
-
-
-      apps.${system}.update = {
+      apps.${system.darwin}.update = {
         type = "app";
         program = toString
-          (pkgs.writeShellScript "update-script" ''
+          (darwinPkgs.writeShellScript "update-script" ''
             set -e
             echo "Updating flake..."
             nix flake update
-            echo "Update profile"
-            nix profile upgrade my-packages
             echo "Updating home-manager..."
-            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig
-            echo "Updating darwin..."
+            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+            echo "Update complete"
             sudo nix run nix-darwin -- switch --flake .#happy-darwin
+          '');
+      };
+
+      apps.${system.linux}.update = {
+        type = "app";
+        program = toString
+          (linuxPkgs.writeShellScript "update-script" ''
+            set -e
+            echo "Updating flake..."
+            nix flake update
+            echo "Updating home-manager..."
+            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-linux
             echo "Update complete"
           '');
       };
 
+
       homeConfigurations = {
-        myHomeConfig = home-manager.lib.homeManagerConfiguration {
+
+        myHomeConfig-darwin = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
-            inherit system;
+            system = system.darwin;
             config.allowUnfree = true;
           };
           extraSpecialArgs = {
@@ -70,15 +70,31 @@
             inherit phps;
           };
           modules = [
-            ./conf/.config/nix/home-manager/default.nix
+            ./conf/.config/nix/home-manager/darwin.nix
           ];
         };
+
+        myHomeConfig-linux = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            system = system.linux;
+            config.allowUnfree = true;
+          };
+          extraSpecialArgs = {
+            inherit inputs;
+            inherit phps;
+          };
+          modules = [
+            ./conf/.config/nix/home-manager/linux.nix
+          ];
+        };
+
       };
 
       darwinConfigurations.happy-darwin = nix-darwin.lib.darwinSystem {
-        system = system;
+        system = system.darwin;
         modules = [ ./conf/.config/nix/nix-darwin/default.nix ];
       };
+
 
     };
 }

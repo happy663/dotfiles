@@ -1,4 +1,7 @@
+
 { inputs, lib, config, pkgs, phps, ... }:
+
+
 let
   username = "happy";
 in
@@ -11,7 +14,6 @@ in
 
   home = {
     username = username;
-    homeDirectory = "/Users/${username}";
 
     packages = with pkgs; [
       # CLI tools
@@ -34,8 +36,8 @@ in
       colima
       awscli
       fastfetch
-      terminal-notifier
       neovim-remote
+      firefox
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -68,6 +70,21 @@ in
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     stateVersion = "24.05";
   };
+
+  # home.file.".xsessionrc" = {
+  #   text = ''
+  #     xset r rate 150 50
+  #   '';
+  #   excutable = true;
+  # };
+
+  # home.file.".xprofile" = {
+  #   text = ''
+  #     xset r rate 150 50
+  #   '';
+  # };
+
+
 
   programs = {
     home-manager.enable = true;
