@@ -1,4 +1,3 @@
-
 { inputs, lib, config, pkgs, phps, ... }:
 
 
@@ -249,28 +248,28 @@ in
           export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include $CPPFLAGS"
           export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-          export LDFLAGS="-L/home/linuxbrew/.linuxbrew/opt/zlib/lib \
-          -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib \
-          -L/home/linuxbrew/.linuxbrew/opt/readline/lib \
-          -L/home/linuxbrew/.linuxbrew/opt/libffi/lib \
-          -L/home/linuxbrew/.linuxbrew/opt/ncurses/lib \
-          -L/home/linuxbrew/.linuxbrew/opt/bzip2/lib $LDFLAGS"
-
-          export CPPFLAGS="-I/home/linuxbrew/.linuxbrew/opt/zlib/include \
-          -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include \
-          -I/home/linuxbrew/.linuxbrew/opt/readline/include \
-          -I/home/linuxbrew/.linuxbrew/opt/libffi/include \
-          -I/home/linuxbrew/.linuxbrew/opt/ncurses/include \
-          -I/home/linuxbrew/.linuxbrew/opt/bzip2/include $CPPFLAGS"
-
-          export PKG_CONFIG_PATH="/home/linuxbrew/.linuxbrew/opt/zlib/lib/pkgconfig:\
-          /home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib/pkgconfig:\
-          /home/linuxbrew/.linuxbrew/opt/readline/lib/pkgconfig:\
-          /home/linuxbrew/.linuxbrew/opt/libffi/lib/pkgconfig:\
-          /home/linuxbrew/.linuxbrew/opt/ncurses/lib/pkgconfig:\
-          /home/linuxbrew/.linuxbrew/opt/bzip2/lib/pkgconfig:\
-          $PKG_CONFIG_PATH"
+          # eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+          # export LDFLAGS="-L/home/linuxbrew/.linuxbrew/opt/zlib/lib \
+          # -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib \
+          # -L/home/linuxbrew/.linuxbrew/opt/readline/lib \
+          # -L/home/linuxbrew/.linuxbrew/opt/libffi/lib \
+          # -L/home/linuxbrew/.linuxbrew/opt/ncurses/lib \
+          # -L/home/linuxbrew/.linuxbrew/opt/bzip2/lib $LDFLAGS"
+          #
+          # export CPPFLAGS="-I/home/linuxbrew/.linuxbrew/opt/zlib/include \
+          # -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include \
+          # -I/home/linuxbrew/.linuxbrew/opt/readline/include \
+          # -I/home/linuxbrew/.linuxbrew/opt/libffi/include \
+          # -I/home/linuxbrew/.linuxbrew/opt/ncurses/include \
+          # -I/home/linuxbrew/.linuxbrew/opt/bzip2/include $CPPFLAGS"
+          #
+          # export PKG_CONFIG_PATH="/home/linuxbrew/.linuxbrew/opt/zlib/lib/pkgconfig:\
+          # /home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib/pkgconfig:\
+          # /home/linuxbrew/.linuxbrew/opt/readline/lib/pkgconfig:\
+          # /home/linuxbrew/.linuxbrew/opt/libffi/lib/pkgconfig:\
+          # /home/linuxbrew/.linuxbrew/opt/ncurses/lib/pkgconfig:\
+          # /home/linuxbrew/.linuxbrew/opt/bzip2/lib/pkgconfig:\
+          # $PKG_CONFIG_PATH"
 
           alias pbcopy='xsel --clipboard --input'
         fi
@@ -496,3 +495,4 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
+

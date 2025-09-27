@@ -12,12 +12,11 @@
     hackgen-nf-font
   ];
 
-  # home.file.".xsessionrc" = {
-  #   text = ''
-  #     xset r rate 150 50
-  #   '';
-  #   excutable = true;
-  # };
+  home.file.".xsessionrc" = {
+    text = ''
+      xset r rate 150 50
+    '';
+  };
 
   # home.file.".xprofile" = {
   #   text = ''
