@@ -10,6 +10,7 @@
     gcc
     hackgen-font
     hackgen-nf-font
+    xsel
   ];
 
   home.file.".xsessionrc" = {
