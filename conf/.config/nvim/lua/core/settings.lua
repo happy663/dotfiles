@@ -144,18 +144,6 @@ vim.cmd([[
 
 vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"
 
--- <C-d> の再マッピング
-vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
-
--- <C-u> の再マッピング
-vim.api.nvim_set_keymap("n", "<C-u>", "<Cmd>keepjumps normal! <C-u><CR>", { noremap = true, silent = true })
-
--- { の再マッピング
-vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = true, silent = true })
-
--- } の再マッピング
-vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
-
 -- カーソルの設定
 vim.opt.guicursor = {
   "n-v:block-Cursor", -- ノーマル・ビジュアルモード: ブロックカーソル
@@ -211,11 +199,6 @@ end
 vim.opt.foldmethod = "indent" -- インデントで折りたたみ
 vim.opt.foldlevel = 99 -- 折りたたみの初期レベルを99に設定
 
--- vim.keymap.set("n", "<Tab>", "zo", { noremap = true, silent = true, desc = "Fold open" })
--- vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
-vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
-vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
---
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "php",
   callback = function()
