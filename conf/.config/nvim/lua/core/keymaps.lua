@@ -121,7 +121,7 @@ vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
 
--- vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
 
 -- クイックフィックスウィンドウでマッピングを上書きする
 vim.api.nvim_create_autocmd("FileType", {
@@ -258,10 +258,16 @@ vim.keymap.set("n", "<Leader>py", function()
   local clipboard_content = vim.fn.getreg("+")
   local lines = vim.split(clipboard_content, "\n", { plain = true })
 
+  if lines[#lines] == "" then
+    table.remove(lines, #lines) -- 最後の空行を削除
+  end
+
   table.insert(lines, 1, "```") -- 先頭に空行を追加
   table.insert(lines, "```") -- 末尾に空行を追加
 
-  vim.api.nvim_put(lines, "l", true, true)
+  vim.api.nvim_put(lines, "l", true, false)
+  -- 1行上に上がる
+  vim.cmd("normal! k")
 end)
 
 vim.keymap.set("n", "<Leader>pd", function()
@@ -275,3 +281,5 @@ vim.keymap.set("n", "<Leader>pd", function()
 
   vim.api.nvim_put(lines, "l", true, true)
 end)
+
+
