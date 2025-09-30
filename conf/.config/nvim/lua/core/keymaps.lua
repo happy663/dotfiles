@@ -275,11 +275,12 @@ vim.keymap.set("n", "<Leader>pd", function()
   local lines = vim.split(clipboard_content, "\n", { plain = true })
 
   table.insert(lines, 1, "```") -- 先頭に空行を追加
+  table.insert(lines, 1, "") -- 先頭に空行を追加
   table.insert(lines, 1, "<details>") -- 先頭に空行を追加
   table.insert(lines, "```") -- 先頭に空行を追加
   table.insert(lines, "</details>") -- 先頭に空行を追加
 
-  vim.api.nvim_put(lines, "l", true, true)
+  vim.api.nvim_put(lines, "l", true, false)
 end)
 
 -- <C-d> の再マッピング
