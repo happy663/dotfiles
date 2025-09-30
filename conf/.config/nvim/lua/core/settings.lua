@@ -193,8 +193,8 @@ function Toggle_diagnostics()
   end
 end
 
-vim.opt.foldmethod = "indent" -- インデントで折りたたみ
-vim.opt.foldlevel = 99 -- 折りたたみの初期レベルを99に設定
+-- vim.opt.foldmethod = "indent" -- インデントで折りたたみ
+-- vim.opt.foldlevel = 99 -- 折りたたみの初期レベルを99に設定
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "php",
