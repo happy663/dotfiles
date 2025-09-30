@@ -37,6 +37,7 @@ in
       fastfetch
       neovim-remote
       firefox
+      neofetch
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -495,4 +496,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
