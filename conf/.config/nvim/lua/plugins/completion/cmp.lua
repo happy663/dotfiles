@@ -118,19 +118,25 @@ return {
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
         { name = "luasnip", group_index = 1 },
-        {
-          name = "spell",
-          option = {
-            keep_all_entries = false,
-            enable_in_context = function()
-              return true
-            end,
-            preselect_correct_word = true,
-          },
-          group_index = 2,
-        },
+        -- {
+        --   name = "spell",
+        --   option = {
+        --     keep_all_entries = false,
+        --     enable_in_context = function()
+        --       return true
+        --     end,
+        --     preselect_correct_word = true,
+        --   },
+        --   group_index = 2,
+        -- },
         {
           name = "rg",
+          group_index = 1,
+        },
+        -- other sources
+        {
+          name = "dictionary",
+          keyword_length = 2,
           group_index = 1,
         },
       }
@@ -244,22 +250,27 @@ return {
           { name = "vimtex", group_index = 1 },
           { name = "render-markdown", group_index = 1 },
           { name = "calc", group_index = 1 },
-          {
-            name = "spell",
-            option = {
-              keep_all_entries = false,
-              enable_in_context = function()
-                return true
-              end,
-              preselect_correct_word = true,
-            },
-            group_index = 2,
-          },
+          -- {
+          --   name = "spell",
+          --   option = {
+          --     keep_all_entries = false,
+          --     enable_in_context = function()
+          --       return true
+          --     end,
+          --     preselect_correct_word = true,
+          --   },
+          --   group_index = 2,
+          -- },
           {
             name = "rg",
             group_index = 1,
           },
           { name = "git", group_index = 1 },
+          {
+            name = "dictionary",
+            keyword_length = 2,
+            group_index = 1,
+          },
         },
         sorting = default_sorting,
         formatting = {
@@ -380,7 +391,21 @@ return {
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
-      "f3fora/cmp-spell",
+      {
+        "uga-rosa/cmp-dictionary",
+        cond = vim.g.not_in_vscode,
+        config = function()
+          require("cmp_dictionary").setup({
+            paths = {
+              -- "$HOME/dict.txt",
+              "/usr/share/dict/words",
+              -- "/usr/share/dict/web2",
+            },
+            exact_length = 2,
+          })
+        end,
+      },
+      -- "f3fora/cmp-spell",
       "lukas-reineke/cmp-rg",
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
@@ -396,5 +421,7 @@ return {
     },
   },
 }
+
+
 
 

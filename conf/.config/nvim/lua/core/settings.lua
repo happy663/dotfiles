@@ -181,9 +181,6 @@ vim.cmd([[
   augroup END
 ]])
 
-vim.opt.spell = false
-vim.opt.spelllang = { "en", "cjk" }
-vim.opt.spelloptions:append("camel", "pascal")
 
 vim.g["diagnostics_active"] = true
 function Toggle_diagnostics()
@@ -225,3 +222,4 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.o.grepprg = "git grep -n --no-color"
 vim.opt.grepformat = "%f:%l:%m"
 vim.o.clipboard = "unnamedplus"
+
