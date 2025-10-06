@@ -57,3 +57,5 @@ conf/.config/user-dirs.dirs
 conf/.config/user-dirs.locale
 conf/.config/xdg-terminals.list
 conf/.config/ibus/bus
+conf/.claude/history.jsonl
+conf/.claude/plugins
