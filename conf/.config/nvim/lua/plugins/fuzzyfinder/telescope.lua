@@ -62,8 +62,11 @@ return {
             },
           },
           path_display = function(_, path)
+            local parent = path:match("(.*/)[^/]*$") or ""
             local tail = require("telescope.utils").path_tail(path)
-            return string.format("%s (%s)", tail, path)
+            local prev_dir = parent:match("([^/]+)/$") or ""
+            local display = prev_dir ~= "" and (prev_dir .. "/" .. tail) or tail
+            return string.format("%s (%s)", display, path)
           end,
         },
         pickers = {
@@ -116,7 +119,7 @@ return {
             default_selection_index = 2, -- 2番目のアイテムを初期選択
             layout_config = {
               horizontal = {
-                width = 0.5,
+                width = 0.6,
                 preview_width = 0,
                 prompt_position = "top",
                 height = 0.6,
