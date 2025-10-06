@@ -59,3 +59,5 @@ conf/.config/xdg-terminals.list
 conf/.config/ibus/bus
 conf/.claude/history.jsonl
 conf/.claude/plugins
+.claude/settings.local.json
+.claude/settings.local.json

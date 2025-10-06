@@ -1,8 +1,29 @@
 {
-  "enableAllProjectMcpServers": false,
   "permissions": {
     "allow": [
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Read(/Users/happy/.local/share/nvim/lazy/orgmode/lua/orgmode/config/**)",
+      "Bash(vim:*)",
+      "Read(/Users/happy/.local/share/nvim/lazy/orgmode/lua/orgmode/colors/**)",
+      "WebSearch",
+      "WebFetch(domain:aws.amazon.com)",
+      "WebFetch(domain:instances.vantage.sh)",
+      "WebFetch(domain:cloudprice.net)",
+      "Bash(zsh:*)",
+      "Read(//nix/store/**)",
+      "Read(//Users/happy/.cache/**)",
+      "Read(//Users/happy/**)",
+      "Bash(GITSTATUS_LOG_LEVEL=DEBUG zsh -i -c 'echo \"\"\"\"Test\"\"\"\"')",
+      "Bash(nix-env:*)",
+      "Bash(home-manager switch:*)",
+      "Bash(exec zsh -l)",
+      "Bash(./build -w)",
+      "Bash(./gitstatus/install:*)",
+      "Bash(./install)",
+      "Bash(bash:*)",
+      "Bash(~/.cache/gitstatus/gitstatusd-darwin-arm64 --version)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false,
+  "outputStyle": "Coding Mentor"
 }
