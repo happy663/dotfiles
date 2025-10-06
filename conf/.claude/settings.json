@@ -80,9 +80,11 @@
       "Bash(nvim:*)",
       "Bash(npx ccusage:*)"
     ],
-    "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(rm -rf:*)"
+    ]
   },
-  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
