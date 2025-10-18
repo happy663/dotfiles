@@ -110,6 +110,7 @@ return {
         { name = "codecompanion_slash_commands", group_index = 1 },
         { name = "codecompanion_tools", group_index = 1 },
         { name = "codecompanion_variables", group_index = 1 },
+        { name = "codecompanion_acp_commands", group_index = 1 },
         { name = "avante_commands" },
         { name = "avante_mentions" },
         { name = "avante_files" },
@@ -421,7 +422,3 @@ return {
     },
   },
 }
-
-
-
-

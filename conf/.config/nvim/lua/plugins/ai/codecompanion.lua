@@ -22,6 +22,17 @@ return {
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
+    keys = {
+      { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
+      { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
+      { "<leader>cct", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
+      { "<leader>ccl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_CHAT), mode = "v", desc = "LSP Diagnostics Chat", },
+      { "<leader>ccfl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_INLINE), mode = "v", desc = "Fix LSP Inline", },
+      { "<leader>ccr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_CHAT), mode = "v", desc = "Refactor Chat", },
+      { "<leader>ccfr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_INLINE), mode = "v", desc = "Refactor Inline", },
+      { "<leader>cce", string.format("<cmd>CodeCompanion /%s<cr>", short_names.EXPLAIN_CHAT), mode = "v", desc = "Explain Code", },
+      { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
+    },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -46,79 +57,91 @@ return {
           },
         },
         adapters = {
-          anthropic = function()
-            return require("codecompanion.adapters").extend("anthropic", {
-              schema = {
-                model = {
-                  default = "claude-3-5-haiku-20241022",
+          http = {
+            -- anthropic = function()
+            --   return require("codecompanion.adapters").extend("anthropic", {
+            --     schema = {
+            --       model = {
+            --         default = "claude-3-5-haiku-20241022",
+            --       },
+            --       choices = {
+            --         "claude-3-7-sonnet-20250219",
+            --         "claude-3-5-haiku-20241022",
+            --       },
+            --     },
+            --     env = {
+            --       api_key = function()
+            --         -- return vim.fn.getenv("ANTHROPIC_API_KEY")
+            --       end,
+            --     },
+            --   })
+            -- end,
+            copilot = function()
+              return require("codecompanion.adapters").extend("copilot", {
+                schema = {
+                  model = {
+                    default = "claude-3.5-sonnet",
+                  },
+                  choices = {
+                    "claude-3.5-sonnet",
+                    "claude-3.7-sonnet",
+                    "gpt-4o-2024-08-06",
+                  },
                 },
-                choices = {
-                  "claude-3-7-sonnet-20250219",
-                  "claude-3-5-haiku-20241022",
+              })
+            end,
+            openai = function()
+              return require("codecompanion.adapters").extend("openai", {
+                schema = {
+                  model = {
+                    default = "gpt-4o-mini",
+                  },
+                  choices = {
+                    "o1-mini-2024-09-12",
+                    "gpt-4o-mini",
+                    "o3-mini-2025-01-31",
+                  },
                 },
-              },
-              env = {
-                api_key = function()
-                  return vim.fn.getenv("ANTHROPIC_API_KEY")
-                end,
-              },
-            })
-          end,
-          copilot = function()
-            return require("codecompanion.adapters").extend("copilot", {
-              schema = {
-                model = {
-                  default = "claude-3.5-sonnet",
+                env = {
+                  api_key = function()
+                    return vim.fn.getenv("OPENAI_API_KEY")
+                  end,
                 },
-                choices = {
-                  "claude-3.5-sonnet",
-                  "claude-3.7-sonnet",
-                  "gpt-4o-2024-08-06",
+              })
+            end,
+            ollama = function()
+              return require("codecompanion.adapters").extend("ollama", {
+                schema = {
+                  model = {
+                    default = "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
+                  },
+                  choices = {
+                    "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
+                    "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K                                                                                                                                     ─╯",
+                    "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
+                  },
                 },
-              },
-            })
-          end,
-          openai = function()
-            return require("codecompanion.adapters").extend("openai", {
-              schema = {
-                model = {
-                  default = "gpt-4o-mini",
+                env = {
+                  url = "http://localhost:11434",
                 },
-                choices = {
-                  "o1-mini-2024-09-12",
-                  "gpt-4o-mini",
-                  "o3-mini-2025-01-31",
+              })
+            end,
+          },
+          acp = {
+            claude_code = function()
+              return require("codecompanion.adapters").extend("claude_code", {
+                env = {
+                  CLAUDE_CODE_OAUTH_TOKEN = "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",
                 },
-              },
-              env = {
-                api_key = function()
-                  return vim.fn.getenv("OPENAI_API_KEY")
-                end,
-              },
-            })
-          end,
-          ollama = function()
-            return require("codecompanion.adapters").extend("ollama", {
-              schema = {
-                model = {
-                  default = "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
-                },
-                choices = {
-                  "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
-                  "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K                                                                                                                                     ─╯",
-                  "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
-                },
-              },
-              env = {
-                url = "http://localhost:11434",
-              },
-            })
-          end,
+              })
+            end,
+          },
         },
         opts = {
           language = "Japanese",
           system_prompt = function(opts)
-            local language = opts.language or "English"
+            -- local language = opts.language or "English"
+            local language = opts.language or "Japanese" -- ここを "Japanese" に変更
             return string.format(
               [[あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
               あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
@@ -154,14 +177,14 @@ return {
               2.関連するコードだけを返すように注意しながら、コードを1つのコードブロックで出力する。
               3.各会話ターンに対して1つの返答しかできません
                 ]],
-              "English"
+              "Japanese"
             )
           end,
           -- log_level = "DEBUG",
         },
         strategies = {
           chat = {
-            adapter = "copilot",
+            adapter = "claude_code",
             slash_commands = {
               ["buffer"] = {
                 callback = "strategies.chat.slash_commands.buffer",
@@ -182,7 +205,7 @@ return {
               },
             },
           },
-          inline = { adapter = "anthropic" },
+          inline = { adapter = "claude_code" },
           keymaps = {
             send = {
               modes = {
@@ -498,31 +521,6 @@ return {
           },
         },
       })
-
-      local function setup_code_companion_keymaps()
-        local modes = { "n", "v" }
-        local silent_noremap = { noremap = true, silent = true }
-
-        local keymaps = {
-          { "v", "<leader>ccl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_CHAT) },
-          { "v", "<leader>ccfl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_INLINE) },
-          { "v", "<leader>ccr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_CHAT) },
-          { "v", "<leader>ccfr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_INLINE) },
-          { "v", "<leader>cce", string.format("<cmd>CodeCompanion /%s<cr>", short_names.EXPLAIN_CHAT) },
-          { modes, "<leader>ccc", "<cmd>CodeCompanionChat<cr>" },
-          { modes, "<leader>cca", "<cmd>CodeCompanionActions<cr>" },
-          -- { modes, "<leader>w", "<cmd>CodeCompanionChat Toggle<cr>" },
-          { "v", "ga", "<cmd>CodeCompanionChat Add<cr>" },
-        }
-
-        for _, keymap in ipairs(keymaps) do
-          vim.keymap.set(keymap[1], keymap[2], keymap[3], silent_noremap)
-        end
-      end
-
-      setup_code_companion_keymaps()
-
-      vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
 
       vim.g.codecompanion_auto_tool_mode = "true"
 
