@@ -48,7 +48,7 @@ return {
       -- vim.keymap.set("n", "[]", "<Plug>Markdown_MoveToPreviousSiblingHeader")
       -- vim.keymap.set("n", "]c", "<Plug>Markdown_MoveToCurHeader")
       -- vim.keymap.set("n", "]u", "<Plug>Markdown_MoveToParentHeader")
-      vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
+      -- vim.keymap.set("n", "<C-c>", "<Plug>Markdown_Checkbox")
       -- vim.keymap.set("n", "gx", "<Plug>Markdown_FollowLink")
       -- vim.keymap.set("n", "<Tab>", "<Plug>Markdown_Fold")
       -- vim.keymap.set("n", "O", "<Plug>Markdown_NewLineAbove")
