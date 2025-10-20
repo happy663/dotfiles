@@ -14,7 +14,6 @@ return {
           auto_trigger = true,
           keymap = {
             accept = false, -- Copilotの内部キーマップを無効化
-            next = "<M-CR>",
           },
         },
         filetypes = {
