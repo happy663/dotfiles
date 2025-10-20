@@ -423,7 +423,7 @@ in
     node = "latest"
     python = "3.12.2"
     yarn = "1.22.19"
-    neovim = "latest"
+    neovim = "0.11.3"
     ghc = "9.6.5"
     deno = "latest"
     pnpm = "latest"
