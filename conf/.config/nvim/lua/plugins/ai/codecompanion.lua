@@ -26,11 +26,36 @@ return {
       { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
       { "<leader>cct", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
-      { "<leader>ccl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_CHAT), mode = "v", desc = "LSP Diagnostics Chat", },
-      { "<leader>ccfl", string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_INLINE), mode = "v", desc = "Fix LSP Inline", },
-      { "<leader>ccr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_CHAT), mode = "v", desc = "Refactor Chat", },
-      { "<leader>ccfr", string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_INLINE), mode = "v", desc = "Refactor Inline", },
-      { "<leader>cce", string.format("<cmd>CodeCompanion /%s<cr>", short_names.EXPLAIN_CHAT), mode = "v", desc = "Explain Code", },
+      {
+        "<leader>ccl",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_CHAT),
+        mode = "v",
+        desc = "LSP Diagnostics Chat",
+      },
+      {
+        "<leader>ccfl",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_INLINE),
+        mode = "v",
+        desc = "Fix LSP Inline",
+      },
+      {
+        "<leader>ccr",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_CHAT),
+        mode = "v",
+        desc = "Refactor Chat",
+      },
+      {
+        "<leader>ccfr",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.REFACTOR_INLINE),
+        mode = "v",
+        desc = "Refactor Inline",
+      },
+      {
+        "<leader>cce",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.EXPLAIN_CHAT),
+        mode = "v",
+        desc = "Explain Code",
+      },
       { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
     },
     dependencies = {
@@ -131,7 +156,9 @@ return {
             claude_code = function()
               return require("codecompanion.adapters").extend("claude_code", {
                 env = {
-                  CLAUDE_CODE_OAUTH_TOKEN = "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",
+                  CLAUDE_CODE_OAUTH_TOKEN = function()
+                    return vim.fn.getenv("CLAUDE_CODE_OAUTH_TOKEN")
+                  end,
                 },
               })
             end,
