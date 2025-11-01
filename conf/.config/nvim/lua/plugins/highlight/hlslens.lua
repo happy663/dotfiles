@@ -2,7 +2,7 @@ return {
   {
     "kevinhwang91/nvim-hlslens",
     lazy = true,
-    keys = { "n", "N", "*", "#", "/", "?" },
+    keys = { "n", "N", "#", "/", "?" },
     config = function()
       require("hlslens").setup()
 
