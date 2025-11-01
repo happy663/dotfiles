@@ -12,6 +12,26 @@ return {
     },
     cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
     config = function()
+      -- 現在アクティブなバッファのパスを保存する変数
+      local current_active_buffer = nil
+
+      -- nvim-treeのbuffersモジュールをカスタマイズ
+      local function setup_active_buffer_tracking()
+        -- nvim-treeのbuffersモジュールを取得
+        local buffers = require("nvim-tree.buffers")
+
+        -- 元のis_opened関数を保存
+        local original_is_opened = buffers.is_opened
+
+        -- is_opened関数を上書き: 現在アクティブなバッファのみtrueを返す
+        buffers.is_opened = function(node)
+          if not node or not current_active_buffer then
+            return false
+          end
+          return node.absolute_path == current_active_buffer
+        end
+      end
+
       require("nvim-tree").setup({
         sort_by = "case_sensitive",
         view = {
@@ -23,7 +43,7 @@ return {
         renderer = {
           group_empty = true,
           highlight_git = true,
-          highlight_opened_files = "name",
+          highlight_opened_files = "all",
           icons = {
             glyphs = {
               git = {
@@ -66,6 +86,39 @@ return {
 
       vim.api.nvim_set_var("loaded_netrw", 1)
       vim.api.nvim_set_var("loaded_netrwPlugin", 1)
+
+      -- 開いているバッファファイルのハイライト色をカスタマイズ
+      vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", {
+        bg = "#0d4270", -- 背景色
+        bold = true, -- 太字にして視認性向上
+      })
+
+      -- カスタムバッファトラッキングをセットアップ
+      setup_active_buffer_tracking()
+
+      -- BufEnterイベントでアクティブバッファを更新し、nvim-treeを再描画
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function()
+          local bufname = vim.api.nvim_buf_get_name(0)
+          -- nvim-treeバッファ自体は無視
+          if bufname:match("NvimTree_") then
+            return
+          end
+          -- 空のバッファ名も無視
+          if bufname == "" then
+            return
+          end
+
+          -- アクティブバッファのフルパスを保存
+          current_active_buffer = vim.fn.fnamemodify(bufname, ":p")
+
+          -- nvim-treeが開いている場合のみ再描画
+          local api = require("nvim-tree.api")
+          if api.tree.is_visible() then
+            api.tree.reload()
+          end
+        end,
+      })
     end,
 
     dependencies = "nvim-tree/nvim-web-devicons",
