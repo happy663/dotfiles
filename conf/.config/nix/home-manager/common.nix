@@ -209,7 +209,7 @@ in
   xdg.configFile."mise/config.toml".text = ''
     [tools]
     go = '1.21.5'
-    node = "latest"
+    node = "23"
     python = "3.12.2"
     yarn = "1.22.19"
     neovim = "0.11.3"
@@ -285,5 +285,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
-
