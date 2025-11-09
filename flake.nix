@@ -17,9 +17,13 @@
       # nixpkgsを共有して一貫性を保つ
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, phps } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, phps, neovim-nightly-overlay } @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";
@@ -27,6 +31,10 @@
       };
       darwinPkgs = nixpkgs.legacyPackages.${system.darwin};
       linuxPkgs = nixpkgs.legacyPackages.${system.linux};
+      overlays = [
+        inputs.neovim-nightly-overlay.overlays.default
+      ];
+
     in
     {
       apps.${system.darwin}.update = {
@@ -63,6 +71,7 @@
           pkgs = import nixpkgs {
             system = system.darwin;
             config.allowUnfree = true;
+            overlays = overlays;
           };
           extraSpecialArgs = {
             inherit inputs;
