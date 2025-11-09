@@ -19,7 +19,7 @@ return {
           vim.notify("Restart command not found", vim.log.levels.WARN)
         end
       end
-
+      
       require("possession.session").save("restart", { no_confirm = true })
       vim.cmd([[qa!]])
     end, {})
@@ -37,7 +37,7 @@ return {
 
           -- ファイルが存在するかチェック
           if vim.fn.filereadable(restart_file) == 1 then
-            vim.notify("Restart file found! Loading session...", vim.log.levels.INFO)
+            -- vim.notify("Restart file found! Loading session...", vim.log.levels.INFO)
 
             -- possession.nvimを明示的にロード
             local ok, session = pcall(require, "possession.session")
@@ -45,9 +45,9 @@ return {
               session.load("restart")
               session.delete("restart", { no_confirm = true })
               vim.opt.cmdheight = 1
-              vim.notify("Restart session loaded and deleted.", vim.log.levels.INFO)
+              -- vim.notify("Restart session loaded and deleted.", vim.log.levels.INFO)
             else
-              vim.notify("Failed to load possession.session module", vim.log.levels.ERROR)
+              -- vim.notify("Failed to load possession.session module", vim.log.levels.ERROR)
             end
           else
             vim.notify("No restart file found.", vim.log.levels.INFO)
@@ -55,5 +55,7 @@ return {
         end)
       end,
     })
+
+    vim.keymap.set("n", "<leader>re", ":Restart<CR>", { noremap = true, silent = true, desc = "Restart Neovim" })
   end,
 }

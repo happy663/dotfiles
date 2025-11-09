@@ -197,7 +197,6 @@ alias ghb='gh browse'
 alias ghpc='gh pr checks'
 alias ghprc='gh pr create'
 alias relogin='exec $SHELL -l'
-alias n='nvim'
 alias gc='ghq get'
 alias po='poetry'
 alias py='python3'
@@ -238,3 +237,23 @@ fi
 function zsh-profiler() {
   ZSHRC_PROFILE=1 zsh -i -c zprof
 }
+
+# -----------------------------------------------------------------------------
+# Neovim Auto-Restart Function
+# -----------------------------------------------------------------------------
+# nvimを起動し、:Restartコマンド使用時に自動的に再起動する
+function nvim-restart() {
+  local restart_marker="$HOME/.local/share/nvim/possession/restart.json"
+  
+  # nvimを起動
+  command nvim "$@"
+  
+  # restart.jsonが存在する限り再起動を繰り返す
+  while [[ -f "$restart_marker" ]]; do
+    echo "Restarting nvim..."
+    command nvim "$@"
+  done
+}
+
+# nコマンドをnvim-restart関数にエイリアス
+alias n='nvim-restart'
