@@ -299,3 +299,8 @@ vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = tr
 -- vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
 vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
 vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
+
+vim.keymap.set("n", "<Leader>ti", function()
+  local time = os.date("%Y-%m-%d (%a) %H:%M")
+  vim.api.nvim_put({ time }, "c", true, true)
+end, { desc = "Insert current time with weekday" })
