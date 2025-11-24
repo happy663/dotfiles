@@ -172,6 +172,7 @@ return {
             return string.format(
               [[
               あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
+              あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
 
               必須事項
               - 回答にはMarkdownフォーマットを使用してください。
