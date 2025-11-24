@@ -12,9 +12,18 @@ return {
     },
     keys = {
       -- 多分遅延ロードの影響のせいでloadされていない状態でキーを打つとエラーになるかも
-      { "<leader>olh", "<cmd>Octo issue list assignee=happy663<CR>", desc = "Open Octo issues assigned to happy663" },
+      {
+        "<leader>olh",
+        "<cmd>Octo issue list assignee=happy663 states=OPEN<CR>",
+        desc = "Open Octo issues assigned to happy663",
+      },
+      {
+        "<leader>olc",
+        "<cmd>Octo issue list assignee=happy663 states=CLOSED<CR>",
+        desc = "Open Octo issues assigned to happy663",
+      },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
-      { "<leader>olc", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
+      { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
     },
     config = function()
       require("octo").setup({
