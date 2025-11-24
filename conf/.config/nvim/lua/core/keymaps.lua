@@ -14,7 +14,7 @@ map("n", "<Leader><Leader>", "<CMD>Lazy<CR>", opts)
 
 map("n", "<leader>/", "gcc", { noremap = false, silent = true })
 map("n", "x", '"_x', opts)
-map("n", "-", "<CMD>split<CR>", opts)
+-- map("n", "-", "<CMD>split<CR>", opts)
 map("n", "|", "<CMD>vsplit<CR>", opts)
 map("n", "<C-f>", "<CMD>lua vim.lsp.buf.format({ async = false })<CR><CMD>w<CR>", opts)
 
