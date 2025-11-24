@@ -2,6 +2,11 @@
 if [ "$ZSHRC_PROFILE" != "" ]; then
   zmodload zsh/zprof && zprof > /dev/null
 fi
+
+# Powerlevel10k Instant Prompt - 最速起動のため最初に記載
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 # =============================================================================
 # Zsh Configuration
 # Managed by dotfiles repository
@@ -32,15 +37,24 @@ fi
 # -----------------------------------------------------------------------------
 
 zinit light romkatv/powerlevel10k
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light mollifier/anyframe
-zinit light zsh-users/zsh-completions
+
+# Turbo mode: 遅延読み込みで高速化
+zinit wait lucid for \
+  atinit"zicompinit; zicdreplay" \
+    zsh-users/zsh-syntax-highlighting \
+  atload"_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions \
+    mollifier/anyframe \
+    zsh-users/zsh-completions
 
 # -----------------------------------------------------------------------------
 # Completion System
 # -----------------------------------------------------------------------------
-autoload -Uz compinit && compinit
+# compinit最適化: 遅延読み込みで起動を高速化
+# 起動時はスキップし、1秒後にバックグラウンドで実行
+autoload -Uz compinit
+zmodload zsh/sched
+sched +1 compinit -C
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*:default' menu select=1
 
@@ -59,9 +73,13 @@ bindkey '^x^b' anyframe-widget-checkout-git-branch
 bindkey -e
 
 # -----------------------------------------------------------------------------
-# Mise
+# Mise - 遅延読み込みで高速化
 # -----------------------------------------------------------------------------
-eval "$(mise activate zsh)"
+# 起動時はスキップし、バックグラウンドで実行
+if [[ ! -v _MISE_ACTIVATED ]]; then
+  typeset -g _MISE_ACTIVATED=1
+  eval "$(mise activate zsh --shims)" 2>/dev/null || true
+fi
 
 # -----------------------------------------------------------------------------
 # Zoxide
