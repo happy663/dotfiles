@@ -180,8 +180,6 @@ vim.cmd([[
     autocmd ColorScheme * highlight vCursor guifg=#1f2430 guibg=#f28779
   augroup END
 ]])
-
-
 vim.g["diagnostics_active"] = true
 function Toggle_diagnostics()
   if vim.g.diagnostics_active then
@@ -223,3 +221,21 @@ vim.o.grepprg = "git grep -n --no-color"
 vim.opt.grepformat = "%f:%l:%m"
 vim.o.clipboard = "unnamedplus"
 
+-- Markdownのスペルチェックハイライトを白色に設定
+-- (デフォルトではCommentと同じ灰色になってしまうため)
+
+vim.api.nvim_set_hl(0, "@spell", { fg = "#c8d3f5" })
+vim.api.nvim_set_hl(0, "@spell.markdown", { fg = "#c8d3f5" })
+vim.g.toggle_markdown_color = true
+
+vim.keymap.set("n", "<leader>tz", function()
+  if vim.g.toggle_markdown_color then
+    vim.api.nvim_set_hl(0, "@spell", { fg = "#7c869c" })
+    vim.api.nvim_set_hl(0, "@spell.markdown", { fg = "#7c869c" })
+    vim.g.toggle_markdown_color = false
+  else
+    vim.api.nvim_set_hl(0, "@spell", { fg = "#c8d3f5" })
+    vim.api.nvim_set_hl(0, "@spell.markdown", { fg = "#c8d3f5" })
+    vim.g.toggle_markdown_color = true
+  end
+end)
