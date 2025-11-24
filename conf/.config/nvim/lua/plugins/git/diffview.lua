@@ -2,15 +2,24 @@ return {
   {
     "sindrets/diffview.nvim",
     cond = vim.g.not_in_vscode,
-    lazy = true,
+    lazy = false,
     cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
-    keys = {
-      { "<leader>dff", "<cmd>DiffviewOpen<CR>", desc = "DiffviewOpen" },
-      { "<leader>dfq", "<cmd>DiffviewClose<CR>", desc = "DiffviewClose" },
-    },
     config = function()
-      vim.api.nvim_set_keymap("n", "<leader>dff", "<cmd>DiffviewOpen<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<leader>dfq", "<cmd>DiffviewClose<CR>", { noremap = true, silent = true })
+      local actions = require("diffview.actions")
+      require("diffview").setup({
+        keymaps = {
+          view = {
+            { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },
+          },
+          file_panel = {
+            { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+          },
+          file_history_panel = {
+            { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+          },
+        },
+      })
+      vim.api.nvim_set_keymap("n", "<leader>df", "<cmd>DiffviewOpen<CR>", { noremap = true, silent = true })
     end,
   },
 }
