@@ -11,6 +11,7 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     keys = {
+      -- 多分遅延ロードの影響のせいでloadされていない状態でキーを打つとエラーになるかも
       { "<leader>olh", "<cmd>Octo issue list assignee=happy663<CR>", desc = "Open Octo issues assigned to happy663" },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
       { "<leader>olc", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
@@ -27,7 +28,7 @@ return {
         picker_config = {
           use_emojis = false, -- only used by "fzf-lua" picker for now
           mappings = { -- mappings for the pickers
-            open_in_browser = { lhs = "<C-b>", desc = "open issue in browser" },
+            open_in_browser = { lhs = "<leader>ob", desc = "open issue in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             checkout_pr = { lhs = "<C-o>", desc = "checkout pull request" },
             merge_pr = { lhs = "<C-r>", desc = "merge pull request" },
@@ -145,7 +146,7 @@ return {
         mappings = {
           runs = {
             expand_step = { lhs = "o", desc = "expand workflow step" },
-            open_in_browser = { lhs = "<C-b>", desc = "open workflow run in browser" },
+            open_in_browser = { lhs = "<leader>ob", desc = "open workflow run in browser" },
             refresh = { lhs = "<C-r>", desc = "refresh workflow" },
             rerun = { lhs = "<C-o>", desc = "rerun workflow" },
             rerun_failed = { lhs = "<C-f>", desc = "rerun failed workflow" },
@@ -157,7 +158,7 @@ return {
             reopen_issue = { lhs = "<localleader>io", desc = "reopen issue" },
             list_issues = { lhs = "<localleader>il", desc = "list open issues on same repo" },
             reload = { lhs = "<C-r>", desc = "reload issue" },
-            open_in_browser = { lhs = "<C-b>", desc = "open issue in browser" },
+            open_in_browser = { lhs = "<leader>ob", desc = "open issue in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             add_assignee = { lhs = "<localleader>aa", desc = "add assignee" },
             remove_assignee = { lhs = "<localleader>ad", desc = "remove assignee" },
@@ -192,7 +193,7 @@ return {
             reopen_issue = { lhs = "<localleader>io", desc = "reopen PR" },
             list_issues = { lhs = "<localleader>il", desc = "list open issues on same repo" },
             reload = { lhs = "<C-r>", desc = "reload PR" },
-            open_in_browser = { lhs = "<C-b>", desc = "open PR in browser" },
+            open_in_browser = { lhs = "<leader>ob", desc = "open PR in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             goto_file = { lhs = "gf", desc = "go to file" },
             add_assignee = { lhs = "<localleader>aa", desc = "add assignee" },
