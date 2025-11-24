@@ -114,7 +114,7 @@ return {
               },
               {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
-                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                match = 'private+PRIORITY="A"|private+PRIORITY="B"|private+PRIORITY="C"', -- 高優先度のタスク
                 org_agenda_overriding_header = "High priority todos",
                 org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
               },
@@ -144,7 +144,7 @@ return {
               },
               {
                 type = "tags_todo", -- Type can be agenda | tags | tags_todo
-                match = '+PRIORITY="A"|+PRIORITY="B"', -- 高優先度のタスク
+                match = 'dev+PRIORITY="A"|dev+PRIORITY="B"', -- 高優先度のタスク
                 org_agenda_overriding_header = "High priority todos",
                 org_agenda_todo_ignore_deadlines = "far", -- Ignore all deadlines that are too far in future (over org_deadline_warning_days). Possible values: all | near | far | past | future
               },
