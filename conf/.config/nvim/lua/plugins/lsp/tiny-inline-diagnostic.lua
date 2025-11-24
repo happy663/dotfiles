@@ -36,7 +36,7 @@ return {
         options = {
           -- Display the source of the diagnostic (e.g., basedpyright, vsserver, lua_ls etc.)
           show_source = {
-            enabled = false,
+            enabled = true,
             if_many = false,
           },
 

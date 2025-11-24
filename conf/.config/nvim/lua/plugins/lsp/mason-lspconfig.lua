@@ -42,7 +42,11 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
   buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gn", "<cmd>lua vim.lsp.buf.rename()<CR>")
-  buf_map("n", "<leader>di", '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double"})<CR>')
+  buf_map(
+    "n",
+    "<leader>di",
+    '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double",source="always"})<CR>'
+  )
   vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "double",
   })
@@ -118,6 +122,7 @@ return {
           "package.json",
         },
         workspace_required = true,
+        root_dir = lspconfig.util.root_pattern("tsconfig.json", "package.json"),
       })
       -- Deno設定
       vim.lsp.config("denols", {
