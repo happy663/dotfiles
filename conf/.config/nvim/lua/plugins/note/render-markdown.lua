@@ -16,6 +16,11 @@ return {
         code = {
           width = "full",
         },
+        html = {
+          comment = {
+            conceal = false,
+          },
+        },
       })
     end,
   },
