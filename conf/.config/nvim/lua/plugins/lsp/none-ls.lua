@@ -77,7 +77,7 @@ return {
           --}),
           -- TODO: なんでこれがtexで動かないのかわからないので調査したい
           -- null_ls.builtins.diagnostics.textlint.with({ filetypes = { "markdown", "tex" } }),
-          textlint,
+          -- textlint,
         },
       })
     end,

@@ -1,0 +1,10 @@
+- [ ] live_grepの入力補完
+- [ ] ctrl+o,ctrl+iを強化する
+- [ ] restartコマンド
+- [ ] ブログ記事を書く
+  - webサイトを作る
+- [ ] neovim-nighly版にしたい
+- [ ] nvim-aibo
+- [ ] codex cliを試す
+- [ ] formatがおかしい
+- [ ] 文字の色を白と灰色でトグル変換する機能が欲しい
