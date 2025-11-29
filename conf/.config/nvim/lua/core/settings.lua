@@ -239,3 +239,5 @@ vim.keymap.set("n", "<leader>tz", function()
     vim.g.toggle_markdown_color = true
   end
 end)
+
+vim.api.nvim_set_hl(0, "mkdNonListItemBlock", { fg = "#c8d3f5" })
