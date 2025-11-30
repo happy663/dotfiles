@@ -26,6 +26,15 @@ return {
       { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
     },
     config = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "octo",
+        callback = function()
+          vim.cmd([[setlocal wrap]])
+          vim.cmd([[setlocal linebreak]])
+          vim.api.nvim_buf_set_keymap(0, "n", "<leader>gn", ":Octo comment url<CR>", { noremap = true, silent = true })
+        end,
+      })
+
       require("octo").setup({
         use_local_fs = false, -- use local files on right side of reviews
         enable_builtin = false, -- shows a list of builtin actions when no action is provided
