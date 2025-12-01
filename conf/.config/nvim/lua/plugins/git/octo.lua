@@ -24,6 +24,7 @@ return {
       },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
       { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
+      { "<leader>oc", "<cmd>Octo actions<CR>", desc = "Open Octo actions" },
     },
     config = function()
       vim.api.nvim_create_autocmd("FileType", {

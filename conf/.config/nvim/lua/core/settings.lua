@@ -241,3 +241,4 @@ vim.keymap.set("n", "<leader>tz", function()
 end)
 
 vim.api.nvim_set_hl(0, "mkdNonListItemBlock", { fg = "#c8d3f5" })
+vim.api.nvim_set_hl(0, "mkdListItemLine", { fg = "#c8d3f5" })
