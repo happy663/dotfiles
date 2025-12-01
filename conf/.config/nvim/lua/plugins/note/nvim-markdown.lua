@@ -14,11 +14,11 @@ return {
             desc = "Markdown: Toggle checkbox",
           })
 
-          vim.api.nvim_buf_set_keymap(0, "n", "<Tab>", "<Plug>Markdown_Fold", {
-            noremap = true,
-            silent = true,
-            desc = "Markdown: Fold",
-          })
+          -- vim.api.nvim_buf_set_keymap(0, "n", "<Tab>", "<Plug>Markdown_Fold", {
+          --   noremap = true,
+          --   silent = true,
+          --   desc = "Markdown: Fold",
+          -- })
 
           vim.api.nvim_buf_set_keymap(0, "n", "O", "<Plug>Markdown_NewLineAbove", {
             noremap = true,
