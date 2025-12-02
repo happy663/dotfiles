@@ -15,6 +15,7 @@ return {
   opts = {
     views = {
       finder = {
+        confirm_simple = true, -- Confirm simple actions without prompt
         default_explorer = true, -- Use fyler as default file explorer (replaces netrw)
         follow_current_file = true, -- Auto focus current file
         close_on_select = false, -- Keep window open after selecting file (like nvim-tree)
