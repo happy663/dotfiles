@@ -5,13 +5,13 @@ return {
     -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
     -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
     -- 遅延ロード: markdown系ファイル時のみ
-    ft = { "markdown", "codecompanion", "Avante" },
+    ft = { "markdown", "codecompanion", "Avante", "octo" },
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
     opts = {},
     config = function()
       require("render-markdown").setup({
-        file_typs = { "markdown", "codecompanion", "Avante" },
+        file_types = { "markdown", "codecompanion", "Avante", "octo" },
         render_modes = true,
         code = {
           width = "full",
