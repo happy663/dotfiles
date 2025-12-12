@@ -35,14 +35,14 @@ zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light mollifier/anyframe
-# zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-completions
 #
-# # -----------------------------------------------------------------------------
-# # Completion System
-# # -----------------------------------------------------------------------------
-# autoload -Uz compinit && compinit
-# zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-# zstyle ':completion:*:default' menu select=1
+# -----------------------------------------------------------------------------
+# Completion System
+# -----------------------------------------------------------------------------
+autoload -Uz compinit && compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*:default' menu select=1
 #
 # # -----------------------------------------------------------------------------
 # # Recent Directories
@@ -295,6 +295,8 @@ function zsh-profiler() {
 
 
 zmodload zsh/zprof
+
+
 
 
 
