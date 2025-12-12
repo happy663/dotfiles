@@ -32,7 +32,12 @@ function M.apply(config)
       inactive_tab_edge = "none",
     },
   }
-
+  -- config.use_fancy_tab_bar = true
+  config.window_frame = {
+    font = require("wezterm").font({ family = "HackGen Console NF" }),
+    font_size = 18,
+    -- active_titlebar_bg = colors.statusBarBackground,
+  }
   -- 背景画像の設定
   -- M.setup_background_image(config)
 end
