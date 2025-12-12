@@ -62,7 +62,7 @@ zstyle ':completion:*:default' menu select=1
 # # -----------------------------------------------------------------------------
 # # Mise
 # # -----------------------------------------------------------------------------
-# eval "$(mise activate zsh)"
+eval "$(mise activate zsh)"
 #
 # # -----------------------------------------------------------------------------
 # # Zoxide
@@ -114,16 +114,16 @@ zstyle ':completion:*:default' menu select=1
 # # -----------------------------------------------------------------------------
 # # Environment Variables
 # # -----------------------------------------------------------------------------
-# export GOPATH=$HOME/go
-# export PATH=$PATH:$HOME/.local/bin
-# export PATH=$PATH:$HOME/.config/wezterm
-# export PATH="$PATH:/opt/homebrew/bin"
-# export PATH="$PATH:/usr/local/bin"
-# export PATH=~/.nix-profile/bin:$PATH
-# export XDG_CONFIG_HOME="$HOME/.config"
-# export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
-# export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
-# export LIMA_HOME="$HOME/.colima_lima"
+export GOPATH=$HOME/go
+export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.config/wezterm
+export PATH="$PATH:/opt/homebrew/bin"
+export PATH="$PATH:/usr/local/bin"
+export PATH=~/.nix-profile/bin:$PATH
+export XDG_CONFIG_HOME="$HOME/.config"
+export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
+export LIMA_HOME="$HOME/.colima_lima"
 #
 # # Coursier Java
 # eval "$(coursier java --jvm temurin:17 --env)"
@@ -162,59 +162,59 @@ zstyle ':completion:*:default' menu select=1
 #   rm -f -- "$tmp"
 # }
 #
-# # fkill - fuzzy process kill
-# function fkill() {
-#   local pid
-#   pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
-#   if [ "x$pid" != "x" ]
-#   then
-#     echo $pid | xargs kill -9
-#   fi
-# }
-#
-# # ghcr - create GitHub repo and clone with ghq
-# function ghcr() {
-#   gh repo create "$@"
-#   ghq get "git@github.com:happy663/$1.git"
-# }
-#
-# # movehere - move file from Downloads (or specified dir) to current dir
-# function movehere() {
-#   local search_dir
-#   search_dir="${1:-$HOME/Downloads}"
-#   mv "$search_dir/$(ls -t -r "$search_dir" | fzf)" .
-# }
+# fkill - fuzzy process kill
+function fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -9
+  fi
+}
+
+# ghcr - create GitHub repo and clone with ghq
+function ghcr() {
+  gh repo create "$@"
+  ghq get "git@github.com:happy663/$1.git"
+}
+
+# movehere - move file from Downloads (or specified dir) to current dir
+function movehere() {
+  local search_dir
+  search_dir="${1:-$HOME/Downloads}"
+  mv "$search_dir/$(ls -t -r "$search_dir" | fzf)" .
+}
 #
 # # -----------------------------------------------------------------------------
 # # Shell Aliases
 # # -----------------------------------------------------------------------------
-# alias g='cd $(ghq root)/$(ghq list | peco)'
-# alias cat='bat'
-# alias find='fd'
-# alias '..'='cd ..'
-# alias '...'='cd ../..'
-# alias '....'='cd ../../..'
-# alias ghb='gh browse'
-# alias ghpc='gh pr checks'
-# alias ghprc='gh pr create'
-# alias relogin='exec $SHELL -l'
-# alias gc='ghq get'
-# alias po='poetry'
-# alias py='python3'
-# alias de='docker exec -it $(docker ps | peco | cut -d " " -f 1) /bin/bash'
-# alias bat='bat'
-# alias rg='rg'
-# alias fzf='fzf'
-# alias alert='terminal-notifier -message'
+alias g='cd $(ghq root)/$(ghq list | peco)'
+alias cat='bat'
+alias find='fd'
+alias '..'='cd ..'
+alias '...'='cd ../..'
+alias '....'='cd ../../..'
+alias ghb='gh browse'
+alias ghpc='gh pr checks'
+alias ghprc='gh pr create'
+alias relogin='exec $SHELL -l'
+alias gc='ghq get'
+alias po='poetry'
+alias py='python3'
+alias de='docker exec -it $(docker ps | peco | cut -d " " -f 1) /bin/bash'
+alias bat='bat'
+alias rg='rg'
+alias fzf='fzf'
+alias alert='terminal-notifier -message'
 #
 # # -----------------------------------------------------------------------------
 # # History Configuration
 # # -----------------------------------------------------------------------------
-# HISTSIZE=1000
-# SAVEHIST=1000
-# HISTFILE=$HOME/.zsh_history
-# setopt HIST_IGNORE_DUPS
-# setopt SHARE_HISTORY
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE=$HOME/.zsh_history
+setopt HIST_IGNORE_DUPS
+setopt SHARE_HISTORY
 #
 # -----------------------------------------------------------------------------
 # Powerlevel10k Configuration
@@ -243,21 +243,22 @@ zstyle ':completion:*:default' menu select=1
 # # Neovim Auto-Restart Function
 # # -----------------------------------------------------------------------------
 # # nvimを起動し、:Restartコマンド使用時に自動的に再起動する
-# function nvim-restart() {
-#   local restart_marker="$HOME/.local/share/nvim/possession/restart.json"
-#   
-#   # nvimを起動
-#   command nvim "$@"
-#   
-#   # restart.jsonが存在する限り再起動を繰り返す
-#   while [[ -f "$restart_marker" ]]; do
-#     echo "Restarting nvim..."
-#     command nvim "$@"
-#   done
-# }
+
+function nvim-restart() {
+  local restart_marker="$HOME/.local/share/nvim/possession/restart.json"
+  
+  # nvimを起動
+  command nvim "$@"
+  
+  # restart.jsonが存在する限り再起動を繰り返す
+  while [[ -f "$restart_marker" ]]; do
+    echo "Restarting nvim..."
+    command nvim "$@"
+  done
+}
 #
 # # nコマンドをnvim-restart関数にエイリアス
-# alias n='nvim-restart'
+alias n='nvim-restart'
 
 
 function zsh-startuptime() {
@@ -296,11 +297,5 @@ function zsh-profiler() {
 
 
 zmodload zsh/zprof
-
-
-
-
-
-
 
 
