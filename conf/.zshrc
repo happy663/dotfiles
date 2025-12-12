@@ -40,7 +40,8 @@ zinit light zsh-users/zsh-completions
 # -----------------------------------------------------------------------------
 # Completion System
 # -----------------------------------------------------------------------------
-autoload -Uz compinit && compinit
+
+
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*:default' menu select=1
 #
