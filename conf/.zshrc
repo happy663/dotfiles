@@ -34,7 +34,7 @@ fi
 zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
-# zinit light mollifier/anyframe
+zinit light mollifier/anyframe
 # zinit light zsh-users/zsh-completions
 #
 # # -----------------------------------------------------------------------------
@@ -295,6 +295,7 @@ function zsh-profiler() {
 
 
 zmodload zsh/zprof
+
 
 
 
