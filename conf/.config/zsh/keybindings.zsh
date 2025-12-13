@@ -5,9 +5,9 @@
 # -----------------------------------------------------------------------------
 # Anyframe Key Bindings (Commented out)
 # -----------------------------------------------------------------------------
-# bindkey '^xb' anyframe-widget-cdr
-# bindkey '^xr' anyframe-widget-execute-history
-# bindkey '^x^b' anyframe-widget-checkout-git-branch
+bindkey '^xb' anyframe-widget-cdr
+bindkey '^xr' anyframe-widget-execute-history
+bindkey '^x^b' anyframe-widget-checkout-git-branch
 
 # -----------------------------------------------------------------------------
 # Emacs Mode (Commented out)

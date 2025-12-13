@@ -21,24 +21,6 @@ export PATH=~/.nix-profile/bin:$PATH
 export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
 
 # -----------------------------------------------------------------------------
-# Zoxide (Commented out)
-# -----------------------------------------------------------------------------
-# eval "$(zoxide init zsh)"
-
-# -----------------------------------------------------------------------------
-# Auto ls after cd (Commented out)
-# -----------------------------------------------------------------------------
-# case "${OSTYPE:-darwin}" in
-#   darwin*)
-#     export CLICOLOR=1
-#     function chpwd() { ls -A -G -F }
-#     ;;
-#   linux*)
-#     function chpwd() { ls -A -F --color=auto }
-#     ;;
-# esac
-
-# -----------------------------------------------------------------------------
 # Prompt Configuration / Shell Integration (Commented out)
 # -----------------------------------------------------------------------------
 # _prompt_executing=""

@@ -7,9 +7,3 @@
 # -----------------------------------------------------------------------------
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*:default' menu select=1
-
-# -----------------------------------------------------------------------------
-# Recent Directories (Commented out)
-# -----------------------------------------------------------------------------
-# autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-# add-zsh-hook chpwd chpwd_recent_dirs
