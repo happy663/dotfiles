@@ -7,6 +7,7 @@
 #   ~/.config/zsh/init.zsh          - Profiling and initialization
 #   ~/.config/zsh/plugins.zsh       - Plugin management (zinit)
 #   ~/.config/zsh/environment.zsh   - Environment variables and PATH
+#   ~/.config/zsh/navigation.zsh    - Directory navigation settings
 #   ~/.config/zsh/completion.zsh    - Completion settings
 #   ~/.config/zsh/history.zsh       - History configuration
 #   ~/.config/zsh/keybindings.zsh   - Key bindings
@@ -19,9 +20,9 @@
 source ~/.config/zsh/init.zsh
 source ~/.config/zsh/plugins.zsh
 source ~/.config/zsh/environment.zsh
+source ~/.config/zsh/navigation.zsh
 source ~/.config/zsh/completion.zsh
 source ~/.config/zsh/history.zsh
 source ~/.config/zsh/keybindings.zsh
 source ~/.config/zsh/aliases.zsh
 source ~/.config/zsh/functions.zsh
-
