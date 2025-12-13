@@ -94,7 +94,6 @@ return {
         local final_text = url .. "\n\n" .. "```" .. vim.bo.filetype .. "\n" .. snippet .. "\n```"
         vim.fn.setreg("+", final_text)
         print("Copied git link with code snippet to clipboard:")
-        print(final_text)
       end
 
       vim.keymap.set("v", "<leader>gN", copy_gitlinker_with_snippet, { desc = "Copy git link with code snippet" })
