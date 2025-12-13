@@ -16,13 +16,13 @@ eval "$(zoxide init zsh)"
 # -----------------------------------------------------------------------------
 # Auto ls after cd (Commented out)
 # -----------------------------------------------------------------------------
-# case "${OSTYPE:-darwin}" in
-#   darwin*)
-#     export CLICOLOR=1
-#     function chpwd() { ls -A -G -F }
-#     ;;
-#   linux*)
-#     function chpwd() { ls -A -F --color=auto }
-#     ;;
-# esac
+case "${OSTYPE:-darwin}" in
+  darwin*)
+    export CLICOLOR=1
+    function chpwd() { ls -A -G -F }
+    ;;
+  linux*)
+    function chpwd() { ls -A -F --color=auto }
+    ;;
+esac
 

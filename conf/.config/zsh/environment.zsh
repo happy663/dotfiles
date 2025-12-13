@@ -68,21 +68,21 @@ export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
 # -----------------------------------------------------------------------------
 # Neovim Remote Settings (Commented out)
 # -----------------------------------------------------------------------------
-# if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-#   alias nvim=nvr -cc split --remote-wait +'set bufhidden=wipe'
-#   export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
-#   export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
-# fi
+if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+  alias nvim=nvr -cc split --remote-wait +'set bufhidden=wipe'
+  export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+  export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+fi
 
 # -----------------------------------------------------------------------------
 # AWS Session Token TTL (Commented out)
 # -----------------------------------------------------------------------------
-# export AWS_SESSION_TOKEN_TTL=12h
+export AWS_SESSION_TOKEN_TTL=24h
 
 # -----------------------------------------------------------------------------
 # Load Local Environment Variables (Commented out)
 # -----------------------------------------------------------------------------
-# if [[ -f ~/.config/nix/home-manager/.env ]]; then
-#   source ~/.config/nix/home-manager/.env
-#   alias ssm="make -C $SSM_SCRIPT_PATH clean session"
-# fi
+if [[ -f ~/.config/nix/home-manager/.env ]]; then
+  source ~/.config/nix/home-manager/.env
+  alias ssm="make -C $SSM_SCRIPT_PATH clean session"
+fi
