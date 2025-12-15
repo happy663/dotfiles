@@ -18,8 +18,13 @@ return {
         desc = "Open Octo issues assigned to happy663",
       },
       {
-        "<leader>olc",
+        "<leader>olch",
         "<cmd>Octo issue list assignee=happy663 states=CLOSED<CR>",
+        desc = "Open Octo issues assigned to happy663",
+      },
+      {
+        "<leader>olca",
+        "<cmd>Octo issue list states=CLOSED<CR>",
         desc = "Open Octo issues assigned to happy663",
       },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
@@ -35,10 +40,28 @@ return {
           vim.api.nvim_buf_set_keymap(0, "n", "<leader>gn", ":Octo comment url<CR>", { noremap = true, silent = true })
           -- render-markdown用にtreesitterを登録
           vim.treesitter.language.register("markdown", "octo")
+
+          -- Treesitterのconceal機能を調整（コードブロックを常に表示）
+          vim.schedule(function()
+            vim.opt_local.conceallevel = 0
+            -- または、カーソル位置のみconcealを解除する場合:
+            -- vim.opt_local.conceallevel = 2
+            -- vim.opt_local.concealcursor = "" -- すべてのモードでconcealを解除
+          end)
+
           -- nvim-markdownのftpluginを確実に実行
           vim.schedule(function()
             vim.b.did_ftplugin = nil
             vim.cmd("runtime! ftplugin/markdown.vim")
+          end)
+
+          -- Octo buffer用の折り畳み設定
+          vim.schedule(function()
+            vim.opt_local.foldmethod = "expr"
+            vim.opt_local.foldexpr = "v:lua.markdown_fold_all()"
+            vim.opt_local.foldlevel = 0
+            vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+            vim.opt_local.conceallevel = 0
           end)
 
           function _G.add_comment_multi_space()
@@ -47,7 +70,9 @@ return {
             vim.cmd("normal! o")
             vim.cmd("normal! o")
             vim.cmd("normal! o")
-            vim.cmd("normal! 3k")
+            vim.cmd("normal! o")
+            vim.cmd("normal! o")
+            vim.cmd("normal! 5k")
           end
 
           vim.api.nvim_buf_set_keymap(0, "n", "<leader>oa", ":lua add_comment_multi_space()<CR>", {
