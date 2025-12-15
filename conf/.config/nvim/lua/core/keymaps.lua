@@ -121,7 +121,7 @@ vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
 vim.g.gyazo_insert_markdown_url = 1
 vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
 
-vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>k", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>", { noremap = true, silent = true })
 
 -- クイックフィックスウィンドウでマッピングを上書きする
 vim.api.nvim_create_autocmd("FileType", {
@@ -295,8 +295,8 @@ vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = tr
 -- } の再マッピング
 vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
 
--- vim.keymap.set("n", "<Tab>", "zo", { noremap = true, silent = true, desc = "Fold open" })
--- vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
+vim.keymap.set("n", "<Tab>", "zo", { noremap = true, silent = true, desc = "Fold open" })
+vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
 vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
 vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
 
