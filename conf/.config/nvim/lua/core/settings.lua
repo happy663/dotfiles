@@ -222,6 +222,13 @@ vim.o.clipboard = "unnamedplus"
 
 vim.api.nvim_set_hl(0, "@spell", { fg = "#c8d3f5" })
 vim.api.nvim_set_hl(0, "@spell.markdown", { fg = "#c8d3f5" })
+
+-- -- HTTPリンクのハイライト設定（Treesitterカスタムクエリ用）
+-- vim.api.nvim_set_hl(0, "@markup.link.url.http", {
+--   fg = "#82aaff", -- 明るい青色（tokyonight-moonに調和）
+--   underline = true,
+-- })
+
 vim.g.toggle_markdown_color = true
 
 vim.keymap.set("n", "<leader>tz", function()
@@ -356,6 +363,7 @@ vim.opt.fillchars:append({
 })
 
 -- Markdown用のfoldmethod設定
+-- nvim-markdownのloadviewより後に実行されるようにvim.schedule()を使用
 vim.api.nvim_create_autocmd("BufWinEnter", {
   pattern = { "*.md", "*.markdown" },
   callback = function()
@@ -366,7 +374,20 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
         vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
         vim.opt_local.foldlevel = 0
         vim.opt_local.foldcolumn = "1" -- 折りたたみ列を表示
+
+        -- nvim-markdownのloadviewによるハイライト設定の上書きを防ぐため再設定
+        vim.api.nvim_set_hl(0, "Folded", {
+          fg = "#82aaff", -- 明るい青色（tokyonight-moonに調和）
+          bg = "#1e2030", -- 少し暗めの背景
+          italic = true,
+        })
+
+        vim.api.nvim_set_hl(0, "FoldColumn", {
+          fg = "#636da6",
+          bg = "NONE",
+        })
       end)
     end
   end,
 })
+

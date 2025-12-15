@@ -62,7 +62,29 @@ return {
             vim.opt_local.foldlevel = 0
             vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
             vim.opt_local.conceallevel = 0
+            -- foldの表示を確実にする
+            vim.opt_local.fillchars:append({ fold = " " })
+
+            -- nvim-markdownのloadviewによるハイライト設定の上書きを防ぐため再設定
+            vim.api.nvim_set_hl(0, "Folded", {
+              fg = "#82aaff", -- 明るい青色（tokyonight-moonに調和）
+              bg = "#1e2030", -- 少し暗めの背景
+              italic = true,
+            })
+
+            vim.api.nvim_set_hl(0, "FoldColumn", {
+              fg = "#636da6",
+              bg = "NONE",
+            })
           end)
+
+          -- render-markdownがロードされた後に設定を再適用
+          vim.defer_fn(function()
+            if vim.bo.filetype == "octo" then
+              vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+              vim.opt_local.conceallevel = 0
+            end
+          end, 200)
 
           function _G.add_comment_multi_space()
             require("octo.commands").add_pr_issue_or_review_thread_comment()
