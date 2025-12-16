@@ -283,7 +283,6 @@ function _G.markdown_fold_all()
       -- ブロックの行数を計算（開始と終了を除く）
       if end_line then
         local block_lines = end_line - vim.v.lnum - 1
-        print("Block lines: " .. block_lines)
         if block_lines >= 20 then
           return ">1" -- 20行以上なら折りたたみ開始
         end
@@ -386,6 +385,13 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
           fg = "#636da6",
           bg = "NONE",
         })
+        -- URLをハイライト
+        vim.fn.matchadd("Underlined", "https\\?://[^ )>]*")
+        -- またはカスタムハイライトグループ
+        vim.cmd([[
+                highlight MarkdownURL guifg=#569CD6 gui=underline ctermfg=75 cterm=underline
+              ]])
+        vim.fn.matchadd("MarkdownURL", "https\\?://[^ )>]*")
       end)
     end
   end,

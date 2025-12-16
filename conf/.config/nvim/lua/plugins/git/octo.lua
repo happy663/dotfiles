@@ -55,6 +55,19 @@ return {
             vim.cmd("runtime! ftplugin/markdown.vim")
           end)
 
+          -- init.luaまたは~/.config/nvim/after/ftplugin/markdown.luaに追加
+          vim.api.nvim_create_autocmd("FileType", {
+            pattern = "markdown",
+            callback = function() end,
+          })
+          -- URLをハイライト
+          vim.fn.matchadd("Underlined", "https\\?://[^ )>]*")
+          -- またはカスタムハイライトグループ
+          vim.cmd([[
+                highlight MarkdownURL guifg=#569CD6 gui=underline ctermfg=75 cterm=underline
+              ]])
+          vim.fn.matchadd("MarkdownURL", "https\\?://[^ )>]*")
+
           -- Octo buffer用の折り畳み設定
           vim.schedule(function()
             vim.opt_local.foldmethod = "expr"
