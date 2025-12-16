@@ -330,7 +330,7 @@ function _G.markdown_foldtext()
   if line:match("^```") then
     local lang = line:match("^```(%w+)") or "code"
     local lines_count = vim.v.foldend - vim.v.foldstart - 1
-    return "  " .. lang .. " (" .. lines_count .. " lines) "
+    return "  " .. lang .. " (" .. lines_count .. " lines) ......................................."
   end
 
   -- detailsタグの場合
@@ -390,4 +390,3 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
     end
   end,
 })
-
