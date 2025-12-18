@@ -1,29 +1,86 @@
 # Dotfiles
 
-## コマンド一覧
+Personal dotfiles repository. Development environment is declaratively managed using Nix and Home Manager.
 
-| コマンド    | 説明                                                               |
-| ----------- | ------------------------------------------------------------------ |
-| `make init` | XcodeのCommand Line Toolsツールのインストールなどを行う            |
-| `make link` | 各種設定ファイルのシンボリックリンクをホームディレクトリに作成する |
+## Supported Platforms
 
-## Nix
+- macOS (Apple Silicon)
+- Linux (x86_64)
 
-NixとHome Managerを使用して開発環境を宣言的に管理している．
-
-### セットアップ
+## Setup
 
 ```bash
-# Nixのインストール
+# 1. Initial setup (macOS only - Xcode Command Line Tools, etc.)
+make init
+
+# 2. Install Nix
 sh <(curl -L https://nixos.org/nix/install)
 
-# nixpkgのinstallとupdate
+# 3. Build Nix environment (flake update + Home Manager + nix-darwin)
 nix run .#update
 
+# 4. Create symlinks for dotfiles
+make link
+
+# 5. Install Neovim plugins
+nvim -c "Lazy install"
 ```
 
-## Neovim
+## Repository Structure
 
-Neovimのプラグインマネージャーにはlazy.nvimを使用している．
-コマンドラインモードで`:Lazy install`を実行すればプラグインをインストールできる
-インストール後は`:Lazy sync`でプラグインを反映できる
+```
+dotfiles/
+├── conf/              # Configuration files
+│   ├── .config/       # Application configurations
+│   │   ├── nvim/      # Neovim configuration
+│   │   ├── wezterm/   # Wezterm configuration
+│   │   ├── zsh/       # Zsh configuration
+│   │   ├── git/       # Git configuration
+│   │   └── ...        # 30+ other tool configurations
+│   ├── .zshrc         # Main Zsh configuration
+│   └── .claude/       # Claude Code configuration
+├── scripts/           # Setup scripts
+│   ├── init.sh        # Initialization script
+│   └── link.sh        # Symlink creation
+├── flake.nix          # Nix flake configuration
+├── flake.lock         # Nix dependency lock file
+└── Makefile           # Main commands
+```
+
+## Managed Configurations
+
+### Editors & Development
+
+- **Neovim**: Main editor (lazy.nvim + numerous plugins)
+
+### Terminal & Shell
+
+- **Wezterm**: Main terminal emulator
+- **Zsh**: Main shell (Powerlevel10k theme)
+- **Tmux**: Terminal multiplexer
+
+### Git Related
+
+- **Git**: Version control configuration
+- **Lazygit**: Git TUI client
+- **GitHub CLI**: GitHub operations tool
+
+### Other Tools
+
+- **Karabiner-Elements**: Keyboard customization
+- **Hammerspoon**: macOS automation
+- **AeroSpace**: Window manager
+- **Raycast**: Launcher
+- **SKK**: Japanese input method
+- **Mise**: Runtime version management
+
+## Commands
+
+| Command     | Description                                               |
+| ----------- | --------------------------------------------------------- |
+| `make init` | Install Xcode Command Line Tools and essentials (macOS)   |
+| `make link` | Create symlinks for configuration files in home directory |
+
+## License
+
+MIT
