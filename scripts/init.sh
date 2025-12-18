@@ -13,8 +13,4 @@ xcode-select --install > /dev/null
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 
-# Install Nix
-sh <(curl -L https://nixos.org/nix/install)
-
-
 
