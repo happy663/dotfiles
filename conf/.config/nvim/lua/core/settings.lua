@@ -346,3 +346,11 @@ vim.opt.fillchars:append({
   foldclose = "▸",
   foldsep = " ",
 })
+
+vim.opt.foldmethod = "expr"
+-- neovimにtreesitterのapiが組み込まれたので、それを利用する
+-- https://github.com/neovim/neovim/blob/e34e2289c22834239e0522b7331f17fdfb3705e0/runtime/lua/vim/treesitter/_fold.lua#L386-L423
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99 -- デフォルトでは全て展開
+vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
+-- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用

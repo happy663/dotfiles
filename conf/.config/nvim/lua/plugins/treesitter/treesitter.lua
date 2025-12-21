@@ -24,12 +24,6 @@ return {
           end,
         },
       })
-
-      -- foldmethodをexprに設定（Treesitterのfoldingを使用）
-      vim.opt.foldmethod = "expr"
-      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-      vim.opt.foldlevel = 99 -- デフォルトでは全て展開
-      vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
     end,
   },
 }
