@@ -307,20 +307,6 @@ function _G.markdown_fold_all()
   return "=" -- 前の行のレベルを継承
 end
 
--- Markdownの折りたたみ関数（<details>タグのみ対応）
-function _G.markdown_fold()
-  local line = vim.fn.getline(vim.v.lnum)
-
-  -- <details>タグの処理
-  if line:match("^%s*<details") then
-    return ">1"
-  elseif line:match("^%s*</details>") then
-    return "<1"
-  end
-
-  return "=" -- 前の行のレベルを継承
-end
-
 -- 折りたたまれたテキストの表示をカスタマイズ
 function _G.markdown_foldtext()
   local line = vim.fn.getline(vim.v.foldstart)
@@ -359,40 +345,4 @@ vim.opt.fillchars:append({
   foldopen = "▾",
   foldclose = "▸",
   foldsep = " ",
-})
-
--- Markdown用のfoldmethod設定
--- nvim-markdownのloadviewより後に実行されるようにvim.schedule()を使用
-vim.api.nvim_create_autocmd("BufWinEnter", {
-  pattern = { "*.md", "*.markdown" },
-  callback = function()
-    if vim.bo.filetype == "markdown" then
-      vim.schedule(function()
-        vim.opt_local.foldmethod = "expr"
-        vim.opt_local.foldexpr = "v:lua.markdown_fold_all()"
-        vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
-        vim.opt_local.foldlevel = 0
-        vim.opt_local.foldcolumn = "1" -- 折りたたみ列を表示
-
-        -- nvim-markdownのloadviewによるハイライト設定の上書きを防ぐため再設定
-        vim.api.nvim_set_hl(0, "Folded", {
-          fg = "#82aaff", -- 明るい青色（tokyonight-moonに調和）
-          bg = "#1e2030", -- 少し暗めの背景
-          italic = true,
-        })
-
-        vim.api.nvim_set_hl(0, "FoldColumn", {
-          fg = "#636da6",
-          bg = "NONE",
-        })
-        -- URLをハイライト
-        vim.fn.matchadd("Underlined", "https\\?://[^ )>]*")
-        -- またはカスタムハイライトグループ
-        vim.cmd([[
-                highlight MarkdownURL guifg=#569CD6 gui=underline ctermfg=75 cterm=underline
-              ]])
-        vim.fn.matchadd("MarkdownURL", "https\\?://[^ )>]*")
-      end)
-    end
-  end,
 })
