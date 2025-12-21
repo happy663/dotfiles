@@ -274,11 +274,15 @@ vim.keymap.set("n", "<Leader>pd", function()
   local clipboard_content = vim.fn.getreg("+")
   local lines = vim.split(clipboard_content, "\n", { plain = true })
 
+  local summary = "詳細"
+  local summary = vim.fn.input("Summary: ")
+
   table.insert(lines, 1, "```") -- 先頭に空行を追加
   table.insert(lines, 1, "") -- 先頭に空行を追加
+  table.insert(lines, 1, "<summary>" .. summary .. "</summary>") -- 先頭に空行を追加
   table.insert(lines, 1, "<details>") -- 先頭に空行を追加
-  table.insert(lines, "```") -- 先頭に空行を追加
-  table.insert(lines, "</details>") -- 先頭に空行を追加
+  table.insert(lines, "```")
+  table.insert(lines, "</details>")
 
   vim.api.nvim_put(lines, "l", true, false)
 end)
@@ -306,3 +310,38 @@ vim.keymap.set("n", "<Leader>tih", function()
 end, { desc = "Insert current time with weekday" })
 
 vim.cmd('iabbrev ** <C-r>=strftime("%Y-%m-%d")<C-r>')
+
+vim.keymap.set("n", "gf", function()
+  local cfile = vim.fn.expand("<cfile>")
+  if vim.fn.filereadable(cfile) == 1 then
+    print("Opening file: " .. cfile)
+    vim.cmd("edit " .. cfile)
+  else
+    if cfile:match("^https?://github.com") then
+      -- https://github.com/voyagegroup/zgok-db/blob/f0049cb054dc0faa90a3f76cbbd95858c7ffcdcf/contrib/local_env/zgok/Dockerfile#L6-L9
+      local home_dir = vim.fn.getenv("HOME")
+      local organization = string.match(cfile, "https://github%.com/([^/]+)/")
+      local repository_name = string.match(cfile, "https://github%.com/[^/]+/([^/]+)/")
+      local local_path = cfile
+        :gsub(
+          "https://github%.com/[^/]+/[^/]+/[^/]+/[^/]+",
+          home_dir .. "/src/github.com/" .. organization .. "/" .. repository_name
+        )
+        :gsub("#.*", "")
+      print(local_path)
+      local line = cfile:match("#L(%d+)-?")
+      if line then
+        print(local_path .. ":" .. line)
+        vim.cmd("edit " .. local_path)
+        vim.cmd(line)
+      else
+        vim.cmd("edit " .. local_path)
+      end
+    else
+      print("File not found: " .. cfile)
+    end
+  end
+end)
+
+
+
