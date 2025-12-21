@@ -254,38 +254,73 @@ vim.api.nvim_create_autocmd("TermOpen", {
 --   desc = "Open Octo issues assigned to happy663",
 -- })
 
-vim.keymap.set("n", "<Leader>py", function()
+local function get_clipboard_lines()
   local clipboard_content = vim.fn.getreg("+")
-  local lines = vim.split(clipboard_content, "\n", { plain = true })
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
 
-  if lines[#lines] == "" then
-    table.remove(lines, #lines) -- 最後の空行を削除
+  if code_lines[#code_lines] == "" then
+    table.remove(code_lines, #code_lines)
   end
 
-  table.insert(lines, 1, "```") -- 先頭に空行を追加
-  table.insert(lines, "```") -- 末尾に空行を追加
+  return code_lines
+end
 
-  vim.api.nvim_put(lines, "l", true, false)
-  -- 1行上に上がる
+vim.keymap.set("n", "<Leader>py", function()
+  local code_line = get_clipboard_lines()
+
+  table.insert(code_line, 1, "```")
+  table.insert(code_line, "```")
+
+  vim.api.nvim_put(code_line, "l", true, false)
   vim.cmd("normal! k")
-end)
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content as a code block",
+})
 
 vim.keymap.set("n", "<Leader>pd", function()
+  local code_lines = get_clipboard_lines()
+  local summary = vim.fn.input("Summary: ") or "詳細"
+
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "",
+  }
+  vim.list_extend(result, code_lines)
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
+  vim.cmd("normal! k")
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content inside HTML <details> tag",
+})
+
+vim.keymap.set("n", "<Leader>ps", function()
   local clipboard_content = vim.fn.getreg("+")
-  local lines = vim.split(clipboard_content, "\n", { plain = true })
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
+  local summary = vim.fn.input("Summary: ") or "詳細"
 
-  local summary = "詳細"
-  local summary = vim.fn.input("Summary: ")
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "", -- 空行
+    "```",
+  }
 
-  table.insert(lines, 1, "```") -- 先頭に空行を追加
-  table.insert(lines, 1, "") -- 先頭に空行を追加
-  table.insert(lines, 1, "<summary>" .. summary .. "</summary>") -- 先頭に空行を追加
-  table.insert(lines, 1, "<details>") -- 先頭に空行を追加
-  table.insert(lines, "```")
-  table.insert(lines, "</details>")
+  vim.list_extend(result, code_lines)
+  table.insert(result, "```")
+  table.insert(result, "</details>")
 
-  vim.api.nvim_put(lines, "l", true, false)
-end)
+  vim.api.nvim_put(result, "l", true, false)
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content as a code block inside HTML <details> tag",
+})
 
 -- <C-d> の再マッピング
 vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
@@ -342,6 +377,3 @@ vim.keymap.set("n", "gf", function()
     end
   end
 end)
-
-
-
