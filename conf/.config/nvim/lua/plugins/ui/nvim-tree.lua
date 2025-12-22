@@ -1,126 +1,126 @@
 return {
   {
-    -- "nvim-tree/nvim-tree.lua",
-    -- cond = vim.g.not_in_vscode,
-    -- lazy = true,
-    -- keys = {
-    --   {
-    --     "<C-b>",
-    --     "<cmd>NvimTreeToggle<CR>",
-    --     desc = "NvimTreeToggle",
-    --   },
-    -- },
-    -- cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
-    -- config = function()
-    --   -- 現在アクティブなバッファのパスを保存する変数
-    --   local current_active_buffer = nil
-    --
-    --   -- nvim-treeのbuffersモジュールをカスタマイズ
-    --   local function setup_active_buffer_tracking()
-    --     -- nvim-treeのbuffersモジュールを取得
-    --     local buffers = require("nvim-tree.buffers")
-    --
-    --     -- 元のis_opened関数を保存
-    --     local original_is_opened = buffers.is_opened
-    --
-    --     -- is_opened関数を上書き: 現在アクティブなバッファのみtrueを返す
-    --     buffers.is_opened = function(node)
-    --       if not node or not current_active_buffer then
-    --         return false
-    --       end
-    --       return node.absolute_path == current_active_buffer
-    --     end
-    --   end
-    --
-    --   require("nvim-tree").setup({
-    --     sort_by = "case_sensitive",
-    --     view = {
-    --       width = {},
-    --     },
-    --     update_focused_file = {
-    --       enable = true,
-    --     },
-    --     renderer = {
-    --       group_empty = true,
-    --       highlight_git = true,
-    --       highlight_opened_files = "all",
-    --       icons = {
-    --         glyphs = {
-    --           git = {
-    --             unstaged = "!",
-    --             renamed = "»",
-    --             untracked = "?",
-    --             deleted = "✘",
-    --             staged = "✓",
-    --             unmerged = "",
-    --             ignored = "◌",
-    --           },
-    --         },
-    --       },
-    --     },
-    --     filters = {
-    --       git_ignored = true,
-    --       dotfiles = false,
-    --       custom = {
-    --         "__pycache__",
-    --         "^.git$",
-    --       },
-    --     },
-    --   })
-    --   local map = vim.api.nvim_set_keymap
-    --
-    --   local api = require("nvim-tree.api")
-    --   vim.keymap.set("n", "<leader>ea", function()
-    --     api.tree.expand_all()
-    --   end, { silent = true, nowait = true, desc = "Expand all" })
-    --
-    --   vim.keymap.set("n", "<leader>ec", function()
-    --     api.tree.collapse_all()
-    --   end, { silent = true, nowait = true, desc = "Collapse all" })
-    --
-    --   vim.keymap.set("n", "<leader>ei", function()
-    --     api.tree.toggle_gitignore_filter()
-    --   end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
-    --
-    --   -- キーマップはkeysで定義済み
-    --
-    --   vim.api.nvim_set_var("loaded_netrw", 1)
-    --   vim.api.nvim_set_var("loaded_netrwPlugin", 1)
-    --
-    --   -- 開いているバッファファイルのハイライト色をカスタマイズ
-    --   vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", {
-    --     bg = "#0d4270", -- 背景色
-    --     bold = true, -- 太字にして視認性向上
-    --   })
-    --
-    --   -- カスタムバッファトラッキングをセットアップ
-    --   setup_active_buffer_tracking()
-    --
-    --   -- BufEnterイベントでアクティブバッファを更新し、nvim-treeを再描画
-    --   vim.api.nvim_create_autocmd("BufEnter", {
-    --     callback = function()
-    --       local bufname = vim.api.nvim_buf_get_name(0)
-    --       -- nvim-treeバッファ自体は無視
-    --       if bufname:match("NvimTree_") then
-    --         return
-    --       end
-    --       -- 空のバッファ名も無視
-    --       if bufname == "" then
-    --         return
-    --       end
-    --
-    --       -- アクティブバッファのフルパスを保存
-    --       current_active_buffer = vim.fn.fnamemodify(bufname, ":p")
-    --
-    --       -- nvim-treeが開いている場合のみ再描画
-    --       local api = require("nvim-tree.api")
-    --       if api.tree.is_visible() then
-    --         api.tree.reload()
-    --       end
-    --     end,
-    --   })
-    -- end,
-    --
-    -- dependencies = "nvim-tree/nvim-web-devicons",
+    "nvim-tree/nvim-tree.lua",
+    cond = vim.g.not_in_vscode,
+    lazy = true,
+    keys = {
+      {
+        "<C-b>",
+        "<cmd>NvimTreeToggle<CR>",
+        desc = "NvimTreeToggle",
+      },
+    },
+    cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeFocus", "NvimTreeFindFile" },
+    config = function()
+      -- 現在アクティブなバッファのパスを保存する変数
+      local current_active_buffer = nil
+
+      -- nvim-treeのbuffersモジュールをカスタマイズ
+      local function setup_active_buffer_tracking()
+        -- nvim-treeのbuffersモジュールを取得
+        local buffers = require("nvim-tree.buffers")
+
+        -- 元のis_opened関数を保存
+        local original_is_opened = buffers.is_opened
+
+        -- is_opened関数を上書き: 現在アクティブなバッファのみtrueを返す
+        buffers.is_opened = function(node)
+          if not node or not current_active_buffer then
+            return false
+          end
+          return node.absolute_path == current_active_buffer
+        end
+      end
+
+      require("nvim-tree").setup({
+        sort_by = "case_sensitive",
+        view = {
+          width = {},
+        },
+        update_focused_file = {
+          enable = true,
+        },
+        renderer = {
+          group_empty = true,
+          highlight_git = true,
+          highlight_opened_files = "all",
+          icons = {
+            glyphs = {
+              git = {
+                unstaged = "!",
+                renamed = "»",
+                untracked = "?",
+                deleted = "✘",
+                staged = "✓",
+                unmerged = "",
+                ignored = "◌",
+              },
+            },
+          },
+        },
+        filters = {
+          git_ignored = true,
+          dotfiles = false,
+          custom = {
+            "__pycache__",
+            "^.git$",
+          },
+        },
+      })
+      local map = vim.api.nvim_set_keymap
+
+      local api = require("nvim-tree.api")
+      vim.keymap.set("n", "<leader>ea", function()
+        api.tree.expand_all()
+      end, { silent = true, nowait = true, desc = "Expand all" })
+
+      vim.keymap.set("n", "<leader>ec", function()
+        api.tree.collapse_all()
+      end, { silent = true, nowait = true, desc = "Collapse all" })
+
+      vim.keymap.set("n", "<leader>ei", function()
+        api.tree.toggle_gitignore_filter()
+      end, { silent = true, nowait = true, desc = "Toggle gitignore filter" })
+
+      -- キーマップはkeysで定義済み
+
+      vim.api.nvim_set_var("loaded_netrw", 1)
+      vim.api.nvim_set_var("loaded_netrwPlugin", 1)
+
+      -- 開いているバッファファイルのハイライト色をカスタマイズ
+      vim.api.nvim_set_hl(0, "NvimTreeOpenedHL", {
+        bg = "#0d4270", -- 背景色
+        bold = true, -- 太字にして視認性向上
+      })
+
+      -- カスタムバッファトラッキングをセットアップ
+      setup_active_buffer_tracking()
+
+      -- BufEnterイベントでアクティブバッファを更新し、nvim-treeを再描画
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function()
+          local bufname = vim.api.nvim_buf_get_name(0)
+          -- nvim-treeバッファ自体は無視
+          if bufname:match("NvimTree_") then
+            return
+          end
+          -- 空のバッファ名も無視
+          if bufname == "" then
+            return
+          end
+
+          -- アクティブバッファのフルパスを保存
+          current_active_buffer = vim.fn.fnamemodify(bufname, ":p")
+
+          -- nvim-treeが開いている場合のみ再描画
+          local api = require("nvim-tree.api")
+          if api.tree.is_visible() then
+            api.tree.reload()
+          end
+        end,
+      })
+    end,
+
+    dependencies = "nvim-tree/nvim-web-devicons",
   },
 }

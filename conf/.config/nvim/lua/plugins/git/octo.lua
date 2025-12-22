@@ -1,3 +1,55 @@
+-- Helper function to get current repository name
+local function get_current_repo()
+  local result = vim
+    .system({
+      "gh",
+      "repo",
+      "view",
+      "--json",
+      "nameWithOwner",
+      "-q",
+      ".nameWithOwner",
+    }, {
+      text = true,
+    })
+    :wait()
+
+  if result.code ~= 0 then
+    vim.notify("Error getting current repo: " .. result.stderr, vim.log.levels.ERROR)
+    return nil
+  end
+
+  return vim.trim(result.stdout)
+end
+
+-- Issue search helper function
+local function search_issues(search_type)
+  local prompt_map = {
+    title = "Search in title: ",
+    body = "Search in body: ",
+    all = "Search issues: ",
+  }
+
+  local search_suffix = {
+    title = " in:title",
+    body = " in:body",
+    all = "",
+  }
+
+  local query = vim.trim(vim.fn.input(prompt_map[search_type]))
+  if query == "" then
+    vim.notify("Search query cannot be empty.", vim.log.levels.ERROR)
+    return
+  end
+
+  local current_repo = get_current_repo()
+  if not current_repo then
+    return
+  end
+
+  vim.cmd("Octo search repo:" .. current_repo .. " " .. query .. search_suffix[search_type])
+end
+
 return {
   {
     "pwntester/octo.nvim",
@@ -25,11 +77,33 @@ return {
       {
         "<leader>olca",
         "<cmd>Octo issue list states=CLOSED<CR>",
-        desc = "Open Octo issues assigned to happy663",
+        desc = "Open Octo closed issues",
       },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
       { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
       { "<leader>oc", "<cmd>Octo actions<CR>", desc = "Open Octo actions" },
+      -- Issue検索用キーマップ
+      {
+        "<leader>oit",
+        function()
+          search_issues("title")
+        end,
+        desc = "Octo: Search issues by title",
+      },
+      {
+        "<leader>oib",
+        function()
+          search_issues("body")
+        end,
+        desc = "Octo: Search issues by body",
+      },
+      {
+        "<leader>ois",
+        function()
+          search_issues("all")
+        end,
+        desc = "Octo: Search issues (title + body)",
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd("FileType", {
@@ -72,9 +146,9 @@ return {
           -- Octo buffer用の折り畳み設定
           vim.schedule(function()
             vim.opt_local.foldmethod = "expr"
-            vim.opt_local.foldexpr = "v:lua.markdown_fold_all()"
+            vim.opt_local.foldexpr = "v:lua.octo_fold_all()"
             vim.opt_local.foldlevel = 0
-            vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+            vim.opt_local.foldtext = "v:lua.octo_foldtext()"
             vim.opt_local.conceallevel = 0
             -- foldの表示を確実にする
             vim.opt_local.fillchars:append({ fold = " " })
@@ -95,7 +169,7 @@ return {
           -- render-markdownがロードされた後に設定を再適用
           vim.defer_fn(function()
             if vim.bo.filetype == "octo" then
-              vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+              vim.opt_local.foldtext = "v:lua.octo_foldtext()"
               vim.opt_local.conceallevel = 0
             end
           end, 200)

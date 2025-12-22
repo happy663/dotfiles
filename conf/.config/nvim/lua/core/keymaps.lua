@@ -254,34 +254,73 @@ vim.api.nvim_create_autocmd("TermOpen", {
 --   desc = "Open Octo issues assigned to happy663",
 -- })
 
-vim.keymap.set("n", "<Leader>py", function()
+local function get_clipboard_lines()
   local clipboard_content = vim.fn.getreg("+")
-  local lines = vim.split(clipboard_content, "\n", { plain = true })
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
 
-  if lines[#lines] == "" then
-    table.remove(lines, #lines) -- 最後の空行を削除
+  if code_lines[#code_lines] == "" then
+    table.remove(code_lines, #code_lines)
   end
 
-  table.insert(lines, 1, "```") -- 先頭に空行を追加
-  table.insert(lines, "```") -- 末尾に空行を追加
+  return code_lines
+end
 
-  vim.api.nvim_put(lines, "l", true, false)
-  -- 1行上に上がる
+vim.keymap.set("n", "<Leader>py", function()
+  local code_line = get_clipboard_lines()
+
+  table.insert(code_line, 1, "```")
+  table.insert(code_line, "```")
+
+  vim.api.nvim_put(code_line, "l", true, false)
   vim.cmd("normal! k")
-end)
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content as a code block",
+})
 
 vim.keymap.set("n", "<Leader>pd", function()
+  local code_lines = get_clipboard_lines()
+  local summary = vim.fn.input("Summary: ") or "詳細"
+
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "",
+  }
+  vim.list_extend(result, code_lines)
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
+  vim.cmd("normal! k")
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content inside HTML <details> tag",
+})
+
+vim.keymap.set("n", "<Leader>ps", function()
   local clipboard_content = vim.fn.getreg("+")
-  local lines = vim.split(clipboard_content, "\n", { plain = true })
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
+  local summary = vim.fn.input("Summary: ") or "詳細"
 
-  table.insert(lines, 1, "```") -- 先頭に空行を追加
-  table.insert(lines, 1, "") -- 先頭に空行を追加
-  table.insert(lines, 1, "<details>") -- 先頭に空行を追加
-  table.insert(lines, "```") -- 先頭に空行を追加
-  table.insert(lines, "</details>") -- 先頭に空行を追加
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "", -- 空行
+    "```",
+  }
 
-  vim.api.nvim_put(lines, "l", true, false)
-end)
+  vim.list_extend(result, code_lines)
+  table.insert(result, "```")
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
+end, {
+  noremap = true,
+  silent = true,
+  desc = "Paste clipboard content as a code block inside HTML <details> tag",
+})
 
 -- <C-d> の再マッピング
 vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
@@ -306,3 +345,35 @@ vim.keymap.set("n", "<Leader>tih", function()
 end, { desc = "Insert current time with weekday" })
 
 vim.cmd('iabbrev ** <C-r>=strftime("%Y-%m-%d")<C-r>')
+
+vim.keymap.set("n", "gf", function()
+  local cfile = vim.fn.expand("<cfile>")
+  if vim.fn.filereadable(cfile) == 1 then
+    print("Opening file: " .. cfile)
+    vim.cmd("edit " .. cfile)
+  else
+    if cfile:match("^https?://github.com") then
+      -- https://github.com/voyagegroup/zgok-db/blob/f0049cb054dc0faa90a3f76cbbd95858c7ffcdcf/contrib/local_env/zgok/Dockerfile#L6-L9
+      local home_dir = vim.fn.getenv("HOME")
+      local organization = string.match(cfile, "https://github%.com/([^/]+)/")
+      local repository_name = string.match(cfile, "https://github%.com/[^/]+/([^/]+)/")
+      local local_path = cfile
+        :gsub(
+          "https://github%.com/[^/]+/[^/]+/[^/]+/[^/]+",
+          home_dir .. "/src/github.com/" .. organization .. "/" .. repository_name
+        )
+        :gsub("#.*", "")
+      print(local_path)
+      local line = cfile:match("#L(%d+)-?")
+      if line then
+        print(local_path .. ":" .. line)
+        vim.cmd("edit " .. local_path)
+        vim.cmd(line)
+      else
+        vim.cmd("edit " .. local_path)
+      end
+    else
+      print("File not found: " .. cfile)
+    end
+  end
+end)

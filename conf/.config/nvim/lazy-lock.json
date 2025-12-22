@@ -119,6 +119,7 @@
   "todo-comments.nvim": { "branch": "main", "commit": "19d461ddd543e938eb22505fb03fa878800270b6" },
   "toggleterm.nvim": { "branch": "main", "commit": "50ea089fc548917cc3cc16b46a8211833b9e3c7c" },
   "tokyonight.nvim": { "branch": "main", "commit": "e63c42a42b11cd6225f009dd949b9ee0fccc15ef" },
+  "trace-pr.nvim": { "branch": "main", "commit": "91d310762f8ecb206e3d49cdcf8d1df7a73f81df" },
   "vim-kensaku": { "branch": "main", "commit": "67727c8cc81f45b3c3abc600ecfef6fba620eb88" },
   "vim-kensaku-search": { "branch": "main", "commit": "9568c2b174a9cf31bd9922c0a991117f4dd4f0c3" },
   "vim-shareedit": { "branch": "main", "commit": "fa8f369904fa0bf6bc7686b62a83ebb60c6d1553" },
