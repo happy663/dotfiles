@@ -247,7 +247,7 @@ vim.api.nvim_set_hl(0, "mkdNonListItemBlock", { fg = "#c8d3f5" })
 vim.api.nvim_set_hl(0, "mkdListItemLine", { fg = "#c8d3f5" })
 
 -- Markdownの折りたたみ関数（<details>タグとコードブロックの両方に対応）
-function _G.markdown_fold_all()
+function _G.octo_fold_all()
   local line = vim.fn.getline(vim.v.lnum)
 
   -- <details>タグの処理を優先
@@ -308,7 +308,7 @@ function _G.markdown_fold_all()
 end
 
 -- 折りたたまれたテキストの表示をカスタマイズ
-function _G.markdown_foldtext()
+function _G.octo_foldtext()
   local line = vim.fn.getline(vim.v.foldstart)
 
   -- コードブロックの場合
@@ -318,9 +318,17 @@ function _G.markdown_foldtext()
     return "  " .. lang .. " (" .. lines_count .. " lines) ......................................."
   end
 
-  -- detailsタグの場合
   if line:match("<details>") then
-    local summary = line:match("<summary>(.-)</summary>") or "詳細"
+    local summary = "詳細"
+    -- 折りたたまれた範囲内でsummaryタグを探す
+    for i = vim.v.foldstart, vim.v.foldend do
+      local l = vim.fn.getline(i)
+      local match = l:match("<summary>(.-)</summary>")
+      if match then
+        summary = match
+        break
+      end
+    end
     return "  " .. summary .. " "
   end
 
