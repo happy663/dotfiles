@@ -234,4 +234,22 @@
   launchd.user.agents = {
     # 不要なサービスの無効化など
   };
+
+  launchd.agents.my-startup-script = {
+    script = ''
+      #!/bin/bash
+      yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L  > /tmp/yaskkserv2.log 2>&1
+      yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 >> /tmp/yaskkserv2.log 2> &1 
+    '';
+    environment = {
+      PATH = "/usr/local/bin:/usr/bin:/bin";
+    };
+
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = true;
+    };
+  };
+
+
 }
