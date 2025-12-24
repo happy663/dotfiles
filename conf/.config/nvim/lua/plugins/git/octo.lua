@@ -115,7 +115,6 @@ return {
           -- render-markdown用にtreesitterを登録
           -- octo bufferでmarkdown parserを使用する
           vim.treesitter.language.register("markdown", "octo")
-
           -- Treesitterのconceal機能を調整（コードブロックを常に表示）
           vim.schedule(function()
             vim.opt_local.conceallevel = 0
@@ -341,7 +340,7 @@ return {
             add_label = { lhs = "<localleader>la", desc = "add label" },
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             -- goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             -- add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
@@ -378,7 +377,7 @@ return {
             add_label = { lhs = "<localleader>la", desc = "add label" },
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             -- goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             -- add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
@@ -398,7 +397,7 @@ return {
           },
           review_thread = {
             -- goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             add_comment = { lhs = "<localleader>ca", desc = "add comment" },
             add_suggestion = { lhs = "<localleader>sa", desc = "add suggestion" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
