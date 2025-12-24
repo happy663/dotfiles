@@ -88,21 +88,21 @@ return {
         function()
           search_issues("title")
         end,
-        desc = "Octo: Search issues by title",
+        desc = "Octo: Search by title",
       },
       {
         "<leader>oib",
         function()
           search_issues("body")
         end,
-        desc = "Octo: Search issues by body",
+        desc = "Octo: Search by body",
       },
       {
         "<leader>ois",
         function()
           search_issues("all")
         end,
-        desc = "Octo: Search issues (title + body)",
+        desc = "Octo: Search (title + body)",
       },
     },
     config = function()
