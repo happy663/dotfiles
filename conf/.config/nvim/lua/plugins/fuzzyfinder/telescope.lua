@@ -144,6 +144,37 @@ return {
           },
           smart_open = {
             open_buffer_indicators = { previous = "👀", others = "🙈" },
+            mappings = {
+              i = {
+                ["<CR>"] = function(prompt_bufnr)
+                  local entry = state.get_selected_entry()
+                  local file_path = entry.path or entry.filename
+
+                  -- ファイルパスが存在しない場合はデフォルト動作
+                  if not file_path or file_path == "" then
+                    actions.select_default(prompt_bufnr)
+                    return
+                  end
+
+                  local flyer_win = nil
+                  for _, win in ipairs(vim.api.nvim_list_wins()) do
+                    local buf = vim.api.nvim_win_get_buf(win)
+                    if vim.bo[buf].filetype == "fyler" then
+                      flyer_win = win
+                      break
+                    end
+                  end
+
+                  if flyer_win then
+                    vim.api.nvim_set_current_win(flyer_win)
+                    vim.cmd("wincmd l")
+                    vim.cmd.edit(file_path)
+                  else
+                    actions.select_default(prompt_bufnr)
+                  end
+                end,
+              },
+            },
           },
           livegrep_history = {
             mappings = {

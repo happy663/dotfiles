@@ -69,6 +69,13 @@ return {
           {
             filter = {
               event = "notify",
+              find = "method textDocument/signatureHelp is not supported by any of the servers registered for the current buffer",
+            },
+            opts = { skip = true },
+          },
+          {
+            filter = {
+              event = "notify",
               find = "# Config Change Detected. Reloading...",
             },
           },
@@ -104,3 +111,4 @@ return {
     },
   },
 }
+

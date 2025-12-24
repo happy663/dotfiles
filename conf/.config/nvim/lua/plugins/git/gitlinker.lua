@@ -31,8 +31,72 @@ return {
           ["git.savannah.gnu.org"] = require("gitlinker.hosts").get_cgit_type_url,
         },
         -- default mapping to call url generation with action_callback
-        mappings = "<leader>gn",
+        -- mappings = "<leader>gn",
       })
+
+      vim.keymap.set(
+        "n",
+        "<leader>gn",
+        ':lua require("gitlinker").get_buf_range_url("n")<CR>',
+        { desc = "Copy git link" }
+      )
+
+      vim.keymap.set(
+        "v",
+        "<leader>gn",
+        ':lua require("gitlinker").get_buf_range_url("v")<CR>',
+        { desc = "Copy git link" }
+      )
+
+      local function get_visual_selection()
+        --   -- これだと現在選択している所を取得できない、1つ前に選択した所を選択することになる
+        --   -- local start_pos = vim.fn.getpos("'<")
+        --   -- local start_pos = vim.fn.getpos("'>")
+        --   -- 実装参考 https://github.com/ruifm/gitlinker.nvim/blob/cc59f732f3d043b626c8702cb725c82e54d35c25/lua/gitlinker/buffer.lua#L14-L14
+        -- gitlinkerと同じ方法で取得
+        local start_pos = vim.fn.getpos("v") -- visual開始位置
+        local end_pos = vim.fn.getcurpos() -- 現在のカーソル位置
+
+        -- 行番号を取得（start_pos[2]が行番号）
+        local start_line = math.min(start_pos[2], end_pos[2])
+        local end_line = math.max(start_pos[2], end_pos[2])
+
+        -- 位置
+        local start_col = math.min(start_pos[3], end_pos[3])
+        local end_col = math.max(start_pos[3], end_pos[3])
+
+        local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+
+        if #lines == 0 then
+          return ""
+        end
+
+        if #lines == 1 then
+          -- visual modeの場合行の途中から途中まで選択されるケースがある
+          lines[1] = string.sub(lines[1], start_col, end_col)
+        else
+          -- 複数行選択の場合は1行目は行の末まで選択される
+          lines[1] = string.sub(lines[1], start_col)
+          -- 先頭の文字から選択された範囲の文字まで
+          lines[#lines] = string.sub(lines[#lines], 1, end_col)
+        end
+
+        return table.concat(lines, "\n")
+      end
+
+      local function copy_gitlinker_with_snippet()
+        local url = require("gitlinker").get_buf_range_url("v", { action_callback = nil })
+        local snippet = get_visual_selection()
+        if snippet == "" then
+          print("No selection")
+          return
+        end
+        local final_text = url .. "\n\n" .. "```" .. vim.bo.filetype .. "\n" .. snippet .. "\n```"
+        vim.fn.setreg("+", final_text)
+        print("Copied git link with code snippet to clipboard:")
+      end
+
+      vim.keymap.set("v", "<leader>gN", copy_gitlinker_with_snippet, { desc = "Copy git link with code snippet" })
     end,
   },
 }

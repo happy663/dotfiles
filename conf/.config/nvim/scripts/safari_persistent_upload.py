@@ -150,34 +150,100 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
             # コメント欄をクリック
             await comment_textarea.click()
             
+            # DOMが更新されるのを待つ
+            await page.wait_for_timeout(500)
+            
             # ファイル入力要素を探す
             print("ファイル入力要素を探しています...", file=sys.stderr)
+            
+            # まず、ページ上のすべてのfile inputを確認（デバッグ用）
+            all_file_inputs = await page.locator('input[type="file"]').all()
+            print(f"ページ上のfile input要素の数: {len(all_file_inputs)}", file=sys.stderr)
             
             file_input_selectors = [
                 'input[type="file"]',
                 'input[accept*="image"]',
-                '.js-upload-input'
+                '.js-upload-input',
+                'file-attachment input[type="file"]',
+                '.js-upload-markdown-image'
             ]
             
             file_input = None
             for selector in file_input_selectors:
                 try:
-                    locator = page.locator(selector).first
-                    if await locator.count() > 0:
-                        file_input = locator
+                    # visible/hiddenに関わらずすべて取得
+                    all_inputs = await page.locator(selector).all()
+                    print(f"セレクタ '{selector}' で見つかった要素数: {len(all_inputs)}", file=sys.stderr)
+                    
+                    if len(all_inputs) > 0:
+                        file_input = page.locator(selector).first
                         print(f"ファイル入力要素を発見: {selector}", file=sys.stderr)
+                        
+                        # 要素の状態を確認
+                        is_visible = await file_input.is_visible()
+                        is_enabled = await file_input.is_enabled()
+                        print(f"  - 可視性: {is_visible}, 有効性: {is_enabled}", file=sys.stderr)
                         break
-                except:
+                except Exception as e:
+                    print(f"セレクタ '{selector}' でエラー: {e}", file=sys.stderr)
                     continue
             
+            # file input要素が見つからない場合は、ドラッグ&ドロップでアップロードを試みる
             if not file_input:
-                print("ファイル入力要素が見つかりません", file=sys.stderr)
-                await browser.close()
-                return None
-            
-            # ファイルをアップロード
-            print(f"画像をアップロード中: {image_path}", file=sys.stderr)
-            await file_input.set_input_files(image_path)
+                print("従来のfile input要素が見つかりません", file=sys.stderr)
+                print("ドラッグ&ドロップ方式でアップロードを試みます...", file=sys.stderr)
+                
+                # 画像ファイルを読み込む
+                print(f"画像をアップロード中: {image_path}", file=sys.stderr)
+                
+                # ファイルをBase64エンコード
+                import base64
+                with open(image_path, 'rb') as f:
+                    file_content = f.read()
+                    file_base64 = base64.b64encode(file_content).decode('utf-8')
+                
+                # ファイル名を取得
+                file_name = os.path.basename(image_path)
+                
+                # DataTransferを使ってドラッグ&ドロップをシミュレート
+                await page.evaluate(f"""
+                    async ({{ base64Data, fileName }}) => {{
+                        // Base64からBlobを作成
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {{
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }}
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], {{ type: 'image/png' }});
+                        
+                        // FileオブジェクトをBlobから作成
+                        const file = new File([blob], fileName, {{ type: 'image/png' }});
+                        
+                        // DataTransferオブジェクトを作成
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        
+                        // テキストエリアを取得
+                        const textarea = document.querySelector('textarea[placeholder*="comment" i]');
+                        if (!textarea) {{
+                            throw new Error('Textarea not found');
+                        }}
+                        
+                        // drop イベントを発火
+                        const dropEvent = new DragEvent('drop', {{
+                            bubbles: true,
+                            cancelable: true,
+                            dataTransfer: dataTransfer
+                        }});
+                        
+                        textarea.dispatchEvent(dropEvent);
+                    }}
+                """, {"base64Data": file_base64, "fileName": file_name})
+            else:
+                # ファイル入力要素が見つかった場合は従来の方法でアップロード
+                print(f"画像をアップロード中: {image_path}", file=sys.stderr)
+                await file_input.set_input_files(image_path)
             
             # アップロードプログレスを監視（超高速化）
             print("アップロード完了を待機中...", file=sys.stderr)
@@ -313,3 +379,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

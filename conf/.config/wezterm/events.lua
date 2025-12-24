@@ -89,10 +89,10 @@ wezterm.on("update-status", function(window, pane)
   local process_info = pane:get_foreground_process_info()
   if process_info then
     local cwd = process_info.cwd
-    local rm_home = string.gsub(cwd, os.getenv("HOME") or "", "")
-    local prj = string.gsub(rm_home, "/src/github.com", "")
-    local dirs = split(prj, "/")
-    local root_dir = dirs[2]
+    -- local rm_home = string.gsub(cwd, os.getenv("HOME") or "", "")
+    -- local prj = string.gsub(rm_home, "/src/github.com", "")
+    local dirs = split(cwd, "/")
+    local root_dir = dirs[#dirs] or ""
     title_cache[pane_id] = root_dir
   end
 end)
@@ -120,7 +120,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
   print(tab.active_pane.title)
   print(max_width)
 
-  local title = " " .. " [ " .. cwd .. " ] "
+  local title = " " .. " " .. cwd .. " "
 
   return {
     { Background = { Color = edge_background } },
