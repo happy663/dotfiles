@@ -216,26 +216,27 @@ return {
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if not luasnip then
-              luasnip = require("luasnip")
-            end
-            if luasnip.locally_jumpable(1) then
-              luasnip.jump(1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if not luasnip then
-              luasnip = require("luasnip")
-            end
-            if luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
+          -- copilotとの競合回避のためTabキー無効化
+          -- ["<Tab>"] = cmp.mapping(function(fallback)
+          --   if not luasnip then
+          --     luasnip = require("luasnip")
+          --   end
+          --   if luasnip.locally_jumpable(1) then
+          --     luasnip.jump(1)
+          --   else
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
+          -- ["<S-Tab>"] = cmp.mapping(function(fallback)
+          --   if not luasnip then
+          --     luasnip = require("luasnip")
+          --   end
+          --   if luasnip.locally_jumpable(-1) then
+          --     luasnip.jump(-1)
+          --   else
+          --     fallback()
+          --   end
+          -- end, { "i", "s" }),
         },
 
         sources = {
