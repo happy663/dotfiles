@@ -14,6 +14,7 @@ local short_names = {
   LSP_INLINE = "lspInline",
   EXPLAIN_CHAT = "explainChat",
   ADD_COMMENT_INLINE = "addCommentInline",
+  CHAT_WITH_BUFFER = "chatWithBuffer",
 }
 
 return {
@@ -57,6 +58,12 @@ return {
         desc = "Explain Code",
       },
       { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
+      {
+        "<leader>ccb",
+        string.format("<cmd>CodeCompanion /%s<cr>", short_names.CHAT_WITH_BUFFER),
+        mode = "n",
+        desc = "Chat with Current Buffer",
+      },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -64,6 +71,21 @@ return {
     },
     config = function()
       local codecompanion = require("codecompanion")
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "CodeCompanionChatCreated",
+        callback = function()
+          vim.notify("Welcome to CodeCompanion!", vim.log.levels.INFO, { title = "CodeCompanion" })
+          local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+          for _, line in ipairs(lines) do
+            if line:match("^#{buffer}$") then
+              vim.cmd("normal! o")
+              vim.cmd("normal! o")
+            end
+          end
+        end,
+      })
 
       codecompanion.setup({
         display = {
@@ -78,7 +100,32 @@ return {
           },
           diff = {
             enabled = true,
-            provider = "default", -- default|mini_diff
+            provider = "inline", -- inline|split|mini.diff
+            provider_opts = {
+              inline = {
+                layout = "float", -- float|buffer - Where to display the diff
+                opts = {
+                  context_lines = 3, -- Number of context lines in hunks
+                  dim = 25, -- Background dim level for floating diff (0-100, [100 full transparent], only applies when layout = "float")
+                  full_width_removed = true, -- Make removed lines span full width
+                  show_keymap_hints = true, -- Show "gda: accept | gdr: reject" hints above diff
+                  show_removed = true, -- Show removed lines as virtual text
+                },
+              },
+              split = {
+                close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
+                layout = "vertical", -- vertical|horizontal split
+                opts = {
+                  "internal",
+                  "filler",
+                  "closeoff",
+                  "algorithm:histogram", -- https://adamj.eu/tech/2024/01/18/git-improve-diff-histogram/
+                  "indent-heuristic", -- https://blog.k-nut.eu/better-git-diffs
+                  "followwrap",
+                  "linematch:120",
+                },
+              },
+            },
           },
         },
         adapters = {
@@ -261,6 +308,28 @@ return {
           },
         },
         prompt_library = {
+          ["Chat with Buffer"] = {
+            strategy = "chat",
+            description = "Open chat with current buffer automatically attached",
+            opts = {
+              is_default = true,
+              is_slash_cmd = false, -- キーマッピングからのみ使用
+              modes = { "n" },
+              short_name = short_names.CHAT_WITH_BUFFER,
+              auto_submit = false,
+              user_prompt = false,
+              stop_context_insertion = false, -- 追加のコンテキストも許可
+            },
+            prompts = {
+              {
+                role = roles.USER_ROLE,
+                content = "#{buffer}",
+                opts = {
+                  contains_code = true,
+                },
+              },
+            },
+          },
           ["Refactor Code"] = {
             strategy = "chat",
             description = "Refactor the selected code to improve its structure and quality",
