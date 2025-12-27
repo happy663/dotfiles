@@ -23,6 +23,7 @@ return {
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
+    version = "v18.0.0",
     keys = {
       { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
@@ -100,7 +101,7 @@ return {
           },
           diff = {
             enabled = true,
-            provider = "inline", -- inline|split|mini.diff
+            provider = "split", -- inline|split|mini.diff
             provider_opts = {
               inline = {
                 layout = "float", -- float|buffer - Where to display the diff
@@ -213,89 +214,53 @@ return {
         },
         opts = {
           language = "Japanese",
-          system_prompt = function(opts)
-            -- local language = opts.language or "English"
-            local language = opts.language or "Japanese" -- ここを "Japanese" に変更
-            return string.format(
-              [[
-              あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
-              あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
-
-              必須事項
-              - 回答にはMarkdownフォーマットを使用してください。
-              - Markdownのコードブロックの最初にプログラミング言語名を入れてください。
-              - コードブロックに行番号を含めないようにする。
-              - コードブロックに解説のコメントを入れる
-              - 回答全体を3重のバックティックで囲むのは避ける。
-              - 手元のタスクに関連するコードのみを返す。ユーザーが共有したコードをすべて返す必要はないかもしれません。
-              - レスポンスの中で改行するときは、'˶n'ではなく'˶n'を使ってください。
-              - バックスラッシュの後に文字'n'が続くリテラルが必要な場合のみ'˶n'を使用してください。
-              - コード以外のすべての応答は %s でなければなりません。
-                ]],
-              "Japanese"
-            )
-
-            -- [[あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
-            -- あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
-            -- 特にユーザーがあなたのタスク以外の文脈で回答する場合は、回答は短く、人間味のないものにしましょう。
-            -- 他の文章は最小限にしましょう。
-            --
-            -- あなたの主な仕事は以下の通りです：
-            -- - 一般的なプログラミングの質問に答える
-            -- - Neovimバッファ内のコードがどのように動作するかを説明する。
-            -- - Neovimバッファで選択したコードをレビューする。
-            -- - 選択したコードの単体テストの作成
-            -- - 選択したコードの問題点の修正提案
-            -- - 新しいワークスペース用のコードの足場作り
-            -- - ユーザーのクエリに関連するコードの検索。
-            -- - テストの失敗に対する修正提案
-            -- - Neovimに関する質問への回答
-            -- - ツールの実行
-            --
-            -- 必須事項
-            -- - ユーザーの要求に注意深く、忠実に従うこと。
-            -- - 回答にはMarkdownフォーマットを使用してください。
-            -- - Markdownのコードブロックの最初にプログラミング言語名を入れてください。
-            -- - コードブロックに行番号を含めないようにする。
-            -- - コードブロックに解説のコメントを入れる
-            -- - 回答全体を3重のバックティックで囲むのは避ける。
-            -- - 手元のタスクに関連するコードのみを返す。ユーザーが共有したコードをすべて返す必要はないかもしれません。
-            -- - レスポンスの中で改行するときは、'˶n'ではなく'˶n'を使ってください。
-            -- - バックスラッシュの後に文字'n'が続くリテラルが必要な場合のみ'˶n'を使用してください。
-            -- - コード以外のすべての応答は %s でなければなりません。
-            --
-            -- タスクが与えられたら
-            -- 1.ステップ・バイ・ステップで考え、何を作るかについてのあなたの計画を、そうしないように要求されない限り、非常に詳細に書かれた擬似コードで記述しなさい。
-            -- 2.関連するコードだけを返すように注意しながら、コードを1つのコードブロックで出力する。
-            -- 3.各会話ターンに対して1つの返答しかできません
-            --   ]],
-            -- "Japanese"
-            --
-          end,
           -- log_level = "DEBUG",
         },
-        strategies = {
+        interactions = {
           chat = {
             adapter = "claude_code",
-            slash_commands = {
-              ["buffer"] = {
-                callback = "strategies.chat.slash_commands.buffer",
-                description = "Insert open buffers",
-                opts = {
-                  contains_code = true,
-                  provider = "telescope", -- default|telescope|mini_pick|fzf_lua
-                },
-              },
-              ["file"] = {
-                callback = "strategies.chat.slash_commands.file",
-                description = "Insert a file",
-                opts = {
-                  contains_code = true,
-                  max_lines = 1000,
-                  provider = "telescope", -- default|telescope|mini_pick|fzf_lua
-                },
-              },
+            opts = {
+              system_prompt = function(opts)
+                local language = opts.language or "Japanese"
+                return string.format(
+                  [[
+                  あなたは "CodeCompanion "という名のAIプログラミングアシスタントです。
+                  あなたは現在、ユーザーのマシンのNeovimテキストエディタに接続されています。
+
+                  必須事項
+                  - 回答にはMarkdownフォーマットを使用してください。
+                  - Markdownのコードブロックの最初にプログラミング言語名を入れてください。
+                  - コードブロックに行番号を含めないようにする。
+                  - コードブロックに解説のコメントを入れる
+                  - 回答全体を3重のバックティックで囲むのは避ける。
+                  - 手元のタスクに関連するコードのみを返す。ユーザーが共有したコードをすべて返す必要はないかもしれません。
+                  - レスポンスの中で改行するときは、'˶n'ではなく'˶n'を使ってください。
+                  - バックスラッシュの後に文字'n'が続くリテラルが必要な場合のみ'˶n'を使用してください。
+                  - コード以外のすべての応答は %s でなければなりません。
+                    ]],
+                  "Japanese"
+                )
+              end,
             },
+            -- slash_commands = {
+            --   ["buffer"] = {
+            --     callback = "interactions.chat.slash_commands.buffer",
+            --     description = "Insert open buffers",
+            --     opts = {
+            --       contains_code = true,
+            --       provider = "telescope", -- default|telescope|mini_pick|fzf_lua
+            --     },
+            --   },
+            --   ["file"] = {
+            --     callback = "interactions.chat.slash_commands.file",
+            --     description = "Insert a file",
+            --     opts = {
+            --       contains_code = true,
+            --       max_lines = 1000,
+            --       provider = "telescope", -- default|telescope|mini_pick|fzf_lua
+            --     },
+            --   },
+            -- },
           },
           inline = { adapter = "claude_code" },
           keymaps = {
@@ -309,13 +274,13 @@ return {
         },
         prompt_library = {
           ["Chat with Buffer"] = {
-            strategy = "chat",
+            interaction = "chat",
             description = "Open chat with current buffer automatically attached",
             opts = {
               is_default = true,
               is_slash_cmd = false, -- キーマッピングからのみ使用
               modes = { "n" },
-              short_name = short_names.CHAT_WITH_BUFFER,
+              alias = short_names.CHAT_WITH_BUFFER,
               auto_submit = false,
               user_prompt = false,
               stop_context_insertion = false, -- 追加のコンテキストも許可
@@ -331,13 +296,13 @@ return {
             },
           },
           ["Refactor Code"] = {
-            strategy = "chat",
+            interaction = "chat",
             description = "Refactor the selected code to improve its structure and quality",
             opts = {
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = short_names.REFACTOR_CHAT,
+              alias = short_names.REFACTOR_CHAT,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
@@ -365,6 +330,7 @@ return {
                     context.start_line,
                     context.end_line,
                     { show_line_numbers = true }
+
                   )
 
                   return string.format(
@@ -384,13 +350,13 @@ return {
             },
           },
           ["Refactor Code Inline"] = {
-            strategy = "inline",
+            interaction = "inline",
             description = "Refactor the selected code to improve its structure and quality",
             opts = {
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = short_names.REFACTOR_INLINE,
+              alias = short_names.REFACTOR_INLINE,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
@@ -440,14 +406,14 @@ return {
             },
           },
           ["Explain LSP Diagnostics"] = {
-            strategy = "chat",
+            interaction = "chat",
             description = "Explain the LSP diagnostics for the selected code",
             opts = {
               index = 9,
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = short_names.LSP_CHAT,
+              alias = short_names.LSP_CHAT,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
@@ -525,13 +491,13 @@ return {
             },
           },
           ["Fix LSP Inline"] = {
-            strategy = "inline",
+            interaction = "inline",
             description = "Fix LSP issues with inline changes",
             opts = {
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = short_names.LSP_INLINE,
+              alias = short_names.LSP_INLINE,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
@@ -586,13 +552,13 @@ return {
             },
           },
           ["Explain"] = {
-            strategy = "chat",
+            interaction = "chat",
             description = "Explain how code in a buffer works",
             opts = {
               is_default = true,
               is_slash_cmd = false,
               modes = { "v" },
-              short_name = short_names.EXPLAIN_CHAT,
+              alias = short_names.EXPLAIN_CHAT,
               auto_submit = true,
               user_prompt = false,
               stop_context_insertion = true,
