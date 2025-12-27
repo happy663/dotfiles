@@ -51,6 +51,7 @@ in
       }))
       deno
       phps.packages.${pkgs.system}.php74
+      php84Extensions.xdebug
     ];
 
     sessionVariables = {
@@ -209,7 +210,7 @@ in
   xdg.configFile."mise/config.toml".text = ''
     [tools]
     go = '1.21.5'
-    node = "23"
+    node = "24.1.0"
     python = "3.12.2"
     yarn = "1.22.19"
     neovim = "0.11.3"

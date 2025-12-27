@@ -247,7 +247,7 @@ vim.api.nvim_set_hl(0, "mkdNonListItemBlock", { fg = "#c8d3f5" })
 vim.api.nvim_set_hl(0, "mkdListItemLine", { fg = "#c8d3f5" })
 
 -- Markdownの折りたたみ関数（<details>タグとコードブロックの両方に対応）
-function _G.markdown_fold_all()
+function _G.octo_fold_all()
   local line = vim.fn.getline(vim.v.lnum)
 
   -- <details>タグの処理を優先
@@ -307,22 +307,8 @@ function _G.markdown_fold_all()
   return "=" -- 前の行のレベルを継承
 end
 
--- Markdownの折りたたみ関数（<details>タグのみ対応）
-function _G.markdown_fold()
-  local line = vim.fn.getline(vim.v.lnum)
-
-  -- <details>タグの処理
-  if line:match("^%s*<details") then
-    return ">1"
-  elseif line:match("^%s*</details>") then
-    return "<1"
-  end
-
-  return "=" -- 前の行のレベルを継承
-end
-
 -- 折りたたまれたテキストの表示をカスタマイズ
-function _G.markdown_foldtext()
+function _G.octo_foldtext()
   local line = vim.fn.getline(vim.v.foldstart)
 
   -- コードブロックの場合
@@ -332,9 +318,17 @@ function _G.markdown_foldtext()
     return "  " .. lang .. " (" .. lines_count .. " lines) ......................................."
   end
 
-  -- detailsタグの場合
   if line:match("<details>") then
-    local summary = line:match("<summary>(.-)</summary>") or "詳細"
+    local summary = "詳細"
+    -- 折りたたまれた範囲内でsummaryタグを探す
+    for i = vim.v.foldstart, vim.v.foldend do
+      local l = vim.fn.getline(i)
+      local match = l:match("<summary>(.-)</summary>")
+      if match then
+        summary = match
+        break
+      end
+    end
     return "  " .. summary .. " "
   end
 
@@ -361,38 +355,10 @@ vim.opt.fillchars:append({
   foldsep = " ",
 })
 
--- Markdown用のfoldmethod設定
--- nvim-markdownのloadviewより後に実行されるようにvim.schedule()を使用
-vim.api.nvim_create_autocmd("BufWinEnter", {
-  pattern = { "*.md", "*.markdown" },
-  callback = function()
-    if vim.bo.filetype == "markdown" then
-      vim.schedule(function()
-        vim.opt_local.foldmethod = "expr"
-        vim.opt_local.foldexpr = "v:lua.markdown_fold_all()"
-        vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
-        vim.opt_local.foldlevel = 0
-        vim.opt_local.foldcolumn = "1" -- 折りたたみ列を表示
-
-        -- nvim-markdownのloadviewによるハイライト設定の上書きを防ぐため再設定
-        vim.api.nvim_set_hl(0, "Folded", {
-          fg = "#82aaff", -- 明るい青色（tokyonight-moonに調和）
-          bg = "#1e2030", -- 少し暗めの背景
-          italic = true,
-        })
-
-        vim.api.nvim_set_hl(0, "FoldColumn", {
-          fg = "#636da6",
-          bg = "NONE",
-        })
-        -- URLをハイライト
-        vim.fn.matchadd("Underlined", "https\\?://[^ )>]*")
-        -- またはカスタムハイライトグループ
-        vim.cmd([[
-                highlight MarkdownURL guifg=#569CD6 gui=underline ctermfg=75 cterm=underline
-              ]])
-        vim.fn.matchadd("MarkdownURL", "https\\?://[^ )>]*")
-      end)
-    end
-  end,
-})
+vim.opt.foldmethod = "expr"
+-- neovimにtreesitterのapiが組み込まれたので、それを利用する
+-- https://github.com/neovim/neovim/blob/e34e2289c22834239e0522b7331f17fdfb3705e0/runtime/lua/vim/treesitter/_fold.lua#L386-L423
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99 -- デフォルトでは全て展開
+vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
+-- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用

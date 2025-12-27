@@ -1,3 +1,55 @@
+-- Helper function to get current repository name
+local function get_current_repo()
+  local result = vim
+    .system({
+      "gh",
+      "repo",
+      "view",
+      "--json",
+      "nameWithOwner",
+      "-q",
+      ".nameWithOwner",
+    }, {
+      text = true,
+    })
+    :wait()
+
+  if result.code ~= 0 then
+    vim.notify("Error getting current repo: " .. result.stderr, vim.log.levels.ERROR)
+    return nil
+  end
+
+  return vim.trim(result.stdout)
+end
+
+-- Issue search helper function
+local function search_issues(search_type)
+  local prompt_map = {
+    title = "Search in title: ",
+    body = "Search in body: ",
+    all = "Search issues: ",
+  }
+
+  local search_suffix = {
+    title = " in:title",
+    body = " in:body",
+    all = "",
+  }
+
+  local query = vim.trim(vim.fn.input(prompt_map[search_type]))
+  if query == "" then
+    vim.notify("Search query cannot be empty.", vim.log.levels.ERROR)
+    return
+  end
+
+  local current_repo = get_current_repo()
+  if not current_repo then
+    return
+  end
+
+  vim.cmd("Octo search repo:" .. current_repo .. " " .. query .. search_suffix[search_type])
+end
+
 return {
   {
     "pwntester/octo.nvim",
@@ -25,11 +77,33 @@ return {
       {
         "<leader>olca",
         "<cmd>Octo issue list states=CLOSED<CR>",
-        desc = "Open Octo issues assigned to happy663",
+        desc = "Open Octo closed issues",
       },
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
       { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
       { "<leader>oc", "<cmd>Octo actions<CR>", desc = "Open Octo actions" },
+      -- Issue検索用キーマップ
+      {
+        "<leader>oit",
+        function()
+          search_issues("title")
+        end,
+        desc = "Octo: Search by title",
+      },
+      {
+        "<leader>oib",
+        function()
+          search_issues("body")
+        end,
+        desc = "Octo: Search by body",
+      },
+      {
+        "<leader>ois",
+        function()
+          search_issues("all")
+        end,
+        desc = "Octo: Search (title + body)",
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd("FileType", {
@@ -41,7 +115,6 @@ return {
           -- render-markdown用にtreesitterを登録
           -- octo bufferでmarkdown parserを使用する
           vim.treesitter.language.register("markdown", "octo")
-
           -- Treesitterのconceal機能を調整（コードブロックを常に表示）
           vim.schedule(function()
             vim.opt_local.conceallevel = 0
@@ -72,9 +145,9 @@ return {
           -- Octo buffer用の折り畳み設定
           vim.schedule(function()
             vim.opt_local.foldmethod = "expr"
-            vim.opt_local.foldexpr = "v:lua.markdown_fold_all()"
+            vim.opt_local.foldexpr = "v:lua.octo_fold_all()"
             vim.opt_local.foldlevel = 0
-            vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+            vim.opt_local.foldtext = "v:lua.octo_foldtext()"
             vim.opt_local.conceallevel = 0
             -- foldの表示を確実にする
             vim.opt_local.fillchars:append({ fold = " " })
@@ -95,7 +168,7 @@ return {
           -- render-markdownがロードされた後に設定を再適用
           vim.defer_fn(function()
             if vim.bo.filetype == "octo" then
-              vim.opt_local.foldtext = "v:lua.markdown_foldtext()"
+              vim.opt_local.foldtext = "v:lua.octo_foldtext()"
               vim.opt_local.conceallevel = 0
             end
           end, 200)
@@ -267,7 +340,7 @@ return {
             add_label = { lhs = "<localleader>la", desc = "add label" },
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             -- goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             -- add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
@@ -297,14 +370,14 @@ return {
             reload = { lhs = "<leader>or", desc = "reload PR" },
             open_in_browser = { lhs = "<leader>ob", desc = "open PR in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
-            goto_file = { lhs = "gf", desc = "go to file" },
+            -- goto_file = { lhs = "gf", desc = "go to file" },
             add_assignee = { lhs = "<localleader>aa", desc = "add assignee" },
             remove_assignee = { lhs = "<localleader>ad", desc = "remove assignee" },
             create_label = { lhs = "<localleader>lc", desc = "create label" },
             add_label = { lhs = "<localleader>la", desc = "add label" },
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             -- goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             -- add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
@@ -324,7 +397,7 @@ return {
           },
           review_thread = {
             -- goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
-            goto_issue = { lhs = "<leader>go", desc = "navigate to a local repo issue" },
+            goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
             add_comment = { lhs = "<localleader>ca", desc = "add comment" },
             add_suggestion = { lhs = "<localleader>sa", desc = "add suggestion" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
@@ -371,7 +444,7 @@ return {
             select_last_entry = { lhs = "]Q", desc = "move to last changed file" },
             close_review_tab = { lhs = "<C-c>", desc = "close review tab" },
             toggle_viewed = { lhs = "<localleader><space>", desc = "toggle viewer viewed state" },
-            goto_file = { lhs = "gf", desc = "go to file" },
+            -- goto_file = { lhs = "gf", desc = "go to file" },
           },
           file_panel = {
             submit_review = { lhs = "<localleader>vs", desc = "submit review" },
