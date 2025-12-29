@@ -88,6 +88,20 @@ return {
         end,
       })
 
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "codecompanion",
+        callback = function()
+          vim.keymap.set("n", "gx", function()
+            local url = vim.fn.expand("<cfile>")
+            if url:match("^https?://") then
+              vim.fn.jobstart({ "xdg-open", url }, { detach = true })
+            else
+              vim.notify("No valid URL under cursor", vim.log.levels.WARN, { title = "CodeCompanion" })
+            end
+          end, { buffer = true, silent = true })
+        end,
+      })
+
       codecompanion.setup({
         display = {
           chat = {
@@ -242,33 +256,24 @@ return {
                 )
               end,
             },
-            -- slash_commands = {
-            --   ["buffer"] = {
-            --     callback = "interactions.chat.slash_commands.buffer",
-            --     description = "Insert open buffers",
-            --     opts = {
-            --       contains_code = true,
-            --       provider = "telescope", -- default|telescope|mini_pick|fzf_lua
-            --     },
-            --   },
-            --   ["file"] = {
-            --     callback = "interactions.chat.slash_commands.file",
-            --     description = "Insert a file",
-            --     opts = {
-            --       contains_code = true,
-            --       max_lines = 1000,
-            --       provider = "telescope", -- default|telescope|mini_pick|fzf_lua
-            --     },
-            --   },
-            -- },
+            keymaps = {
+              send = {
+                modes = {
+                  n = { "<C-S>" },
+                  i = { "<C-S>" },
+                },
+              },
+              clear = false,
+            },
           },
           inline = { adapter = "claude_code" },
-          keymaps = {
-            send = {
-              modes = {
-                n = { "<C-S>" },
-                i = { "<C-S>" },
-              },
+          cmd = {
+            adapter = "openai",
+          },
+          background = {
+            adapter = {
+              name = "ollama",
+              model = "qwen-7b-instruct",
             },
           },
         },
@@ -330,7 +335,6 @@ return {
                     context.start_line,
                     context.end_line,
                     { show_line_numbers = true }
-
                   )
 
                   return string.format(
