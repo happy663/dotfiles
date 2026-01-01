@@ -188,6 +188,14 @@ return {
             silent = true,
             desc = "Octo: Add comment with extra space",
           })
+
+          vim.api.nvim_buf_set_keymap(
+            0,
+            "n",
+            "<leader>o>",
+            ":Octo comment reply<CR>",
+            { noremap = true, silent = true, desc = "Octo: Reply to comment" }
+          )
         end,
       })
 
@@ -579,3 +587,5 @@ return {
     end,
   },
 }
+
+
