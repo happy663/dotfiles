@@ -38,6 +38,7 @@ in
       neovim-remote
       firefox
       neofetch
+      nodejs_24
       claude-code
       claude-code-acp
       # Development tools
@@ -92,15 +93,8 @@ in
   programs = {
     home-manager.enable = true;
     delta.enable = true;
-
     git = {
       enable = true;
-      settings = {
-        user = {
-          name = "happy663";
-          email = "tatu2425@gmail.com";
-        };
-      };
       includes = [
         # 別ディレクトリ用の設定を読み込む
         {
@@ -108,7 +102,11 @@ in
           path = "~/.config/git/gitconfig_sub";
         }
       ];
-      extraConfig = {
+      settings = {
+        user = {
+          name = "happy663";
+          email = "tatu2425@gmail.com";
+        };
         core = {
           editor = "nvim";
           excludesfile = "~/.config/git/ignore";
@@ -216,7 +214,7 @@ in
   xdg.configFile."mise/config.toml".text = ''
     [tools]
     go = '1.21.5'
-    node = "24.1.0"
+    # node = "24.1.0"
     python = "3.12.2"
     yarn = "1.22.19"
     neovim = "0.11.3"
