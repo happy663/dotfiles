@@ -213,6 +213,7 @@
       "ghostty"
       "superwhisper"
       "homerow"
+      "tonisives/tap/ovim"
     ];
   };
 
@@ -238,6 +239,7 @@
   launchd.agents.my-startup-script = {
     script = ''
       #!/bin/bash
+      # FIX: 環境差分があるので修正したい,辞書のある位置がおかしい,yaskkserv2_make_dictionaryをコマンドとして認識しない
       yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L  > /tmp/yaskkserv2.log 2>&1
       yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 >> /tmp/yaskkserv2.log 2>&1
     '';

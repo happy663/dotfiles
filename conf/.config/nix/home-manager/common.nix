@@ -38,6 +38,8 @@ in
       neovim-remote
       firefox
       neofetch
+      claude-code
+      claude-code-acp
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -89,12 +91,16 @@ in
 
   programs = {
     home-manager.enable = true;
+    delta.enable = true;
 
     git = {
       enable = true;
-      userName = "happy663";
-      userEmail = "tatu2425@gmail.com";
-      delta.enable = true;
+      settings = {
+        user = {
+          name = "happy663";
+          email = "tatu2425@gmail.com";
+        };
+      };
       includes = [
         # 別ディレクトリ用の設定を読み込む
         {
