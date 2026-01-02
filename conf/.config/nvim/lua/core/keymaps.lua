@@ -282,6 +282,9 @@ end, {
 vim.keymap.set("n", "<Leader>pd", function()
   local code_lines = get_clipboard_lines()
   local summary = vim.fn.input("Summary: ") or "詳細"
+  if summary == nil or summary == "" then
+    summary = "詳細"
+  end
 
   local result = {
     "<details>",
@@ -302,7 +305,10 @@ end, {
 vim.keymap.set("n", "<Leader>ps", function()
   local clipboard_content = vim.fn.getreg("+")
   local code_lines = vim.split(clipboard_content, "\n", { plain = true })
-  local summary = vim.fn.input("Summary: ") or "詳細"
+  local summary = vim.fn.input("Summary: ")
+  if summary == nil or summary == "" then
+    summary = "詳細"
+  end
 
   local result = {
     "<details>",
