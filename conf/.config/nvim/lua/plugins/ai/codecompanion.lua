@@ -257,25 +257,29 @@ return {
               end,
             },
             keymaps = {
-              send = {
+              -- send = {
+              --   modes = {
+              --     n = { "<C-S>" },
+              --     i = { "<C-S>" },
+              --   },
+              -- },
+              clear = {
                 modes = {
-                  n = { "<C-S>" },
-                  i = { "<C-S>" },
+                  n = { "<C-l>" },
                 },
               },
-              clear = false,
             },
           },
           inline = { adapter = "claude_code" },
           cmd = {
             adapter = "openai",
           },
-          background = {
-            adapter = {
-              name = "ollama",
-              model = "qwen-7b-instruct",
-            },
-          },
+          -- background = {
+          --   adapter = {
+          --     name = "ollama",
+          --     model = "qwen-7b-instruct",
+          --   },
+          -- },
         },
         prompt_library = {
           ["Chat with Buffer"] = {
