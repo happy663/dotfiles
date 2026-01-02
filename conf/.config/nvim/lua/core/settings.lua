@@ -362,3 +362,4 @@ vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99 -- デフォルトでは全て展開
 vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
 -- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用
+vim.o.synmaxcol = 200

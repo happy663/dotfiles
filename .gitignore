@@ -65,3 +65,5 @@ conf/.claude/debug
 conf/.claude/file-history/5e1dee8e-f212-47d1-b309-35a22c8c1638/12e7eadb34813b3b@v1
 conf/.claude/telemetry
 conf/.claude/stats-cache.json
+tmp
+todo.md
