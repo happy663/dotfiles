@@ -52,6 +52,7 @@ return {
         end
       end
 
+      -- REFACTOR: デフォルト設定を変数にまとめる
       local default_sorting = {
         priority_weight = 2,
         comparators = {
@@ -97,6 +98,9 @@ return {
         },
       }
 
+      -- HACK: 現状sourceが2つある,本当は同じsourceを初期sourceに入れたい
+      -- それをやるとcodecompanionなどのプラグイン側がソースを読み込んでいるので2つ同じソースが読み込まれるようになってしまう
+      -- 現状無駄があるので共通のsourceは切り出してそれぞれで読み込みようにしたい
       local default_sources = {
         -- {
         --   name = "copilot",
@@ -133,6 +137,23 @@ return {
         {
           name = "rg",
           group_index = 1,
+          option = {
+            additional_arguments = {
+              "--hidden",
+              "--glob",
+              "!.git/",
+              "--glob",
+              "!*lock.json",
+              "--glob",
+              "!.p10k.zsh",
+              "--glob",
+              "!*startuptime-logs/",
+              "--glob",
+              "!*.L",
+              "--glob",
+              "!*.plist",
+            },
+          },
         },
         -- other sources
         {
@@ -266,6 +287,23 @@ return {
           {
             name = "rg",
             group_index = 1,
+            option = {
+              additional_arguments = {
+                "--hidden",
+                "--glob",
+                "!.git/",
+                "--glob",
+                "!*lock.json",
+                "--glob",
+                "!.p10k.zsh",
+                "--glob",
+                "!*startuptime-logs/",
+                "--glob",
+                "!*.L",
+                "--glob",
+                "!*.plist",
+              },
+            },
           },
           { name = "git", group_index = 1 },
           {
@@ -408,7 +446,9 @@ return {
         end,
       },
       -- "f3fora/cmp-spell",
-      "lukas-reineke/cmp-rg",
+      {
+        "happy663/cmp-rg",
+      },
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
       {
@@ -423,3 +463,4 @@ return {
     },
   },
 }
+
