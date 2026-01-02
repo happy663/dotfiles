@@ -3,6 +3,26 @@ vim.g.mapleader = " "
 -- 起動高速化
 vim.loader.enable()
 
+-- 限定的なPATH環境でも必要なツールを認識できるようにする
+local function ensure_path()
+  local paths_to_add = {
+    vim.fn.expand("$HOME") .. "/.nix-profile/bin",
+    "/opt/homebrew/bin",
+    "/usr/local/bin",
+  }
+
+  local current_path = vim.env.PATH or ""
+  for _, path in ipairs(paths_to_add) do
+    -- パスが存在し、かつ現在のPATHに含まれていない場合のみ追加
+    if vim.fn.isdirectory(path) == 1 and not string.find(current_path, path, 1, true) then
+      vim.env.PATH = path .. ":" .. current_path
+      current_path = vim.env.PATH
+    end
+  end
+end
+
+ensure_path()
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
