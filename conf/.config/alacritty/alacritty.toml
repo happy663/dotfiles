@@ -1,0 +1,238 @@
+# Alacritty Configuration
+# Migrated from WezTerm configuration
+
+[window]
+# ウィンドウの不透明度 (0.0 - 1.0)
+opacity = 0.55
+startup_mode = "Maximized"  # または "SimpleFullscreen", "Maximized", "Fullscreen"
+
+# macOSでのブラー効果
+# blur = true
+# 初期ウィンドウサイズ (列 x 行)
+# ウィンドウ装飾 (Full, None, Transparent, Buttonless)
+decorations = "Buttonless"
+
+# ウィンドウのパディング
+padding = { x = 5, y = 5 }
+
+# 動的なパディング
+dynamic_padding = true
+
+# ウィンドウタイトル
+title = "Alacritty"
+
+# macOSでフルスクリーンモードでネイティブタブを非表示
+option_as_alt = "Both"
+
+[font]
+# フォント設定
+normal = { family = "HackGen Console NF", style = "Regular" }
+bold = { family = "HackGen Console NF", style = "Bold" }
+italic = { family = "HackGen Console NF", style = "Italic" }
+bold_italic = { family = "HackGen Console NF", style = "Bold Italic" }
+
+# フォントサイズ
+size = 14.0
+
+# 文字間隔調整
+offset = { x = 0, y = 0 }
+
+# グリフオフセット
+glyph_offset = { x = 0, y = 0 }
+
+[scrolling]
+# スクロールバック履歴の行数
+history = 10000
+
+# 一度にスクロールする行数
+multiplier = 3
+
+[cursor]
+# カーソルスタイル (Block, Underline, Beam)
+style = { shape = "Block", blinking = "On" }
+
+# カーソルの点滅間隔（ミリ秒）
+blink_interval = 750
+
+# カーソルが非アクティブ時にフェードアウトするまでの時間（ミリ秒）
+blink_timeout = 5
+
+# カーソルが非アクティブ時のスタイル
+unfocused_hollow = true
+
+[selection]
+# 選択したテキストの保存先
+save_to_clipboard = true
+
+# トリプルクリックで行全体を選択
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+[colors]
+# AdventureTime カラースキーム
+# プライマリカラー
+[colors.primary]
+background = "#1f1d45"
+foreground = "#f8dcc0"
+
+# カーソルカラー
+[colors.cursor]
+text = "#1f1d45"
+cursor = "#efbf38"
+
+# 通常カラー
+[colors.normal]
+black = "#050404"
+red = "#bd0013"
+green = "#4ab118"
+yellow = "#e7741e"
+blue = "#0f4ac6"
+magenta = "#665993"
+cyan = "#70a598"
+white = "#f8dcc0"
+
+# 明るいカラー
+[colors.bright]
+black = "#4e7cbf"
+red = "#fc5f5a"
+green = "#9eff6e"
+yellow = "#efc11a"
+blue = "#1997c6"
+magenta = "#9b5953"
+cyan = "#c8faf4"
+white = "#f6f5fb"
+
+# Vi mode のカラー
+[colors.vi_mode_cursor]
+text = "#1f1d45"
+cursor = "#efbf38"
+
+# 選択範囲のカラー
+[colors.selection]
+text = "CellForeground"
+background = "#4e7cbf"
+
+[bell]
+# ベルの設定
+animation = "EaseOutExpo"
+duration = 0
+color = "#ffffff"
+
+# キーバインディング
+[[keyboard.bindings]]
+key = "V"
+mods = "Command"
+action = "Paste"
+
+[[keyboard.bindings]]
+key = "C"
+mods = "Command"
+action = "Copy"
+
+# フルスクリーンはmacOSの緑ボタンを使用
+# [[keyboard.bindings]]
+# key = "F"
+# mods = "Control|Shift"
+# action = "ToggleFullscreen"
+
+[[keyboard.bindings]]
+key = "Plus"
+mods = "Command"
+action = "IncreaseFontSize"
+
+[[keyboard.bindings]]
+key = "Minus"
+mods = "Command"
+action = "DecreaseFontSize"
+
+[[keyboard.bindings]]
+key = "Key0"
+mods = "Command"
+action = "ResetFontSize"
+
+[[keyboard.bindings]]
+key = "N"
+mods = "Command"
+action = "CreateNewWindow"
+
+[[keyboard.bindings]]
+key = "Q"
+mods = "Command"
+action = "Quit"
+
+[[keyboard.bindings]]
+key = "W"
+mods = "Command"
+action = "Quit"
+
+# PageUp/PageDown でスクロール
+[[keyboard.bindings]]
+key = "PageUp"
+mods = "Shift"
+action = "ScrollPageUp"
+
+[[keyboard.bindings]]
+key = "PageDown"
+mods = "Shift"
+action = "ScrollPageDown"
+
+# Home/End
+[[keyboard.bindings]]
+key = "Home"
+mods = "Shift"
+action = "ScrollToTop"
+
+[[keyboard.bindings]]
+key = "End"
+mods = "Shift"
+action = "ScrollToBottom"
+
+# Vi mode のキーバインディング (オプション)
+[[keyboard.bindings]]
+key = "Space"
+mods = "Control|Shift"
+action = "ToggleViMode"
+
+[[keyboard.bindings]]
+key = "Tab"
+mods = "Control"
+chars = "\u001b[27;5;9~"
+
+[[keyboard.bindings]]
+key = "Tab"
+mods = "Control|Shift"
+chars = "\u001b[27;6;9~"
+
+[[keyboard.bindings]]
+key = "."
+mods = "Control"
+chars = "\u001b[27;5;46~"
+
+[mouse]
+# マウス設定
+hide_when_typing = true
+
+# ダブルクリックとトリプルクリックの閾値
+# double_click = { threshold = 300 }
+# triple_click = { threshold = 300 }
+
+[[mouse.bindings]]
+mouse = "Middle"
+action = "PasteSelection"
+
+[hints]
+# URLヒントの設定
+[[hints.enabled]]
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001f\u007f-\u009f<>\"\\s{-}\\^⟨⟩`]+"
+command = "open"
+post_processing = true
+mouse.enabled = true
+binding = { key = "U", mods = "Control|Shift" }
+
+[debug]
+# デバッグ設定
+render_timer = false
+persistent_logging = false
+log_level = "Warn"
+print_events = false
+
+
