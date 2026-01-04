@@ -7,6 +7,12 @@ return {
     keys = {
       { "<leader>tc", desc = "Toggle Copilot" },
     },
+    dependencies = {
+      "copilotlsp-nvim/copilot-lsp",
+      init = function()
+        vim.g.copilot_nes_debounce = 500
+      end,
+    },
     cond = vim.g.not_in_vscode,
     config = function()
       local setup_config = {
@@ -22,6 +28,14 @@ return {
           markdown = false,
           org = false,
         },
+        nes = {
+          enabled = true,
+          keymap = {
+            accept_and_goto = "<leader>cp",
+            accept = false,
+            dismiss = "<Esc>",
+          },
+        },
       }
 
       -- Copilotのセットアップ（一度だけ）
@@ -33,6 +47,19 @@ return {
           require("copilot.suggestion").accept()
         else
           return vim.api.nvim_replace_termcodes("<Tab>", true, false, true)
+        end
+      end, {
+        silent = true,
+        expr = true,
+        desc = "Accept copilot suggestion or fallback to tab",
+      })
+
+      -- カスタムTabキーマップ - トグル後も機能する
+      vim.keymap.set("i", "<C-l>", function()
+        if require("copilot.suggestion").is_visible() then
+          require("copilot.suggestion").accept_line()
+        else
+          return vim.api.nvim_replace_termcodes("<C-l>", true, false, true)
         end
       end, {
         silent = true,
