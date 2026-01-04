@@ -383,3 +383,25 @@ vim.keymap.set("n", "gf", function()
     end
   end
 end)
+
+vim.api.nvim_create_autocmd("BufRead", {
+  pattern = "*/Library/Caches/ovim/*",
+  callback = function()
+    vim.keymap.set("i", "<C-q>", function()
+      vim.cmd("wq")
+    end, { buffer = true, silent = true })
+    vim.keymap.set("n", "<C-q>", ":wq<CR>", { buffer = true, silent = true })
+  end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "skkeleton-enable-post",
+  callback = function()
+    local bufname = vim.api.nvim_buf_get_name(0)
+    if string.match(bufname, "/Library/Caches/ovim/") then
+      vim.keymap.set("i", "<C-q>", function()
+        vim.cmd("wq")
+      end, { buffer = true, silent = true, nowait = true })
+    end
+  end,
+})

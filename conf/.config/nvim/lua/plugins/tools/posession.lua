@@ -1,6 +1,10 @@
 return {
   "jedrzejboczar/possession.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
+  cond = function()
+    local current_file_path = vim.fn.expand("%:p")
+    return not current_file_path:match("/Library/Caches/ovim/edit_.*%.txt$")
+  end,
   config = function()
     local restart_cmd = nil
     require("possession").setup({
@@ -19,7 +23,7 @@ return {
           vim.notify("Restart command not found", vim.log.levels.WARN)
         end
       end
-      
+
       require("possession.session").save("restart", { no_confirm = true })
       vim.cmd([[qa!]])
     end, {})

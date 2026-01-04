@@ -79,6 +79,13 @@ return {
               find = "# Config Change Detected. Reloading...",
             },
           },
+          {
+            filter = {
+              event = "notify",
+              find = "Response contained no choices",
+            },
+            opts = { skip = true },
+          },
         },
         presets = {
           bottom_search = false,
@@ -111,4 +118,3 @@ return {
     },
   },
 }
-
