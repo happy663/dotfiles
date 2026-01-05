@@ -38,9 +38,6 @@ return {
           -- },
         },
         sections = {
-          lualine_a = {
-            { require("plugins.ui.lualine.cc-component") },
-          },
           lualine_x = {
             {
               "copilot",
@@ -59,6 +56,11 @@ return {
             },
             {
               "ctime",
+            },
+          },
+          lualine_z = {
+            {
+              require("plugins.ui.lualine.cc-component"),
             },
           },
         },

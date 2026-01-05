@@ -99,6 +99,69 @@ return {
               vim.notify("No valid URL under cursor", vim.log.levels.WARN, { title = "CodeCompanion" })
             end
           end, { buffer = true, silent = true })
+
+          -- Plan mode切り替えキーマップ
+          vim.keymap.set("n", "<leader>mp", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local Chat = require("codecompanion.interactions.chat")
+            local chat = Chat.buf_get_chat(bufnr)
+
+            if chat and chat.acp_connection then
+              local success = chat.acp_connection:set_mode("plan")
+              if success then
+                vim.notify("Switched to plan mode", vim.log.levels.INFO, { title = "CodeCompanion" })
+                chat:update_metadata()
+              else
+                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+              end
+            else
+              vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
+            end
+          end, { buffer = true, desc = "Switch to plan mode" })
+
+          -- デフォルトモードに戻るキーマップ
+          vim.keymap.set("n", "<leader>md", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local Chat = require("codecompanion.interactions.chat")
+            local chat = Chat.buf_get_chat(bufnr)
+
+            if chat and chat.acp_connection then
+              local success = chat.acp_connection:set_mode("default")
+              if success then
+                vim.notify("Switched to default mode", vim.log.levels.INFO, { title = "CodeCompanion" })
+                chat:update_metadata()
+              else
+                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+              end
+            else
+              vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
+            end
+          end, { buffer = true, desc = "Switch to default mode" })
+
+          -- モードトグルキーマップ
+          vim.keymap.set("n", "<leader>mt", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local Chat = require("codecompanion.interactions.chat")
+            local chat = Chat.buf_get_chat(bufnr)
+
+            if chat and chat.acp_connection then
+              local modes = chat.acp_connection:get_modes()
+              if modes then
+                local next_mode = (modes.currentModeId == "plan") and "default" or "plan"
+                local success = chat.acp_connection:set_mode(next_mode)
+                if success then
+                  vim.notify("Switched to " .. next_mode .. " mode", vim.log.levels.INFO, { title = "CodeCompanion" })
+                  chat:update_metadata()
+                else
+                  vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                end
+              else
+                vim.notify("Modes not supported", vim.log.levels.WARN, { title = "CodeCompanion" })
+              end
+            else
+              vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
+            end
+          end, { buffer = true, desc = "Toggle mode" })
         end,
       })
 
@@ -630,3 +693,4 @@ return {
     end,
   },
 }
+
