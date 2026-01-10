@@ -94,7 +94,8 @@ return {
           vim.keymap.set("n", "gx", function()
             local url = vim.fn.expand("<cfile>")
             if url:match("^https?://") then
-              vim.fn.jobstart({ "xdg-open", url }, { detach = true })
+              local open_cmd = vim.fn.has("mac") == 1 and "open" or "xdg-open"
+              vim.fn.jobstart({ open_cmd, url }, { detach = true })
             else
               vim.notify("No valid URL under cursor", vim.log.levels.WARN, { title = "CodeCompanion" })
             end

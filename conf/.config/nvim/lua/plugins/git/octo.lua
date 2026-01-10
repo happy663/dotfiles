@@ -324,7 +324,7 @@ return {
           dark_blue = "#0366d6",
           purple = "#6f42c1",
         },
-        mappings_disable_default = true, -- disable default mappings if true, but will still adapt user mappings
+        mappings_disable_default = false, -- disable default mappings if true, but will still adapt user mappings
         mappings = {
           runs = {
             expand_step = { lhs = "o", desc = "expand workflow step" },
@@ -587,5 +587,3 @@ return {
     end,
   },
 }
-
-

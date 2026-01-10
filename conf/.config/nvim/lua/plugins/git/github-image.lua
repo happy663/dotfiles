@@ -9,6 +9,9 @@ return {
       -- GitHub画像アップロード機能を追加
 
       local function github_image_upload()
+        -- コマンド実行時のカーソル位置を保存
+        local saved_cursor_pos = vim.api.nvim_win_get_cursor(0)
+        local saved_bufnr = vim.api.nvim_get_current_buf()
         -- 現在のバッファからリポジトリURLを取得
         local bufname = vim.api.nvim_buf_get_name(0)
 
@@ -53,12 +56,11 @@ return {
             if data and #data > 0 then
               for _, line in ipairs(data) do
                 if line ~= "" then
-                  -- マークダウン形式の画像URLをカーソル位置に挿入
-                  local cursor_pos = vim.api.nvim_win_get_cursor(0)
-                  local row = cursor_pos[1]
-                  local col = cursor_pos[2]
+                  -- マークダウン形式の画像URLを保存したカーソル位置に挿入
+                  local row = saved_cursor_pos[1]
+                  local col = saved_cursor_pos[2]
 
-                  vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, col, { line })
+                  vim.api.nvim_buf_set_text(saved_bufnr, row - 1, col, row - 1, col, { line })
                   vim.notify("画像のアップロードが完了しました", vim.log.levels.INFO)
                 end
               end
