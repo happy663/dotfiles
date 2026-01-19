@@ -3,6 +3,12 @@
 
 let
   username = "happy";
+
+  # npmパッケージをNixで管理
+  nodeTools = pkgs.importNpmLock.buildNodeModules {
+    npmRoot = ../node-pkgs;
+    nodejs = pkgs.nodejs_24;
+  };
 in
 {
   nixpkgs = {
@@ -41,6 +47,8 @@ in
       nodejs_24
       claude-code
       claude-code-acp
+      # Node.js tools managed by Nix
+      nodeTools
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";
@@ -62,13 +70,23 @@ in
       VISUAL = "nvim";
       XDG_CONFIG_HOME = "$HOME/.config";
       GOPATH = "$HOME/go";
+      # Additional environment variables
+      CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
+      LIMA_HOME = "$HOME/.colima_lima";
+      AWS_SESSION_TOKEN_TTL = "24h";
+      COLIMA_HOME = "$HOME/.local/share/colima";
+      DOCKER_HOST = "unix://$HOME/.local/share/colima/default/docker.sock";
     };
 
+    # ~/.nix-profile/etc/profile.d/hm-session-vars.shにPATHが生成されるのでそれを.zshrcで読み込む必要がある
     sessionPath = [
       "$HOME/.local/bin"
       "$HOME/.config/wezterm"
       "/opt/homebrew/bin"
+      "/usr/local/bin"
       "$GOPATH/bin"
+      "$HOME/src/github.com/wachikun/yaskkserv2/target/release"
+      "${nodeTools}/node_modules/.bin"
     ];
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
@@ -290,3 +308,8 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
+
+
+
+
+

@@ -1,24 +1,9 @@
 # =============================================================================
 # Environment Variables
 # =============================================================================
-
-# -----------------------------------------------------------------------------
-# Basic Environment
-# -----------------------------------------------------------------------------
-export GOPATH=$HOME/go
-export XDG_CONFIG_HOME="$HOME/.config"
-export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
-export LIMA_HOME="$HOME/.colima_lima"
-
-# -----------------------------------------------------------------------------
-# PATH Configuration
-# -----------------------------------------------------------------------------
-export PATH=$PATH:$HOME/.local/bin
-export PATH=$PATH:$HOME/.config/wezterm
-export PATH="$PATH:/opt/homebrew/bin"
-export PATH="$PATH:/usr/local/bin"
-export PATH=~/.nix-profile/bin:$PATH
-export PATH="$PATH:$HOME/src/github.com/wachikun/yaskkserv2/target/release"
+# Load Home Manager session variables (PATH and environment variables)
+# All static environment variables are managed in ~/.config/nix/home-manager/common.nix
+[ -f ~/.nix-profile/etc/profile.d/hm-session-vars.sh ] && source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 # -----------------------------------------------------------------------------
 # Prompt Configuration / Shell Integration (Commented out)
@@ -75,17 +60,10 @@ if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
 fi
 
 # -----------------------------------------------------------------------------
-# AWS Session Token TTL (Commented out)
+# Dynamic Settings
 # -----------------------------------------------------------------------------
-export AWS_SESSION_TOKEN_TTL=24h
-
-
-# Load Local Environment Variables (Commented out)
-# -----------------------------------------------------------------------------
+# Load Local Environment Variables
 if [[ -f ~/.config/nix/home-manager/.env ]]; then
   source ~/.config/nix/home-manager/.env
   alias ssm="make -C $SSM_SCRIPT_PATH clean session"
 fi
-
-export COLIMA_HOME=$HOME/.local/share/colima 
-export DOCKER_HOST="unix://${COLIMA_HOME}/default/docker.sock"

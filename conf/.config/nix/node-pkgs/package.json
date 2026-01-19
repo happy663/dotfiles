@@ -1,0 +1,8 @@
+{
+  "name": "home-node-tools",
+  "version": "1.0.0",
+  "description": "Node.js CLI tools managed by Nix",
+  "devDependencies": {
+    "editprompt": "latest"
+  }
+}
