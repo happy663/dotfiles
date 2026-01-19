@@ -234,7 +234,6 @@ return {
           end, { "i" }),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.close(),
           ["<CR>"] = cmp.mapping.confirm(),
           -- copilotとの競合回避のためTabキー無効化
@@ -346,6 +345,18 @@ return {
             vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
             skkeleton_last_registered = key
           else
+          end
+
+          -- 補完確定後に▽が残る問題を解決
+          local cursor = vim.api.nvim_win_get_cursor(0)
+          local line = vim.api.nvim_get_current_line()
+
+          -- 行内の▽を探して削除
+          local delta_pos = line:find("▽")
+          if delta_pos then
+            -- ▽を削除（▽は3バイトのUTF-8文字）
+            local delta_end = delta_pos + 2
+            vim.api.nvim_buf_set_text(0, cursor[1] - 1, delta_pos - 1, cursor[1] - 1, delta_end, {})
           end
 
           skkeleton_last_selected = nil
