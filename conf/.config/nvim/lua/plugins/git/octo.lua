@@ -349,6 +349,7 @@ return {
             remove_label = { lhs = "<localleader>ld", desc = "remove label" },
             -- goto_issue = { lhs = "<localleader>gi", desc = "navigate to a local repo issue" },
             goto_issue = { lhs = "<C-]>", desc = "navigate to a local repo issue" },
+            issue_options = { lhs = "", desc = "show issue options" },
             -- add_comment = { lhs = "<leader>oa", desc = "add comment" },
             delete_comment = { lhs = "<localleader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
@@ -363,6 +364,7 @@ return {
             react_confused = { lhs = "<localleader>rc", desc = "add/remove 😕 reaction" },
           },
           pull_request = {
+            pr_options = { lhs = "", desc = "show PR options" },
             checkout_pr = { lhs = "<localleader>po", desc = "checkout PR" },
             merge_pr = { lhs = "<localleader>pm", desc = "merge commit PR" },
             squash_and_merge_pr = { lhs = "<localleader>psm", desc = "squash and merge PR" },
@@ -378,6 +380,7 @@ return {
             reload = { lhs = "<leader>or", desc = "reload PR" },
             open_in_browser = { lhs = "<leader>ob", desc = "open PR in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
+            copy_sha = { lhs = "", desc = "copy commit SHA to system clipboard" },
             -- goto_file = { lhs = "gf", desc = "go to file" },
             add_assignee = { lhs = "<localleader>aa", desc = "add assignee" },
             remove_assignee = { lhs = "<localleader>ad", desc = "remove assignee" },
@@ -436,6 +439,7 @@ return {
           review_diff = {
             submit_review = { lhs = "<localleader>vs", desc = "submit review" },
             discard_review = { lhs = "<localleader>vd", desc = "discard review" },
+            copy_sha = { lhs = "", desc = "copy commit SHA to system clipboard" },
             add_review_comment = { lhs = "<localleader>ca", desc = "add a new review comment", mode = { "n", "x" } },
             add_review_suggestion = {
               lhs = "<localleader>sa",
@@ -587,3 +591,4 @@ return {
     end,
   },
 }
+
