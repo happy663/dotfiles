@@ -96,6 +96,10 @@ return {
         },
       })
 
+      require("notify").setup({
+        timeout = 0,
+      })
+
       local noice_visible = false
       local function toggle_noice()
         if noice_visible then
