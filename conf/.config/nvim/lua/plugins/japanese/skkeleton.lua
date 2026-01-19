@@ -23,6 +23,7 @@ return {
             immediatelyOkuriConvert = true,
             sources = {
               "skk_dictionary",
+              "skk_server",
               "google_japanese_input",
             },
             keepState = true,
@@ -60,11 +61,9 @@ return {
           vim.keymap.set("t", "<C-y>", function()
             vim.fn.feedkeys(vim.fn.input("Input: "), "n")
           end)
-
         end,
       })
     end,
   },
 }
-
 

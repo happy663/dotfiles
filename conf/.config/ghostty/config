@@ -1,17 +1,141 @@
-# Font configuration
+# Ghostty Configuration
+# Migrated from Alacritty configuration
+
+# ============================================================================
+# Font Settings
+# ============================================================================
 font-family = HackGen Console NF
+font-size = 14
 
-# Appearance settings (similar to Wezterm)
-background-opacity = 1
+# ============================================================================
+# Window Settings
+# ============================================================================
+# ウィンドウの不透明度 (0.0 - 1.0)
+background-opacity = 0.55
 
-# Window settings
-window-height = 60
-window-width = 120
+# ウィンドウのパディング
+window-padding-x = 5
+window-padding-y = 5
+
+# ウィンドウ装飾 (Alacrittyの"Buttonless"に相当)
+window-decoration = none
+
+# macOSでのフルスクリーンモード
+fullscreen = true 
+macos-non-native-fullscreen = padded-notch
+
+# ウィンドウタイトル
+title = Ghostty
+
+# ============================================================================
+# Cursor Settings
+# ============================================================================
+cursor-style = block
+cursor-style-blink = true
+
+# ============================================================================
+# Scrolling Settings
+# ============================================================================
+# スクロールバック履歴 (10000行分、約10MB程度を想定)
+scrollback-limit = 10485760
+
+# ============================================================================
+# Color Scheme: AdventureTime
+# ============================================================================
+# プライマリカラー
+background = #1f1d45
+foreground = #f8dcc0
+
+# カーソルカラー
+cursor-color = #efbf38
+cursor-text = #1f1d45
+
+# 通常カラー (0-7)
+palette = 0=#050404
+palette = 1=#bd0013
+palette = 2=#4ab118
+palette = 3=#e7741e
+palette = 4=#0f4ac6
+palette = 5=#665993
+palette = 6=#70a598
+palette = 7=#f8dcc0
+
+# 明るいカラー (8-15)
+palette = 8=#4e7cbf
+palette = 9=#fc5f5a
+palette = 10=#9eff6e
+palette = 11=#efc11a
+palette = 12=#1997c6
+palette = 13=#9b5953
+palette = 14=#c8faf4
+palette = 15=#f6f5fb
+
+# 選択範囲のカラー
+selection-background = #4e7cbf
+selection-foreground = #f8dcc0
+
+# ============================================================================
+# Clipboard Settings
+# ============================================================================
+# クリップボードへの自動コピー
+clipboard-read = allow
+clipboard-write = allow
+
+# ============================================================================
+# Mouse Settings
+# ============================================================================
+# タイピング中にマウスを隠す
+mouse-hide-while-typing = true
+
+# ============================================================================
 # Keybindings
-keybind = cmd+shift+f=toggle_fullscreen
-# Ctrl+Tab and Ctrl+Shift+Tab for buffer navigation in Neovim
-keybind = ctrl+tab=text:\u001b[27;5;9~
-keybind = ctrl+shift+tab=text:\u001b[27;6;9~
+# ============================================================================
+# macOSのOptionキーをAltとして扱う
+macos-option-as-alt = true
 
-macos-option-as-alt=true
-macos-non-native-fullscreen = true
+# コピー・ペースト
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+
+# フォントサイズ調整
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+0=reset_font_size
+
+# 新しいウィンドウ・タブ
+keybind = cmd+n=new_window
+keybind = cmd+t=new_tab
+
+# ウィンドウを閉じる
+keybind = cmd+w=close_surface
+keybind = cmd+q=quit
+
+# スクロール
+keybind = shift+page_up=scroll_page_up
+keybind = shift+page_down=scroll_page_down
+keybind = shift+home=scroll_to_top
+keybind = shift+end=scroll_to_bottom
+
+# Ctrl+Tab/Ctrl+Shift+Tab をNeovimに送信
+keybind = ctrl+tab=text:\x1b[27;5;9~
+keybind = ctrl+shift+tab=text:\x1b[27;6;9~
+
+# Ctrl+. の設定
+keybind = ctrl+period=text:\x1b[27;5;46~
+
+# フルスクリーン切り替え
+keybind = cmd+shift+f=toggle_fullscreen
+
+# ============================================================================
+# Shell Integration
+# ============================================================================
+shell-integration = detect
+
+# ============================================================================
+# macOS Specific Settings
+# ============================================================================
+# macOSでのウィンドウテーマ
+window-theme = auto
+
+theme = "TokyoNight"
+
