@@ -255,56 +255,6 @@ return {
         },
       })
 
-      -- Git更新関数（非同期）
-      -- local function org_git_update()
-      --   local org_memo_dir = vim.fn.expand("~/src/github.com/happy663/org-memo")
-      --
-      --   local commands = {
-      --     { "git", "add", "." },
-      --     { "git", "commit", "-m", "auto update from nvim" },
-      --     { "git", "push", "origin", "main" },
-      --   }
-      --
-      --   local function run_commands(cmd_list, index)
-      --     if index > #cmd_list then
-      --       print("Org files updated and pushed to git!")
-      --       return
-      --     end
-      --
-      --     local cmd = cmd_list[index]
-      --     vim.system(cmd, {
-      --       cwd = org_memo_dir,
-      --       text = true,
-      --     }, function(result)
-      --       if result.code == 0 then
-      --         -- 成功時は次のコマンドを実行
-      --         run_commands(cmd_list, index + 1)
-      --       else
-      --         -- エラー時は処理を停止してエラーメッセージを表示
-      --         print(string.format("Git command failed: %s (exit code: %d)", table.concat(cmd, " "), result.code))
-      --         if result.stderr and result.stderr ~= "" then
-      --           print("Error: " .. result.stderr)
-      --         end
-      --       end
-      --     end)
-      --   end
-      --
-      --   -- 最初のコマンドから開始
-      --   run_commands(commands, 1)
-      -- end
-
-      -- orgファイル保存時の自動更新設定
-      -- vim.api.nvim_create_autocmd("BufWritePost", {
-      --   pattern = {
-      --     "*/org-memo/org/*.org",
-      --   },
-      --   callback = function()
-      --     -- 少し遅延してからgit操作を実行（ファイル保存完了を待つ）
-      --     vim.defer_fn(org_git_update, 500)
-      --   end,
-      --   desc = "Auto update git for org files",
-      -- })
-
       -- ファイル直接アクセス用キーマップ（シンプル化）
       vim.keymap.set(
         "n",
