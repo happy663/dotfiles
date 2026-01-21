@@ -104,6 +104,11 @@ return {
         end,
         desc = "Octo: Search (title + body)",
       },
+      {
+        "<leader>opl",
+        "<cmd>Octo pr list<CR>",
+        desc = "Open Octo pull requests",
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd("FileType", {
@@ -591,4 +596,3 @@ return {
     end,
   },
 }
-
