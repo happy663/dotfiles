@@ -91,6 +91,12 @@ in
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     stateVersion = "24.05";
+
+    activation.myScript = lib.hm.dag.entryAfter [ "postActivation" ] ''
+      sh $HOME/src/github.com/happy663/dotfiles/scripts/skkserv.sh
+    '';
+
+
   };
 
   # home.file.".xsessionrc" = {
@@ -308,8 +314,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
-
-
-
-
