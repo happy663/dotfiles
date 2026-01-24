@@ -783,6 +783,70 @@ return {
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])
 
+      -- Markdown保存用ヘルパー関数
+      local function save_chat_as_markdown(chat)
+        if not chat or not chat.opts or not chat.opts.save_id then
+          return
+        end
+
+        local save_id = chat.opts.save_id
+        local title = chat.opts.title or "Untitled Chat"
+        local messages = chat.messages or {}
+
+        -- Markdownディレクトリの作成
+        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
+        vim.fn.mkdir(md_dir, "p")
+
+        -- Markdown内容の生成
+        local lines = {}
+        table.insert(lines, "# " .. title)
+        table.insert(lines, "")
+        table.insert(lines, "**Updated**: " .. os.date("%Y-%m-%d %H:%M:%S"))
+
+        if chat.settings and chat.settings.model then
+          table.insert(lines, "**Model**: " .. chat.settings.model)
+        end
+
+        if chat.adapter and chat.adapter.name then
+          table.insert(lines, "**Adapter**: " .. chat.adapter.name)
+        end
+
+        table.insert(lines, "")
+        table.insert(lines, "---")
+        table.insert(lines, "")
+
+        -- メッセージの追加
+        for _, msg in ipairs(messages) do
+          local role = msg.role or "unknown"
+          local content = msg.content or ""
+
+          -- roleを見やすい形式に変換
+          local role_display = role:gsub("^%l", string.upper) -- 先頭を大文字に
+
+          table.insert(lines, "## " .. role_display)
+          table.insert(lines, "")
+
+          -- contentがテーブルの場合の処理（tool callなど）
+          if type(content) == "table" then
+            table.insert(lines, "```")
+            table.insert(lines, vim.inspect(content))
+            table.insert(lines, "```")
+          else
+            table.insert(lines, content)
+          end
+
+          table.insert(lines, "")
+        end
+
+        -- ファイルへの書き込み
+        local md_path = md_dir .. "/" .. save_id .. ".md"
+        local file = io.open(md_path, "w")
+        if file then
+          file:write(table.concat(lines, "\n"))
+          file:close()
+        end
+      end
+
       -- インラインリクエストが完了したらバッファをフォーマットする
       local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
       vim.api.nvim_create_autocmd({ "User" }, {
@@ -794,6 +858,42 @@ return {
             vim.lsp.buf.format({ async = false, bufnr = request.bufnr })
           end
         end,
+      })
+
+      -- チャット保存時にMarkdownファイルも保存
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "CodeCompanion*Finished",
+        group = group,
+        callback = vim.schedule_wrap(function(opts)
+          if opts.match == "CodeCompanionRequestFinished" or opts.match == "CodeCompanionToolsFinished" then
+            if opts.match == "CodeCompanionRequestFinished" and opts.data.interaction ~= "chat" then
+              return
+            end
+            local chat_module = require("codecompanion.interactions.chat")
+            local bufnr = opts.data.bufnr
+            if not bufnr then
+              return
+            end
+            local chat = chat_module.buf_get_chat(bufnr)
+            if chat then
+              save_chat_as_markdown(chat)
+            end
+          end
+        end),
+      })
+
+      -- チャット送信時にもMarkdownファイルを保存
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "CodeCompanionChatSubmitted",
+        group = group,
+        callback = vim.schedule_wrap(function(opts)
+          local chat_module = require("codecompanion.interactions.chat")
+          local bufnr = opts.data.bufnr
+          local chat = chat_module.buf_get_chat(bufnr)
+          if chat then
+            save_chat_as_markdown(chat)
+          end
+        end),
       })
     end,
   },
