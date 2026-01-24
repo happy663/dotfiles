@@ -1,437 +1,377 @@
 {
-  "profiles": [
-    {
-      "complex_modifications": {
-        "rules": [
-          {
-            "description": "Ctrl-j to Kana on PowerPoint",
-            "enabled": false,
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.microsoft\\.Powerpoint"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "j",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "0",
-                    "modifiers": [
-                      "control",
-                      "option"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Ctrl-h to delete on PowerPoint",
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.microsoft\\.Powerpoint"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "h",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "delete_or_backspace"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Ctrl+C and Ctrl+V to Cmd+C and Cmd+V and Cmd+W and Cmd+Z on PowerPoint & Chrome",
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome",
-                      "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.tinyspeck\\.slackmacgap"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "c",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "c",
-                    "modifiers": [
-                      "command"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome",
-                      "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.tinyspeck\\.slackmacgap"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "v",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "v",
-                    "modifiers": [
-                      "command"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.google\\.Chrome",
-                      "^com\\.tinyspeck\\.slackmacgap"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "w",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "w",
-                    "modifiers": [
-                      "command"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.google\\.Chrome",
-                      "^com\\.tinyspeck\\.slackmacgap"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "z",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "z",
-                    "modifiers": [
-                      "command"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Remap Enter to Ctrl+Enter in ChatGPT",
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.openai\\.chat$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "return_or_enter"
-                },
-                "to": [
-                  {
-                    "key_code": "return_or_enter",
-                    "modifiers": [
-                      "control"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Remap Ctrl+Enter to Enter in ChatGPT",
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.openai\\.chat$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "return_or_enter",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "return_or_enter"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Alt+W to launch wezterm, disabled when wezterm is active",
-            "enabled": false,
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.github\\.wez\\.wezterm$"
-                    ],
-                    "type": "frontmost_application_unless"
-                  }
-                ],
-                "from": {
-                  "key_code": "w",
-                  "modifiers": {
-                    "mandatory": [
-                      "option"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "open -a wezterm"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "macSKK for Ghostty",
-            "enabled": false,
-            "manipulators": [
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.mitchellh\\.ghostty$"
-                    ],
-                    "type": "frontmost_application_if"
-                  },
-                  {
-                    "input_sources": [
-                      {
-                        "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.(hiragana|katakana|hankaku)$"
-                      }
-                    ],
-                    "type": "input_source_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "l"
-                },
-                "to": [
-                  {
-                    "select_input_source": {
-                      "input_mode_id": "net.mtgto.inputmethod.macSKK.ascii",
-                      "input_source_id": "net.mtgto.inputmethod.macSKK.ascii",
-                      "language": "en"
-                    }
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.mitchellh\\.ghostty$"
-                    ],
-                    "type": "frontmost_application_if"
-                  },
-                  {
-                    "input_sources": [
-                      {
-                        "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.(katakana|hankaku)$"
-                      }
-                    ],
-                    "type": "input_source_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "q"
-                },
-                "to": [
-                  {
-                    "select_input_source": {
-                      "input_mode_id": "net.mtgto.inputmethod.macSKK.hiragana",
-                      "input_source_id": "net.mtgto.inputmethod.macSKK.hiragana",
-                      "language": "ja"
-                    }
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.mitchellh\\.ghostty$"
-                    ],
-                    "type": "frontmost_application_if"
-                  },
-                  {
-                    "input_sources": [
-                      {
-                        "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.hiragana$"
-                      }
-                    ],
-                    "type": "input_source_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "q"
-                },
-                "to": [
-                  {
-                    "select_input_source": {
-                      "input_mode_id": "net.mtgto.inputmethod.macSKK.katakana",
-                      "input_source_id": "net.mtgto.inputmethod.macSKK.katakana",
-                      "language": "ja"
-                    }
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          }
-        ]
-      },
-      "devices": [
+    "profiles": [
         {
-          "identifiers": {
-            "is_keyboard": true,
-            "product_id": 834,
-            "vendor_id": 1452
-          },
-          "simple_modifications": [
-            {
-              "from": {
-                "key_code": "caps_lock"
-              },
-              "to": [
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "Ctrl-j to Kana on PowerPoint",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.Powerpoint"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "j",
+                                    "modifiers": { "mandatory": ["control"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "0",
+                                        "modifiers": ["control", "option"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Ctrl-h to delete on PowerPoint",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.Powerpoint"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["control"] }
+                                },
+                                "to": [{ "key_code": "delete_or_backspace" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Ctrl+C and Ctrl+V to Cmd+C and Cmd+V and Cmd+W and Cmd+Z on PowerPoint & Chrome",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.google\\.Chrome",
+                                            "^com\\.microsoft\\.Powerpoint",
+                                            "^com\\.tinyspeck\\.slackmacgap"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "c",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.google\\.Chrome",
+                                            "^com\\.microsoft\\.Powerpoint",
+                                            "^com\\.tinyspeck\\.slackmacgap"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "v",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.Powerpoint",
+                                            "^com\\.google\\.Chrome",
+                                            "^com\\.tinyspeck\\.slackmacgap"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "w",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "w",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.Powerpoint",
+                                            "^com\\.google\\.Chrome",
+                                            "^com\\.tinyspeck\\.slackmacgap"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "z",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Remap Enter to Ctrl+Enter in ChatGPT",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["control"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Remap Ctrl+Enter to Enter in ChatGPT",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["control"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Alt+W to launch wezterm, disabled when wezterm is active",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.github\\.wez\\.wezterm$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "w",
+                                    "modifiers": {
+                                        "mandatory": ["option"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "shell_command": "open -a wezterm" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "macSKK for Ghostty",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.mitchellh\\.ghostty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "input_sources": [{ "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.(hiragana|katakana|hankaku)$" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": { "key_code": "l" },
+                                "to": [
+                                    {
+                                        "select_input_source": {
+                                            "input_mode_id": "net.mtgto.inputmethod.macSKK.ascii",
+                                            "input_source_id": "net.mtgto.inputmethod.macSKK.ascii",
+                                            "language": "en"
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.mitchellh\\.ghostty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "input_sources": [{ "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.(katakana|hankaku)$" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": { "key_code": "q" },
+                                "to": [
+                                    {
+                                        "select_input_source": {
+                                            "input_mode_id": "net.mtgto.inputmethod.macSKK.hiragana",
+                                            "input_source_id": "net.mtgto.inputmethod.macSKK.hiragana",
+                                            "language": "ja"
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.mitchellh\\.ghostty$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "input_sources": [{ "input_source_id": "^net\\.mtgto\\.inputmethod\\.macSKK\\.hiragana$" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": { "key_code": "q" },
+                                "to": [
+                                    {
+                                        "select_input_source": {
+                                            "input_mode_id": "net.mtgto.inputmethod.macSKK.katakana",
+                                            "input_source_id": "net.mtgto.inputmethod.macSKK.katakana",
+                                            "language": "ja"
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "SandS",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^io\\.krunker\\.desktop$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "spacebar",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "left_shift" }],
+                                "to_if_alone": [{ "key_code": "spacebar" }],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "devices": [
                 {
-                  "key_code": "left_control"
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 834,
+                        "vendor_id": 1452
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "caps_lock" },
+                            "to": [{ "key_code": "left_control" }]
+                        }
+                    ]
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": true,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 514,
+                        "vendor_id": 1278
+                    }
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": true,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 33,
+                        "vendor_id": 1278
+                    }
                 }
-              ]
+            ],
+            "name": "Default profile",
+            "selected": true,
+            "virtual_hid_keyboard": {
+                "country_code": 0,
+                "keyboard_type_v2": "ansi"
             }
-          ]
-        },
-        {
-          "disable_built_in_keyboard_if_exists": true,
-          "identifiers": {
-            "is_keyboard": true,
-            "product_id": 514,
-            "vendor_id": 1278
-          }
-        },
-        {
-          "disable_built_in_keyboard_if_exists": true,
-          "identifiers": {
-            "is_keyboard": true,
-            "product_id": 33,
-            "vendor_id": 1278
-          }
         }
-      ],
-      "name": "Default profile",
-      "selected": true,
-      "virtual_hid_keyboard": {
-        "country_code": 0,
-        "keyboard_type_v2": "ansi"
-      }
-    }
-  ]
+    ]
 }
