@@ -67,6 +67,19 @@ return {
         desc = "Accept copilot suggestion or fallback to tab",
       })
 
+      -- カスタムTabキーマップ - トグル後も機能する
+      vim.keymap.set("i", "<C-w>", function()
+        if require("copilot.suggestion").is_visible() then
+          require("copilot.suggestion").accept_word()
+        else
+          return vim.api.nvim_replace_termcodes("<C-w>", true, false, true)
+        end
+      end, {
+        silent = true,
+        expr = true,
+        desc = "Accept copilot suggestion or fallback to tab",
+      })
+
       -- Copilotをトグルする関数
       function _G.toggle_copilot()
         if require("copilot.client").is_disabled() then
