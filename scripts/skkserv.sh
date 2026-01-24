@@ -18,13 +18,15 @@ else
 fi
 
 if [ ! -f "/tmp/dictionary.yaskkserv2" ]; then
-  yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L  > /tmp/yaskkserv2.log 2>&1
+  yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/src/github.com/happy663/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L 
+  echo "Dictionary created at /tmp/dictionary.yaskkserv2"
 else
   echo "/tmp/dictionary.yaskkserv2 already exists. Skipping dictionary creation."
 fi
 
 if [ ! -f "/tmp/yaskkserv2.cache" ]; then
-  yaskkserv2_make_google_cache --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 >> /tmp/yaskkserv2.log 2>&1
+  yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 
+  echo "Google cache created at /tmp/yaskkserv2.cache"
 else
   echo "/tmp/yaskkserv2.cache already exists. Skipping google cache creation."
 fi

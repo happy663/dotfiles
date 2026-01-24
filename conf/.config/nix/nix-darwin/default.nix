@@ -247,8 +247,8 @@
   launchd.agents.my-startup-script = {
     script = ''
       #!/bin/bash
-      yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L  > /tmp/yaskkserv2.log 2>&1
-      yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 >> /tmp/yaskkserv2.log 2>&1
+      yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2  /Users/happy/src/github.com/happy663/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L
+      yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 
     '';
     environment = {
       PATH = "/Users/happy/src/github.com/wachikun/yaskkserv2/target/release";
@@ -257,6 +257,39 @@
     serviceConfig = {
       RunAtLoad = true;
       KeepAlive = true;
+    };
+  };
+
+  launchd.agents.ice = {
+    script = ''
+      #!/bin/bash
+      open -g -a Ice
+    '';
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = false;
+    };
+  };
+
+  launchd.agents.hammerspoon = {
+    script = ''
+      #!/bin/bash
+      open -g -a Hammerspoon
+    '';
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = false;
+    };
+  };
+
+  launchd.agents.raycast = {
+    script = ''
+      #!/bin/bash
+      open -g -a Raycast
+    '';
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = false;
     };
   };
 

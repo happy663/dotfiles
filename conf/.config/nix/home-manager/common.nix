@@ -93,6 +93,7 @@ in
     stateVersion = "24.05";
 
     activation.myScript = lib.hm.dag.entryAfter [ "postActivation" ] ''
+      export PATH="$HOME/src/github.com/wachikun/yaskkserv2/target/release:$PATH"
       sh $HOME/src/github.com/happy663/dotfiles/scripts/skkserv.sh
     '';
 
