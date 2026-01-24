@@ -23,11 +23,13 @@ return {
             immediatelyOkuriConvert = true,
             sources = {
               "skk_dictionary",
+              -- skkserverが動いていないとエラーになる、google_japanese_inputにfallbackが望ましい
               "skk_server",
               "google_japanese_input",
             },
             keepState = true,
             debug = false,
+            registerConvertResult = true,
           })
 
           vim.fn["skkeleton#register_kanatable"]("rom", {
