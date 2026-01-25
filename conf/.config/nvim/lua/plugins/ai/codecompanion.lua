@@ -25,7 +25,7 @@ return {
     lazy = true,
     version = "v18.5.0",
     keys = {
-      { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
+      -- { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
       { "<C-t>", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
       {
@@ -60,7 +60,7 @@ return {
       },
       { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
       {
-        "<leader>ccb",
+        "<leader>ccc",
         string.format("<cmd>CodeCompanion /%s<cr>", short_names.CHAT_WITH_BUFFER),
         mode = "n",
         desc = "Chat with Current Buffer",
@@ -77,7 +77,6 @@ return {
       vim.api.nvim_create_autocmd("User", {
         pattern = "CodeCompanionChatCreated",
         callback = function()
-          vim.notify("Welcome to CodeCompanion!", vim.log.levels.INFO, { title = "CodeCompanion" })
           local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
           for _, line in ipairs(lines) do
@@ -337,6 +336,16 @@ return {
                   "Japanese"
                 )
               end,
+              enabled = true,
+            },
+            callbacks = {
+              ["on_ready"] = {
+                actions = {
+                  "interactions.background.builtin.chat_make_title",
+                },
+                -- Enable "on_ready" callback which contains the title generation action
+                enabled = true,
+              },
             },
             keymaps = {
               -- send = {
@@ -347,7 +356,7 @@ return {
               -- },
               clear = {
                 modes = {
-                  n = { "<C-l>" },
+                  n = { "gl" },
                 },
               },
             },
@@ -356,12 +365,17 @@ return {
           cmd = {
             adapter = "openai",
           },
-          -- background = {
-          --   adapter = {
-          --     name = "ollama",
-          --     model = "qwen-7b-instruct",
-          --   },
-          -- },
+          background = {
+            adapter = {
+              name = "copilot",
+              model = "gpt-4o", -- 高速で安価なモデル
+            },
+            chat = {
+              opts = {
+                enabled = true, -- バックグラウンドチャット機能を有効化(タイトル生成に必要)
+              },
+            },
+          },
         },
         prompt_library = {
           ["Chat with Buffer"] = {
@@ -713,12 +727,12 @@ return {
                 duplicate = { n = "<C-y>", i = "<C-y>" },
               },
               ---Automatically generate titles for new chats
-              auto_generate_title = false,
+              auto_generate_title = true,
               title_generation_opts = {
                 ---Adapter for generating titles (defaults to current chat adapter)
                 adapter = "copilot", -- "copilot"
                 ---Model for generating titles (defaults to current chat model)
-                model = nil, -- "gpt-4o"
+                model = "gpt-4o", -- "gpt-4o"
                 ---Number of user prompts after which to refresh the title (0 to disable)
                 refresh_every_n_prompts = 0, -- e.g., 3 to refresh after every 3rd user prompt
                 ---Maximum number of times to refresh the title (default: 3)
@@ -790,53 +804,18 @@ return {
         end
 
         local save_id = chat.opts.save_id
-        local title = chat.opts.title or "Untitled Chat"
-        local messages = chat.messages or {}
+        local bufnr = chat.bufnr
+
+        if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
+          return
+        end
 
         -- Markdownディレクトリの作成
         local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
         vim.fn.mkdir(md_dir, "p")
 
-        -- Markdown内容の生成
-        local lines = {}
-        table.insert(lines, "# " .. title)
-        table.insert(lines, "")
-        table.insert(lines, "**Updated**: " .. os.date("%Y-%m-%d %H:%M:%S"))
-
-        if chat.settings and chat.settings.model then
-          table.insert(lines, "**Model**: " .. chat.settings.model)
-        end
-
-        if chat.adapter and chat.adapter.name then
-          table.insert(lines, "**Adapter**: " .. chat.adapter.name)
-        end
-
-        table.insert(lines, "")
-        table.insert(lines, "---")
-        table.insert(lines, "")
-
-        -- メッセージの追加
-        for _, msg in ipairs(messages) do
-          local role = msg.role or "unknown"
-          local content = msg.content or ""
-
-          -- roleを見やすい形式に変換
-          local role_display = role:gsub("^%l", string.upper) -- 先頭を大文字に
-
-          table.insert(lines, "## " .. role_display)
-          table.insert(lines, "")
-
-          -- contentがテーブルの場合の処理（tool callなど）
-          if type(content) == "table" then
-            table.insert(lines, "```")
-            table.insert(lines, vim.inspect(content))
-            table.insert(lines, "```")
-          else
-            table.insert(lines, content)
-          end
-
-          table.insert(lines, "")
-        end
+        -- バッファの内容をそのまま取得
+        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
         -- ファイルへの書き込み
         local md_path = md_dir .. "/" .. save_id .. ".md"
@@ -847,7 +826,7 @@ return {
         end
       end
 
-      -- インラインリクエストが完了したらバッファをフォーマットする
+      -- -- インラインリクエストが完了したらバッファをフォーマットする
       local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
       vim.api.nvim_create_autocmd({ "User" }, {
         pattern = "CodeCompanionInline*",
@@ -895,6 +874,17 @@ return {
           end
         end),
       })
+
+      -- Markdownファイルをlive_grepするキーマップ
+      vim.keymap.set("n", "<leader>ccm", function()
+        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
+        require("telescope.builtin").live_grep({
+          prompt_title = "CodeCompanion Chat History",
+          cwd = md_dir,
+          default_text = "",
+        })
+      end, { desc = "Search CodeCompanion Chat Markdown" })
     end,
   },
 }
+
