@@ -215,7 +215,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.o.grepprg = "git grep -n --no-color"
 vim.opt.grepformat = "%f:%l:%m"
-vim.o.clipboard = "unnamedplus"
+-- vim.o.clipboard = "unnamedplus"
 
 -- Markdownのスペルチェックハイライトを白色に設定
 -- (デフォルトではCommentと同じ灰色になってしまうため)
@@ -364,5 +364,3 @@ vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
 -- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用
 vim.o.synmaxcol = 200
 vim.o.laststatus = 3
-
-
