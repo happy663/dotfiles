@@ -405,3 +405,28 @@ vim.api.nvim_create_autocmd("User", {
     end
   end,
 })
+
+-- editprompt integration
+if vim.env.EDITPROMPT == "1" then
+  -- エディタを閉じずに送信（自動Enter押下 + フォーカス戻る）
+  vim.keymap.set("n", "<C-CR>", function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local content = table.concat(lines, "\n")
+    local escaped_content = vim.fn.shellescape(content)
+    vim.fn.system("editprompt input --auto-send -- " .. escaped_content)
+  end, { noremap = true, silent = true, desc = "Send to target pane with auto-send" })
+
+  -- エディタを閉じずに送信（フォーカスは対象ペインに移動）
+  vim.keymap.set("n", "<leader>es", function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local content = table.concat(lines, "\n")
+    local escaped_content = vim.fn.shellescape(content)
+    vim.fn.system("editprompt input -- " .. escaped_content)
+  end, { noremap = true, silent = true, desc = "Send to target pane" })
+
+  -- 収集した引用を取得
+  vim.keymap.set("n", "<leader>ed", function()
+    vim.fn.system("editprompt dump")
+    vim.cmd('normal! "+p')
+  end, { noremap = true, silent = true, desc = "Dump collected quotes" })
+end
