@@ -11,6 +11,7 @@ return {
     -- See Commands section for default commands if you want to lazy load on them
     config = function()
       require("CopilotChat").setup({
+        language = "Japanese", -- 公式のlanguage設定
         mappings = {
           complete = false, -- Disable the default completion mapping
         },
