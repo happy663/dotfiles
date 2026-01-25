@@ -3,6 +3,8 @@
 # =============================================================================
 # Load Home Manager session variables (PATH and environment variables)
 # All static environment variables are managed in ~/.config/nix/home-manager/common.nix
+# NOTE: Unset the flag to allow re-sourcing after home-manager switch
+unset __HM_SESS_VARS_SOURCED
 [ -f ~/.nix-profile/etc/profile.d/hm-session-vars.sh ] && source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 # -----------------------------------------------------------------------------
