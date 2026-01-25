@@ -238,6 +238,29 @@ return {
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])
 
+      -- -- インラインリクエストが完了したらバッファをフォーマットする
+      local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
+      vim.api.nvim_create_autocmd({ "User" }, {
+        pattern = "CodeCompanionInline*",
+        group = group,
+        callback = function(request)
+          if request.match == "CodeCompanionInlineFinished" then
+            -- Format the buffer after the inline request has completed
+            vim.lsp.buf.format({ async = false, bufnr = request.bufnr })
+          end
+        end,
+      })
+
+      -- Markdownファイルをlive_grepするキーマップ
+      vim.keymap.set("n", "<leader>ccm", function()
+        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
+        require("telescope.builtin").live_grep({
+          prompt_title = "CodeCompanion Chat History",
+          cwd = md_dir,
+          default_text = "",
+        })
+      end, { desc = "Search CodeCompanion Chat Markdown" })
+
       -- Markdown保存用ヘルパー関数
       local function save_chat_as_markdown(chat)
         if not chat or not chat.opts or not chat.opts.save_id then
@@ -259,31 +282,16 @@ return {
         local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
         -- ファイルへの書き込み
-        local md_path = md_dir .. "/" .. save_id .. ".md"
+        local md_path = md_dir .. "/" .. save_id .. "_" .. chat.opts.title .. ".md"
         local file = io.open(md_path, "w")
         if file then
           file:write(table.concat(lines, "\n"))
           file:close()
         end
       end
-
-      -- -- インラインリクエストが完了したらバッファをフォーマットする
-      local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
-      vim.api.nvim_create_autocmd({ "User" }, {
-        pattern = "CodeCompanionInline*",
-        group = group,
-        callback = function(request)
-          if request.match == "CodeCompanionInlineFinished" then
-            -- Format the buffer after the inline request has completed
-            vim.lsp.buf.format({ async = false, bufnr = request.bufnr })
-          end
-        end,
-      })
-
       -- チャット保存時にMarkdownファイルも保存
       vim.api.nvim_create_autocmd("User", {
         pattern = "CodeCompanion*Finished",
-        group = group,
         callback = vim.schedule_wrap(function(opts)
           if opts.match == "CodeCompanionRequestFinished" or opts.match == "CodeCompanionToolsFinished" then
             if opts.match == "CodeCompanionRequestFinished" and opts.data.interaction ~= "chat" then
@@ -301,32 +309,6 @@ return {
           end
         end),
       })
-
-      -- チャット送信時にもMarkdownファイルを保存
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "CodeCompanionChatSubmitted",
-        group = group,
-        callback = vim.schedule_wrap(function(opts)
-          local chat_module = require("codecompanion.interactions.chat")
-          local bufnr = opts.data.bufnr
-          local chat = chat_module.buf_get_chat(bufnr)
-          if chat then
-            save_chat_as_markdown(chat)
-          end
-        end),
-      })
-
-      -- Markdownファイルをlive_grepするキーマップ
-      vim.keymap.set("n", "<leader>ccm", function()
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        require("telescope.builtin").live_grep({
-          prompt_title = "CodeCompanion Chat History",
-          cwd = md_dir,
-          default_text = "",
-        })
-      end, { desc = "Search CodeCompanion Chat Markdown" })
     end,
   },
 }
-
-
