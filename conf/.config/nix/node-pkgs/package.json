@@ -1,8 +1,9 @@
 {
   "name": "home-node-tools",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Node.js CLI tools managed by Nix",
   "devDependencies": {
+    "@zed-industries/claude-code-acp": "^0.12.4",
     "editprompt": "latest"
   }
 }

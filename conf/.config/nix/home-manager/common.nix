@@ -46,7 +46,6 @@ in
       neofetch
       nodejs_24
       claude-code
-      claude-code-acp
       # Node.js tools managed by Nix
       nodeTools
       # Development tools
@@ -81,12 +80,12 @@ in
     # ~/.nix-profile/etc/profile.d/hm-session-vars.shにPATHが生成されるのでそれを.zshrcで読み込む必要がある
     sessionPath = [
       "$HOME/.local/bin"
+      "${nodeTools}/node_modules/.bin"
       "$HOME/.config/wezterm"
       "/opt/homebrew/bin"
       "/usr/local/bin"
       "$GOPATH/bin"
       "$HOME/src/github.com/wachikun/yaskkserv2/target/release"
-      "${nodeTools}/node_modules/.bin"
     ];
 
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
