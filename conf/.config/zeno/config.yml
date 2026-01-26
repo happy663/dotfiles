@@ -210,7 +210,7 @@ snippets:
     keyword: enable_desktop
     snippet: defaults write com.apple.finder CreateDesktop -boolean true; killall Finder
   - name: relogin
-    keyword: re
+    keyword: r
     snippet: exec $SHELL -l
   - name: docker exec select
     keyword: de
@@ -302,7 +302,7 @@ completions:
 
   - name: Makefile
     patterns:
-      - "^make( .*)? $"
+      - "^make $"
     sourceCommand: cat Makefile | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}'
     callback: "awk '{printf $1}'"
     options:
