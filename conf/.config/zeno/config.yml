@@ -1,0 +1,331 @@
+# 参考
+# https://github.com/yuki-yano/dotfiles/blob/main/.config/zeno/config.yml
+# https://github.com/eetann/dotfiles/blob/main/.config/zeno/config.yml
+# https://github.com/mozumasu/dotfiles/tree/main/.config/zeno
+
+snippets:
+  - name: zeno preprompt
+    keyword: zp
+    snippet: zeno-preprompt
+  - name: zeno preprompt snippet
+    keyword: zps
+    snippet: zeno-preprompt-snippet
+
+  - name: git status
+    keyword: gs
+    snippet: git status --short --branch
+  - name: git add
+    keyword: ga
+    snippet: git add {{file}}
+  - name: git add all
+    keyword: gaa
+    snippet: git add --all
+  - name: git commit
+    keyword: gci
+    snippet: git commit
+  - name: git commit message
+    keyword: gcim
+    snippet: git commit -m '{{commit_message}}'
+  - name: git commit fixup
+    keyword: gcif
+    snippet: git fixup {{commit_id}}
+  - name: git diff
+    keyword: gd
+    snippet: git diff {{branch}}
+  - name: git diff file
+    keyword: gd
+    snippet: git diff -- {{file}}
+  - name: git diff branch file
+    keyword: gd
+    snippet: git diff {{branch}} -- {{file}}
+  - name: git diff 2 branch
+    keyword: gd
+    snippet: git diff {{branch1}} {{branch2}}
+  - name: git diff 2 branch file
+    keyword: gd
+    snippet: git diff {{branch1}} {{branch2}} -- {{file}}
+  - name: git diff cached
+    keyword: gdc
+    snippet: git diff --cached
+  - name: git diff cached file
+    keyword: gdc
+    snippet: git diff --cached -- {{file}}
+  - name: git checkout
+    keyword: gco
+    snippet: git checkout {{branch}}
+  - name: git checkout file
+    keyword: gcof
+    snippet: git checkout -- {{file}}
+  - name: git checkout branch file
+    keyword: gcof
+    snippet: git checkout {{branch}} -- {{file}}
+  - name: git checkout track
+    keyword: gcot
+    snippet: git checkout --track {{origin_branch}}
+  - name: git reset
+    keyword: gre
+    snippet: git reset {{branch}}
+  - name: git reset file
+    keyword: gre
+    snippet: git reset -- {{file}}
+  - name: git reset hard
+    keyword: gre
+    snippet: git reset --hard {{branch}}
+  - name: git stash
+    keyword: gst
+    snippet: git stash
+  - name: git stash --include-untracked
+    keyword: gstu
+    snippet: git stash -u
+  - name: git stash list
+    keyword: gstl
+    snippet: git stash list
+  - name: git stash show {{stash}}
+    keyword: gsts
+    snippet: git stash show {{stash}}
+  - name: git stash apply
+    keyword: gsta
+    snippet: git stash apply {{stash}}
+  - name: git stash pop
+    keyword: gstp
+    snippet: git stash pop {{stash}}
+  - name: git stash drop
+    keyword: gstd
+    snippet: git stash drop {{stash}}
+  - name: git rebase squash
+    keyword: squash
+    snippet: git rebase --interactive --autosquash {{branch}}
+  - name: git rebase squash auto
+    keyword: squash
+    snippet: GIT_EDITOR=cat git rebase --interactive --autosquash {{branch}}
+  - name: git rebase conflict resolution
+    snippet: git range-diff @{u} @{1} @
+  - name: git push
+    keyword: gp
+    snippet: git push
+  - name: git push force-with-lease
+    keyword: gpf
+    snippet: git push --force-with-lease
+
+  - name: git push safe force
+    keyword: -f
+    snippet: --force-with-lease
+    context:
+      lbuffer: '^git push(\s+\S+)*\s+'
+
+  - name: ghq-project-selector
+    keyword: f
+    snippet: ghq-project-selector
+
+  - name: tmux session selector
+    keyword: t
+    snippet: tmux-session-manager
+
+  - name: tmux session killer
+    keyword: tk
+    snippet: tmux-session-manager --kill
+
+  - name: "null"
+    keyword: "null"
+    snippet: ">/dev/null 2>&1"
+    context:
+      lbuffer: '.+\s+'
+  - name: stdout to null
+    keyword: null1
+    snippet: ">/dev/null"
+    context:
+      lbuffer: '.+\s+'
+  - name: stderr to null
+    keyword: null2
+    snippet: "2>/dev/null"
+    context:
+      lbuffer: '.+\s+'
+
+  - name: pipe vim
+    keyword: V
+    snippet: "| vi"
+    context:
+      lbuffer: '.+\s'
+
+  - name: default branch
+    keyword: B
+    snippet: zsh -c "git symbolic-ref --short refs/remotes/origin/HEAD | sed 's!.*/!!'"
+    context:
+      lbuffer: '^git\s+'
+    evaluate: true
+
+  - name: mkdir -p
+    keyword: mkdir
+    snippet: mkdir -p
+
+  - name: git quick save
+    keyword: c
+    snippet: git quick-save "{{message}}"
+
+  - name: nr to ni run
+    keyword: nr
+    snippet: ni run
+
+  - name: brew
+    keyword: b
+    snippet: brew
+
+  - name: brew update
+    keyword: bu
+    snippet: brew update && brew outdated
+
+  - name: brew update
+    keyword: bg
+    snippet: brew upgrade
+
+  - name: codex yolo
+    keyword: yolo
+    snippet: codex --yolo
+  - name: codex
+    keyword: co
+    snippet: codex --yolo
+  - name: claude
+    keyword: cc
+    snippet: claude --dangerously-skip-permissions
+
+  - name: codex oneline
+    keyword: "?"
+    snippet: codex --config model_reasoning_effort="low" exec "{{prompt}}" 2>/dev/null; printf $'\e[<u'; printf $'\e[?2004h'
+  - name: CC oneline
+    keyword: "??"
+    snippet: claude --print --model haiku "{{prompt}}"
+
+  - name: vde-layout
+    keyword: vl
+    snippet: vde-layout
+
+  - name: difit
+    keyword: difit
+    snippet: bun x difit@latest .
+
+  - name: disable desktop
+    keyword: disable_desktop
+    snippet: defaults write com.apple.finder CreateDesktop -boolean false; killall Finder
+  - name: enable desktop
+    keyword: enable_desktop
+    snippet: defaults write com.apple.finder CreateDesktop -boolean true; killall Finder
+  - name: relogin
+    keyword: re
+    snippet: exec $SHELL -l
+  - name: docker exec select
+    keyword: de
+    snippet: docker exec -it $(docker ps | fzf | cut -d " " -f 1) /bin/bash
+  - name: github browser
+    keyword: ghb
+    snippet: gh browser
+  - name: nvim-restart
+    keyword: n
+    snippet: nvim-restart .
+  - name: "home-manager switch"
+    keyword: "hm"
+    snippet: "home-manager switch --flake ~/src/github.com/happy663/dotfiles"
+  - name: "which"
+    keyword: "w"
+    snippet: "which"
+  - name: "make docker"
+    keyword: "md"
+    snippet: "make -f docker.mk"
+  - name: ghq list
+    keyword: g
+    snippet: cd $(ghq root)/$(ghq list | fzf)
+
+  # - name:
+  #   keyword:
+  #   snippet:
+completions:
+  - name: kill
+    patterns:
+      - "^kill( -9)? $"
+    sourceCommand: "procs --color=always"
+    options:
+      --multi: true
+      --prompt: "'Kill Process> '"
+      --exact: true
+      --header-lines: 2
+    callback: "perl -lane 'print $F[0]'"
+  - name: git fixup script
+    patterns:
+      - "^git fixup $"
+    sourceCommand: "git log --decorate --color=always --format='%C(green)[commit] %C(magenta)%h%x09%C(yellow)%cr%x09%C(blue)[%an]%x09%C(auto)%s%d' | column -t -s $'\\t'"
+    options:
+      --prompt: "'Git fixup> '"
+      --exact: true
+      --no-sort: true
+      --preview: "git show --color=always {2}"
+    callback: "awk '{print $2}'"
+  - name: docker stop
+    patterns:
+      - "^docker stop $"
+    sourceCommand: "docker ps"
+    options:
+      --header-lines: 1
+      --tmux: "80%"
+      --prompt: "'Docker Stop> '"
+      --no-select-1: true
+    callback: "awk '{print $1}'"
+
+  - name: docker rm(コンテナ)
+    patterns:
+      - "^docker rm $"
+    sourceCommand: "docker ps -a"
+    options:
+      --header-lines: 1
+      --tmux: "80%"
+      --multi: true
+      --prompt: "'Docker Remove Container> '"
+      --no-select-1: true
+    callback: "awk '{print $1}'"
+
+  - name: docker rmi(イメージ)
+    patterns:
+      - "^docker rmi $"
+    sourceCommand: "docker images"
+    options:
+      --header-lines: 1
+      --tmux: "80%"
+      --multi: true
+      --prompt: "'Docker Remove Image> '"
+      --no-select-1: true
+    callback: "awk '{print $3}'"
+
+  - name: nix run apps
+    patterns:
+      - "^nix run \\.#$"
+    sourceCommand: '/nix/var/nix/profiles/default/bin/nix flake show ~/src/github.com/happy663/dotfiles --json 2>/dev/null | jq -r ''.apps["aarch64-darwin"] // {} | keys[]'''
+    options:
+      --prompt: "'nix run .#> '"
+
+  - name: Makefile
+    patterns:
+      - "^make( .*)? $"
+    sourceCommand: cat Makefile | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}'
+    callback: "awk '{printf $1}'"
+    options:
+      --prompt: "'make> '"
+
+  - name: docker Makefile
+    patterns:
+      - "^make -f docker.mk( .*)? $"
+    sourceCommand: cat docker.mk | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}'
+    callback: "awk '{printf $1}'"
+    options:
+      --prompt: "'make> '"
+
+history:
+  defaultScope: global
+  fzfCommand: fzf-tmux
+  fzfOptions:
+    - "-p 50%,50%"
+    - "--exact"
+    - "--no-sort"
+  redact:
+  keymap:
+    deleteSoft: ctrl-d
+    deleteHard: alt-d
+    toggleScope: ctrl-r
+    togglePreview: "?"

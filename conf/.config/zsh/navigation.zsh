@@ -12,6 +12,7 @@ add-zsh-hook chpwd chpwd_recent_dirs
 # Zoxide (Commented out)
 # -----------------------------------------------------------------------------
 eval "$(zoxide init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
 
 # -----------------------------------------------------------------------------
 # Auto ls after cd (Commented out)

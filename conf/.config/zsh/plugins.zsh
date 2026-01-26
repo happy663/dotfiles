@@ -15,6 +15,12 @@ if [ -n "$_comps" ]; then
   _comps[zinit]=_zinit
 fi
 
+# ziエイリアスを削除（zoxideのziコマンドに譲る）
+unalias zi 2>/dev/null
+
+# zinitには別のエイリアスを設定
+alias zin='zinit'
+
 # -----------------------------------------------------------------------------
 # Powerlevel10k Instant Prompt
 # -----------------------------------------------------------------------------
@@ -26,12 +32,22 @@ fi
 # Zinit Plugins
 # -----------------------------------------------------------------------------
 zinit light romkatv/powerlevel10k
-zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light mollifier/anyframe
 zinit light zsh-users/zsh-completions
+
+# Load syntax-highlighting last to properly highlight all commands
+# zinit light zsh-users/zsh-syntax-highlighting
+
+# Load zeno.zsh after syntax-highlighting
+zinit ice lucid depth"1" blockf
+zinit light yuki-yano/zeno.zsh
+zinit light zdharma-continuum/fast-syntax-highlighting
+
 
 # -----------------------------------------------------------------------------
 # Powerlevel10k Configuration
 # -----------------------------------------------------------------------------
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
