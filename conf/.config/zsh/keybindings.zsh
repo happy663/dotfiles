@@ -27,7 +27,7 @@ if [[ -n $ZENO_LOADED ]]; then
 
   # 入れると便利
   bindkey '^r' zeno-history-selection
-  bindkey '^x^f' zeno-ghq-cd
+  bindkey '^g' zeno-ghq-cd
 fi
 
 
