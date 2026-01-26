@@ -16,6 +16,10 @@
 #
 # =============================================================================
 
+if [[ -t 0 ]]; then
+  stty stop undef
+  stty start undef
+fi
 # Source all configuration files
 source ~/.config/zsh/init.zsh
 source ~/.config/zsh/plugins.zsh
@@ -26,3 +30,4 @@ source ~/.config/zsh/history.zsh
 source ~/.config/zsh/keybindings.zsh
 source ~/.config/zsh/aliases.zsh
 source ~/.config/zsh/functions.zsh
+
