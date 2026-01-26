@@ -228,7 +228,7 @@ vim.keymap.set(
 )
 
 -- normalモードの時に位置がずれるので調整
-vim.keymap.set("i", "<C-v>", '<C-o><C-h><C-o>"+p', { noremap = true, silent = true, desc = "Paste from clipboard" })
+vim.keymap.set("i", "<C-v>", '<C-o>"+P', { noremap = true, silent = true, desc = "Paste from clipboard" })
 
 -- map("t", "<Esc>", "<Esc>", opts)
 -- map("t", "<C-w>", "<C-\\><C-n><C-w>", opts)
