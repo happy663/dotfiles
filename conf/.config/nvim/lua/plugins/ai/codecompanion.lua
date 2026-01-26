@@ -78,7 +78,6 @@ return {
         pattern = "CodeCompanionChatCreated",
         callback = function()
           local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
           for _, line in ipairs(lines) do
             if line:match("^#{buffer}$") then
               vim.cmd("normal! o")
@@ -250,11 +249,19 @@ return {
           end
         end,
       })
-
       -- Markdownファイルをlive_grepするキーマップ
       vim.keymap.set("n", "<leader>ccm", function()
         local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
         require("telescope.builtin").live_grep({
+          prompt_title = "CodeCompanion Chat History",
+          cwd = md_dir,
+          default_text = "",
+        })
+      end, { desc = "Search CodeCompanion Chat Markdown" })
+
+      vim.keymap.set("n", "<leader>ccp", function()
+        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
+        require("telescope.builtin").find_files({
           prompt_title = "CodeCompanion Chat History",
           cwd = md_dir,
           default_text = "",
