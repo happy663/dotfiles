@@ -7,6 +7,7 @@ gui:
   showBottomLine: false
   nerdFontsVersion: "3"
   sidePanelWidth: 0.25
+  expandFocusedSidePanel: true
   theme:
     selectedLineBgColor:
       - underline
