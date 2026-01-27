@@ -257,6 +257,17 @@ return {
               fallback()
             end
           end, { "i", "s" }),
+          ["<C-x>"] = cmp.mapping(function(fallback)
+            local entry = cmp.get_selected_entry()
+            if entry and entry.source.name == "skkeleton" then
+              local label = entry.completion_item.label
+              local kana = entry.completion_item.filterText
+              require("cmp_skkeleton").purge_candidate(kana, label)
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
         },
 
         sources = {
