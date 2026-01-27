@@ -27,7 +27,7 @@ if [[ -n $ZENO_LOADED ]]; then
 
   # 入れると便利
   bindkey '^r' zeno-history-selection
-  bindkey '^g' zeno-ghq-cd
+  # bindkey '^g' zeno-ghq-cd
 fi
 
 
@@ -45,7 +45,16 @@ function zoxide-widget() {
 zle -N zoxide-widget
 bindkey '^s' zoxide-widget
 
+function ghq-list() {
+  local selected=$(ghq list | fzf)
+  if [[ -n "$selected" ]]; then
+    BUFFER="cd $(ghq root)/${selected}"
+    zle accept-line
+  fi
+  zle reset-prompt
+}
 
-
+zle -N ghq-list
+bindkey '^g' ghq-list
 
 
