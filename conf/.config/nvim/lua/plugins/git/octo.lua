@@ -201,6 +201,26 @@ return {
             ":Octo comment reply<CR>",
             { noremap = true, silent = true, desc = "Octo: Reply to comment" }
           )
+
+          -- カスタムreload: バッファ名変更後も正常動作するように
+          -- _G.octo_buffersのメタデータを使用してreloadする
+          vim.keymap.set("n", "<leader>or", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local buffer = _G.octo_buffers and _G.octo_buffers[bufnr]
+            if buffer and buffer.repo and buffer.kind and buffer.number then
+              require("octo").load(buffer.repo, buffer.kind, buffer.number, nil, function(obj)
+                vim.api.nvim_buf_call(bufnr, function()
+                  require("octo").create_buffer(buffer.kind, obj, buffer.repo, false, nil)
+                end)
+                -- reload後にバッファ名を再カスタマイズするためフラグをリセット
+                vim.b[bufnr].octo_title_processed = false
+              end)
+            else
+              -- フォールバック: 標準のreloadを試行
+              vim.notify("OctoBuffer metadata not found, trying standard reload", vim.log.levels.WARN)
+              require("octo.commands").reload()
+            end
+          end, { buffer = 0, noremap = true, silent = true, desc = "Octo: Reload (custom)" })
         end,
       })
 
@@ -344,7 +364,7 @@ return {
             close_issue = { lhs = "<localleader>ic", desc = "close issue" },
             reopen_issue = { lhs = "<localleader>io", desc = "reopen issue" },
             list_issues = { lhs = "<localleader>il", desc = "list open issues on same repo" },
-            reload = { lhs = "<leader>or", desc = "reload issue" },
+            reload = { lhs = "", desc = "reload issue" }, -- カスタム実装を使用するため無効化
             open_in_browser = { lhs = "<leader>ob", desc = "open issue in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             add_assignee = { lhs = "<localleader>aa", desc = "add assignee" },
@@ -382,7 +402,7 @@ return {
             close_issue = { lhs = "<localleader>ic", desc = "close PR" },
             reopen_issue = { lhs = "<localleader>io", desc = "reopen PR" },
             list_issues = { lhs = "<localleader>il", desc = "list open issues on same repo" },
-            reload = { lhs = "<leader>or", desc = "reload PR" },
+            reload = { lhs = "", desc = "reload PR" }, -- カスタム実装を使用するため無効化
             open_in_browser = { lhs = "<leader>ob", desc = "open PR in browser" },
             copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             copy_sha = { lhs = "", desc = "copy commit SHA to system clipboard" },
@@ -489,110 +509,115 @@ return {
 
       -- issueバッファ名のカスタマイズ: 番号の代わりにissueタイトルを使用
       -- UTF-8対応の安全な文字列処理を実装
-      -- vim.api.nvim_create_autocmd({ "BufReadPost", "BufEnter" }, {
-      --   pattern = "octo://*",
-      --   callback = function(event)
-      --     local bufname = vim.api.nvim_buf_get_name(event.buf)
-      --
-      --     -- 既に処理済みかチェック
-      --     if vim.b[event.buf].octo_title_processed then
-      --       return
-      --     end
-      --
-      --     -- バッファ名からリポジトリ、種類、番号を抽出
-      --     local repo, kind, number = bufname:match("octo://([^/]+/[^/]+)/([^/]+)/([^/]+)")
-      --
-      --     if repo and kind == "issue" and number and tonumber(number) then
-      --       -- UTF-8対応の安全な文字列切り取り関数
-      --       local function utf8_safe_truncate(str, max_chars)
-      --         local chars = {}
-      --         -- UTF-8文字をパターンマッチングで1文字ずつ抽出
-      --         for char in str:gmatch("([^\128-\191][\128-\191]*)") do
-      --           table.insert(chars, char)
-      --           if #chars >= max_chars then
-      --             break
-      --           end
-      --         end
-      --         return table.concat(chars)
-      --       end
-      --
-      --       -- バッファコンテンツの読み込み待機と再試行
-      --       local function try_extract_title(attempt)
-      --         attempt = attempt or 1
-      --         local lines = vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)
-      --
-      --         if #lines <= 1 or (#lines == 1 and lines[1] == "") then
-      --           if attempt < 10 then
-      --             vim.defer_fn(function()
-      --               try_extract_title(attempt + 1)
-      --             end, 100 * attempt)
-      --             return
-      --           end
-      --           return
-      --         end
-      --
-      --         -- issueタイトルを抽出
-      --         local title = nil
-      --         for _, line in ipairs(lines) do
-      --           if line:match("^%s*[^#%s]") then
-      --             title = line:gsub("^%s+", ""):gsub("%s+$", "")
-      --             break
-      --           end
-      --         end
-      --
-      --         if title and title ~= "" then
-      --           -- ファイルシステム禁止文字のみ置換、日本語は保持
-      --           local clean_title = title:gsub('[/\\:*?"<>|]', "_")
-      --           clean_title = clean_title:gsub("%s+", "_")
-      --           clean_title = clean_title:gsub("_+", "_")
-      --           clean_title = clean_title:gsub("^[_%s]+", "")
-      --           clean_title = clean_title:gsub("[_%s]+$", "")
-      --
-      --           -- UTF-8対応の安全な長さ制限
-      --           local max_chars = 30
-      --           if vim.fn.strchars(clean_title) > max_chars then
-      --             clean_title = utf8_safe_truncate(clean_title, max_chars - 3) .. "..."
-      --           end
-      --
-      --           -- Copilot対応: LSPクライアントを一時的にデタッチ
-      --           -- RPC[Error] code_name = InvalidParams, message = "Document for URI could not be found:
-      --           local lsp_clients = vim.lsp.get_clients({ bufnr = event.buf })
-      --           local client_ids = {}
-      --           for _, client in ipairs(lsp_clients) do
-      --             table.insert(client_ids, client.id)
-      --             vim.lsp.buf_detach_client(event.buf, client.id)
-      --           end
-      --
-      --           -- バッファ名を変更（エラーハンドリング付き）
-      --           local new_bufname = string.format("octo://%s/%s/%s", repo, kind, clean_title)
-      --           local ok = pcall(vim.api.nvim_buf_set_name, event.buf, new_bufname)
-      --
-      --           if not ok then
-      --             -- 名前衝突時の処理：既存バッファを削除してリトライ
-      --             local existing_buf = vim.fn.bufnr(new_bufname)
-      --             if existing_buf ~= -1 and existing_buf ~= event.buf then
-      --               vim.api.nvim_buf_delete(existing_buf, { force = true })
-      --               vim.api.nvim_buf_set_name(event.buf, new_bufname)
-      --             end
-      --           end
-      --
-      --           -- LSPクライアントを再アタッチ（新しいバッファ名で）
-      --           vim.schedule(function()
-      --             for _, client_id in ipairs(client_ids) do
-      --               pcall(vim.lsp.buf_attach_client, event.buf, client_id)
-      --             end
-      --           end)
-      --
-      --           vim.b[event.buf].octo_title_processed = true
-      --         end
-      --       end
-      --
-      --       vim.schedule(function()
-      --         try_extract_title(1)
-      --       end)
-      --     end
-      --   end,
-      -- })
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufEnter" }, {
+        pattern = "octo://*",
+        callback = function(event)
+          local bufname = vim.api.nvim_buf_get_name(event.buf)
+
+          -- 既に処理済みかチェック
+          if vim.b[event.buf].octo_title_processed then
+            return
+          end
+
+          -- バッファ名からリポジトリ、種類、番号を抽出
+          local repo, kind, number = bufname:match("octo://([^/]+/[^/]+)/([^/]+)/([^/]+)")
+
+          if repo and kind == "issue" and number and tonumber(number) then
+            -- UTF-8対応の安全な文字列切り取り関数
+            local function utf8_safe_truncate(str, max_chars)
+              local chars = {}
+              -- UTF-8文字をパターンマッチングで1文字ずつ抽出
+              for char in str:gmatch("([^\128-\191][\128-\191]*)") do
+                table.insert(chars, char)
+                if #chars >= max_chars then
+                  break
+                end
+              end
+              return table.concat(chars)
+            end
+
+            -- バッファコンテンツの読み込み待機と再試行
+            local function try_extract_title(attempt)
+              attempt = attempt or 1
+              local lines = vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)
+
+              if #lines <= 1 or (#lines == 1 and lines[1] == "") then
+                if attempt < 10 then
+                  vim.defer_fn(function()
+                    try_extract_title(attempt + 1)
+                  end, 100 * attempt)
+                  return
+                end
+                return
+              end
+
+              -- issueタイトルを抽出
+              local title = nil
+              for _, line in ipairs(lines) do
+                if line:match("^%s*[^#%s]") then
+                  title = line:gsub("^%s+", ""):gsub("%s+$", "")
+                  break
+                end
+              end
+
+              if title and title ~= "" then
+                -- ファイルシステム禁止文字のみ置換、日本語は保持
+                local clean_title = title:gsub('[/\\:*?"<>|]', "_")
+                clean_title = clean_title:gsub("%s+", "_")
+                clean_title = clean_title:gsub("_+", "_")
+                clean_title = clean_title:gsub("^[_%s]+", "")
+                clean_title = clean_title:gsub("[_%s]+$", "")
+
+                -- UTF-8対応の安全な長さ制限
+                local max_chars = 30
+                if vim.fn.strchars(clean_title) > max_chars then
+                  clean_title = utf8_safe_truncate(clean_title, max_chars - 3) .. "..."
+                end
+
+                -- Copilot対応: LSPクライアントを一時的にデタッチ
+                -- RPC[Error] code_name = InvalidParams, message = "Document for URI could not be found:
+                local lsp_clients = vim.lsp.get_clients({ bufnr = event.buf })
+                local client_ids = {}
+                for _, client in ipairs(lsp_clients) do
+                  table.insert(client_ids, client.id)
+                  vim.lsp.buf_detach_client(event.buf, client.id)
+                end
+
+                -- バッファ名を変更（エラーハンドリング付き）
+                local new_bufname = string.format("octo://%s/%s/%s", repo, kind, clean_title)
+                local ok = pcall(vim.api.nvim_buf_set_name, event.buf, new_bufname)
+
+                if not ok then
+                  -- 名前衝突時の処理：既存バッファを削除してリトライ
+                  local existing_buf = vim.fn.bufnr(new_bufname)
+                  if existing_buf ~= -1 and existing_buf ~= event.buf then
+                    vim.api.nvim_buf_delete(existing_buf, { force = true })
+                    vim.api.nvim_buf_set_name(event.buf, new_bufname)
+                  end
+                end
+
+                -- LSPクライアントを再アタッチ（新しいバッファ名で）
+                vim.schedule(function()
+                  for _, client_id in ipairs(client_ids) do
+                    pcall(vim.lsp.buf_attach_client, event.buf, client_id)
+                  end
+                end)
+
+                vim.b[event.buf].octo_title_processed = true
+                vim.b[event.buf].octo_issue_number = tonumber(number) -- reloadで使用するために保存
+              end
+            end
+
+            vim.schedule(function()
+              try_extract_title(1)
+            end)
+          end
+        end,
+      })
     end,
   },
 }
+
+
+
+
