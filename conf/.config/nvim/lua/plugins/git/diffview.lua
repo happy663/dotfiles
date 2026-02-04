@@ -48,7 +48,8 @@ return {
       require("diffview").setup({
         keymaps = {
           view = {
-            { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },
+            { "n", "q", actions.close, { esc = "ヘルプメニューを閉じる" } },
+            { "n", "-", actions.toggle_stage_entry, { desc = "ステージング/アンステージング" } },
             {
               "n",
               "<leader>cc",
