@@ -4,6 +4,7 @@
   "description": "Node.js CLI tools managed by Nix",
   "devDependencies": {
     "@zed-industries/claude-code-acp": "^0.12.4",
-    "editprompt": "latest"
+    "editprompt": "latest",
+    "@anthropic-ai/claude-code": "latest"
   }
 }

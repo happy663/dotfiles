@@ -45,7 +45,6 @@ in
       firefox
       neofetch
       nodejs_24
-      claude-code
       # Node.js tools managed by Nix
       nodeTools
       # Development tools
