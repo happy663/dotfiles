@@ -111,8 +111,47 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
                 return None
             
             # アクセス権限エラーをチェック
-            access_denied = await page.locator("text=404").count()
-            if access_denied > 0:
+            # より正確なエラー検出: 404エラーページの特定要素をチェック
+            error_detected = False
+            
+            # 404エラーページの特徴的な要素をチェック
+            error_selectors = [
+                "h1:has-text('404')",
+                "[data-view-component='true']:has-text('404')",
+                ".blankslate:has-text('404')",
+            ]
+            
+            for selector in error_selectors:
+                try:
+                    count = await page.locator(selector).count()
+                    if count > 0:
+                        error_detected = True
+                        break
+                except:
+                    continue
+            
+            # その他のエラーメッセージを検索
+            error_patterns = [
+                "Page not found",
+                "This is not the web page you are looking for",
+                "Repository access blocked"
+            ]
+            
+            for pattern in error_patterns:
+                try:
+                    count = await page.locator(f"text={pattern}").count()
+                    if count > 0:
+                        error_detected = True
+                        break
+                except:
+                    continue
+            
+            # ページタイトルに"404"が含まれているかチェック
+            if "404" in page_title.lower() or "not found" in page_title.lower():
+                error_detected = True
+            
+            # エラーが見つかった場合
+            if error_detected:
                 print("❌ このリポジトリにアクセスする権限がありません", file=sys.stderr)
                 print("   リポジトリが存在しないか、プライベートリポジトリへの権限が不足しています", file=sys.stderr)
                 await browser.close()
