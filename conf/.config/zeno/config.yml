@@ -214,7 +214,7 @@ snippets:
     snippet: exec $SHELL -l
   - name: docker exec select
     keyword: de
-    snippet: docker exec -it $(docker ps | fzf | cut -d " " -f 1) /bin/bash
+    snippet: docker exec -it $(docker ps | fzf --reverse --height 60% | cut -d " " -f 1) /bin/bash
   - name: github browser
     keyword: ghb
     snippet: gh browser
@@ -232,7 +232,10 @@ snippets:
     snippet: "make -f docker.mk"
   - name: ghq list
     keyword: g
-    snippet: cd $(ghq root)/$(ghq list | fzf)
+    snippet: cd $(ghq root)/$(ghq list | fzf --reverse --height 40%)
+  - name: docker compose
+    keyword: dc
+    snippet: docker compose
 
   # - name:
   #   keyword:
