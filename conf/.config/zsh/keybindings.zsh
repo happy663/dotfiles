@@ -46,7 +46,7 @@ zle -N zoxide-widget
 bindkey '^s' zoxide-widget
 
 function ghq-list() {
-  local selected=$(ghq list | fzf)
+  local selected=$(ghq list | fzf --reverse --height 50% --preview 'ls -la $(ghq root)/{}')
   if [[ -n "$selected" ]]; then
     BUFFER="cd $(ghq root)/${selected}"
     zle accept-line
