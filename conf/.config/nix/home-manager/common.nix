@@ -59,10 +59,16 @@ in
         };
       }))
       deno
-      # PHP 7.4 with tests disabled (fixes GitHub Actions runner issue)
-      (phps.packages.${pkgs.system}.php74.overrideAttrs (old: {
+      # PHP 7.4 with tests disabled for extensions (fixes GitHub Actions runner issue)
+      (phps.packages.${pkgs.system}.php74.override {
+        packageOverrides = final: prev: {
+          pcntl = prev.pcntl.overrideAttrs (old: {
+            doCheck = false;
+          });
+        };
+      }).overrideAttrs (old: {
         doCheck = false;
-      }))
+      })
       php84Extensions.xdebug
     ];
 
