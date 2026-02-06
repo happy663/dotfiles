@@ -39,3 +39,16 @@ hs.hotkey.bind({ "alt" }, "S", function()
     hs.application.launchOrFocus("Slack")
   end
 end)
+
+hs.hotkey.bind({ "alt" }, "D", function()
+  local app = hs.application.get("com.hnc.Discord")
+  if app then
+    if app:isFrontmost() then
+      app:hide()
+    else
+      app:activate()
+    end
+  else
+    hs.application.launchOrFocus("Discord")
+  end
+end)
