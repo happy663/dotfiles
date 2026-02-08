@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.nix"
+      - "flake.lock"
+  pull_request:
+    paths:
+      - "**.nix"
+      - "flake.lock"
+  workflow_dispatch:
+
+jobs:
+  build-darwin:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
+        with:
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: ${{ github.event_name == 'pull_request' }}
+
+      - name: Build homeConfigurations (darwin)
+        run: nix build --show-trace --no-link .#homeConfigurations.myHomeConfig-darwin.activationPackage
+
+      - name: Build darwinConfigurations
+        run: nix build --show-trace --no-link .#darwinConfigurations.happy-darwin.system
+
+      - name: Print disk usage
+        run: df -h
+
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v5
+  #
+  #     - name: Setup Nix
+  #       uses: ./.github/actions/setup-nix
+  #       with:
+  #         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+  #         skipPush: ${{ github.event_name == 'pull_request' }}
+  #
+  #     - name: Build homeConfigurations (linux)
+  #       run: nix build --show-trace --no-link .#homeConfigurations.myHomeConfig-linux.activationPackage
+  #
+  #     - name: Print disk usage
+  #       run: df -h

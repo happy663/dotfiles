@@ -8,6 +8,19 @@
     settings = {
       experimental-features = "nix-command flakes";
       max-jobs = 8;
+      # Cachix設定（マシン全体でキャッシュを使用可能にする）
+      extra-substituters = [
+        "https://happy663.cachix.org"
+        "https://nix-community.cachix.org"
+      ];
+      extra-trusted-public-keys = [
+        "happy663.cachix.org-1:QZP/lx8Sric/M5NWPa3V/l4AS3gpFAKzIuD7/UwG8iE="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      ];
+      trusted-users = [
+        "root"
+        "@admin"
+      ];
     };
   };
   # services.nix-daemon.enable = true;

@@ -23,6 +23,17 @@
     };
   };
 
+
+  nixConfig = {
+    extra-substituters = [
+      "https://happy663.cachix.org"
+
+    ];
+    extra-trusted-public-keys = [
+      "happy663.cachix.org-1:QZP/lx8Sric/M5NWPa3V/l4AS3gpFAKzIuD7/UwG8iE="
+    ];
+  };
+
   outputs = { self, nixpkgs, home-manager, nix-darwin, phps, neovim-nightly-overlay } @ inputs:
     let
       system = {
