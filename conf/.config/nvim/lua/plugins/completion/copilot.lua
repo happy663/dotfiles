@@ -27,6 +27,7 @@ return {
           tex = false,
           markdown = false,
           org = false,
+          codecompanion = false,
         },
         nes = {
           enabled = false,

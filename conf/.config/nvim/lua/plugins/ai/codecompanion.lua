@@ -19,7 +19,8 @@ local short_names = {
 
 return {
   {
-    "olimorris/codecompanion.nvim",
+    -- "olimorris/codecompanion.nvim",
+    dir = "~/src/github.com/olimorris/codecompanion.nvim",
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
@@ -27,7 +28,24 @@ return {
     keys = {
       -- { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
-      { "<C-t>", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
+      {
+        "<C-t>",
+        function()
+          local chat = require("codecompanion").last_chat()
+          if chat and chat.ui:is_visible() then
+            -- 非表示にする前に現在の幅を保存
+            vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(chat.ui.winnr)
+            vim.cmd("CodeCompanionChat Toggle")
+          elseif vim.g.codecompanion_saved_width then
+            -- 保存した幅でトグル
+            require("codecompanion").toggle({ window_opts = { width = vim.g.codecompanion_saved_width } })
+          else
+            vim.cmd("CodeCompanionChat Toggle")
+          end
+        end,
+        mode = { "n", "v" },
+        desc = "CodeCompanion Toggle",
+      },
       {
         "<leader>ccl",
         string.format("<cmd>CodeCompanion /%s<cr>", short_names.LSP_CHAT),
@@ -186,6 +204,9 @@ return {
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
+            acp = {
+              max_title_length = 15, -- Maximum title length (nil = unlimited)
+            },
           },
           action_palette = {
             provider = "telescope", -- default|telescope|mini_pick|fzf_lua
@@ -233,6 +254,22 @@ return {
       })
 
       vim.g.codecompanion_auto_tool_mode = "true"
+
+      -- WinResizedイベントでCodeCompanionバッファの幅を保存
+      vim.api.nvim_create_autocmd("WinResized", {
+        callback = function()
+          local windows = vim.v.event.windows
+          for _, win in ipairs(windows) do
+            if vim.api.nvim_win_is_valid(win) then
+              local buf = vim.api.nvim_win_get_buf(win)
+              local ft = vim.bo[buf].filetype
+              if ft == "codecompanion" then
+                vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(win)
+              end
+            end
+          end
+        end,
+      })
 
       -- コマンドラインで'cc'を'CodeCompanion'に展開
       vim.cmd([[cab cc CodeCompanion]])
