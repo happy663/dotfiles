@@ -288,6 +288,10 @@ return {
         "<Leader>tb",
         "<cmd>lua require('telescope.builtin').buffers()<CR>",
       },
+      {
+        "<Leader>tq",
+        "<cmd>lua require('telescope.builtin').quickfixhistory()<CR>",
+      },
     },
     version = "0.1.5",
   },
