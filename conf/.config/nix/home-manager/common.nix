@@ -60,11 +60,14 @@ in
       }))
       deno
       # PHP 7.4 with tests disabled (fixes GitHub Actions runner issue)
-      (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }: enabled ++ [
-        (all.pcntl.overrideAttrs (old: {
-          doCheck = false;
-        }))
-      ]))
+      # (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }: enabled ++ [
+      #   (all.pcntl.overrideAttrs (old: {
+      #     doCheck = false;
+      #   }))
+      # ]))
+      (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }:
+        builtins.filter (ext: ext.pname != "php-pcntl") enabled
+      ))
       php84Extensions.xdebug
     ];
 
