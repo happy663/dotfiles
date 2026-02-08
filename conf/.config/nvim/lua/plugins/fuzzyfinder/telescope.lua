@@ -35,6 +35,8 @@ return {
         end
       end
 
+      local qfs_actions = require("qfscope.actions")
+
       require("telescope").setup({
         defaults = {
           sorting_strategy = "ascending",
@@ -56,6 +58,10 @@ return {
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = custom_actions.qf_and_highlight(),
               ["<C-f>"] = require("telescope.actions.layout").toggle_preview,
+              ["<C-s>f"] = qfs_actions.qfscope_search_filename,
+              ["<C-s>g"] = qfs_actions.qfscope_grep_filename,
+              ["<C-s>l"] = qfs_actions.qfscope_grep_line,
+              ["<C-s>t"] = qfs_actions.qfscope_grep_text,
             },
             n = {
               ["<C-Tab>"] = actions.move_selection_next,
@@ -390,5 +396,9 @@ return {
     config = function()
       require("telescope").load_extension("livegrep_history")
     end,
+  },
+  {
+    "atusy/qfscope.nvim",
+    cond = vim.g.not_in_vscode,
   },
 }
