@@ -30,7 +30,22 @@ return {
         return function(prompt_bufnr)
           actions.send_to_qflist(prompt_bufnr)
           actions.open_qflist(prompt_bufnr)
-          local search_term = state.get_current_line()
+
+          -- quickfixのtitleから検索語を取得
+          local current_title = vim.fn.getqflist({ title = 0 }).title
+          local search_term
+
+          -- qfscope経由かどうかを判定
+          if current_title:match("^Qfscope") then
+            -- qfscope経由の場合、1つ前のquickfixから元の検索語を取得
+            local current_nr = vim.fn.getqflist({ nr = 0 }).nr
+            local prev_qf = vim.fn.getqflist({ nr = current_nr - 1, title = 0 })
+            search_term = prev_qf.title and prev_qf.title:match("%((.-)%)") or state.get_current_line()
+          else
+            -- 直接の場合、現在のtitleから検索語を取得
+            search_term = current_title:match("%((.-)%)") or state.get_current_line()
+          end
+
           highlight_search_term(search_term)
         end
       end
