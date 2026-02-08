@@ -13,7 +13,7 @@ runs:
   using: composite
   steps:
     - name: Install Nix
-      uses: nixbuild/nix-quick-install-action@v34
+      uses: cachix/install-nix-action@v31
     - name: Setup Cachix
       uses: cachix/cachix-action@v16
       with:
@@ -21,3 +21,4 @@ runs:
         authToken: ${{ inputs.authToken }}
         extraPullNames: nix-community
         skipPush: ${{ inputs.skipPush }}
+

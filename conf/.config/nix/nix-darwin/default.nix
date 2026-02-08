@@ -20,6 +20,7 @@
       trusted-users = [
         "root"
         "@admin"
+        "happy"
       ];
     };
   };
@@ -308,3 +309,4 @@
 
 
 }
+
