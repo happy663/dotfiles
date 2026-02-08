@@ -22,6 +22,7 @@
         "@admin"
         "happy"
       ];
+      narinfo-cache-negative-ttl = 0; # ネガティブキャッシュのTTLを1時間に設定
     };
   };
   # services.nix-daemon.enable = true;
@@ -309,4 +310,3 @@
 
 
 }
-
