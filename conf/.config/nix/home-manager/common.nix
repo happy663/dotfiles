@@ -59,12 +59,7 @@ in
         };
       }))
       deno
-      # PHP 7.4 with tests disabled (fixes GitHub Actions runner issue)
-      # (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }: enabled ++ [
-      #   (all.pcntl.overrideAttrs (old: {
-      #     doCheck = false;
-      #   }))
-      # ]))
+      # php-pcntlはプロセス制御を行うプラグインでGithub Actions上の環境ではこれのテストが失敗するためphp-pcntlを除外する
       (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }:
         builtins.filter (ext: ext.pname != "php-pcntl") enabled
       ))
