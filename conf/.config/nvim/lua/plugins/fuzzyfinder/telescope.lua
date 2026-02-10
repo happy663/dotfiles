@@ -15,7 +15,6 @@ return {
         vim.fn.setreg("/", search_term)
         vim.cmd("set hlsearch")
       end
-
       -- Custom actions
       local custom_actions = {}
       function custom_actions.select_with_highlight()
@@ -261,6 +260,16 @@ return {
         builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
       end)
 
+      -- Telescope preview highlight settings
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        callback = function()
+          vim.cmd([[highlight TelescopeSelection guibg=#083747]])
+          vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+          vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+        end,
+      })
+
       -- local telescope = require("telescope")
       -- telescope.load_extension("live_grep_args")
       -- vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
@@ -276,6 +285,23 @@ return {
     -- },
 
     keys = {
+      {
+        "<Leader>tr",
+        function()
+          vim.cmd("Telescope resume")
+        end,
+        desc = "Telescope resume",
+      },
+      {
+        "<Leader>tt",
+        function()
+          vim.cmd("Telescope pickers")
+        end,
+        desc = "Telescope pickers",
+      },
+      { "<Leader>tq", "<CMD>Telescope quickfix<CR>", desc = "Telescope quickfix" },
+      { "<Leader>ml", "<CMD>Telescope memo list<CR>", desc = "Telescope memo list" },
+      { "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", desc = "Telescope memo live_grep" },
       {
         "<Leader>bg",
         "<cmd>lua require('telescope.builtin').live_grep({grep_open_files = true})<CR>",
@@ -421,3 +447,5 @@ return {
     cond = vim.g.not_in_vscode,
   },
 }
+
+

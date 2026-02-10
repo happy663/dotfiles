@@ -56,20 +56,12 @@ require("notify").setup({
   background_colour = "#000000",
 })
 
----- 現在選択中のアイテムのハイライト色を変更（Telescope読み込み時に実行）
-vim.api.nvim_create_autocmd("User", {
-  pattern = "TelescopePreviewerLoaded",
-  callback = function()
-    vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-    vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
-    vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
-  end,
-})
+
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
 
-vim.g.lazygit_floating_window_scaling_factor = 1
+
 
 -- ayu_mirageに調和する検索ハイライトの設定
 local colors = {
@@ -141,7 +133,7 @@ vim.cmd([[
   augroup END
 ]])
 
-vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"
+
 
 -- カーソルの設定
 vim.opt.guicursor = {
@@ -364,3 +356,6 @@ vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
 -- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用
 vim.o.synmaxcol = 200
 vim.o.laststatus = 3
+
+
+

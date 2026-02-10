@@ -8,6 +8,9 @@ return {
       { "vim-denops/denops.vim" },
     },
     config = function()
+      local opts = { noremap = false, silent = true }
+      vim.keymap.set({ "i", "t" }, "<C-j>", "<Plug>(skkeleton-enable)", opts)
+
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-initialize-pre",
         callback = function()
@@ -68,4 +71,3 @@ return {
     end,
   },
 }
-

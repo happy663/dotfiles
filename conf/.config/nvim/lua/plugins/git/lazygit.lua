@@ -16,6 +16,8 @@ return {
       { "<Leader>l", "<cmd>LazyGit<CR>" },
     },
     config = function()
+      vim.g.lazygit_floating_window_scaling_factor = 1
+
       -- telescopeがロードされている場合のみ拡張をロード
       if pcall(require, "telescope") then
         require("telescope").load_extension("lazygit")
