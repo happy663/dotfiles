@@ -24,6 +24,10 @@ return {
           end,
         },
       })
+
+      -- Treesitter folding settings
+      vim.opt.foldmethod = "expr"
+      vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
     end,
   },
 }

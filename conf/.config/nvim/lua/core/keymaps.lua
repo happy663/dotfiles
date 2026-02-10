@@ -41,9 +41,6 @@ end
 -- カスタムコマンドとして設定
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
-
-
-
 -- windows用
 -- windowsではctrl+hをbackspaceに当てている
 -- 他環境と同じ動きになるように調整
@@ -63,18 +60,9 @@ map("n", "gP", '"+P', opts)
 -- mason
 map("n", "<Leader>ma", ":Mason<CR>", opts)
 
-
-
-
-
 vim.cmd([[
   cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
 ]])
-
-
-
-
-
 
 vim.api.nvim_create_user_command("Help", function(command)
   local current_win_width = vim.api.nvim_win_get_width(0)
@@ -84,8 +72,6 @@ vim.api.nvim_create_user_command("Help", function(command)
   end
 end, { nargs = 1, complete = "help" })
 vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
-
-
 
 vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>", { noremap = true, silent = true })
 
@@ -129,31 +115,30 @@ map("n", "<leader>cw", "<cmd>lua toggle_cwindow()<CR>", opts)
 map("n", "<M-;>", "<CMD>cprev<CR>", opts)
 map("n", "<M-'>", "<CMD>cnext<CR>", opts)
 
--- init.luaまたは適切な設定ファイルでキーマッピングを設定
-local diag_qf = require("diagnostic_to_qf")
+-- diagnostic_to_qf - 条件付き読み込み
+local ok, diag_qf = pcall(require, "diagnostic_to_qf")
+if ok then
+  -- すべての診断情報をQuickfixリストに送る
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>dq",
+    ':lua require("diagnostic_to_qf").diagnostics_to_qf()<CR>',
+    { noremap = true, silent = true }
+  )
 
--- すべての診断情報をQuickfixリストに送る
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>dq",
-  ':lua require("diagnostic_to_qf").diagnostics_to_qf()<CR>',
-  { noremap = true, silent = true }
-)
-
--- 現在のバッファの診断情報をQuickfixリストに送る
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>db",
-  ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
-  { noremap = true, silent = true }
-)
+  -- 現在のバッファの診断情報をQuickfixリストに送る
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>db",
+    ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
+    { noremap = true, silent = true }
+  )
+end
 
 -- leader wqで保存して終了
 map("n", "<leader>qw", "<CMD>wq<CR>", opts)
 map("n", "<leader>qq", "<CMD>q<CR>", opts)
 map("n", "<leader>qa", "<CMD>qa<CR>", opts)
-
-
 
 vim.keymap.set("n", "<leader>yy", function()
   vim.cmd("normal! ggVGy")
@@ -401,3 +386,4 @@ vim.keymap.set("n", "<leader>upe", function()
 		:e /tmp/nvim-profile.log
 	]])
 end, { desc = "Profile End" })
+
