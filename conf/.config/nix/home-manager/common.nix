@@ -243,7 +243,7 @@ in
     # node = "24.1.0"
     python = "3.12.2"
     yarn = "1.22.19"
-    neovim = "0.11.3"
+    neovim = "0.11.6"
     ghc = "9.6.5"
     deno = "latest"
     pnpm = "latest"
