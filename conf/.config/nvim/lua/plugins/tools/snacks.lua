@@ -1,6 +1,13 @@
 return {
   {
     "folke/snacks.nvim",
+    init = function()
+      -- 起動時に走る処理
+      -- vim.ui.selecrtが呼ばれるとloadされる
+      vim.ui.select = function(items, opts, on_choice)
+        require("snacks").picker.select(items, opts, on_choice)
+      end
+    end,
     priority = 1000,
     lazy = true,
     ---@type snacks.Config
@@ -76,7 +83,7 @@ return {
       },
       indent = { enabled = false },
       input = { enabled = false },
-      picker = { enabled = false },
+      picker = { enabled = true },
       notifier = { enabled = false },
       quickfile = { enabled = false },
       scope = { enabled = false },
