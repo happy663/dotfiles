@@ -9,8 +9,11 @@ return {
 
       -- コミット用のターミナルを開く関数
       local function open_commit_terminal(close_after)
-        -- diffviewを閉じる
-        vim.cmd("DiffviewClose")
+        -- 現在のDiffviewタブのページ番号を取得
+        local pagenr = vim.api.nvim_tabpage_get_number(0)
+
+        -- Diffviewタブを強制的に閉じる（tabclose!は変更があっても閉じる）
+        vim.cmd("tabclose! " .. pagenr)
 
         -- 新しいタブでターミナルを開く
         vim.cmd("tabnew")
