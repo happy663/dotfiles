@@ -82,6 +82,35 @@ hookの設定は ~/.claude/settings.json で管理される。
    - 直接ツールで調査実行
 3. **存在しない場合**: リポジトリクローンが必要と報告
 
+### OSS Investigation Policy
+
+**基本原則**: OSSを調査する際は、Web Fetchを使わずghq getでローカルにクローンして調査する
+
+#### ワークフロー
+
+1. **ローカル存在確認**: `ghq list | grep [repo名]`
+2. **存在しない場合**: `ghq get [GitHubリポジトリURL]`でクローン
+3. **調査実行**:
+   - `cd $(ghq root)/github.com/[org]/[repo]`で移動
+   - Grep、Read、Globなどの直接ツールで調査
+
+#### 理由
+
+- **全体検索が可能**: コードベース全体をGrep等で検索できる
+- **詳細な調査**: Web Fetchの制限を受けずに任意のファイルを読める
+- **再利用性**: 一度クローンすれば繰り返し参照可能
+- **効率性**: 既存の直接ツールを活用できる
+
+#### 例
+
+```bash
+# Neovimプラグインの調査
+ghq list | grep nvim-lspconfig
+ghq get github.com/neovim/nvim-lspconfig
+cd $(ghq root)/github.com/neovim/nvim-lspconfig
+# Grep、Readなどで調査
+```
+
 ### Examples
 
 #### ✅ 効率的なアプローチ
