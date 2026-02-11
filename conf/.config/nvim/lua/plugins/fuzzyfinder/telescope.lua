@@ -15,7 +15,6 @@ return {
         vim.fn.setreg("/", search_term)
         vim.cmd("set hlsearch")
       end
-
       -- Custom actions
       local custom_actions = {}
       function custom_actions.select_with_highlight()
@@ -30,10 +29,27 @@ return {
         return function(prompt_bufnr)
           actions.send_to_qflist(prompt_bufnr)
           actions.open_qflist(prompt_bufnr)
-          local search_term = state.get_current_line()
+
+          -- quickfixのtitleから検索語を取得
+          local current_title = vim.fn.getqflist({ title = 0 }).title
+          local search_term
+
+          -- qfscope経由かどうかを判定
+          if current_title:match("^Qfscope") then
+            -- qfscope経由の場合、1つ前のquickfixから元の検索語を取得
+            local current_nr = vim.fn.getqflist({ nr = 0 }).nr
+            local prev_qf = vim.fn.getqflist({ nr = current_nr - 1, title = 0 })
+            search_term = prev_qf.title and prev_qf.title:match("%((.-)%)") or state.get_current_line()
+          else
+            -- 直接の場合、現在のtitleから検索語を取得
+            search_term = current_title:match("%((.-)%)") or state.get_current_line()
+          end
+
           highlight_search_term(search_term)
         end
       end
+
+      local qfs_actions = require("qfscope.actions")
 
       require("telescope").setup({
         defaults = {
@@ -56,6 +72,10 @@ return {
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = custom_actions.qf_and_highlight(),
               ["<C-f>"] = require("telescope.actions.layout").toggle_preview,
+              ["<C-s>f"] = qfs_actions.qfscope_search_filename,
+              ["<C-s>g"] = qfs_actions.qfscope_grep_filename,
+              ["<C-s>l"] = qfs_actions.qfscope_grep_line,
+              ["<C-s>t"] = qfs_actions.qfscope_grep_text,
             },
             n = {
               ["<C-Tab>"] = actions.move_selection_next,
@@ -240,6 +260,16 @@ return {
         builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
       end)
 
+      -- Telescope preview highlight settings
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        callback = function()
+          vim.cmd([[highlight TelescopeSelection guibg=#083747]])
+          vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
+          vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
+        end,
+      })
+
       -- local telescope = require("telescope")
       -- telescope.load_extension("live_grep_args")
       -- vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
@@ -256,6 +286,23 @@ return {
 
     keys = {
       {
+        "<Leader>tr",
+        function()
+          vim.cmd("Telescope resume")
+        end,
+        desc = "Telescope resume",
+      },
+      {
+        "<Leader>tt",
+        function()
+          vim.cmd("Telescope pickers")
+        end,
+        desc = "Telescope pickers",
+      },
+      { "<Leader>tq", "<CMD>Telescope quickfix<CR>", desc = "Telescope quickfix" },
+      { "<Leader>ml", "<CMD>Telescope memo list<CR>", desc = "Telescope memo list" },
+      { "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", desc = "Telescope memo live_grep" },
+      {
         "<Leader>bg",
         "<cmd>lua require('telescope.builtin').live_grep({grep_open_files = true})<CR>",
       },
@@ -266,6 +313,10 @@ return {
       {
         "<Leader>tb",
         "<cmd>lua require('telescope.builtin').buffers()<CR>",
+      },
+      {
+        "<Leader>tq",
+        "<cmd>lua require('telescope.builtin').quickfixhistory()<CR>",
       },
     },
     version = "0.1.5",
@@ -391,4 +442,10 @@ return {
       require("telescope").load_extension("livegrep_history")
     end,
   },
+  {
+    "atusy/qfscope.nvim",
+    cond = vim.g.not_in_vscode,
+  },
 }
+
+

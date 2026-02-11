@@ -45,31 +45,16 @@ vim.opt.shortmess:append("sI")
 vim.o.encoding = "utf-8"
 vim.o.fileencodings = "utf-8,euc-jp"
 
--- デフォルトのカラースキームを設定
-vim.cmd("colorscheme tokyonight-moon")
--- vim.cmd("colorscheme ayu-mirage")
--- vim.cmd("colorscheme tokyonight-moon")
--- vim.cmd("colorscheme ayu-mirage")
--- vim.cmd("colorscheme everforest")
 
-require("notify").setup({
-  background_colour = "#000000",
-})
 
----- 現在選択中のアイテムのハイライト色を変更（Telescope読み込み時に実行）
-vim.api.nvim_create_autocmd("User", {
-  pattern = "TelescopePreviewerLoaded",
-  callback = function()
-    vim.cmd([[highlight TelescopeSelection guibg=#083747]])
-    vim.cmd([[highlight TelescopePreviewLine guibg=#083747]])
-    vim.cmd([[highlight TelescopeMatching guifg=#ffd685]])
-  end,
-})
+
+
+
 
 vim.api.nvim_set_hl(0, "Comment", { fg = "#7c869c" })
 vim.api.nvim_set_hl(0, "@Comment", { fg = "#7c869c" })
 
-vim.g.lazygit_floating_window_scaling_factor = 1
+
 
 -- ayu_mirageに調和する検索ハイライトの設定
 local colors = {
@@ -141,7 +126,7 @@ vim.cmd([[
   augroup END
 ]])
 
-vim.g.vsnip_snippet_dir = "~/.config/nvim/my_snippets"
+
 
 -- カーソルの設定
 vim.opt.guicursor = {
@@ -355,12 +340,15 @@ vim.opt.fillchars:append({
   foldsep = " ",
 })
 
-vim.opt.foldmethod = "expr"
--- neovimにtreesitterのapiが組み込まれたので、それを利用する
--- https://github.com/neovim/neovim/blob/e34e2289c22834239e0522b7331f17fdfb3705e0/runtime/lua/vim/treesitter/_fold.lua#L386-L423
-vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
 vim.opt.foldlevel = 99 -- デフォルトでは全て展開
 vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
 -- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用
 vim.o.synmaxcol = 200
 vim.o.laststatus = 3
+
+
+
+
+
+

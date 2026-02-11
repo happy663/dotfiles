@@ -222,6 +222,11 @@ return {
       })
       -- Mason-LSPConfigの設定
       require("mason-lspconfig").setup()
+
+      -- LSPのハイライト設定
+      vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
+      vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
+      vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
     end,
     dependencies = {
       "neovim/nvim-lspconfig",

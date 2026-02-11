@@ -20,17 +20,36 @@ return {
 
         -- GitHub issueのURLを構築
         local issue_url = nil
-        if bufname:match("octo://") and (bufname:match("/issue/") or bufname:match("/issues/")) then
-          -- octo://owner/repo/issue/123 または octo://owner/repo/issues/123 の形式からissue URLを生成
+        
+        -- 方法1: _G.octo_buffersメタデータから取得（最も確実）
+        local octo_buffer = _G.octo_buffers and _G.octo_buffers[saved_bufnr]
+        if octo_buffer and octo_buffer.repo and octo_buffer.number then
+          local url_path = octo_buffer.kind == "pull_request" and "pull" or "issues"
+          issue_url = "https://github.com/" .. octo_buffer.repo .. "/" .. url_path .. "/" .. octo_buffer.number
+        -- 方法2: バッファローカル変数から取得（リネーム処理で保存された番号）
+        elseif vim.b[saved_bufnr].octo_issue_number and bufname:match("octo://") then
+          local parts = vim.split(bufname, "/")
+          if #parts >= 5 then
+            local owner = parts[3]
+            local repo = parts[4]
+            local kind = parts[5]
+            local issue_number = vim.b[saved_bufnr].octo_issue_number
+            local url_path = kind == "pull_request" and "pull" or "issues"
+            issue_url = "https://github.com/" .. owner .. "/" .. repo .. "/" .. url_path .. "/" .. issue_number
+          end
+        -- 方法3: バッファ名から取得（フォールバック: リネームされていない場合）
+        elseif bufname:match("octo://") and (bufname:match("/issue/") or bufname:match("/issues/") or bufname:match("/pull_request/")) then
           local parts = vim.split(bufname, "/")
           if #parts >= 6 then
             local owner = parts[3]
             local repo = parts[4]
+            local kind = parts[5]
             local issue_number = parts[6]
-            issue_url = "https://github.com/" .. owner .. "/" .. repo .. "/issues/" .. issue_number
-
-            -- デバッグ用: 生成されたURLを表示（必要に応じてコメントアウト）
-            -- vim.notify("Generated URL: " .. issue_url, vim.log.levels.INFO)
+            -- issue_numberが数字かどうかを確認
+            if tonumber(issue_number) then
+              local url_path = kind == "pull_request" and "pull" or "issues"
+              issue_url = "https://github.com/" .. owner .. "/" .. repo .. "/" .. url_path .. "/" .. issue_number
+            end
           end
         end
 
@@ -113,3 +132,4 @@ return {
     end,
   },
 }
+

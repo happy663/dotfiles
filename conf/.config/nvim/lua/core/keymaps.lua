@@ -41,23 +41,12 @@ end
 -- カスタムコマンドとして設定
 map("n", "<leader>]", "<cmd>lua goto_definition_vsplit()<CR>", { noremap = true, silent = true })
 
-map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", opts)
-vim.keymap.set("n", "<Leader>tr", function()
-  vim.cmd("Telescope resume")
-end, opts)
-vim.keymap.set("n", "<Leader>tt", function()
-  vim.cmd("Telescope pickers")
-end, opts)
-map("n", "<Leader>tq", "<CMD>Telescope quickfix<CR>", opts)
-
 -- windows用
 -- windowsではctrl+hをbackspaceに当てている
 -- 他環境と同じ動きになるように調整
 map("n", "<BS>", "<C-w>h", opts)
 
 map("n", "<Leader>mn", "<CMD>MemoNew<CR>", opts)
-map("n", "<Leader>ml", "<CMD>Telescope memo list<CR>", opts)
-map("n", "<Leader>mg", "<CMD>Telescope memo live_grep<CR>", opts)
 
 -- 矢印キーを無効化
 map("n", "<Up>", "<Nop>", opts)
@@ -71,43 +60,9 @@ map("n", "gP", '"+P', opts)
 -- mason
 map("n", "<Leader>ma", ":Mason<CR>", opts)
 
-map("i", "<C-J>", "<Plug>(skkeleton-enable)", opts)
-map("c", "<C-J>", "<Plug>(skkeleton-enable)", opts)
-map("t", "<C-J>", "<Plug>(skkeleton-enable)", opts)
-
-map("n", "<Leader>cr", "<CMD>RunCode<CR>", opts)
-
 vim.cmd([[
   cnoreabbrev <expr> s getcmdtype() .. getcmdline() ==# ':s' ? [getchar(), ''][1] .. "%s///g<Left><Left>" : 's'
 ]])
-
-vim.g.highlight_on = true
-function Toggle_highlight()
-  if vim.g.highlight_on then
-    -- ハイライトがオンの場合、オフにする
-    vim.cmd("nohlsearch")
-    vim.cmd("HlSearchLensDisable")
-    vim.g.highlight_on = false
-  else
-    -- ハイライトがオフの場合、オンにする
-    vim.cmd("set hlsearch")
-    vim.cmd("HlSearchLensEnable")
-    vim.g.highlight_on = true
-  end
-end
-
-vim.api.nvim_create_autocmd("CmdlineEnter", {
-  pattern = { "/" },
-  callback = function()
-    vim.g.highlight_on = true
-  end,
-})
-
-map("n", "<ESC><ESC>", "<cmd>lua Toggle_highlight()<CR>", opts)
-map("c", "<CR>", "<Plug>(kensaku-search-replace)<CR>", opts)
-
-map("n", "<Leader>h", "<CMD>FuzzyMotion<CR>", opts)
-vim.cmd("let g:fuzzy_motion_matchers = ['kensaku', 'fzf']")
 
 vim.api.nvim_create_user_command("Help", function(command)
   local current_win_width = vim.api.nvim_win_get_width(0)
@@ -117,9 +72,6 @@ vim.api.nvim_create_user_command("Help", function(command)
   end
 end, { nargs = 1, complete = "help" })
 vim.api.nvim_set_keymap("n", "<Leader>je", ":Help ", opts)
-
-vim.g.gyazo_insert_markdown_url = 1
-vim.api.nvim_set_keymap("n", "<leader>gy", "<Plug>(gyazo-upload)", { noremap = false, silent = true })
 
 vim.api.nvim_set_keymap("n", "<CR>", "A<Return><Esc>", { noremap = true, silent = true })
 
@@ -163,42 +115,30 @@ map("n", "<leader>cw", "<cmd>lua toggle_cwindow()<CR>", opts)
 map("n", "<M-;>", "<CMD>cprev<CR>", opts)
 map("n", "<M-'>", "<CMD>cnext<CR>", opts)
 
--- init.luaまたは適切な設定ファイルでキーマッピングを設定
-local diag_qf = require("diagnostic_to_qf")
+-- diagnostic_to_qf - 条件付き読み込み
+local ok, diag_qf = pcall(require, "diagnostic_to_qf")
+if ok then
+  -- すべての診断情報をQuickfixリストに送る
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>dq",
+    ':lua require("diagnostic_to_qf").diagnostics_to_qf()<CR>',
+    { noremap = true, silent = true }
+  )
 
--- すべての診断情報をQuickfixリストに送る
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>dq",
-  ':lua require("diagnostic_to_qf").diagnostics_to_qf()<CR>',
-  { noremap = true, silent = true }
-)
-
--- 現在のバッファの診断情報をQuickfixリストに送る
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>db",
-  ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
-  { noremap = true, silent = true }
-)
+  -- 現在のバッファの診断情報をQuickfixリストに送る
+  vim.api.nvim_set_keymap(
+    "n",
+    "<leader>db",
+    ':lua require("diagnostic_to_qf").buffer_diagnostics_to_qf()<CR>',
+    { noremap = true, silent = true }
+  )
+end
 
 -- leader wqで保存して終了
 map("n", "<leader>qw", "<CMD>wq<CR>", opts)
 map("n", "<leader>qq", "<CMD>q<CR>", opts)
 map("n", "<leader>qa", "<CMD>qa<CR>", opts)
-
-vim.api.nvim_set_keymap(
-  "n",
-  "n",
-  [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
-  opts
-)
-vim.api.nvim_set_keymap(
-  "n",
-  "N",
-  [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
-  opts
-)
 
 vim.keymap.set("n", "<leader>yy", function()
   vim.cmd("normal! ggVGy")
@@ -431,3 +371,19 @@ if vim.env.EDITPROMPT == "1" then
     vim.cmd('normal! "+p')
   end, { noremap = true, silent = true, desc = "Dump collected quotes" })
 end
+
+vim.keymap.set("n", "<leader>ups", function()
+  vim.cmd([[
+		:profile start /tmp/nvim-profile.log
+		:profile func *
+		:profile file *
+	]])
+end, { desc = "Profile Start" })
+
+vim.keymap.set("n", "<leader>upe", function()
+  vim.cmd([[
+		:profile stop
+		:e /tmp/nvim-profile.log
+	]])
+end, { desc = "Profile End" })
+
