@@ -83,7 +83,17 @@ return {
       },
       indent = { enabled = false },
       input = { enabled = false },
-      picker = { enabled = true },
+      picker = {
+        enabled = true,
+        win = {
+          input = {
+            keys = {
+              ["<C-Tab>"] = { "list_down", mode = { "i", "n" } },
+              ["<C-S-Tab>"] = { "list_up", mode = { "i", "n" } },
+            },
+          },
+        },
+      },
       notifier = { enabled = false },
       quickfile = { enabled = false },
       scope = { enabled = false },
