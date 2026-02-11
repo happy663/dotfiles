@@ -116,6 +116,51 @@ M.interactions = {
         },
       },
     },
+    -- smart-open.nvimを使用する/fileスラッシュコマンドのカスタマイズ
+    slash_commands = {
+      ["file"] = {
+        callback = function(chat)
+          -- smart-open.nvimでファイル選択（複数選択対応）
+          require("telescope").extensions.smart_open.smart_open({
+            attach_mappings = function()
+              local actions = require("telescope.actions")
+              local action_state = require("telescope.actions.state")
+
+              actions.select_default:replace(function(bufnr)
+                local picker = action_state.get_current_picker(bufnr)
+                local selections = picker:get_multi_selection()
+
+                -- 複数選択がなければ現在の選択を使用
+                if vim.tbl_isempty(selections) then
+                  selections = { action_state.get_selected_entry() }
+                end
+
+                actions.close(bufnr)
+
+                -- SlashCommand.file の output メソッドを呼び出す
+                local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.file")
+                local cmd = SlashCommand.new({ Chat = chat })
+
+                for _, selection in ipairs(selections) do
+                  if selection then
+                    cmd:output({
+                      path = selection.path or selection.filename,
+                      relative_path = selection.path and vim.fn.fnamemodify(selection.path, ":."),
+                    })
+                  end
+                end
+              end)
+              return true
+            end,
+          })
+        end,
+        description = "Insert a file (smart-open)",
+        opts = {
+          contains_code = true,
+          max_lines = 1000,
+        },
+      },
+    },
   },
   inline = { adapter = "claude_code" },
   cmd = {
