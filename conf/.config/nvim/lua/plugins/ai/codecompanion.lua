@@ -160,6 +160,27 @@ return {
             end
           end, { buffer = true, desc = "Switch to default mode" })
 
+          -- Ctrl+Tabでモード選択UI
+          vim.keymap.set("n", "<C-Tab>", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local Chat = require("codecompanion.interactions.chat")
+            local chat = Chat.buf_get_chat(bufnr)
+
+            if not chat or not chat.acp_connection then
+              vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
+              return
+            end
+
+            -- modeスラッシュコマンドを直接実行
+            local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.mode")
+            local cmd = SlashCommand.new({
+              Chat = chat,
+              config = require("codecompanion.config"),
+              context = {},
+            })
+            cmd:execute()
+          end, { buffer = true, desc = "Select mode" })
+
           -- モードトグルキーマップ
           vim.keymap.set("n", "<leader>mt", function()
             local bufnr = vim.api.nvim_get_current_buf()
