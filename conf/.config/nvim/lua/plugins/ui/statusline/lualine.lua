@@ -60,7 +60,7 @@ return {
           },
           lualine_z = {
             {
-              require("plugins.ui.lualine.cc-component"),
+              require("plugins.ui.statusline.lualine.cc-component"),
             },
           },
         },
