@@ -27,7 +27,7 @@ return {
           tex = false,
           markdown = false,
           org = false,
-          codecompanion = false,
+          codecompanion = true,
         },
         nes = {
           enabled = false,
@@ -106,3 +106,4 @@ return {
     end,
   },
 }
+
