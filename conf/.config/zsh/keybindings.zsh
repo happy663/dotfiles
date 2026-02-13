@@ -14,9 +14,7 @@
 # -----------------------------------------------------------------------------
 bindkey -e
 
-if [[ -n $ZENO_LOADED ]]; then
-  # ここに任意のZLEの記述を行う
-
+if [[ -n $ZENO_LOADED ]]; then # ここに任意のZLEの記述を行う
   bindkey " " zeno-auto-snippet
   bindkey '^m' zeno-auto-snippet-and-accept-line
   bindkey '^i' zeno-completion
@@ -25,10 +23,34 @@ if [[ -n $ZENO_LOADED ]]; then
   bindkey '^x ' zeno-insert-space # zenoを発動させないでSpace
   bindkey '^x^m' accept-line # zenoを発動させないでaccept
 
-  # 入れると便利
-  bindkey '^r' zeno-history-selection
   # bindkey '^g' zeno-ghq-cd
 fi
+
+# -----------------------------------------------------------------------------
+# Custom History Selection (zeno-history-selectionの代替)
+# -----------------------------------------------------------------------------
+function custom-history-selection() {
+  local selection
+  selection=$(builtin history -r 1 | fzf \
+    --reverse \
+    --height 50% \
+    --no-sort \
+    --exact \
+    --no-multi \
+    --query="$LBUFFER" \
+    --prompt="History> " \
+    --with-nth=2..)
+  
+  if [[ -n "$selection" ]]; then
+    local history_index=${${=selection}[1]}
+    if [[ -n "$history_index" ]]; then
+      zle vi-fetch-history -n "$history_index"
+    fi
+  fi
+  zle reset-prompt
+}
+zle -N custom-history-selection
+bindkey '^r' custom-history-selection
 
 
 # -----------------------------------------------------------------------------

@@ -32,16 +32,22 @@ fi
 # Zinit Plugins
 # -----------------------------------------------------------------------------
 zinit light romkatv/powerlevel10k
-zinit light zsh-users/zsh-autosuggestions
 zinit light mollifier/anyframe
 zinit light zsh-users/zsh-completions
 
-# Load syntax-highlighting last to properly highlight all commands
-# zinit light zsh-users/zsh-syntax-highlighting
-
-# Load zeno.zsh after syntax-highlighting
+# Load zeno.zsh before autosuggestions so that zeno widgets get wrapped properly
 zinit ice lucid depth"1" blockf
 zinit light yuki-yano/zeno.zsh
+
+# zeno-auto-snippet-and-accept-lineをCLEAR_WIDGETSに追加
+# これによりEnter時にautosuggestionsの提案がクリアされる
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(zeno-auto-snippet-and-accept-line)
+
+# Load autosuggestions after zeno.zsh to wrap zeno-auto-snippet-and-accept-line
+zinit light zsh-users/zsh-autosuggestions
+
+# Load syntax-highlighting last to properly highlight all commands
+# zinit light zsh-users/zsh-syntax-highlighting
 zinit light zdharma-continuum/fast-syntax-highlighting
 
 
@@ -49,5 +55,6 @@ zinit light zdharma-continuum/fast-syntax-highlighting
 # Powerlevel10k Configuration
 # -----------------------------------------------------------------------------
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 
 
