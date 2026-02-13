@@ -154,9 +154,6 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
-  - name: mkdir -p
-    keyword: mkdir
-    snippet: mkdir -p
 
   - name: git quick save
     keyword: c

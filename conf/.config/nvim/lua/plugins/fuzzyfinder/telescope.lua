@@ -71,7 +71,7 @@ return {
               ["<C-S-Tab>"] = actions.move_selection_previous,
               ["<C-J>"] = false, -- to support skkeleton.vim
               ["<C-o>"] = custom_actions.qf_and_highlight(),
-              ["<C-f>"] = require("telescope.actions.layout").toggle_preview,
+              -- ["<C-<"] = require("telescope.actions.layout").toggle_preview,
               ["<C-s>f"] = qfs_actions.qfscope_search_filename,
               ["<C-s>g"] = qfs_actions.qfscope_grep_filename,
               ["<C-s>l"] = qfs_actions.qfscope_grep_line,
@@ -447,5 +447,3 @@ return {
     cond = vim.g.not_in_vscode,
   },
 }
-
-

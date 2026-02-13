@@ -15,7 +15,7 @@ hs.hotkey.bind({ "alt" }, "W", function()
 end)
 
 hs.hotkey.bind({ "alt" }, "C", function()
-  local app = hs.application.get("com.google.Chrome")
+  local app = hs.application.get("com.vivaldi.Vivaldi")
   if app then
     if app:isFrontmost() then
       app:hide()
