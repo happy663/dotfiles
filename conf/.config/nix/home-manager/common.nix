@@ -42,7 +42,6 @@ in
       awscli
       fastfetch
       neovim-remote
-      firefox
       neofetch
       nodejs_24
       # Node.js tools managed by Nix
