@@ -82,6 +82,16 @@ return {
       { "<leader>oll", "<cmd>Octo issue list<CR>", desc = "Open Octo issues" },
       { "<leader>oic", "<cmd>Octo issue create<CR>", desc = "Create a new Octo issue" },
       { "<leader>oc", "<cmd>Octo actions<CR>", desc = "Open Octo actions" },
+      {
+        "<leader>opam",
+        "<cmd>Octo search author:@me is:open is:pr<CR>",
+        desc = "My created PRs (all repos)",
+      },
+      {
+        "<leader>oprm",
+        "<cmd>Octo search review-requested:@me is:open is:pr<CR>",
+        desc = "PRs requesting my review (all repos)",
+      },
       -- Issue検索用キーマップ
       {
         "<leader>oit",
@@ -617,4 +627,3 @@ return {
     end,
   },
 }
-
