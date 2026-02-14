@@ -74,3 +74,4 @@ jobs:
           delete-branch: true
           body: ${{ steps.pr-body-output.outputs.body }}
           token: ${{ steps.app-token.outputs.token }}
+          reviewrs: happy663
