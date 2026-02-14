@@ -67,3 +67,6 @@ conf/.claude/telemetry
 conf/.claude/stats-cache.json
 tmp
 todo.md
+conf/.claude/plans
+conf/.claude/cache/changelog.md
+conf/.claude/paste-cache

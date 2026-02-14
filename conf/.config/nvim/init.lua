@@ -1,3 +1,4 @@
+vim.g.loaded_matchparen = 1
 vim.g.mapleader = " "
 
 -- 起動高速化
@@ -77,7 +78,6 @@ require("lazy").setup({
     { import = "plugins.note" },
     { import = "plugins.terminal" },
     { import = "plugins.tools" },
-
     { import = "plugins.lsp" },
     { import = "plugins.highlight" },
     { import = "plugins.treesitter" },
@@ -101,3 +101,4 @@ end
 if vim.fn.has("nvim") == 1 and vim.fn.executable("nvr") == 1 then
   vim.env.GIT_EDITOR = "nvr --remote-wait +'set bufhidden=wipe' +'normal! 7G' +'startinsert'"
 end
+
