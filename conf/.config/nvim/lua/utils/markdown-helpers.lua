@@ -434,6 +434,71 @@ function M.toggle_checkbox()
   end
 end
 
+local function get_clipboard_lines()
+  local clipboard_content = vim.fn.getreg("+")
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
+
+  if code_lines[#code_lines] == "" then
+    table.remove(code_lines, #code_lines)
+  end
+
+  return code_lines
+end
+
+function M.paste_as_code_block()
+  local code_lines = get_clipboard_lines()
+
+  if code_lines[#code_lines] == "" then
+    table.remove(code_lines, #code_lines)
+  end
+
+  table.insert(code_lines, 1, "```")
+  table.insert(code_lines, "```")
+
+  vim.api.nvim_put(code_lines, "l", true, false)
+  vim.cmd("normal! k")
+end
+
+function M.paste_as_details()
+  local code_lines = get_clipboard_lines()
+  local summary = vim.fn.input("Summary: ") or "詳細"
+  if summary == nil or summary == "" then
+    summary = "詳細"
+  end
+
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "",
+  }
+  vim.list_extend(result, code_lines)
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
+  vim.cmd("normal! k")
+end
+
+function M.paste_as_details_with_code_block()
+  local code_lines = get_clipboard_lines()
+  local summary = vim.fn.input("Summary: ") or "詳細"
+  if summary == nil or summary == "" then
+    summary = "詳細"
+  end
+
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "", -- 空行
+    "```",
+  }
+
+  vim.list_extend(result, code_lines)
+  table.insert(result, "```")
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
+end
+
 -- Setup keymaps for markdown/octo buffers
 function M.setup_keymaps()
   vim.keymap.set("n", "<C-c>", M.toggle_checkbox, {
@@ -459,7 +524,22 @@ function M.setup_keymaps()
     silent = true,
     desc = "Markdown: Create link",
   })
+
+  vim.keymap.set("n", "<leader>py", M.paste_as_code_block, {
+    buffer = true,
+    silent = true,
+    desc = "Markdown: Paste as code block",
+  })
+  vim.keymap.set("n", "<leader>pd", M.paste_as_details, {
+    buffer = true,
+    silent = true,
+    desc = "Markdown: Paste as details",
+  })
+  vim.keymap.set("n", "<leader>ps", M.paste_as_details, {
+    buffer = true,
+    silent = true,
+    desc = "Markdown: Paste as details with code block",
+  })
 end
 
 return M
-

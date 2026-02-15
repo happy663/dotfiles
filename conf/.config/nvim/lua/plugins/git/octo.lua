@@ -13,7 +13,6 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     keys = {
-      -- 多分遅延ロードの影響のせいでloadされていない状態でキーを打つとエラーになるかも
       {
         "<leader>olh",
         "<cmd>Octo issue list assignee=happy663 states=OPEN<CR>",
@@ -69,21 +68,7 @@ return {
           -- Register treesitter for render-markdown
           -- Use markdown parser in octo buffers
           vim.treesitter.language.register("markdown", "octo")
-          -- URL highlighting
-          vim.fn.matchadd("Underlined", "https\\?://[^ )>]*")
-          -- Or custom highlight group
-          vim.cmd([[ highlight MarkdownURL guifg=#569CD6 gui=underline ctermfg=75 cterm=underline ]])
-          vim.fn.matchadd("MarkdownURL", "https\\?://[^ )>]*")
-          -- Prevent nvim-markdown's loadview from overwriting highlight settings
-          vim.api.nvim_set_hl(0, "Folded", {
-            fg = "#82aaff", -- Bright blue (harmonizes with tokyonight-moon)
-            bg = "#1e2030", -- Slightly darker background
-            italic = true,
-          })
-          vim.api.nvim_set_hl(0, "FoldColumn", {
-            fg = "#636da6",
-            bg = "NONE",
-          })
+
           -- プラグイン側に上書きされないように、遅延して実行
           -- https://github.com/pwntester/octo.nvim/blob/4a3a4fc5a9d3a372c91041f5b846f33b8d6b31fa/lua/octo/model/octo-buffer.lua#L213
           vim.schedule(function()

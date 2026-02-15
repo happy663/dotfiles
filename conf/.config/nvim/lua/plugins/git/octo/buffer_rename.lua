@@ -65,7 +65,7 @@ function M.setup()
             clean_title = clean_title:gsub("[_%s]+$", "")
 
             -- UTF-8 aware length limit
-            local max_chars = 30
+            local max_chars = 50
             if vim.fn.strchars(clean_title) > max_chars then
               clean_title = utf8_safe_truncate(clean_title, max_chars - 3) .. "..."
             end

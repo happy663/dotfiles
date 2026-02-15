@@ -10,9 +10,22 @@ return {
     ---@type render.md.UserConfig
     opts = {},
     config = function()
+      vim.api.nvim_set_hl(0, "RenderMarkdownLink", { underline = true, fg = "#569CD6" })
       require("render-markdown").setup({
+        on = {
+          attach = function(ctx)
+            -- 生URLをハイライト（render-markdownのlinkでは検出できないため）
+            -- attachは一度だけ呼ばれるので重複しない
+            vim.fn.matchadd("RenderMarkdownLink", "https\\?://[^ )>]*")
+          end,
+        },
         file_types = { "markdown", "codecompanion", "Avante", "octo" },
         render_modes = true,
+        link = {
+          enabled = true,
+          hyperlink = "󰌹 ",
+          highlight = "RenderMarkdownLink",
+        },
         code = {
           width = "full",
           -- コードブロックの左パディングを設定（折りたたみ列のスペースを確保）
@@ -64,3 +77,4 @@ return {
     end,
   },
 }
+
