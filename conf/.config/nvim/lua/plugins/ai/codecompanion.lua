@@ -31,20 +31,41 @@ return {
       {
         "<C-t>",
         function()
-          local chat = require("codecompanion").last_chat()
+          local codecompanion = require("codecompanion")
+          local chat = codecompanion.last_chat()
+
           if chat and chat.ui:is_visible() then
-            -- 非表示にする前に現在の幅を保存
+            -- 既存チャットを非表示
             vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(chat.ui.winnr)
             vim.cmd("CodeCompanionChat Toggle")
-          elseif vim.g.codecompanion_saved_width then
-            -- 保存した幅でトグル
-            require("codecompanion").toggle({ window_opts = { width = vim.g.codecompanion_saved_width } })
+          elseif chat then
+            -- 非表示のチャットを再表示
+            if vim.g.codecompanion_saved_width then
+              codecompanion.toggle({ window_opts = { width = vim.g.codecompanion_saved_width } })
+            else
+              vim.cmd("CodeCompanionChat Toggle")
+            end
           else
-            vim.cmd("CodeCompanionChat Toggle")
+            -- 新規チャット作成時に#{buffer}を含める
+            local config = require("codecompanion.config")
+            local chat_opts = {
+              messages = {
+                {
+                  role = config.constants.USER_ROLE,
+                  content = "#{buffer}",
+                  opts = { contains_code = true },
+                },
+              },
+              auto_submit = false,
+            }
+            if vim.g.codecompanion_saved_width then
+              chat_opts.window_opts = { width = vim.g.codecompanion_saved_width }
+            end
+            codecompanion.chat(chat_opts)
           end
         end,
         mode = { "n", "v" },
-        desc = "CodeCompanion Toggle",
+        desc = "CodeCompanion Toggle with Buffer",
       },
       {
         "<leader>ccl",
