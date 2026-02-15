@@ -138,3 +138,10 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHo
   pattern = "*",
   command = "if mode() != 'c' | checktime | endif",
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown" },
+  callback = function()
+    require("utils.markdown-helpers").setup_keymaps()
+  end,
+})
