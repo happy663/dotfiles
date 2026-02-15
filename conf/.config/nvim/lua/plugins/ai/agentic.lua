@@ -42,6 +42,9 @@ return {
 
     agentic.setup({
       -- Available by default: "claude-acp" | "gemini-acp" | "codex-acp" | "opencode-acp" | "cursor-acp" | "auggie-acp"
+      settings = {
+        move_cursor_to_chat_on_submit = false, -- カーソルをプロンプトに留める
+      },
       provider = "claude-acp", -- setting the name here is all you need to get started
       keymaps = {
         -- Keybindings for ALL buffers in the widget (chat, prompt, code, files)
@@ -96,4 +99,3 @@ return {
     })
   end,
 }
-

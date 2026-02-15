@@ -115,6 +115,9 @@ M.interactions = {
           n = { "gl" },
         },
       },
+      stop = {
+        modes = { n = "<C-c>" },
+      },
     },
     -- smart-open.nvimを使用する/fileスラッシュコマンドのカスタマイズ
     slash_commands = {
