@@ -1,76 +1,78 @@
 return {
-  "happy663/fyler.nvim",
-  dependencies = { "nvim-mini/mini.icons" },
-  branch = "stable", -- Use stable branch for production
-  lazy = false, -- Necessary for `default_explorer` to work properly
-  keys = {
-    {
-      "<C-b>",
-      function()
-        require("fyler").toggle({ kind = "split_left_most" })
-      end,
-      desc = "Toggle Fyler",
-    },
-  },
-  opts = {
-    views = {
-      finder = {
-        confirm_simple = true, -- Confirm simple actions without prompt
-        default_explorer = true, -- Use fyler as default file explorer (replaces netrw)
-        follow_current_file = true, -- Auto focus current file
-        close_on_select = false, -- Keep window open after selecting file (like nvim-tree)
-        delete_to_trash = false,
-        git_status = {
-          enabled = true,
-          symbols = {
-            Untracked = "?",
-            Added = "+",
-            Modified = "*",
-            Deleted = "✘",
-            Renamed = "»",
-            Copied = "~",
-            Conflict = "!",
-            Ignored = "◌",
-          },
-        },
-        win = {
-          kind = "split_left_most", -- Open as left sidebar
-          border = "single",
-          kinds = {
-            split_left_most = {
-              width = "20%", -- Fixed width sidebar
-              win_opts = {
-                winfixwidth = true, -- Fixed width
-              },
-            },
-          },
-          win_opts = {
-            number = false,
-            relativenumber = false,
-            cursorline = true,
-            signcolumn = "no",
-          },
-        },
-        mappings = {
-          ["q"] = "CloseView",
-          ["<CR>"] = "Select",
-          ["<C-t>"] = "SelectTab",
-          ["|"] = "SelectVSplit",
-          -- ["-"] = "SelectSplit",
-          ["-"] = "GotoParent",
-          ["="] = "GotoCwd",
-          ["."] = "GotoNode",
-          ["#"] = "CollapseAll",
-          ["<BS>"] = "CollapseNode",
-        },
-      },
-    },
-  },
-  config = function(_, opts)
-    require("fyler").setup(opts)
+  -- NOTE: helpなどを開くとfylerが閉じられてしまうことがある、nvim-treeのようなTabを使用したpreviewもできない
 
-    -- Disable netrw (same as nvim-tree)
-    vim.api.nvim_set_var("loaded_netrw", 1)
-    vim.api.nvim_set_var("loaded_netrwPlugin", 1)
-  end,
+  -- "happy663/fyler.nvim",
+  -- dependencies = { "nvim-mini/mini.icons" },
+  -- branch = "stable", -- Use stable branch for production
+  -- lazy = false, -- Necessary for `default_explorer` to work properly
+  -- keys = {
+  --   {
+  --     "<C-b>",
+  --     function()
+  --       require("fyler").toggle({ kind = "split_left_most" })
+  --     end,
+  --     desc = "Toggle Fyler",
+  --   },
+  -- },
+  -- opts = {
+  --   views = {
+  --     finder = {
+  --       confirm_simple = true, -- Confirm simple actions without prompt
+  --       default_explorer = true, -- Use fyler as default file explorer (replaces netrw)
+  --       follow_current_file = true, -- Auto focus current file
+  --       close_on_select = false, -- Keep window open after selecting file (like nvim-tree)
+  --       delete_to_trash = false,
+  --       git_status = {
+  --         enabled = true,
+  --         symbols = {
+  --           Untracked = "?",
+  --           Added = "+",
+  --           Modified = "*",
+  --           Deleted = "✘",
+  --           Renamed = "»",
+  --           Copied = "~",
+  --           Conflict = "!",
+  --           Ignored = "◌",
+  --         },
+  --       },
+  --       win = {
+  --         kind = "split_left_most", -- Open as left sidebar
+  --         border = "single",
+  --         kinds = {
+  --           split_left_most = {
+  --             width = "20%", -- Fixed width sidebar
+  --             win_opts = {
+  --               winfixwidth = true, -- Fixed width
+  --             },
+  --           },
+  --         },
+  --         win_opts = {
+  --           number = false,
+  --           relativenumber = false,
+  --           cursorline = true,
+  --           signcolumn = "no",
+  --         },
+  --       },
+  --       mappings = {
+  --         ["q"] = "CloseView",
+  --         ["<CR>"] = "Select",
+  --         ["<C-t>"] = "SelectTab",
+  --         ["|"] = "SelectVSplit",
+  --         -- ["-"] = "SelectSplit",
+  --         ["-"] = "GotoParent",
+  --         ["="] = "GotoCwd",
+  --         ["."] = "GotoNode",
+  --         ["#"] = "CollapseAll",
+  --         ["<BS>"] = "CollapseNode",
+  --       },
+  --     },
+  --   },
+  -- },
+  -- config = function(_, opts)
+  --   require("fyler").setup(opts)
+  --
+  --   -- Disable netrw (same as nvim-tree)
+  --   vim.api.nvim_set_var("loaded_netrw", 1)
+  --   vim.api.nvim_set_var("loaded_netrwPlugin", 1)
+  -- end,
 }
