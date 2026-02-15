@@ -24,7 +24,7 @@ return {
       function()
         require("agentic").new_session()
       end,
-      mode = { "n", "v", "i" },
+      mode = { "n", "v" },
       desc = "New Agentic Session",
     },
     {
@@ -34,7 +34,7 @@ return {
       end,
       desc = "Agentic Restore session",
       silent = true,
-      mode = { "n", "v", "i" },
+      mode = { "n", "v" },
     },
   },
   config = function()
@@ -51,7 +51,7 @@ return {
           change_mode = {
             {
               "<leader>am", -- Same as the global toggle, but also works inside the widget
-              mode = { "i", "n", "v" }, -- Specify modes for this keybinding
+              mode = { "n", "v" }, -- Specify modes for this keybinding
             },
           },
         },
@@ -96,3 +96,4 @@ return {
     })
   end,
 }
+
