@@ -140,8 +140,17 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHo
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "markdown" },
+  pattern = { "markdown", "AgenticChat" },
   callback = function()
     require("utils.markdown-helpers").setup_keymaps()
+
+    -- ## 見出し間の移動キーバインド
+    vim.keymap.set("n", "]]", function()
+      vim.fn.search("^##  User\\s", "W")
+    end, { buffer = true, desc = "Next ## heading" })
+
+    vim.keymap.set("n", "[[", function()
+      vim.fn.search("^##  User\\s", "bW")
+    end, { buffer = true, desc = "Previous ## heading" })
   end,
 })
