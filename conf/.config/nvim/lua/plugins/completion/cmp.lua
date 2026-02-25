@@ -19,7 +19,6 @@ return {
       -- -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
-
       -- skkeleton候補選択追跡用のグローバル変数
       local skkeleton_last_selected = nil
       local skkeleton_last_registered = nil
@@ -62,36 +61,7 @@ return {
           cmp.config.compare.recently_used,
           cmp.config.compare.locality,
           -- cmp.config.compare.kind,
-          lspkind_comparator({
-            kind_priority = {
-              Keyword = 14,
-              Parameter = 13,
-              Variable = 12,
-              Field = 11,
-              Property = 11,
-              Constant = 10,
-              Enum = 10,
-              EnumMember = 10,
-              Event = 10,
-              Function = 10,
-              Method = 10,
-              Operator = 10,
-              Reference = 10,
-              Struct = 10,
-              File = 8,
-              Folder = 8,
-              Class = 5,
-              Color = 5,
-              Module = 5,
-              Constructor = 1,
-              Interface = 1,
-              Snippet = 0,
-              Text = 1,
-              TypeParameter = 1,
-              Unit = 1,
-              Value = 1,
-            },
-          }),
+          lspkind_comparator(),
           cmp.config.compare.sort_text,
           cmp.config.compare.length,
           cmp.config.compare.order,
@@ -339,6 +309,9 @@ return {
         preselect = cmp.PreselectMode.None,
         -- 補完候補が多すぎると邪魔なので制限
         performance = {
+          debounce = 150, -- デフォルト60ms → 150msに延長（入力遅延を軽減）
+          throttle = 60, -- デフォルト30ms → 60msに延長
+          fetching_timeout = 500, -- デフォルト200ms → 500msに延長
           max_view_entries = 20,
         },
       })
@@ -449,7 +422,7 @@ return {
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
       -- "uga-rosa/cmp-skkeleton",
-      "happy663/cmp-skkeleton",
+      -- "happy663/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
@@ -482,7 +455,9 @@ return {
           require("copilot_cmp").setup()
         end,
       },
+      {
+        dir = "~/src/github.com/happy663/cmp-skkeleton",
+      },
     },
   },
 }
-
