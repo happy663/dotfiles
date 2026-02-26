@@ -1,4 +1,4 @@
-{ inputs, lib, config, pkgs, phps, ... }:
+{ inputs, lib, config, pkgs, ... }:
 
 
 let
@@ -58,10 +58,6 @@ in
         };
       }))
       deno
-      # php-pcntlはプロセス制御を行うプラグインでGithub Actions上の環境ではこれのテストが失敗するためphp-pcntlを除外する
-      (phps.packages.${pkgs.system}.php74.withExtensions ({ enabled, all }:
-        builtins.filter (ext: ext.pname != "php-pcntl") enabled
-      ))
       php84Extensions.xdebug
     ];
 
