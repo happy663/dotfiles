@@ -451,7 +451,7 @@ return {
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
       -- "uga-rosa/cmp-skkeleton",
-      -- "happy663/cmp-skkeleton",
+      "happy663/cmp-skkeleton",
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
@@ -484,9 +484,9 @@ return {
           require("copilot_cmp").setup()
         end,
       },
-      {
-        dir = "~/src/github.com/happy663/cmp-skkeleton",
-      },
+      -- {
+      --   dir = "~/src/github.com/happy663/cmp-skkeleton",
+      -- },
     },
   },
 }
