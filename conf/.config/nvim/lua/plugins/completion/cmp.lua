@@ -338,9 +338,9 @@ return {
         preselect = cmp.PreselectMode.None,
         -- 補完候補が多すぎると邪魔なので制限
         performance = {
-          debounce = 150, -- デフォルト60ms → 150msに延長（入力遅延を軽減）
-          throttle = 60, -- デフォルト30ms → 60msに延長
-          fetching_timeout = 500, -- デフォルト200ms → 500msに延長
+          debounce = 20, 
+          throttle = 30, 
+          fetching_timeout = 200,
           max_view_entries = 20,
         },
       })
