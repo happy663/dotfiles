@@ -154,7 +154,6 @@ snippets:
       lbuffer: '^git\s+'
     evaluate: true
 
-
   - name: git quick save
     keyword: c
     snippet: git quick-save "{{message}}"
@@ -212,9 +211,9 @@ snippets:
   - name: docker exec select
     keyword: de
     snippet: docker exec -it $(docker ps | fzf --reverse --height 60% | cut -d " " -f 1) /bin/bash
-  - name: github browser
+  - name: github browse
     keyword: ghb
-    snippet: gh browser
+    snippet: gh browse
   - name: nvim-restart
     keyword: n
     snippet: nvim-restart .
