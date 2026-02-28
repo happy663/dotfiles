@@ -3,6 +3,7 @@
 ## Conversation Guidelines
 
 - 常に日本語で会話する
+- Markdownの強調構文（`**太字**`）を使用しない。代わりにシンプルな文章表現を使う
 
 ## Development Philosophy
 
@@ -124,6 +125,28 @@ cd $(ghq root)/github.com/neovim/nvim-lspconfig
 - Issue調査にTask tool使用
 - 存在確認せずに他リポジトリをTask toolで検索
 - 単純な情報取得にTask tool使用
+
+## Skills Usage Policy
+
+### Mandatory Skill Usage
+
+**IMPORTANT**: 以下のタスクでは、対応するスキルを**IMMEDIATELY**使用すること。これは必須要件である。
+
+#### summarize-issue スキル
+
+**トリガー条件**（以下のいずれかに該当する場合、**MUST**使用）:
+
+- ユーザーが「issueのまとめ」「issueを要約」「issue まとめ」などと依頼した時
+- issueファイル（`octo://`バッファまたは通常ファイル）が開かれており、要約・まとめ作成を求められた時
+- GitHub issueの内容を構造化して出力するよう求められた時
+
+**使用方法**:
+
+```
+Skill tool with skill="summarize-issue"
+```
+
+**重要**: 自分で直接実装できる場合でも、スキルが利用可能な場合は**必ずスキルを使用する**こと。
 
 ## Response Confidence Policy
 
