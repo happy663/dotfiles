@@ -281,7 +281,7 @@ vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = tr
 -- } の再マッピング
 vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
 
-vim.keymap.set("n", "<Tab>", "zo", { noremap = true, silent = true, desc = "Fold open" })
+vim.keymap.set("n", "zz", "za", { noremap = true, silent = true, desc = "Fold toggle" })
 vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
 vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
 vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
@@ -386,4 +386,5 @@ vim.keymap.set("n", "<leader>upe", function()
 		:e /tmp/nvim-profile.log
 	]])
 end, { desc = "Profile End" })
+
 
