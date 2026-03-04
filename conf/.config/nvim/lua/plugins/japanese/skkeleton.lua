@@ -9,7 +9,13 @@ return {
     },
     config = function()
       local opts = { noremap = false, silent = true }
-      vim.keymap.set({ "i", "t", "c" }, "<C-j>", "<Plug>(skkeleton-enable)", opts)
+      vim.keymap.set({ "i", "c" }, "<C-j>", "<Plug>(skkeleton-enable)", opts)
+      vim.api.nvim_create_autocmd("TermOpen", {
+        pattern = "*",
+        callback = function()
+          vim.keymap.set("t", "<C-j>", "<Plug>(skkeleton-enable)", opts)
+        end,
+      })
 
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-initialize-pre",

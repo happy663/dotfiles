@@ -19,7 +19,6 @@ return {
       -- -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
-
       -- skkeleton候補選択追跡用のグローバル変数
       local skkeleton_last_selected = nil
       local skkeleton_last_registered = nil
@@ -339,6 +338,9 @@ return {
         preselect = cmp.PreselectMode.None,
         -- 補完候補が多すぎると邪魔なので制限
         performance = {
+          debounce = 20,
+          throttle = 30,
+          fetching_timeout = 200,
           max_view_entries = 20,
         },
       })
@@ -482,7 +484,9 @@ return {
           require("copilot_cmp").setup()
         end,
       },
+      -- {
+      --   dir = "~/src/github.com/happy663/cmp-skkeleton",
+      -- },
     },
   },
 }
-

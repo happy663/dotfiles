@@ -5,6 +5,7 @@
   "devDependencies": {
     "@zed-industries/claude-code-acp": "^0.12.4",
     "editprompt": "latest",
-    "@anthropic-ai/claude-code": "latest"
+    "@anthropic-ai/claude-code": "latest",
+    "@openai/codex": "latest"
   }
 }

@@ -11,12 +11,6 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # PHP 7.4などのレガシーPHPバージョンのリポジトリを追加
-    phps = {
-      url = "github:fossar/nix-phps";
-      # nixpkgsを共有して一貫性を保つ
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +28,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, phps, neovim-nightly-overlay } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay } @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";
@@ -86,8 +80,6 @@
           };
           extraSpecialArgs = {
             inherit inputs;
-            # phpsパッケージを渡す
-            inherit phps;
           };
           modules = [
             ./conf/.config/nix/home-manager/darwin.nix
@@ -101,7 +93,6 @@
           };
           extraSpecialArgs = {
             inherit inputs;
-            inherit phps;
           };
           modules = [
             ./conf/.config/nix/home-manager/linux.nix

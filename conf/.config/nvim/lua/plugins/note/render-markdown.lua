@@ -12,6 +12,13 @@ return {
     config = function()
       vim.api.nvim_set_hl(0, "RenderMarkdownLink", { underline = true, fg = "#569CD6" })
       require("render-markdown").setup({
+        callout = {
+          todo = { raw = "[!TODO]", rendered = " TODO ", highlight = "RenderMarkdownInfo" },
+          done = { raw = "[!DONE]", rendered = " DONE ", highlight = "RenderMarkdownSuccess" },
+          -- カスタムcalloutを追加
+          waiting = { raw = "[!WAITING]", rendered = "WAITING ", highlight = "RenderMarkdownWarn" },
+          doing = { raw = "[!DOING]", rendered = " DOING ", highlight = "RenderMarkdownHint" },
+        },
         on = {
           attach = function(ctx)
             -- 生URLをハイライト（render-markdownのlinkでは検出できないため）
@@ -77,4 +84,3 @@ return {
     end,
   },
 }
-

@@ -10,7 +10,24 @@ function M.octo_fold_all()
     return "<1"
   end
 
-  -- コードブロックの処理
+  -- <details>タグ内にいるかチェック
+  local in_details = false
+  for i = vim.v.lnum - 1, 1, -1 do
+    local prev_line = vim.fn.getline(i)
+    if prev_line:match("^%s*<details") then
+      in_details = true
+      break
+    elseif prev_line:match("^%s*</details>") then
+      break
+    end
+  end
+
+  -- <details>内にいる場合、コードブロックのfoldは作成しない
+  if in_details then
+    return "="
+  end
+
+  -- コードブロックの処理（<details>外のみ）
   if line:match("^```") then
     -- 現在行より前の```の数を数える
     local count = 0
