@@ -31,7 +31,7 @@ function M.setup()
       -- Extract repository, kind, and number from buffer name
       local repo, kind, number = bufname:match("octo://([^/]+/[^/]+)/([^/]+)/([^/]+)")
 
-      if repo and kind == "issue" and number and tonumber(number) then
+      if repo and kind == "issue" or kind == "pull" and number and tonumber(number) then
         -- Retry function for buffer content loading
         local function try_extract_title(attempt)
           attempt = attempt or 1
