@@ -23,6 +23,7 @@ return {
             background = "Normal",
           },
         },
+        auto_scroll = false, -- automatically scroll to the bottom on terminal output
       })
     end,
   },
