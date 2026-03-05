@@ -9,11 +9,21 @@ return {
     },
     config = function()
       local opts = { noremap = false, silent = true }
+      local function enable_skkeleton_on_terminal()
+        if vim.bo.buftype == "terminal" and vim.api.nvim_get_mode().mode ~= "t" then
+          return
+        end
+        if not vim.fn["skkeleton#is_enabled"]() then
+          pcall(vim.fn["denops#request"], "skkeleton", "reset", {})
+        end
+        vim.fn["skkeleton#handle"]("enable", { key = { "<C-j>" } })
+      end
+
       vim.keymap.set({ "i", "c" }, "<C-j>", "<Plug>(skkeleton-enable)", opts)
       vim.api.nvim_create_autocmd("TermOpen", {
         pattern = "*",
         callback = function()
-          vim.keymap.set("t", "<C-j>", "<Plug>(skkeleton-enable)", opts)
+          vim.keymap.set("t", "<C-j>", enable_skkeleton_on_terminal, opts)
         end,
       })
 
