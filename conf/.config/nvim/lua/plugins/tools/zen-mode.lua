@@ -8,7 +8,7 @@ return {
       -- refer to the configuration section below
     },
     config = {
-      vim.keymap.set("n", "<leader>zz", "<cmd>ZenMode<cr>", { noremap = true, silent = true }),
+      -- vim.keymap.set("n", "<leader>zz", "<cmd>ZenMode<cr>", { noremap = true, silent = true }),
     },
   },
 }
