@@ -192,8 +192,8 @@ vim.api.nvim_create_user_command("CodexTerm", function(command)
   vim.cmd("terminal " .. codex_cmd)
   local bufnr = vim.api.nvim_get_current_buf()
 
-  -- Codex terminal: Enter sends command and returns to terminal-normal mode.
-  vim.keymap.set("t", "<CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
+  -- Codex terminal: Ctrl+Enter sends command and returns to terminal-normal mode.
+  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
 end, { nargs = "*" })
 
 vim.keymap.set(
@@ -359,6 +359,14 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "skkeleton-enable-post",
   callback = function()
     local bufname = vim.api.nvim_buf_get_name(0)
+    if vim.bo.buftype == "terminal" and string.match(bufname, "codex") then
+      vim.keymap.set(
+        "t",
+        "<C-CR>",
+        [[<C-\><C-n>A<CR><Esc>]],
+        { buffer = true, noremap = true, silent = true, nowait = true }
+      )
+    end
     if string.match(bufname, "/Library/Caches/ovim/") then
       vim.keymap.set("i", "<C-q>", function()
         vim.cmd("wq")
