@@ -1,0 +1,26 @@
+# Codex configuration based on conf/.claude/settings.json
+# Only keys supported by Codex CLI are included.
+
+model = "gpt-5.2-codex"
+model_provider = "openai"
+model_reasoning_effort = "high"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = true
+exclude = []
+include_only = []
+set = { BASH_DEFAULT_TIMEOUT_MS = "9600000", BASH_MAX_TIMEOUT_MS = "9600000" }
+
+[tui]
+notifications = true
+animations = true
+show_tooltips = true
+status_line = ["model-with-reasoning", "context-remaining", "current-dir"]
+
+[projects."/Users/happy/src/github.com/happy663/dotfiles"]
+trust_level = "trusted"
+
