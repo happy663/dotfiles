@@ -64,6 +64,15 @@ function nvim-restart() {
   done
 }
 
+# codexterm - open Neovim and run :CodexTerm with optional args
+function codexterm() {
+  local ex_cmd="CodexTerm"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
 # -----------------------------------------------------------------------------
 # Profiling and Performance Functions
 # -----------------------------------------------------------------------------

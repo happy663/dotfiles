@@ -183,6 +183,26 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+vim.api.nvim_create_user_command("CodexTerm", function(command)
+  local codex_cmd = "codex"
+  if command.args ~= "" then
+    codex_cmd = codex_cmd .. " " .. command.args
+  end
+
+  vim.cmd("terminal " .. codex_cmd)
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Codex terminal: Enter sends command and returns to terminal-normal mode.
+  vim.keymap.set("t", "<CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
+end, { nargs = "*" })
+
+vim.keymap.set(
+  { "n", "t" },
+  "<leader>co",
+  ":CodexTerm<CR>",
+  { noremap = true, silent = true, desc = "Open Codex terminal" }
+)
+
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,
 --   silent = true,
@@ -386,5 +406,3 @@ vim.keymap.set("n", "<leader>upe", function()
 		:e /tmp/nvim-profile.log
 	]])
 end, { desc = "Profile End" })
-
-
