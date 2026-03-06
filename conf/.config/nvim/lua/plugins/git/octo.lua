@@ -85,6 +85,24 @@ return {
           require("utils.markdown-helpers").setup_keymaps()
         end,
       })
+
+      -- Save and restore fold state when switching buffers
+      local octo_fold_group = vim.api.nvim_create_augroup("OctoFoldPersist", { clear = true })
+      vim.api.nvim_create_autocmd("BufWinLeave", {
+        group = octo_fold_group,
+        pattern = "octo://*",
+        callback = function()
+          vim.cmd("silent! mkview")
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("BufWinEnter", {
+        group = octo_fold_group,
+        pattern = "octo://*",
+        callback = function()
+          vim.cmd("silent! loadview")
+        end,
+      })
     end,
   },
 }

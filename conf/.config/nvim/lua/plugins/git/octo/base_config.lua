@@ -36,7 +36,13 @@ return {
   outdated_icon = "󰅒 ", -- outdated indicator
   resolved_icon = " ", -- resolved indicator
   reaction_viewer_hint_icon = " ", -- marker for user reactions
-  commands = {}, -- additional subcommands made available to `Octo` command
+  commands = {
+    issue = {
+      create_child = function()
+        require("plugins.git.octo.helpers").create_child_issue_and_open()
+      end,
+    },
+  }, -- additional subcommands made available to `Octo` command
   users = "search", -- Users for assignees or reviewers. Values: "search" | "mentionable" | "assignable"
   user_icon = " ", -- user icon
   ghost_icon = "󰊠 ", -- ghost icon
@@ -282,4 +288,3 @@ return {
     },
   },
 }
-
