@@ -249,6 +249,9 @@ return {
             acp = {
               max_title_length = 15, -- Maximum title length (nil = unlimited)
             },
+            window = {
+              layout = "vertical", -- vertical|horizontal|float
+            },
           },
           action_palette = {
             provider = "telescope", -- default|telescope|mini_pick|fzf_lua
@@ -398,3 +401,7 @@ return {
     end,
   },
 }
+
+
+
+

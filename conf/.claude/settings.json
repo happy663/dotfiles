@@ -80,11 +80,9 @@
       "Bash(nvim:*)",
       "Bash(npx ccusage:*)"
     ],
-    "deny": [
-      "Bash(rm:*)",
-      "Bash(rm -rf:*)"
-    ]
+    "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
   },
+  "model": "opusplan",
   "hooks": {
     "PostToolUse": [
       {
@@ -129,5 +127,6 @@
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-script.sh"
-  }
+  },
+  "plansDirectory": "./plans"
 }
