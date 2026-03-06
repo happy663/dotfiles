@@ -535,7 +535,7 @@ function M.setup_keymaps()
     silent = true,
     desc = "Markdown: Paste as details",
   })
-  vim.keymap.set("n", "<leader>ps", M.paste_as_details, {
+  vim.keymap.set("n", "<leader>ps", M.paste_as_code_block, {
     buffer = true,
     silent = true,
     desc = "Markdown: Paste as details with code block",
