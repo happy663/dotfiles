@@ -1,7 +1,7 @@
 # Codex configuration based on conf/.claude/settings.json
 # Only keys supported by Codex CLI are included.
 
-model = "gpt-5.2-codex"
+model = "gpt-5.3-codex"
 model_provider = "openai"
 model_reasoning_effort = "high"
 approval_policy = "on-request"
@@ -16,11 +16,18 @@ include_only = []
 set = { BASH_DEFAULT_TIMEOUT_MS = "9600000", BASH_MAX_TIMEOUT_MS = "9600000" }
 
 [tui]
-notifications = true
+notifications = ["agent-turn-complete", "approval-requested"]
 animations = true
 show_tooltips = true
 status_line = ["model-with-reasoning", "context-remaining", "current-dir"]
+notification_method = "auto"
+
+notify = ["/Users/happy/.codex/notify.py"]
 
 [projects."/Users/happy/src/github.com/happy663/dotfiles"]
 trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.2-codex" = "gpt-5.3-codex"
+
 
