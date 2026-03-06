@@ -75,6 +75,12 @@ function M.create_child_issue_and_open()
   end
 
   local repo = buffer.repo
+  local function open_issue(issue)
+    octo.create_buffer("issue", issue, repo, true, nil)
+    vim.fn.execute("normal! Gk")
+    vim.fn.execute("startinsert")
+  end
+
   local repo_id = octo_utils.get_repo_id(repo)
   if not repo_id then
     octo_utils.error("Cannot find repo id: " .. repo)
@@ -127,15 +133,13 @@ function M.create_child_issue_and_open()
                   if response_id == child_issue.id then
                     octo_utils.info("Child issue created and linked")
                   end
-                  octo.create_buffer("issue", child_issue, repo, true, nil)
-                  vim.fn.execute("normal! Gk")
-                  vim.fn.execute("startinsert")
+                  octo.load(repo, "issue", child_issue.number, nil, function(refreshed_issue)
+                    open_issue(refreshed_issue)
+                  end)
                 end,
                 failure = function()
                   octo_utils.error("Issue created but failed to link as a child issue")
-                  octo.create_buffer("issue", child_issue, repo, true, nil)
-                  vim.fn.execute("normal! Gk")
-                  vim.fn.execute("startinsert")
+                  open_issue(child_issue)
                 end,
               }),
             },
