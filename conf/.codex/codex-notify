@@ -1,0 +1,255 @@
+#!/usr/bin/env node
+
+"use strict";
+
+const { spawnSync } = require("child_process");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+/**
+ * Codex CLI の `notify` イベントを `terminal-notifier` 経由で macOS の通知センターへ送信します。
+ *
+ * Codex は、設定されたプログラムを 1 つの JSON ペイロード引数付きで呼び出します。この実装は
+ * stdin からペイロードを読み取ることにも対応しています（ローカルテストに便利です）。
+ *
+ * 動作はベストエフォートです。例外を投げず、常に終了コード 0 で終了するため、通知が
+ * Codex CLI のフローを壊すことはありません。
+ *
+ * 任意の環境変数ノブ:
+ * - `CODEX_NOTIFY_SOUND`: サウンド名（デフォルト: "default"）。無効化するには "none" を設定します。
+ * - `CODEX_NOTIFY_ACTIVATE_BUNDLE_ID`: クリック時にアクティブ化する bundle id（例: "com.googlecode.iterm2"）。
+ * - `CODEX_NOTIFY_LOG_PAYLOAD`: "1" に設定すると、生のペイロード JSON を `~/.codex/notify.log` に追記します（機密情報に注意）。
+ * - `CODEX_NOTIFY_LOG_MAX_BYTES`: ローテーション前の `notify.log` の最大サイズ（デフォルト: 1048576）。超えると `notify.log.1` に切り替えます。
+ *
+ * @returns {void}
+ */
+function main() {
+  const payloadRaw = readPayload();
+  if (!payloadRaw) return;
+
+  if (process.env.CODEX_NOTIFY_LOG_PAYLOAD === "1") {
+    appendLogLine("notify.log", payloadRaw);
+  }
+
+  const payload = parseJsonObject(payloadRaw);
+  const type = typeof payload?.type === "string" ? payload.type : "";
+  if (type && type !== "agent-turn-complete") return;
+
+  const cwd = typeof payload?.cwd === "string" ? payload.cwd : "";
+  const lastAssistantMessage =
+    typeof payload?.["last-assistant-message"] === "string"
+      ? payload["last-assistant-message"]
+      : "";
+  const summary = typeof payload?.summary === "string" ? payload.summary : "";
+
+  const title = buildTitle({ cwd, type });
+  const message = buildMessage({ lastAssistantMessage, summary, fallback: payloadRaw });
+  const group = typeof payload?.["thread-id"] === "string" ? payload["thread-id"] : "";
+
+  // `terminal-notifier` には癖があり、特定の先頭文字（例: `(`, `[`, `-`）があると
+  // `-title`/`-message` が無視されたり、空になったり、stdin 待ちでハングすることさえあります。
+  // 先頭にバックスラッシュを付けることで、表示内容を変えずに先頭文字を確実にエスケープできます。
+  const args = ["-title", escapeForTerminalNotifier(title), "-message", escapeForTerminalNotifier(message)];
+
+  const sound = (process.env.CODEX_NOTIFY_SOUND ?? "default").trim();
+  if (sound && sound.toLowerCase() !== "none") {
+    args.push("-sound", sound);
+  }
+
+  if (group) {
+    args.push("-group", `codex-${group}`);
+  }
+
+  const activateBundleId = (process.env.CODEX_NOTIFY_ACTIVATE_BUNDLE_ID ?? "").trim();
+  if (activateBundleId) {
+    args.push("-activate", activateBundleId);
+  }
+
+  const result = spawnSync("terminal-notifier", args, { stdio: "ignore" });
+  if (result.error) {
+    appendLogLine("notify-errors.log", `terminal-notifier spawn failed: ${String(result.error)}`);
+    return;
+  }
+
+  if (typeof result.status === "number" && result.status !== 0) {
+    appendLogLine("notify-errors.log", `terminal-notifier exited ${result.status}`);
+  }
+}
+
+/**
+ * argv[2] または stdin からペイロードを読み取ります。stdin が TTY の場合は、
+ * 入力待ちでブロックしないようにします。
+ *
+ * @returns {string} ペイロードのテキスト（空の場合もあります）。
+ */
+function readPayload() {
+  const arg = process.argv[2];
+  if (typeof arg === "string" && arg.length > 0) return arg;
+  if (process.stdin.isTTY) return "";
+  try {
+    return fs.readFileSync(0, "utf8").trim();
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * 生の JSON 文字列をプレーンオブジェクトにパースします。パースに失敗した場合、
+ * またはルート値がオブジェクトでない場合は undefined を返します。
+ *
+ * @param {string} raw
+ * @returns {Record<string, unknown> | undefined}
+ */
+function parseJsonObject(raw) {
+  try {
+    const value = JSON.parse(raw);
+    if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+    return /** @type {Record<string, unknown>} */ (value);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 値を、通知に安全な 1 行文字列へ正規化します。
+ *
+ * @param {unknown} value
+ * @returns {string}
+ */
+function normalizeText(value) {
+  if (typeof value !== "string") return "";
+  return value.replace(/[\r\n\t]+/g, " ").replace(/\s{2,}/g, " ").trim();
+}
+
+/**
+ * Unicode のコードポイント単位で文字列を切り詰め、切り詰めが発生した場合は省略記号を付けます。
+ *
+ * @param {string} text
+ * @param {number} maxCodePoints
+ * @returns {string}
+ */
+function truncate(text, maxCodePoints) {
+  if (maxCodePoints <= 0) return "";
+  const codePoints = Array.from(text);
+  if (codePoints.length <= maxCodePoints) return text;
+  return `${codePoints.slice(0, Math.max(0, maxCodePoints - 1)).join("")}…`;
+}
+
+/**
+ * `terminal-notifier` で値が確実に認識されるよう、先頭 1 文字をエスケープします。
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+function escapeForTerminalNotifier(text) {
+  if (!text) return "";
+  return `\\${text}`;
+}
+
+/**
+ * 任意のプロジェクト文脈を含む、短い通知タイトルを作成します。
+ *
+ * @param {{ cwd: string; type: string }} params
+ * @returns {string}
+ */
+function buildTitle({ cwd, type }) {
+  const folder = cwd ? path.basename(cwd) : "";
+  if (folder) return truncate(folder, 120);
+  if (type) return truncate("Codex", 120);
+  return truncate("Codex", 120);
+}
+
+/**
+ * 通知メッセージ本文を作成します。アシスタントの最後のメッセージを優先します。
+ *
+ * @param {{ lastAssistantMessage: string; summary: string; fallback: string }} params
+ * @returns {string}
+ */
+function buildMessage({ lastAssistantMessage, summary, fallback }) {
+  const raw = normalizeText(lastAssistantMessage) || normalizeText(summary) || normalizeText(fallback);
+  return truncate(raw || "Turn complete.", 800);
+}
+
+/**
+ * ログファイルに 1 行だけ追記します。エラーは握りつぶします（ベストエフォート）。
+ *
+ * 可能であればログは `~/.codex/` 配下に書き込み、そうでなければ OS の一時ディレクトリに書き込みます。
+ * `notify.log` はサイズに応じてローテーション（デフォルト 1 MiB）し、無制限に肥大化しないようにします。
+ *
+ * @param {string} fileName
+ * @param {string} line
+ * @returns {void}
+ */
+function appendLogLine(fileName, line) {
+  const maxBytes = parsePositiveInt(process.env.CODEX_NOTIFY_LOG_MAX_BYTES) ?? 1024 * 1024;
+
+  const codexDir = path.join(os.homedir(), ".codex");
+  const primaryPath = path.join(codexDir, fileName);
+  const fallbackPath = path.join(process.env.TMPDIR || os.tmpdir(), `codex-${fileName}`);
+
+  const targetPath = ensureWritablePath(primaryPath) ? primaryPath : fallbackPath;
+  if (fileName === "notify.log") {
+    rotateIfTooLarge(targetPath, maxBytes);
+  }
+  try {
+    fs.appendFileSync(targetPath, `${line}\n`, "utf8");
+  } catch {
+    // ベストエフォート: 決して例外を投げない。
+  }
+}
+
+/**
+ * ディレクトリが存在すること、およびファイルが書き込み可能であることを保証します。
+ *
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+function ensureWritablePath(filePath) {
+  try {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.closeSync(fs.openSync(filePath, "a"));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * `filePath` が `maxBytes` を超えていたら `filePath.1` にローテーションします。
+ *
+ * @param {string} filePath
+ * @param {number} maxBytes
+ * @returns {void}
+ */
+function rotateIfTooLarge(filePath, maxBytes) {
+  try {
+    const stat = fs.statSync(filePath);
+    if (stat.size <= maxBytes) return;
+    const rotated = `${filePath}.1`;
+    try {
+      fs.renameSync(filePath, rotated);
+    } catch {
+      // リネームに失敗した場合（例: 権限問題）は、ローテーションを中止します。
+    }
+  } catch {
+    // ファイルが存在しない場合は問題ありません。
+  }
+}
+
+/**
+ * 環境変数文字列から正の整数をパースします。
+ *
+ * @param {string | undefined} value
+ * @returns {number | undefined}
+ */
+function parsePositiveInt(value) {
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return undefined;
+  return parsed;
+}
+
+main();
+
+

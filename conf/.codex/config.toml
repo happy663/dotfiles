@@ -7,6 +7,8 @@ model_reasoning_effort = "high"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
+service_tier = "fast"
+notify = ["/Users/happy/src/github.com/happy663/dotfiles/conf/.codex/codex-notify"]
 
 [shell_environment_policy]
 inherit = "all"
@@ -16,13 +18,12 @@ include_only = []
 set = { BASH_DEFAULT_TIMEOUT_MS = "9600000", BASH_MAX_TIMEOUT_MS = "9600000" }
 
 [tui]
-notifications = ["agent-turn-complete", "approval-requested"]
+notifications = true
 animations = true
 show_tooltips = true
 status_line = ["model-with-reasoning", "context-remaining", "current-dir"]
-notification_method = "auto"
+# notification_method = "auto"
 
-notify = ["/Users/happy/.codex/notify.py"]
 
 [projects."/Users/happy/src/github.com/happy663/dotfiles"]
 trust_level = "trusted"
