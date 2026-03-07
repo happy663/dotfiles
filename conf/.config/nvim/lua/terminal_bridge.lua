@@ -5,7 +5,7 @@
 local M = {}
 
 -- ログ設定
-M.log_level = "DEBUG" -- DEBUG, INFO, WARN, ERROR
+M.log_level = "ERROR" -- DEBUG, INFO, WARN, ERROR
 
 ---
 -- ログ出力
@@ -35,8 +35,6 @@ end
 -- @return table ターミナル情報のリスト {bufnr, job_id, name}
 ---
 function M.get_all_terminals()
-  M.log("DEBUG", "get_all_terminals() called")
-
   local terminals = {}
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "terminal" then
@@ -64,7 +62,10 @@ end
 -- @return table|nil ターミナル情報
 ---
 function M.find_terminal_by_index(index, exclude_current)
-  M.log("DEBUG", string.format("find_terminal_by_index(index=%s, exclude_current=%s)", tostring(index), tostring(exclude_current)))
+  M.log(
+    "DEBUG",
+    string.format("find_terminal_by_index(index=%s, exclude_current=%s)", tostring(index), tostring(exclude_current))
+  )
 
   local current_bufnr = vim.api.nvim_get_current_buf()
   local terminals = M.get_all_terminals()
@@ -95,7 +96,10 @@ end
 -- @return table|nil 一致したターミナル情報、または nil
 ---
 function M.find_terminal_by_pattern(pattern, exclude_current)
-  M.log("DEBUG", string.format("find_terminal_by_pattern(pattern=%s, exclude_current=%s)", pattern, tostring(exclude_current)))
+  M.log(
+    "DEBUG",
+    string.format("find_terminal_by_pattern(pattern=%s, exclude_current=%s)", pattern, tostring(exclude_current))
+  )
 
   local current_bufnr = vim.api.nvim_get_current_buf()
   local terminals = M.get_all_terminals()
@@ -197,13 +201,12 @@ function M.external_send(args)
     return vim.fn.json_encode({ success = false, message = err_msg })
   end
 
-  M.log("DEBUG", string.format("  Parsed params: target=%s, command=%s", tostring(params.target), tostring(params.command)))
-
-  local success, message = M.send_command(
-    params.target or 1,
-    params.command or "",
-    params.opts or {}
+  M.log(
+    "DEBUG",
+    string.format("  Parsed params: target=%s, command=%s", tostring(params.target), tostring(params.command))
   )
+
+  local success, message = M.send_command(params.target or 1, params.command or "", params.opts or {})
 
   local result = vim.fn.json_encode({
     success = success,
