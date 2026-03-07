@@ -114,9 +114,6 @@ return {
         ":lua toggle_transparent()<CR>",
         { noremap = true, silent = true, desc = "Toggle transparent" }
       )
-
-      -- デフォルトのカラースキームを設定
-      vim.cmd("colorscheme tokyonight-moon")
     end,
   },
 }

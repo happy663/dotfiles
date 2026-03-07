@@ -154,3 +154,56 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = true, desc = "Previous ## heading" })
   end,
 })
+
+local function apply_dir_based_colorscheme()
+  require("utils").load_env("~/.config/nvim/.env")
+
+  local default_dir_map_color_schema = {
+    default = "tokyonight-moon",
+  }
+  local env_dir_map_color_schema = {}
+  local dir_map_color_schema_json = vim.env.NVIM_DIR_MAP_COLOR_SCHEME or ""
+  if dir_map_color_schema_json ~= "" then
+    local ok, decoded = pcall(vim.json.decode, dir_map_color_schema_json)
+    if ok and type(decoded) == "table" then
+      env_dir_map_color_schema = decoded
+    else
+      vim.notify("NVIM_DIR_MAP_COLOR_SCHEME is not valid JSON", vim.log.levels.WARN)
+    end
+  end
+
+  local current_dir_path = vim.fn.getcwd()
+  local dir_name = string.match(current_dir_path, "([^/]+)$") or ""
+  local selected_color_schema = env_dir_map_color_schema[dir_name]
+    or env_dir_map_color_schema["default"]
+    or default_dir_map_color_schema["default"]
+
+  if vim.g.colors_name == selected_color_schema then
+    return
+  end
+
+  print("Selected color schema:", selected_color_schema)
+  vim.cmd("colorscheme " .. selected_color_schema)
+end
+
+local did_apply_dir_based_colorscheme = false
+local function apply_dir_based_colorscheme_once()
+  if did_apply_dir_based_colorscheme then
+    return
+  end
+  did_apply_dir_based_colorscheme = true
+  apply_dir_based_colorscheme()
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  pattern = "",
+  once = true,
+  callback = function()
+    -- vim.schedule(apply_dir_based_colorscheme_once)
+    apply_dir_based_colorscheme()
+  end,
+})
+
+
+
+
