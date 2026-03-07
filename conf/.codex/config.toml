@@ -8,6 +8,7 @@ approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
 service_tier = "fast"
+# ~が展開されないため、絶対パスを使用
 notify = ["/Users/happy/src/github.com/happy663/dotfiles/conf/.codex/codex-notify"]
 
 [shell_environment_policy]
