@@ -46,6 +46,8 @@ return {
         codex:open()
       end, { desc = "Open new Codex terminal" })
 
+      vim.keymap.set("n", "<leader>ts", ":TermSelect<CR>", { desc = "Select terminal to open" })
+
       -- ターミナルモード表示: ボーダー色でInsert/Normalを区別
       local augroup = vim.api.nvim_create_augroup("ToggleTermModes", { clear = true })
 
