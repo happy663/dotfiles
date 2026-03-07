@@ -66,7 +66,7 @@ return {
             end,
           }),
           null_ls.builtins.formatting.markdownlint.with({
-            args = { "--fix", "--config", vim.fn.expand("~/.markdownlint.jsonc"), "$FILENAME" },
+            args = { "--fix", "--config", vim.fn.expand("~/.config/nvim/.markdownlint.jsonc"), "$FILENAME" },
           }),
           null_ls.builtins.formatting.nixpkgs_fmt,
           null_ls.builtins.formatting.phpcsfixer.with({
