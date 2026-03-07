@@ -88,3 +88,4 @@ conf/.codex/sessions/
 conf/.codex/history.jsonl
 conf/.config/ai-agents/skills/.system
 
+conf/.claude/file-history
