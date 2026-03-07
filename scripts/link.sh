@@ -19,23 +19,26 @@ done
 # AI Agent configurations
 link_ai_agent_configs() {
     AI_AGENTS_DIR="${DOTFILES_DIR}/.config/ai-agents"
-    
+
     echo "Setting up AI agent configurations..."
-    
+
     # Codex (only if ~/.codex exists)
     if [[ -d "$HOME/.codex" ]]; then
-        mkdir -p "$HOME/.codex/skills"
-        
-        # Link shared skills individually (preserving .system directory)
-        for skill in "${AI_AGENTS_DIR}/skills/"*/; do
-            skill_name=$(basename "$skill")
-            ln -snfv "$skill" "$HOME/.codex/skills/$skill_name"
-        done
-        
+        # Link shared skills directory
+        ln -snfv "${AI_AGENTS_DIR}/skills" "$HOME/.codex/skills"
+
         # Link AGENT.md
         ln -snfv "${AI_AGENTS_DIR}/instructions/INSTRUCTIONS.md" "$HOME/.codex/AGENT.md"
-        
-        echo "Codex: skills and AGENT.md linked"
+
+        echo "Codex: skills directory and AGENT.md linked"
+    fi
+
+    # Claude Code (only if ~/.claude exists)
+    if [[ -d "$HOME/.claude" ]]; then
+        # Link shared skills directory
+        ln -snfv "${AI_AGENTS_DIR}/skills" "$HOME/.claude/skills"
+
+        echo "Claude Code: skills directory linked"
     fi
 }
 
