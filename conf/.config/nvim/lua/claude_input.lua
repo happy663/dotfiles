@@ -28,6 +28,36 @@ local function trim_trailing_empty_lines(lines)
   return lines
 end
 
+local function focus_existing_draft(bufnr)
+  local windows = vim.fn.win_findbuf(bufnr)
+  for _, winid in ipairs(windows) do
+    if vim.api.nvim_win_is_valid(winid) then
+      vim.api.nvim_set_current_win(winid)
+      vim.cmd("startinsert")
+      return true
+    end
+  end
+  return false
+end
+
+local function resolve_target_terminal_bufnr(target_pattern)
+  if is_valid_buf(vim.t.claude_terminal_bufnr) and vim.bo[vim.t.claude_terminal_bufnr].buftype == "terminal" then
+    return vim.t.claude_terminal_bufnr
+  end
+
+  local bridge_ok, terminal_bridge = pcall(require, "terminal_bridge")
+  if not bridge_ok then
+    return nil
+  end
+
+  local terminal = terminal_bridge.find_terminal_by_pattern(target_pattern, false)
+  if terminal and is_valid_buf(terminal.bufnr) then
+    return terminal.bufnr
+  end
+
+  return nil
+end
+
 local function ensure_buffer_keymaps(bufnr)
   vim.keymap.set("n", "<C-CR>", "<Cmd>ClaudeDraftSend<CR>", {
     buffer = bufnr,
@@ -53,6 +83,43 @@ local function ensure_buffer_keymaps(bufnr)
     silent = true,
     desc = "Send Claude draft buffer",
   })
+end
+
+function M.focus_or_open(opts)
+  opts = opts or {}
+
+  local draft_bufnr = get_draft_bufnr()
+  if draft_bufnr then
+    if focus_existing_draft(draft_bufnr) then
+      return true, "Focused existing draft buffer"
+    end
+    vim.cmd("belowright split")
+    if type(opts.draft_height) == "number" and opts.draft_height > 0 then
+      vim.cmd("resize " .. tostring(opts.draft_height))
+    end
+    vim.api.nvim_win_set_buf(0, draft_bufnr)
+    vim.cmd("startinsert")
+    return true, "Opened existing draft buffer"
+  end
+
+  local target_pattern = opts.target_pattern or vim.t.claude_input_target_pattern or M.defaults.target_pattern
+  local terminal_bufnr = opts.claude_bufnr
+  if not is_valid_buf(terminal_bufnr) then
+    terminal_bufnr = resolve_target_terminal_bufnr(target_pattern)
+  end
+  if not is_valid_buf(terminal_bufnr) then
+    return false, "Target terminal not found for draft buffer"
+  end
+
+  vim.cmd("belowright split")
+  if type(opts.draft_height) == "number" and opts.draft_height > 0 then
+    vim.cmd("resize " .. tostring(opts.draft_height))
+  end
+  M.open_input_buffer({
+    claude_bufnr = terminal_bufnr,
+    target_pattern = target_pattern,
+  })
+  return true, "Opened draft buffer"
 end
 
 function M.open_input_buffer(opts)
