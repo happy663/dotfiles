@@ -93,6 +93,7 @@ if vim.g.not_in_vscode then
   require("core.settings")
   require("core.keymaps")
   require("discord")
+  require("claude_input")
 else
   require("self-vscode")
 end
@@ -119,4 +120,3 @@ if vim.v.servername == "" or vim.v.servername == nil then
     vim.notify("[init.lua] Failed to start server: " .. tostring(err), vim.log.levels.WARN)
   end
 end
-
