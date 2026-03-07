@@ -3,7 +3,7 @@ return {
     "nvimtools/none-ls.nvim",
     cond = vim.g.not_in_vscode,
     lazy = true,
-    event = "LspAttach",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       local null_ls = require("null-ls")
 
@@ -60,7 +60,14 @@ return {
         sources = {
           null_ls.builtins.formatting.stylua,
           --null_ls.builtins.completion.spell,
-          null_ls.builtins.formatting.prettierd,
+          null_ls.builtins.formatting.prettierd.with({
+            runtime_condition = function(params)
+              return params.ft ~= "markdown"
+            end,
+          }),
+          null_ls.builtins.formatting.markdownlint.with({
+            args = { "--fix", "--config", vim.fn.expand("~/.markdownlint.jsonc"), "$FILENAME" },
+          }),
           null_ls.builtins.formatting.nixpkgs_fmt,
           null_ls.builtins.formatting.phpcsfixer.with({
             extra_args = { "--rules=@PSR2" },

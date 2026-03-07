@@ -15,6 +15,7 @@ return {
           "lua-language-server",
           --"luacheck",
           "prettierd",
+          "markdownlint",
           "pyright",
           "staticcheck",
           "stylua",
