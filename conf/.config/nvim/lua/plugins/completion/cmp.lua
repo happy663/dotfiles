@@ -23,6 +23,33 @@ return {
       local skkeleton_last_selected = nil
       local skkeleton_last_registered = nil
 
+      local function refresh_skkeleton_abbrev_completion()
+        if vim.g["skkeleton#mode"] ~= "abbrev" then
+          return
+        end
+
+        local mode = vim.api.nvim_get_mode().mode
+        if mode ~= "i" and mode ~= "ic" then
+          return
+        end
+
+        local state = vim.g["skkeleton#state"]
+        if type(state) ~= "table" or state.phase ~= "input:okurinasi" then
+          cmp.close()
+          return
+        end
+
+        local line = vim.api.nvim_get_current_line()
+        local col = vim.api.nvim_win_get_cursor(0)[2]
+        local input = line:sub(1, col):match("([a-zA-Z]+)$")
+
+        if input and #input > 0 then
+          cmp.complete()
+        else
+          cmp.close()
+        end
+      end
+
       local lspkind_comparator = function(conf)
         local lsp_types = require("cmp.types").lsp
         return function(entry1, entry2)
@@ -440,6 +467,13 @@ return {
               { name = "buffer" },
             },
           })
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "skkeleton-handled",
+        callback = function()
+          vim.schedule(refresh_skkeleton_abbrev_completion)
         end,
       })
     end,
