@@ -198,6 +198,14 @@ end, { nargs = "*" })
 
 -- vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
 
+local dual_ai_config = {
+  primary_command = "claude",
+  secondary_command = "codex",
+  draft_target_pattern = "claude",
+  draft_height = 8,
+  open_in_new_tab = true,
+}
+
 local claude_input_ok, claude_input = pcall(require, "claude_input")
 if claude_input_ok then
   vim.api.nvim_create_user_command("ClaudeDraftSend", function()
@@ -221,24 +229,31 @@ end
 
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
 vim.api.nvim_create_user_command("DualAI", function()
-  vim.cmd("tabnew")
+  if dual_ai_config.open_in_new_tab then
+    vim.cmd("tabnew")
+  end
 
-  vim.cmd("terminal claude")
+  vim.cmd("terminal " .. dual_ai_config.primary_command)
   local claude_bufnr = vim.api.nvim_get_current_buf()
   vim.t.claude_terminal_bufnr = claude_bufnr
 
   vim.cmd("vsplit")
-  vim.cmd("terminal codex")
+  vim.cmd("terminal " .. dual_ai_config.secondary_command)
   local codex_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
 
   -- Claude側に戻って下段に入力バッファを開く
-  -- vim.cmd("wincmd h")
+  vim.cmd("wincmd h")
   vim.cmd("belowright split")
-  vim.cmd("resize 8")
+  if dual_ai_config.draft_height and dual_ai_config.draft_height > 0 then
+    vim.cmd("resize " .. tostring(dual_ai_config.draft_height))
+  end
 
   if claude_input_ok then
-    claude_input.open_input_buffer({ claude_bufnr = claude_bufnr })
+    claude_input.open_input_buffer({
+      claude_bufnr = claude_bufnr,
+      target_pattern = dual_ai_config.draft_target_pattern,
+    })
   else
     vim.notify("[DualAI] claude_input module not found", vim.log.levels.WARN)
     vim.cmd("enew")

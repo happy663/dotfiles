@@ -2,6 +2,9 @@
 -- Claude Code向け入力バッファの作成と送信を管理するモジュール
 
 local M = {}
+M.defaults = {
+  target_pattern = "claude",
+}
 
 local function is_valid_buf(bufnr)
   return bufnr ~= nil and vim.api.nvim_buf_is_valid(bufnr)
@@ -70,6 +73,9 @@ function M.open_input_buffer(opts)
   if opts.claude_bufnr and is_valid_buf(opts.claude_bufnr) then
     vim.t.claude_terminal_bufnr = opts.claude_bufnr
   end
+  if type(opts.target_pattern) == "string" and opts.target_pattern ~= "" then
+    vim.t.claude_input_target_pattern = opts.target_pattern
+  end
 
   vim.api.nvim_win_set_buf(0, bufnr)
   vim.cmd("startinsert")
@@ -114,6 +120,7 @@ function M.send_draft()
 
   local target_index
   local claude_bufnr = vim.t.claude_terminal_bufnr
+  local target_pattern = vim.t.claude_input_target_pattern or M.defaults.target_pattern
   if is_valid_buf(claude_bufnr) then
     local terminals = terminal_bridge.get_all_terminals()
     for index, term in ipairs(terminals) do
@@ -124,7 +131,7 @@ function M.send_draft()
     end
   end
 
-  local target = target_index or "claude"
+  local target = target_index or target_pattern
   local success, message =
     terminal_bridge.send_command(target, content, { add_newline = true, exclude_current = false })
   if not success then
