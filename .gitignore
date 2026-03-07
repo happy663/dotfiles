@@ -85,7 +85,6 @@ conf/.codex/skills/.system
 conf/.codex/shell_snapshots
 conf/.codex/sessions/
 
-
-
-
 conf/.codex/history.jsonl
+conf/.config/ai-agents/skills/.system
+
