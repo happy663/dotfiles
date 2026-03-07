@@ -29,7 +29,7 @@ source ~/.config/zsh/init.zsh
 source ~/.config/zsh/plugins.zsh
 source ~/.config/zsh/environment.zsh
 source ~/.config/zsh/navigation.zsh
-# source ~/.config/zsh/completion.zsh
+source ~/.config/zsh/completion.zsh
 source ~/.config/zsh/history.zsh
 source ~/.config/zsh/keybindings.zsh
 source ~/.config/zsh/aliases.zsh
@@ -40,4 +40,5 @@ source ~/.config/zsh/functions.zsh
 # Kiro CLI post block. Keep at the bottom of this file.
 # Disabled to avoid Kiro shell integration startup slowdown.
 # [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
+
 
