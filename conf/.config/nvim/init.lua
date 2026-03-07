@@ -102,3 +102,21 @@ if vim.fn.has("nvim") == 1 and vim.fn.executable("nvr") == 1 then
   vim.env.GIT_EDITOR = "nvr --remote-wait +'set bufhidden=wipe' +'normal! 7G' +'startinsert'"
 end
 
+-- Neovimサーバーソケットを起動（terminal_bridge用）
+-- nvrからリモートでNeovimを制御するために必要
+local socket_path = vim.fn.expand("$HOME/.cache/nvim/server.pipe")
+local cache_dir = vim.fn.expand("$HOME/.cache/nvim")
+
+-- キャッシュディレクトリが存在しない場合は作成
+if vim.fn.isdirectory(cache_dir) == 0 then
+  vim.fn.mkdir(cache_dir, "p")
+end
+
+-- サーバーが起動していない場合のみ起動
+if vim.v.servername == "" or vim.v.servername == nil then
+  local ok, err = pcall(vim.fn.serverstart, socket_path)
+  if not ok then
+    vim.notify("[init.lua] Failed to start server: " .. tostring(err), vim.log.levels.WARN)
+  end
+end
+
