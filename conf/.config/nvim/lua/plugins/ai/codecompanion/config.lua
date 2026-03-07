@@ -165,7 +165,7 @@ M.interactions = {
       },
     },
   },
-  inline = { adapter = "claude_code" },
+  inline = { adapter = "copilot" },
   cmd = {
     adapter = "openai",
   },
@@ -183,4 +183,3 @@ M.interactions = {
 }
 
 return M
-
