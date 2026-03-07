@@ -225,6 +225,21 @@ if claude_input_ok then
       vim.notify(message, vim.log.levels.WARN)
     end
   end, { desc = "Clear Claude draft buffer" })
+
+  vim.api.nvim_create_user_command("TermDraft", function()
+    local target_bufnr = vim.api.nvim_get_current_buf()
+    if vim.bo[target_bufnr].buftype ~= "terminal" then
+      vim.notify("[TermDraft] Run this command from a terminal buffer", vim.log.levels.WARN)
+      return
+    end
+
+    vim.cmd("belowright split")
+    if dual_ai_config.draft_height and dual_ai_config.draft_height > 0 then
+      vim.cmd("resize " .. tostring(dual_ai_config.draft_height))
+    end
+
+    claude_input.open_input_buffer({ claude_bufnr = target_bufnr })
+  end, { desc = "Open draft buffer linked to current terminal" })
 end
 
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
@@ -524,3 +539,4 @@ if bridge_ok then
     desc = "Send command to terminal by index",
   })
 end
+
