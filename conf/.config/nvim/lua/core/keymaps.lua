@@ -196,7 +196,7 @@ vim.api.nvim_create_user_command("CodexTerm", function(command)
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
 end, { nargs = "*" })
 
-vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
+-- vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
 
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,
@@ -315,7 +315,6 @@ vim.keymap.set("n", "gf", function()
     vim.cmd("edit " .. cfile)
   else
     if cfile:match("^https?://github.com") then
-      -- https://github.com/voyagegroup/zgok-db/blob/f0049cb054dc0faa90a3f76cbbd95858c7ffcdcf/contrib/local_env/zgok/Dockerfile#L6-L9
       local home_dir = vim.fn.getenv("HOME")
       local organization = string.match(cfile, "https://github%.com/([^/]+)/")
       local repository_name = string.match(cfile, "https://github%.com/[^/]+/([^/]+)/")
