@@ -198,27 +198,57 @@ end, { nargs = "*" })
 
 -- vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
 
--- Claude Code と Codex を左右に並べて起動
+local claude_input_ok, claude_input = pcall(require, "claude_input")
+if claude_input_ok then
+  vim.api.nvim_create_user_command("ClaudeDraftSend", function()
+    local success, message = claude_input.send_draft()
+    if success then
+      vim.notify(message, vim.log.levels.INFO)
+    else
+      vim.notify(message, vim.log.levels.ERROR)
+    end
+  end, { desc = "Send draft buffer to Claude terminal" })
+
+  vim.api.nvim_create_user_command("ClaudeDraftClear", function()
+    local success, message = claude_input.clear_draft()
+    if success then
+      vim.notify(message, vim.log.levels.INFO)
+    else
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Clear Claude draft buffer" })
+end
+
+-- Claude Code / Codex / Claude入力バッファ を3分割で起動
 vim.api.nvim_create_user_command("DualAI", function()
-  -- 現在のバッファを閉じるか新しいタブで開始
   vim.cmd("tabnew")
 
-  -- 左側: Claude Code
   vim.cmd("terminal claude")
   local claude_bufnr = vim.api.nvim_get_current_buf()
+  vim.t.claude_terminal_bufnr = claude_bufnr
 
-  -- 右側に分割: Codex
   vim.cmd("vsplit")
   vim.cmd("terminal codex")
   local codex_bufnr = vim.api.nvim_get_current_buf()
-
-  -- Codex用のキーマップ
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
 
-  -- 左側（Claude Code）に戻る
-  vim.cmd("wincmd h")
-  vim.cmd("startinsert")
-end, { desc = "Open Claude Code and Codex side by side" })
+  -- Claude側に戻って下段に入力バッファを開く
+  -- vim.cmd("wincmd h")
+  vim.cmd("belowright split")
+  vim.cmd("resize 8")
+
+  if claude_input_ok then
+    claude_input.open_input_buffer({ claude_bufnr = claude_bufnr })
+  else
+    vim.notify("[DualAI] claude_input module not found", vim.log.levels.WARN)
+    vim.cmd("enew")
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
+    vim.bo.swapfile = false
+    vim.bo.filetype = "markdown"
+    vim.cmd("startinsert")
+  end
+end, { desc = "Open Claude + Codex + Claude draft buffer" })
 
 vim.keymap.set("n", "<leader>ai", ":DualAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + Codex" })
 
