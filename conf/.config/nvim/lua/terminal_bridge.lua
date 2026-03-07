@@ -146,17 +146,35 @@ function M.send_command(target, command, opts)
   end
 
   local cmd_to_send = command
-  if add_newline then
-    cmd_to_send = cmd_to_send .. "\n"
-  end
 
-  M.log("DEBUG", string.format("  Sending to job_id=%d: %s", terminal.job_id, cmd_to_send:gsub("\n", "\\n")))
+  M.log("DEBUG", string.format("  Sending to job_id=%d: %s", terminal.job_id, cmd_to_send))
 
+  -- まずコマンドテキストを送信
   local ok, err = pcall(vim.fn.chansend, terminal.job_id, cmd_to_send)
   if not ok then
     local err_msg = "Failed to send command: " .. tostring(err)
     M.log("ERROR", err_msg)
     return false, err_msg
+  end
+
+  -- 改行が必要な場合、ターミナルバッファに移動してEnterキーをシミュレート
+  if add_newline then
+    local current_win = vim.api.nvim_get_current_win()
+    -- ターミナルバッファのウィンドウを探す
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == terminal.bufnr then
+        vim.api.nvim_set_current_win(win)
+        -- ターミナルモードに入ってEnterを送信
+        vim.cmd("startinsert")
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "t", false)
+        -- 元のウィンドウに戻る
+        vim.defer_fn(function()
+          vim.cmd("stopinsert")
+          vim.api.nvim_set_current_win(current_win)
+        end, 50)
+        break
+      end
+    end
   end
 
   local success_msg = string.format("Command sent to terminal %d (%s)", target, terminal.name)
