@@ -196,12 +196,7 @@ vim.api.nvim_create_user_command("CodexTerm", function(command)
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
 end, { nargs = "*" })
 
-vim.keymap.set(
-  { "n", "t" },
-  "<leader>co",
-  ":CodexTerm<CR>",
-  { noremap = true, silent = true, desc = "Open Codex terminal" }
-)
+vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
 
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,
