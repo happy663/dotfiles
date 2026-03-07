@@ -198,6 +198,30 @@ end, { nargs = "*" })
 
 -- vim.keymap.set({ "n" }, "<leader>co", ":CodexTerm<CR>", { noremap = true, silent = true, desc = "Open Codex terminal" })
 
+-- Claude Code と Codex を左右に並べて起動
+vim.api.nvim_create_user_command("DualAI", function()
+  -- 現在のバッファを閉じるか新しいタブで開始
+  vim.cmd("tabnew")
+
+  -- 左側: Claude Code
+  vim.cmd("terminal claude")
+  local claude_bufnr = vim.api.nvim_get_current_buf()
+
+  -- 右側に分割: Codex
+  vim.cmd("vsplit")
+  vim.cmd("terminal codex")
+  local codex_bufnr = vim.api.nvim_get_current_buf()
+
+  -- Codex用のキーマップ
+  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
+
+  -- 左側（Claude Code）に戻る
+  vim.cmd("wincmd h")
+  vim.cmd("startinsert")
+end, { desc = "Open Claude Code and Codex side by side" })
+
+vim.keymap.set("n", "<leader>ai", ":DualAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + Codex" })
+
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,
 --   silent = true,
