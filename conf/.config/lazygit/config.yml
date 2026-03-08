@@ -106,6 +106,28 @@ customCommands:
               rm -f "$COMMIT_MSG_FILE"'
     context: files
     subprocess: true
+  - key: "N"
+    context: "localBranches"
+    description: "Create branch+worktree from current branch (single input)"
+    command: |
+      TASK={{.Form.TaskName | quote}}
+      SLUG=$(printf "%s" "$TASK" | tr '[:upper:]' '[:lower:]' | sed -E 's@[[:space:]/]+@-@g; s@[^a-z0-9._-]@@g; s@-+@-@g; s@^-+@@; s@-+$@@')
+      if [ -z "$SLUG" ]; then
+        echo "Task name is empty"
+        exit 1
+      fi
+      BASE_BRANCH="{{.CheckedOutBranch.Name}}"
+      if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "<no value>" ]; then
+        BASE_BRANCH="main"
+      fi
+      REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+      BRANCH="wt/$SLUG"
+      WT_PATH="../${REPO_NAME}-wt/$SLUG"
+      git worktree add -b "$BRANCH" "$WT_PATH" "$BASE_BRANCH"
+    prompts:
+      - type: "input"
+        title: "Task name (for branch+worktree)"
+        key: "TaskName"
 keybinding:
   universal:
     prevItem: "<c-p>" # Navigate up with Ctrl+p
