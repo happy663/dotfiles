@@ -17,6 +17,24 @@ return {
     },
     config = function()
       vim.g.lazygit_floating_window_scaling_factor = 1
+      local lazygit_new_dir_file = vim.fn.stdpath("state") .. "/lazygit-newdir"
+      vim.env.LAZYGIT_NEW_DIR_FILE = lazygit_new_dir_file
+
+      local function sync_cwd_from_lazygit()
+        if vim.fn.filereadable(lazygit_new_dir_file) ~= 1 then
+          return
+        end
+
+        local lines = vim.fn.readfile(lazygit_new_dir_file)
+        pcall(vim.fn.delete, lazygit_new_dir_file)
+
+        local new_dir = lines[1]
+        if not new_dir or new_dir == "" or vim.fn.isdirectory(new_dir) ~= 1 then
+          return
+        end
+
+        vim.cmd("cd " .. vim.fn.fnameescape(new_dir))
+      end
 
       -- telescopeがロードされている場合のみ拡張をロード
       if pcall(require, "telescope") then
@@ -50,6 +68,7 @@ return {
       -- lazygit終了時のコールバック設定
       vim.g.lazygit_on_exit_callback = function()
         print("Lazygit has exited")
+        sync_cwd_from_lazygit()
         -- ウィンドウレイアウトの修復
         vim.schedule(function()
           -- フローティングウィンドウやターミナルバッファをクリーンアップ
