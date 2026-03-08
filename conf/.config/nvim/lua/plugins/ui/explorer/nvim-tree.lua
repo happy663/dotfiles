@@ -126,6 +126,22 @@ return {
           end
         end,
       })
+
+      -- カレントディレクトリ変更時にnvim-treeのrootを同期
+      vim.api.nvim_create_autocmd("DirChanged", {
+        callback = function()
+          local cwd = vim.loop.cwd()
+          if not cwd or cwd == "" then
+            return
+          end
+
+          local api = require("nvim-tree.api")
+          if api.tree.is_visible() then
+            api.tree.change_root(cwd)
+            api.tree.reload()
+          end
+        end,
+      })
     end,
 
     dependencies = "nvim-tree/nvim-web-devicons",
