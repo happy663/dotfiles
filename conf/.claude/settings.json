@@ -45,7 +45,7 @@
       "Bash(gh run view:*)",
       "Bash(gh browse:*)",
       "Bash(gh config list:*)",
-      "Bash(gh api user:*)",
+      "Bash(gh api:*)",
       "Bash(gh release list:*)",
       "Bash(gh release view:*)",
       "Bash(ghq list:*)",
@@ -78,9 +78,30 @@
       "Bash(mise exec rust@nightly:*)",
       "Bash(mise bin-paths:*)",
       "Bash(nvim:*)",
-      "Bash(npx ccusage:*)"
+      "Bash(npx ccusage:*)",
+      "Bash(fd:*)",
+      "Bash(mkdir:*)",
+      "Bash(ghq get:*)",
+      "Bash(git clone:*)",
+      "Bash(git describe:*)",
+      "Bash(vim:*)",
+      "Bash(zsh:*)",
+      "Bash(exec zsh -l)",
+      "Bash(stty:*)",
+      "Bash(mdfind:*)",
+      "Bash(infocmp:*)",
+      "Bash(tmux list-sessions:*)",
+      "Bash(tmux show-environment:*)",
+      "Bash(tmux show-options:*)",
+      "Bash(tmux show:*)",
+      "Bash(ghostty:*)",
+      "Bash(lazygit:*)",
+      "Bash(mise ls-remote:*)",
+      "Bash(npm install:*)",
+      "Bash(gh search:*)",
+      "WebSearch"
     ],
-    "deny": ["Bash(rm:*)", "Bash(rm -rf:*)"]
+    "deny": ["Bash(rm:*)"]
   },
   "model": "opusplan",
   "hooks": {
@@ -128,5 +149,16 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-script.sh"
   },
-  "plansDirectory": "./plans"
+  "extraKnownMarketplaces": {
+    "makikub-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/makikub/claude-code-plugin.git"
+      }
+    }
+  },
+  "plansDirectory": "./plans",
+  "enabledPlugins": {
+    "permissions-audit@makikub-plugins": true
+  }
 }
