@@ -42,7 +42,7 @@ in
       awscli
       fastfetch
       neovim-remote
-      neofetch
+      fastfetch
       nodejs_24
       # Node.js tools managed by Nix
       nodeTools
