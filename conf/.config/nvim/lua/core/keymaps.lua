@@ -381,6 +381,10 @@ vim.api.nvim_set_keymap("n", "{", "<Cmd>keepjumps normal! {<CR>", { noremap = tr
 vim.api.nvim_set_keymap("n", "}", "<Cmd>keepjumps normal! }<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "zz", "za", { noremap = true, silent = true, desc = "Fold toggle" })
+
+vim.keymap.set("n", "<Tab>", "za", { noremap = true, silent = true, desc = "Fold toggle" })
+vim.keymap.set("n", "<C-i>", "<C-i>", { noremap = true, silent = true, desc = "Fold toggle" })
+
 vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fold close" })
 vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
 vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
@@ -539,4 +543,5 @@ if bridge_ok then
     desc = "Send command to terminal by index",
   })
 end
+
 
