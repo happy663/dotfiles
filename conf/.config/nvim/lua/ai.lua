@@ -169,4 +169,51 @@ end, { desc = "Open Claude + Codex + Claude draft buffer" })
 
 vim.keymap.set("n", "<leader>ai", ":DualAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + Codex" })
 
+-- terminal_bridge: ターミナル間コマンド送信
+local bridge_ok, terminal_bridge = pcall(require, "terminal_bridge")
+if bridge_ok then
+  -- ターミナル一覧表示
+  vim.api.nvim_create_user_command("TermList", function()
+    local terminals = terminal_bridge.get_all_terminals()
+    if #terminals == 0 then
+      vim.notify("No terminal buffers found", vim.log.levels.WARN)
+      return
+    end
+
+    print("Terminal buffers:")
+    for i, term in ipairs(terminals) do
+      print(string.format("  [%d] bufnr=%d, name=%s", i, term.bufnr, term.name))
+    end
+  end, {
+    desc = "List all terminal buffers",
+  })
+
+  -- ターミナルにコマンド送信
+  vim.api.nvim_create_user_command("TermSend", function(cmd_opts)
+    local args = vim.split(cmd_opts.args, " ", { plain = true })
+    if #args < 2 then
+      vim.notify("Usage: TermSend <index> <command>", vim.log.levels.ERROR)
+      return
+    end
+
+    local target = tonumber(args[1])
+    if not target then
+      vim.notify("Invalid target index: " .. args[1], vim.log.levels.ERROR)
+      return
+    end
+
+    local command = table.concat(vim.list_slice(args, 2), " ")
+
+    local success, message = terminal_bridge.send_command(target, command)
+    if success then
+      vim.notify(message, vim.log.levels.INFO)
+    else
+      vim.notify(message, vim.log.levels.ERROR)
+    end
+  end, {
+    nargs = "+",
+    desc = "Send command to terminal by index",
+  })
+end
+
 return {}

@@ -93,7 +93,6 @@ if vim.g.not_in_vscode then
   require("core.settings")
   require("core.keymaps")
   require("discord")
-  require("claude_input")
 else
   require("self-vscode")
 end
