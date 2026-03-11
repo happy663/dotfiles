@@ -211,6 +211,10 @@ if claude_input_ok then
   vim.api.nvim_create_user_command("ClaudeDraftSend", function()
     local success, message = claude_input.send_draft()
     if success then
+      local cleared, clear_message = claude_input.clear_draft()
+      if not cleared then
+        vim.notify(clear_message, vim.log.levels.WARN)
+      end
       vim.notify(message, vim.log.levels.INFO)
     else
       vim.notify(message, vim.log.levels.ERROR)
@@ -240,6 +244,76 @@ if claude_input_ok then
 
     claude_input.open_input_buffer({ claude_bufnr = target_bufnr })
   end, { desc = "Open draft buffer linked to current terminal" })
+
+  local function find_claude_draft_winid()
+    local draft_bufnr = vim.t.claude_input_bufnr
+    if not draft_bufnr or not vim.api.nvim_buf_is_valid(draft_bufnr) then
+      return nil
+    end
+
+    local windows = vim.fn.win_findbuf(draft_bufnr)
+    for _, winid in ipairs(windows) do
+      if vim.api.nvim_win_is_valid(winid) then
+        return winid
+      end
+    end
+
+    return nil
+  end
+
+  local function move_to_best_previous_window(excluded_winid)
+    local prev_winid = vim.t.claude_input_prev_winid
+    if prev_winid and vim.api.nvim_win_is_valid(prev_winid) and prev_winid ~= excluded_winid then
+      vim.api.nvim_set_current_win(prev_winid)
+      return
+    end
+
+    local windows = vim.api.nvim_tabpage_list_wins(0)
+    for _, winid in ipairs(windows) do
+      if vim.api.nvim_win_is_valid(winid) and winid ~= excluded_winid then
+        vim.api.nvim_set_current_win(winid)
+        return
+      end
+    end
+  end
+
+  local function toggle_claude_draft_buffer()
+    local current_winid = vim.api.nvim_get_current_win()
+    local draft_winid = find_claude_draft_winid()
+
+    if draft_winid and draft_winid == current_winid then
+      move_to_best_previous_window(draft_winid)
+      return
+    end
+
+    vim.t.claude_input_prev_winid = current_winid
+
+    if draft_winid then
+      vim.api.nvim_set_current_win(draft_winid)
+      vim.cmd("startinsert")
+      return
+    end
+
+    local current_bufnr = vim.api.nvim_get_current_buf()
+    local focus_opts = {
+      draft_height = dual_ai_config.draft_height,
+      target_pattern = dual_ai_config.draft_target_pattern,
+    }
+    if vim.bo[current_bufnr].buftype == "terminal" then
+      focus_opts.claude_bufnr = current_bufnr
+    end
+
+    local success, message = claude_input.focus_or_open(focus_opts)
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end
+
+  vim.keymap.set({ "n", "i", "t", "v" }, "<M-a>", toggle_claude_draft_buffer, {
+    noremap = true,
+    silent = true,
+    desc = "Toggle Claude draft buffer",
+  })
 end
 
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
@@ -543,5 +617,3 @@ if bridge_ok then
     desc = "Send command to terminal by index",
   })
 end
-
-
