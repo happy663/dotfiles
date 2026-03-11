@@ -34,7 +34,7 @@
     # =========================[ Line #1 ]=========================
     os_icon                 # os identifier
     dir                     # current directory
-    # vcs                   # git status (disabled for performance)
+    vcs                     # git status
     time                    # current time
     # =========================[ Line #2 ]=========================
     newline                 # \n
