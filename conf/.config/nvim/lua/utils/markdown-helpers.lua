@@ -446,17 +446,25 @@ local function get_clipboard_lines()
 end
 
 function M.paste_as_code_block()
-  local code_lines = get_clipboard_lines()
-
-  if code_lines[#code_lines] == "" then
-    table.remove(code_lines, #code_lines)
+  local clipboard_content = vim.fn.getreg("+")
+  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
+  local summary = vim.fn.input("Summary: ")
+  if summary == nil or summary == "" then
+    summary = "詳細"
   end
 
-  table.insert(code_lines, 1, "```")
-  table.insert(code_lines, "```")
+  local result = {
+    "<details>",
+    "<summary>" .. summary .. "</summary>",
+    "", -- 空行
+    "```",
+  }
 
-  vim.api.nvim_put(code_lines, "l", true, false)
-  vim.cmd("normal! k")
+  vim.list_extend(result, code_lines)
+  table.insert(result, "```")
+  table.insert(result, "</details>")
+
+  vim.api.nvim_put(result, "l", true, false)
 end
 
 function M.paste_as_details()

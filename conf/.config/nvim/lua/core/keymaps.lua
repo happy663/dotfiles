@@ -244,31 +244,6 @@ end, {
   desc = "Paste clipboard content inside HTML <details> tag",
 })
 
-vim.keymap.set("n", "<Leader>ps", function()
-  local clipboard_content = vim.fn.getreg("+")
-  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
-  local summary = vim.fn.input("Summary: ")
-  if summary == nil or summary == "" then
-    summary = "詳細"
-  end
-
-  local result = {
-    "<details>",
-    "<summary>" .. summary .. "</summary>",
-    "", -- 空行
-    "```",
-  }
-
-  vim.list_extend(result, code_lines)
-  table.insert(result, "```")
-  table.insert(result, "</details>")
-
-  vim.api.nvim_put(result, "l", true, false)
-end, {
-  noremap = true,
-  silent = true,
-  desc = "Paste clipboard content as a code block inside HTML <details> tag",
-})
 
 -- <C-d> の再マッピング
 vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
