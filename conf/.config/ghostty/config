@@ -131,4 +131,8 @@ shell-integration = detect
 # macOSでのウィンドウテーマ
 window-theme = auto
 
+notify-on-command-finish = always
+notify-on-command-finish-action = no-bell,notify
+notify-on-command-finish-after = 20s
+
 
