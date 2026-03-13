@@ -1,3 +1,4 @@
+local keymap = require("vim.keymap")
 return {
   {
     "L3MON4D3/LuaSnip",
@@ -129,6 +130,43 @@ return {
           t({ "```yaml", "" }),
           i(1, "key: value"),
           t({ "", "```" }),
+        }),
+      })
+
+      -- Lua用のスニペットを追加
+      ls.add_snippets("lua", {
+        -- config関数テンプレート
+        s("config", {
+          t("config = function()"),
+          t({ "", "  " }),
+          i(1),
+          t({ "", "end" }),
+        }),
+
+        -- vim.keymap.setテンプレート
+        s("keymap", {
+          t('vim.keymap.set("'),
+          i(1, "n"),
+          t('", "'),
+          i(2, ""),
+          t('", '),
+          i(3, ""),
+          t(', { desc = "'),
+          i(4, "description"),
+          t('", noremap = true, silent = true })'),
+        }),
+
+        s("keymapl", {
+          t('vim.keymap.set("'),
+          i(1, "n"),
+          t('", "'),
+          t("<leader>"),
+          i(2),
+          t('", '),
+          i(3, ""),
+          t(', { desc = "'),
+          i(4, "description"),
+          t('", { noremap = true, silent = true })'),
         }),
       })
 
