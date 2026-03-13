@@ -446,23 +446,11 @@ local function get_clipboard_lines()
 end
 
 function M.paste_as_code_block()
-  local clipboard_content = vim.fn.getreg("+")
-  local code_lines = vim.split(clipboard_content, "\n", { plain = true })
-  local summary = vim.fn.input("Summary: ")
-  if summary == nil or summary == "" then
-    summary = "詳細"
-  end
+  local code_lines = get_clipboard_lines()
 
-  local result = {
-    "<details>",
-    "<summary>" .. summary .. "</summary>",
-    "", -- 空行
-    "```",
-  }
-
+  local result = { "```" }
   vim.list_extend(result, code_lines)
   table.insert(result, "```")
-  table.insert(result, "</details>")
 
   vim.api.nvim_put(result, "l", true, false)
 end
@@ -488,7 +476,7 @@ end
 
 function M.paste_as_details_with_code_block()
   local code_lines = get_clipboard_lines()
-  local summary = vim.fn.input("Summary: ") or "詳細"
+  local summary = vim.fn.input("Summary: ")
   if summary == nil or summary == "" then
     summary = "詳細"
   end
@@ -543,7 +531,7 @@ function M.setup_keymaps()
     silent = true,
     desc = "Markdown: Paste as details",
   })
-  vim.keymap.set("n", "<leader>ps", M.paste_as_code_block, {
+  vim.keymap.set("n", "<leader>ps", M.paste_as_details_with_code_block, {
     buffer = true,
     silent = true,
     desc = "Markdown: Paste as details with code block",
