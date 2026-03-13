@@ -15,20 +15,25 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    arto = {
+      url = "github:arto-app/Arto";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
 
   nixConfig = {
     extra-substituters = [
       "https://happy663.cachix.org"
-
+      "https://arto.cachix.org"
     ];
     extra-trusted-public-keys = [
       "happy663.cachix.org-1:QZP/lx8Sric/M5NWPa3V/l4AS3gpFAKzIuD7/UwG8iE="
+      "arto.cachix.org-1:yaH0JQomRJTosIcTh2xZPKBEny41D7h6QUePYQzWYqc="
     ];
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, arto } @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";

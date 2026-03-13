@@ -198,6 +198,7 @@
       # "homebrew/bundle"
       "nikitabobko/AeroSpace"
       "FelixKratz/formulae"
+      "manaflow-ai/cmux"
     ];
     brews = [
       "sqlite"
@@ -238,6 +239,7 @@
       "superwhisper"
       "homerow"
       "tonisives/tap/ovim"
+      "cmux"
     ];
   };
 
