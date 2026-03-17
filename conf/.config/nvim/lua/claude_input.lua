@@ -128,6 +128,7 @@ function M.open_input_buffer(opts)
   local bufnr = get_draft_bufnr()
   if not bufnr then
     bufnr = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_name(bufnr, "[Claude Input]")
     vim.bo[bufnr].buftype = "nofile"
     vim.bo[bufnr].bufhidden = "wipe"
     vim.bo[bufnr].swapfile = false
@@ -208,6 +209,72 @@ function M.send_draft()
 
   notify("Sent draft to Claude", vim.log.levels.INFO)
   return true, message
+end
+
+function M.quote_to_draft(lines, opts)
+  opts = opts or {}
+
+  -- 各行に "> " プレフィックスを付与
+  local quoted = {}
+  for _, line in ipairs(lines) do
+    table.insert(quoted, "> " .. line)
+  end
+
+  -- ドラフトバッファの取得・作成
+  local draft_bufnr = get_draft_bufnr()
+  local need_open = draft_bufnr == nil
+
+  if need_open then
+    local success, message = M.focus_or_open({
+      draft_height = opts.draft_height,
+      target_pattern = opts.target_pattern,
+      claude_bufnr = opts.claude_bufnr,
+    })
+    if not success then
+      return false, message
+    end
+    draft_bufnr = get_draft_bufnr()
+    if not draft_bufnr then
+      return false, "Failed to create draft buffer"
+    end
+  end
+
+  -- 既存内容の確認
+  local existing = vim.api.nvim_buf_get_lines(draft_bufnr, 0, -1, false)
+  local has_content = not (#existing == 0 or (#existing == 1 and existing[1] == ""))
+
+  -- 追記する行を組み立て
+  local to_append = {}
+  if has_content then
+    table.insert(to_append, "")
+  end
+  for _, q in ipairs(quoted) do
+    table.insert(to_append, q)
+  end
+  table.insert(to_append, "")
+
+  -- ドラフトバッファに追記
+  if has_content then
+    vim.api.nvim_buf_set_lines(draft_bufnr, -1, -1, false, to_append)
+  else
+    vim.api.nvim_buf_set_lines(draft_bufnr, 0, -1, false, to_append)
+  end
+
+  -- ドラフトバッファにフォーカスして末尾でインサートモード
+  if not need_open then
+    local windows = vim.fn.win_findbuf(draft_bufnr)
+    for _, winid in ipairs(windows) do
+      if vim.api.nvim_win_is_valid(winid) then
+        vim.api.nvim_set_current_win(winid)
+        break
+      end
+    end
+  end
+  local line_count = vim.api.nvim_buf_line_count(draft_bufnr)
+  vim.api.nvim_win_set_cursor(0, { line_count, 0 })
+  vim.cmd("startinsert|normal! $")
+
+  return true, "Quoted " .. #quoted .. " lines to draft"
 end
 
 return M

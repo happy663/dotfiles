@@ -127,6 +127,24 @@ if claude_input_ok then
     silent = true,
     desc = "Toggle Claude draft buffer",
   })
+
+  vim.api.nvim_create_user_command("ClaudeDraftQuote", function()
+    local l1 = vim.fn.line("'<")
+    local l2 = vim.fn.line("'>")
+
+    local lines = vim.api.nvim_buf_get_lines(0, l1 - 1, l2, false)
+
+    claude_input.quote_to_draft(lines, {
+      draft_height = dual_ai_config.draft_height,
+      target_pattern = dual_ai_config.draft_target_pattern,
+    })
+  end, { range = true, desc = "Quote selected text to Claude draft buffer" })
+
+  vim.keymap.set("v", "<leader>iq", ":<C-u>ClaudeDraftQuote<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "Quote selection to Claude draft",
+  })
 end
 
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
