@@ -105,7 +105,13 @@ return {
       {
         "<leader>.",
         function()
-          Snacks.scratch({ ft = "markdown" })
+          Snacks.scratch({
+            ft = "markdown",
+            win = {
+              width = 120,
+              height = 40,
+            },
+          })
         end,
         desc = "Markdown Scratch",
       },
@@ -122,7 +128,12 @@ return {
 
         "<leader>sc",
         function()
-          Snacks.scratch()
+          Snacks.scratch({
+            win = {
+              width = 120,
+              height = 40,
+            },
+          })
         end,
         desc = "Toggle Scratch Buffer",
       },
