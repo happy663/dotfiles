@@ -124,6 +124,23 @@ return {
         },
       }
 
+      -- ターミナルバッファの内容も補完対象にする
+      local function buffer_get_bufnrs()
+        local bufs = { vim.api.nvim_get_current_buf() }
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "terminal" then
+            table.insert(bufs, buf)
+          end
+        end
+        return bufs
+      end
+
+      local buffer_source = {
+        name = "buffer",
+        group_index = 1,
+        option = { get_bufnrs = buffer_get_bufnrs },
+      }
+
       -- HACK: 現状sourceが2つある,本当は同じsourceを初期sourceに入れたい
       -- それをやるとcodecompanionなどのプラグイン側がソースを読み込んでいるので2つ同じソースが読み込まれるようになってしまう
       -- 現状無駄があるので共通のsourceは切り出してそれぞれで読み込みようにしたい
@@ -135,7 +152,7 @@ return {
         { name = "emoji", group_index = 1 },
         { name = "nvim_lsp", group_index = 1 },
         { name = "path", group_index = 1 },
-        { name = "buffer", group_index = 1 },
+        buffer_source,
         { name = "codecompanion_models", group_index = 1 },
         { name = "codecompanion_slash_commands", group_index = 1 },
         { name = "codecompanion_tools", group_index = 1 },
@@ -149,6 +166,9 @@ return {
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
         { name = "luasnip", group_index = 1 },
+        { name = "coding_agent_slash" },
+        { name = "coding_agent_dollar" },
+        { name = "coding_agent_at" },
         -- {
         --   name = "spell",
         --   option = {
@@ -305,7 +325,7 @@ return {
           { name = "emoji", group_index = 1 },
           { name = "nvim_lsp", group_index = 1 },
           { name = "path", group_index = 1 },
-          { name = "buffer", group_index = 1 },
+          buffer_source,
           { name = "vimtex", group_index = 1 },
           { name = "render-markdown", group_index = 1 },
           { name = "calc", group_index = 1 },
@@ -521,6 +541,55 @@ return {
       -- {
       --   dir = "~/src/github.com/happy663/cmp-skkeleton",
       -- },
+      {
+        "yuki-yano/cmp-coding-agent",
+        dependencies = {
+          "hrsh7th/nvim-cmp",
+        },
+        config = function()
+          require("cmp_coding_agent").setup({
+            agent = "both",
+            max_items = 200,
+            paths = {
+              preserve_at_prefix = true,
+              show_hidden = true,
+              preview_lines = 20,
+              deep_search = false,
+              root = "git",
+            },
+            skills = {
+              include = {
+                repo_agents = true,
+                repo_claude = true,
+                repo_codex = true,
+                user_agents = true,
+                user_claude = true,
+                user_codex = true,
+              },
+              include_non_user_invocable = false,
+            },
+            commands = {
+              include_builtins = {
+                claude = true,
+                codex = true,
+              },
+              extra = {
+                claude = {},
+                codex = {},
+              },
+              disabled = {
+                claude = {},
+                codex = {},
+              },
+            },
+            prompts = {
+              codex = {
+                enabled = true,
+              },
+            },
+          })
+        end,
+      },
     },
   },
 }
