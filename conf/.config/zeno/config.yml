@@ -214,9 +214,9 @@ snippets:
   - name: github browse
     keyword: ghb
     snippet: gh browse
-  - name: nvim-restart
+  - name: nvim
     keyword: n
-    snippet: nvim-restart .
+    snippet: nvim .
   - name: "home-manager switch"
     keyword: "hm"
     snippet: "home-manager switch --flake ~/src/github.com/happy663/dotfiles"
