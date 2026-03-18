@@ -73,6 +73,14 @@ function codexterm() {
   command nvim -c "$ex_cmd"
 }
 
+function claudeAI() {
+  local ex_cmd="ClaudeAI"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
 # -----------------------------------------------------------------------------
 # Profiling and Performance Functions
 # -----------------------------------------------------------------------------

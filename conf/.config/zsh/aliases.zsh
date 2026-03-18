@@ -45,4 +45,5 @@ alias alert='terminal-notifier -message'
 # Neovim Alias
 # -----------------------------------------------------------------------------
 # nコマンドをnvim-restart関数にエイリアス
-alias n='nvim-restart'
+alias n='nvim .'
+
