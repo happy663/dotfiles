@@ -262,4 +262,18 @@ if bridge_ok then
   })
 end
 
+-- DualClaude: 2つのClaude Codeターミナル + 中央寄せ入力バッファ
+local dual_claude_ok, dual_claude = pcall(require, "dual_claude")
+if dual_claude_ok then
+  vim.api.nvim_create_user_command("DualClaude", function()
+    dual_claude.open()
+  end, { desc = "Open dual Claude terminals with centered input" })
+
+  vim.keymap.set("n", "<leader>aD", ":DualClaude<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "Open DualClaude",
+  })
+end
+
 return {}
