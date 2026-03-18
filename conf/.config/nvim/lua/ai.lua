@@ -147,6 +147,34 @@ if claude_input_ok then
   })
 end
 
+-- Claude Code + Claude入力バッファ を2分割で起動
+vim.api.nvim_create_user_command("ClaudeAI", function()
+  vim.cmd("tabnew")
+  vim.cmd("terminal " .. dual_ai_config.primary_command)
+  local claude_bufnr = vim.api.nvim_get_current_buf()
+  vim.t.claude_terminal_bufnr = claude_bufnr
+
+  vim.cmd("belowright split")
+  vim.cmd("resize " .. tostring(15))
+
+  if claude_input_ok then
+    claude_input.open_input_buffer({
+      claude_bufnr = claude_bufnr,
+      target_pattern = dual_ai_config.draft_target_pattern,
+    })
+  else
+    vim.notify("[ClaudeAI] claude_input module not found", vim.log.levels.WARN)
+    vim.cmd("enew")
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
+    vim.bo.swapfile = false
+    vim.bo.filetype = "markdown"
+    vim.cmd("startinsert")
+  end
+end, { desc = "Open Claude Code + Claude draft buffer" })
+
+vim.keymap.set("n", "<leader>ac", ":ClaudeAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + draft" })
+
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
 vim.api.nvim_create_user_command("DualAI", function()
   if dual_ai_config.open_in_new_tab then
