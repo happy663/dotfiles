@@ -207,7 +207,6 @@ function M.send_draft()
     return false, message
   end
 
-  notify("Sent draft to Claude", vim.log.levels.INFO)
   return true, message
 end
 
