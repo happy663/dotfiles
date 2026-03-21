@@ -76,7 +76,7 @@ return {
             vim.opt_local.foldexpr = "v:lua.require('plugins.git.octo.fold').octo_fold_all()"
             vim.opt_local.foldtext = "v:lua.require('plugins.git.octo.fold').octo_foldtext()"
             vim.opt_local.foldlevel = 0
-            vim.opt_local.conceallevel = 0
+            vim.opt_local.conceallevel = 2
             -- Ensure fold display is visible
             vim.opt_local.fillchars:append({ fold = " " })
           end)

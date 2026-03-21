@@ -58,19 +58,19 @@ return {
           filetype = {
             markdown = {
               code = {
-                -- 設定しないとfoldされているときにコードブロックが見えなくなってしまう
-                enabled = false,
+                enabled = true,
               },
             },
-            -- octo専用: コードブロックのレンダリングのみ無効化
             octo = {
               code = {
-                enabled = false,
+                enabled = true,
+                conceal_delimiters = true,
+                language = true,
+                border = "none",
               },
               win_options = {
                 conceallevel = {
-                  default = 0,
-                  rendered = 0,
+                  rendered = 2,
                 },
                 concealcursor = {
                   default = "",

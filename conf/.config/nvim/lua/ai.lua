@@ -173,8 +173,6 @@ vim.api.nvim_create_user_command("ClaudeAI", function()
   end
 end, { desc = "Open Claude Code + Claude draft buffer" })
 
-vim.keymap.set("n", "<leader>ac", ":ClaudeAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + draft" })
-
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
 vim.api.nvim_create_user_command("DualAI", function()
   if dual_ai_config.open_in_new_tab then

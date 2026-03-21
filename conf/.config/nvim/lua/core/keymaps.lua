@@ -273,6 +273,11 @@ end, { desc = "Insert current time with weekday" })
 
 vim.cmd('iabbrev ** <C-r>=strftime("%Y-%m-%d")<C-r>')
 
+-- コマンドラインで空行削除コマンドを展開
+vim.cmd([[
+  cnoreabbrev gd g/^$/d
+]])
+
 vim.keymap.set("n", "gf", function()
   local cfile = vim.fn.expand("<cfile>")
   if vim.fn.filereadable(cfile) == 1 then
@@ -307,10 +312,10 @@ end)
 vim.api.nvim_create_autocmd("BufRead", {
   pattern = "*/Library/Caches/ovim/*",
   callback = function()
-    vim.keymap.set("i", "<C-q>", function()
+    vim.keymap.set("i", "<C-CR>", function()
       vim.cmd("wq")
     end, { buffer = true, silent = true })
-    vim.keymap.set("n", "<C-q>", ":wq<CR>", { buffer = true, silent = true })
+    vim.keymap.set("n", "<C-CR>", ":wq<CR>", { buffer = true, silent = true })
   end,
 })
 
@@ -325,11 +330,6 @@ vim.api.nvim_create_autocmd("User", {
         [[<C-\><C-n>A<CR><Esc>]],
         { buffer = true, noremap = true, silent = true, nowait = true }
       )
-    end
-    if string.match(bufname, "/Library/Caches/ovim/") then
-      vim.keymap.set("i", "<C-q>", function()
-        vim.cmd("wq")
-      end, { buffer = true, silent = true, nowait = true })
     end
   end,
 })
