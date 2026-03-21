@@ -1,6 +1,19 @@
 #!/bin/zsh
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)/conf"
+if [[ $# -gt 0 ]]; then
+    if [[ -z "$1" ]]; then
+        echo "Error: empty worktree path. Cancelled."
+        exit 1
+    fi
+    DOTFILES_DIR="$1/conf"
+else
+    DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)/conf"
+fi
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+    echo "Error: $DOTFILES_DIR does not exist."
+    exit 1
+fi
 
 echo "Creating symlinks from ${DOTFILES_DIR} to $HOME"
 

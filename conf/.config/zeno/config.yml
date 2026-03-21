@@ -236,6 +236,10 @@ snippets:
     keyword: ct
     snippet: codexterm
 
+  - name: make link worktree
+    keyword: mwt
+    snippet: wt=$(git worktree list | fzf --prompt='Worktree> ' | awk '{print $1}') && [ -n "$wt" ] && scripts/link.sh "$wt"
+
   # - name:
   #   keyword:
   #   snippet:
