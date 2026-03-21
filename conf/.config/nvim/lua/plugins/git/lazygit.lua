@@ -41,6 +41,16 @@ return {
         require("telescope").load_extension("lazygit")
       end
 
+      -- Copilotリセット処理を共通化
+      local function reset_copilot()
+        if _G.toggle_copilot then
+          _G.toggle_copilot() -- 1回目：無効化
+          vim.defer_fn(function()
+            _G.toggle_copilot() -- 2回目：有効化（コンテキストリセット）
+          end, 500)
+        end
+      end
+
       vim.api.nvim_create_autocmd("TermOpen", {
         pattern = "term://*lazygit*",
         callback = function()
@@ -49,18 +59,18 @@ return {
           vim.api.nvim_buf_set_keymap(0, "t", "<esc>", "<esc>", opts)
 
           vim.schedule(function()
-            -- 直接関数を呼び出してCopilotをリセット
-            if _G.toggle_copilot then
-              print("Toggling Copilot (disable)...")
-              _G.toggle_copilot() -- 1回目：無効化
-              -- サーバーが確実に停止するまで待機してから再有効化
-              vim.defer_fn(function()
-                print("Toggling Copilot (enable)...")
-                _G.toggle_copilot() -- 2回目：有効化（コンテキストリセット）
-              end, 500) -- 500ms待機
-            else
-              print("toggle_copilot function not available")
-            end
+            reset_copilot()
+          end)
+        end,
+      })
+
+      -- コミットバッファが開いたときにCopilotをリセット
+      -- nvrで親Neovimに開かれるため、前回のdiffキャッシュをクリアする
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "gitcommit",
+        callback = function()
+          vim.schedule(function()
+            reset_copilot()
           end)
         end,
       })
