@@ -192,7 +192,7 @@
     enable = true;
     onActivation = {
       autoUpdate = true;
-      # cleanup = "zap";
+      cleanup = "zap";
     };
     taps = [
       # "homebrew/bundle"
@@ -210,6 +210,7 @@
       "luarocks"
     ];
     casks = [
+      "arc"
       "emacs"
       "meetingbar"
       "alacritty"
@@ -240,6 +241,7 @@
       "homerow"
       "tonisives/tap/ovim"
       "cmux"
+      "hammerspoon"
     ];
   };
 
@@ -311,4 +313,3 @@
     };
   };
 }
-
