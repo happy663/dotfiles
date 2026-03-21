@@ -16,6 +16,12 @@ brew:
 apply-nix:
 	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
 	sudo nix run nix-darwin -- switch --flake .#happy-darwin
+
+apply-nix-just-home:
+	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+
+apply-nix-just-darwin:
+	sudo nix run nix-darwin -- switch --flake .#happy-darwin
 		
 update-apply-npm:
 	cd conf/.config/nix/node-pkgs && rm package-lock.json
