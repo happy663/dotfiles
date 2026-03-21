@@ -4,42 +4,69 @@ DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)/conf"
 
 echo "Creating symlinks from ${DOTFILES_DIR} to $HOME"
 
+# ========================================
+# トップレベルのドットファイル（.zshrc, .p10k.zsh等）
+# .config, .claude, .codex は個別リンクで処理するためスキップ
+# ========================================
 for dotfile in "${DOTFILES_DIR}"/.??* ; do
-    # Skip certain files/directories
-    [[ $(basename "$dotfile") == ".git" ]] && continue
-    [[ $(basename "$dotfile") == ".github" ]] && continue
-    [[ $(basename "$dotfile") == ".DS_Store" ]] && continue
-
-    # Get just the filename
     filename=$(basename "$dotfile")
-    # Create symlink to home directory
+
+    [[ "$filename" == ".git" ]] && continue
+    [[ "$filename" == ".github" ]] && continue
+    [[ "$filename" == ".DS_Store" ]] && continue
+    [[ "$filename" == ".config" ]] && continue
+    [[ "$filename" == ".claude" ]] && continue
+    [[ "$filename" == ".codex" ]] && continue
+
     ln -snfv "$dotfile" "$HOME/$filename"
 done
 
-# AI Agent configurations
-link_ai_agent_configs() {
-    AI_AGENTS_DIR="${DOTFILES_DIR}/.config/ai-agents"
+echo ""
+echo "=== ~/.config ==="
+mkdir -p "$HOME/.config"
 
-    echo "Setting up AI agent configurations..."
+for dir in "${DOTFILES_DIR}"/.config/*/; do
+    [[ ! -d "$dir" ]] && continue
+    dirname=$(basename "$dir")
 
-    # Codex (only if ~/.codex exists)
-    if [[ -d "$HOME/.codex" ]]; then
-        # Link shared skills directory
-        ln -snfv "${AI_AGENTS_DIR}/skills" "$HOME/.codex/skills"
+    # リンクしないディレクトリ（git管理対象なし）
+    case "$dirname" in
+        colima|gh|fish|github-copilot) continue ;;
+    esac
 
-        # Link AGENT.md
-        ln -snfv "${AI_AGENTS_DIR}/instructions/INSTRUCTIONS.md" "$HOME/.codex/AGENT.md"
+    ln -snfv "$dir" "$HOME/.config/$dirname"
+done
 
-        echo "Codex: skills directory and AGENT.md linked"
+echo ""
+echo "=== ~/.claude ==="
+mkdir -p "$HOME/.claude"
+
+# ディレクトリ
+for target in commands commands.old output-styles skills; do
+    if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
+        ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi
+done
 
-    # Claude Code (only if ~/.claude exists)
-    if [[ -d "$HOME/.claude" ]]; then
-        # Link shared skills directory
-        ln -snfv "${AI_AGENTS_DIR}/skills" "$HOME/.claude/skills"
-
-        echo "Claude Code: skills directory linked"
+# ファイル
+for target in CLAUDE.md settings.json statusline-script.sh; do
+    if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
+        ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi
-}
+done
 
-link_ai_agent_configs
+echo ""
+echo "=== ~/.codex ==="
+mkdir -p "$HOME/.codex"
+
+for target in codex-notify rules skills; do
+    if [[ -e "${DOTFILES_DIR}/.codex/${target}" ]]; then
+        ln -snfv "${DOTFILES_DIR}/.codex/${target}" "$HOME/.codex/${target}"
+    fi
+done
+
+for target in AGENT.md config.toml; do
+    if [[ -e "${DOTFILES_DIR}/.codex/${target}" ]]; then
+        ln -snfv "${DOTFILES_DIR}/.codex/${target}" "$HOME/.codex/${target}"
+    fi
+done
