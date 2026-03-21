@@ -67,6 +67,7 @@ in
       XDG_CONFIG_HOME = "$HOME/.config";
       GOPATH = "$HOME/go";
       # Additional environment variables
+      DOTFILES_DIR = "$HOME/src/github.com/happy663/dotfiles";
       CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
       LIMA_HOME = "$HOME/.colima_lima";
       AWS_SESSION_TOKEN_TTL = "24h";

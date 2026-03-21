@@ -1,5 +1,5 @@
 local utils = require("utils")
-utils.load_env("~/.config/nvim/.env")
+utils.load_env(vim.env.DOTFILES_DIR .. "/.env")
 
 local roles = {
   LLM_ROLE = "llm",
@@ -401,7 +401,3 @@ return {
     end,
   },
 }
-
-
-
-

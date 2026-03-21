@@ -69,3 +69,4 @@ if [[ -f ~/.config/nix/home-manager/.env ]]; then
   source ~/.config/nix/home-manager/.env
   alias ssm="make -C $SSM_SCRIPT_PATH clean session"
 fi
+

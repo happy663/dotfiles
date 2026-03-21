@@ -156,7 +156,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local function apply_dir_based_colorscheme()
-  require("utils").load_env("~/.config/nvim/.env")
+  require("utils").load_env(vim.env.DOTFILES_DIR .. "/.env")
 
   local default_dir_map_color_schema = {
     default = "tokyonight-moon",
@@ -203,7 +203,3 @@ vim.api.nvim_create_autocmd("VimEnter", {
     apply_dir_based_colorscheme()
   end,
 })
-
-
-
-

@@ -52,7 +52,7 @@ return {
   {
     "potamides/pantran.nvim",
     config = function()
-      require("utils").load_env("~/.config/nvim/.env")
+      require("utils").load_env(vim.env.DOTFILES_DIR .. "/.env")
       require("pantran").setup({
         default_engine = "deepl",
         engines = {
