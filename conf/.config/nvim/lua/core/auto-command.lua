@@ -164,6 +164,8 @@ local function apply_dir_based_colorscheme()
   local env_dir_map_color_schema = {}
   local dir_map_color_schema_json = vim.env.NVIM_DIR_MAP_COLOR_SCHEME or ""
   if dir_map_color_schema_json ~= "" then
+    -- シングルクォートで囲まれている場合は除去
+    dir_map_color_schema_json = dir_map_color_schema_json:gsub("^'(.*)'$", "%1")
     local ok, decoded = pcall(vim.json.decode, dir_map_color_schema_json)
     if ok and type(decoded) == "table" then
       env_dir_map_color_schema = decoded
