@@ -2,7 +2,7 @@
 
 -- UI設定
 vim.o.number = true -- 行番号を表示
-vim.o.relativenumber = true -- 現在行からの相対的な行番号表示
+vim.o.relativenumber = false -- 現在行からの相対的な行番号表示
 vim.o.cursorline = true -- カーソル位置の行をハイライト
 vim.o.showmatch = true -- 括弧のマッチング部分を表示
 vim.o.colorcolumn = "80" -- 80文字目に縦線を表示

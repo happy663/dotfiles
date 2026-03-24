@@ -4,6 +4,11 @@ vim.g.mapleader = " "
 -- 起動高速化
 vim.loader.enable()
 
+-- DOTFILES_DIR環境変数の設定（Ovimなどシェル経由でない起動時への対応）
+if not vim.env.DOTFILES_DIR or vim.env.DOTFILES_DIR == "" then
+  vim.env.DOTFILES_DIR = vim.fn.expand("$HOME") .. "/src/github.com/happy663/dotfiles"
+end
+
 -- 限定的なPATH環境でも必要なツールを認識できるようにする
 local function ensure_path()
   local paths_to_add = {
