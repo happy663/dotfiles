@@ -39,7 +39,8 @@ in
       docker
       docker-compose
       colima
-      awscli
+      awscli2
+      snowflake-cli
       fastfetch
       neovim-remote
       fastfetch
@@ -71,6 +72,7 @@ in
       CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense";
       LIMA_HOME = "$HOME/.colima_lima";
       AWS_SESSION_TOKEN_TTL = "24h";
+      AWS_ASSUME_ROLE_TTL = "12h";
       COLIMA_HOME = "$HOME/.local/share/colima";
       DOCKER_HOST = "unix://$HOME/.local/share/colima/default/docker.sock";
     };
@@ -299,3 +301,5 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
+
+
