@@ -29,9 +29,6 @@ status_line = ["model-with-reasoning", "context-remaining", "current-dir"]
 [projects."/Users/happy/src/github.com/happy663/dotfiles"]
 trust_level = "trusted"
 
-[projects."/Users/happy/src/github.com/voyagegroup/zgok"]
-trust_level = "trusted"
-
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 "gpt-5.3-codex" = "gpt-5.4"
