@@ -19,12 +19,12 @@ local short_names = {
 
 return {
   {
-    -- "olimorris/codecompanion.nvim",
-    dir = "~/src/github.com/olimorris/codecompanion.nvim",
+    "olimorris/codecompanion.nvim",
+    -- dir = "~/src/github.com/olimorris/codecompanion.nvim",
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
-    version = "v18.5.0",
+    version = "v19.8.0",
     keys = {
       -- { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
