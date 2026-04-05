@@ -64,16 +64,16 @@ return {
         end,
       })
 
-      -- コミットバッファが開いたときにCopilotをリセット
-      -- nvrで親Neovimに開かれるため、前回のdiffキャッシュをクリアする
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "gitcommit",
-        callback = function()
-          vim.schedule(function()
-            reset_copilot()
-          end)
-        end,
-      })
+      -- -- コミットバッファが開いたときにCopilotをリセット
+      -- -- nvrで親Neovimに開かれるため、前回のdiffキャッシュをクリアする
+      -- vim.api.nvim_create_autocmd("FileType", {
+      --   pattern = "gitcommit",
+      --   callback = function()
+      --     vim.schedule(function()
+      --       reset_copilot()
+      --     end)
+      --   end,
+      -- })
 
       -- lazygit終了時のコールバック設定
       vim.g.lazygit_on_exit_callback = function()

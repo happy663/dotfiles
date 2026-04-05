@@ -18,6 +18,9 @@ disable-model-invocation: false
 bash conf/.config/ai-agents/skills/send-review-result/scripts/send_review_result.sh "<REVIEW_RESULT>"
 ```
 
+Codex から実行する場合、macOS の sandbox では `nvr` 接続が失敗することがある。
+その場合は最初から権限付きでこのスクリプトを実行する。
+
 引数を省略した場合は以下を自動送信する:
 
 ```md
@@ -41,6 +44,7 @@ SEND_REVIEW_RESULT_TARGET=2 bash conf/.config/ai-agents/skills/send-review-resul
 - どれも失敗した場合のみ `nvr --serverlist` で探索する
 - `target` は既定で `1`（Claude Code想定）
 - 改行や引用符を含むメッセージは内部でJSONエスケープして送信する
+- `nvr` が `Operation not permitted` や `failed to attach` を返した場合は、sandbox 起因の可能性を案内する
 
 ## レビュー結果フォーマット
 
@@ -66,4 +70,5 @@ SEND_REVIEW_RESULT_TARGET=2 bash conf/.config/ai-agents/skills/send-review-resul
 ## 運用メモ
 
 - 問題がない場合は「LGTM」と総評のみでよい
-- ユーザー確認を減らすには、`nvr --servername ... --remote-expr ...` 実行許可を事前承認しておく
+- Codex + macOS では `nvr` が sandbox からソケットに接続できないことがある。その場合は `send_review_result.sh` を権限付きで実行する
+- ユーザー確認を減らすには、`bash conf/.config/ai-agents/skills/send-review-result/scripts/send_review_result.sh` の実行許可を事前承認しておく

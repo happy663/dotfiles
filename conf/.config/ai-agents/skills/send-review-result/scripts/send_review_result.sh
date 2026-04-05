@@ -4,6 +4,8 @@ set -euo pipefail
 
 TARGET_INDEX="${SEND_REVIEW_RESULT_TARGET:-1}"
 DEFAULT_SERVER="$HOME/.cache/nvim/server.pipe"
+LAST_CONNECT_ERROR=""
+LAST_SERVERLIST_ERROR=""
 
 if [ "$#" -gt 0 ]; then
   MESSAGE="$*"
@@ -21,8 +23,12 @@ can_connect() {
   local server="$1"
   local out
   [ -n "$server" ] || return 1
-  out=$(nvr --servername "$server" --remote-expr '1' 2>/dev/null || true)
-  [ "$out" = "1" ]
+  out=$(nvr --servername "$server" --remote-expr '1' 2>&1 || true)
+  if [ "$out" = "1" ]; then
+    return 0
+  fi
+  LAST_CONNECT_ERROR="$out"
+  return 1
 }
 
 SERVER_CANDIDATES=()
@@ -46,16 +52,27 @@ for candidate in "${SERVER_CANDIDATES[@]}"; do
 done
 
 if [ -z "$SERVER" ]; then
+  SERVERLIST_OUTPUT=$(nvr --serverlist 2>&1 || true)
+  LAST_SERVERLIST_ERROR="$SERVERLIST_OUTPUT"
   while IFS= read -r candidate; do
     if can_connect "$candidate"; then
       SERVER="$candidate"
       break
     fi
-  done < <(nvr --serverlist 2>/dev/null || true)
+  done < <(printf '%s\n' "$SERVERLIST_OUTPUT" | grep '^/' || true)
 fi
 
 if [ -z "$SERVER" ]; then
-  echo "send_review_result: nvr server not found" >&2
+  echo "send_review_result: nvr server not found or not accessible" >&2
+  if printf '%s\n%s\n' "$LAST_CONNECT_ERROR" "$LAST_SERVERLIST_ERROR" | grep -Eq 'Operation not permitted|failed to attach'; then
+    echo "hint: Codex on macOS may need escalated permissions for nvr/Neovim remote access" >&2
+  fi
+  if [ -n "$LAST_CONNECT_ERROR" ]; then
+    printf 'last nvr error:\n%s\n' "$LAST_CONNECT_ERROR" >&2
+  fi
+  if [ -n "$LAST_SERVERLIST_ERROR" ] && ! printf '%s' "$LAST_SERVERLIST_ERROR" | grep -q '^/'; then
+    printf 'nvr --serverlist output:\n%s\n' "$LAST_SERVERLIST_ERROR" >&2
+  fi
   exit 1
 fi
 
