@@ -199,6 +199,7 @@
       "nikitabobko/AeroSpace"
       "FelixKratz/formulae"
       "manaflow-ai/cmux"
+      "tonisives/tap"
     ];
     brews = [
       "sqlite"
@@ -239,7 +240,7 @@
       "ghostty"
       "superwhisper"
       "homerow"
-      "tonisives/tap/ovim"
+      "ovim"
       "cmux"
       "hammerspoon"
     ];
