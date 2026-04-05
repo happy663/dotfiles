@@ -1,2 +1,4 @@
 prefix_rule(pattern=["/bin/zsh", "-lc", "for s in $(nvr --serverlist | rg '^/'); do printf '== %s ==\\n' \"$s\"; nvr --servername \"$s\" --remote-expr 'luaeval(\"require(\\\"terminal_bridge\\\").list_terminals()\")' 2>&1 | sed -n '1,5p'; done"], decision="allow")
 prefix_rule(pattern=["bash", "conf/.config/ai-agents/skills/send-review-result/scripts/send_review_result.sh"], decision="allow")
+prefix_rule(pattern=["nix", "run", "nixpkgs#home-manager", "--", "switch", "--flake"], decision="allow")
+prefix_rule(pattern=["nix", "build", ".#homeConfigurations.myHomeConfig-darwin.activationPackage"], decision="allow")

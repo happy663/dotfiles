@@ -27,6 +27,7 @@ disable-model-invocation: false
 * トピックごとに `### {トピック}` で見出しをつける
 * 1コメント = 1まとまり
 * 「問題→調査→試行→結果」の流れを意識する
+* 直前のissueコメントを `gh issue view {number} --repo {owner/repo} --comments` で確認し、前のコメントと内容が重複しないよう・話の流れが自然につながるよう意識する
 
 ## コード参照ルール
 
@@ -37,6 +38,7 @@ disable-model-invocation: false
 ```lua
 -- コード内容
 ```
+
 <https://github.com/{owner}/{repo}/blob/{commit}/{path}#L{start}-L{end}>
 
 ### 30行以上のコード
@@ -61,6 +63,14 @@ git remote get-url origin | sed 's|.*github.com[:/]||' | sed 's|\.git$||'
 ```
 
 ## コメント追加方法
+
+### 確認ステップ（必須）
+
+`gh issue comment` を実行する前に、必ずユーザーに確認を取ること。
+
+1. 追加予定のコメント全文をチャットに表示する
+2. 「このコメントをissue #{number} に追加してよいですか？」と確認する
+3. ユーザーが明示的に承認した場合のみコマンドを実行する
 
 ```bash
 gh issue comment {number} --repo {owner/repo} --body "..."
@@ -140,4 +150,3 @@ qで終了すると反映され、Shift+Qだと反映しない。
 - OK: ~/dotfiles = main, ~/dotfiles-wt = feat/x
 - OK: ~/dotfiles = main, ~/dotfiles-wt = detached(mainのコミット)
 - NG: ~/dotfiles = main, ~/dotfiles-wt = main
-
