@@ -32,6 +32,7 @@ in
       peco
       mise
       coreutils
+      coreutils-prefixed
       zoxide
       delta
       cargo
