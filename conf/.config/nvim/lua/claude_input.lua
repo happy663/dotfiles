@@ -98,6 +98,7 @@ function M.focus_or_open(opts)
       vim.cmd("resize " .. tostring(opts.draft_height))
     end
     vim.api.nvim_win_set_buf(0, draft_bufnr)
+    vim.wo.winfixheight = true
     vim.cmd("startinsert")
     return true, "Opened existing draft buffer"
   end
@@ -135,6 +136,7 @@ function M.open_input_buffer(opts)
     vim.bo[bufnr].filetype = "markdown"
     vim.bo[bufnr].modifiable = true
     ensure_buffer_keymaps(bufnr)
+    vim.b[bufnr].claude_input = true
   end
 
   vim.t.claude_input_bufnr = bufnr
@@ -146,6 +148,18 @@ function M.open_input_buffer(opts)
   end
 
   vim.api.nvim_win_set_buf(0, bufnr)
+  vim.wo.winfixheight = true
+
+  -- 補完ポップアップが下に表示されるよう候補数を制限
+  local cmp_ok, cmp = pcall(require, "cmp")
+  if cmp_ok then
+    cmp.setup.buffer({
+      performance = {
+        max_view_entries = 5,
+      },
+    })
+  end
+
   vim.cmd("startinsert")
 
   return bufnr

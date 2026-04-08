@@ -182,6 +182,290 @@ vim.api.nvim_create_autocmd("TermOpen", {
     end
   end,
 })
+
+-- ターミナル出力テキストオブジェクト（it/at）
+do
+  local function is_prompt_line(line)
+    return line:match("^❯") ~= nil
+  end
+
+  local function is_info_line(line)
+    return line:match("│") ~= nil
+  end
+
+  local function select_terminal_output(inner)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+    local line_count = vim.api.nvim_buf_line_count(0)
+
+    -- カーソル位置から上方向に ❯ 行を探す
+    local cmd_row = nil
+    for i = row, 1, -1 do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_prompt_line(line) then
+        cmd_row = i
+        break
+      end
+    end
+    if not cmd_row then
+      return
+    end
+
+    -- コマンド行の下から、次のプロンプト境界を探す
+    local end_row = line_count
+    for i = cmd_row + 1, line_count do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_info_line(line) or is_prompt_line(line) then
+        end_row = i - 1
+        break
+      end
+    end
+
+    -- 末尾の空行を除外
+    while end_row > cmd_row do
+      local line = vim.api.nvim_buf_get_lines(0, end_row - 1, end_row, false)[1]
+      if line:match("^%s*$") then
+        end_row = end_row - 1
+      else
+        break
+      end
+    end
+
+    if inner then
+      -- it: 出力のみ（コマンド行の次の行から）
+      local start = cmd_row + 1
+      if start > end_row then
+        return
+      end
+      vim.api.nvim_win_set_cursor(0, { start, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    else
+      -- at: コマンド行 + 出力
+      vim.api.nvim_win_set_cursor(0, { cmd_row, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    end
+  end
+
+  vim.api.nvim_create_autocmd("TermOpen", {
+    callback = function(ev)
+      local buf_opts = { buffer = ev.buf, silent = true }
+      vim.keymap.set({ "o", "x" }, "it", function()
+        select_terminal_output(true)
+      end, vim.tbl_extend("force", buf_opts, { desc = "inner terminal output" }))
+      vim.keymap.set({ "o", "x" }, "at", function()
+        select_terminal_output(false)
+      end, vim.tbl_extend("force", buf_opts, { desc = "around terminal output" }))
+    end,
+  })
+end
+
+-- Claude Code会話テキストオブジェクト（ic/ac, iC/aC）
+do
+  local function is_claude_block_line(line)
+    return line:match("^⏺") ~= nil
+  end
+
+  local function is_user_prompt_line(line)
+    return line:match("^❯") ~= nil
+  end
+
+  -- ic/ac: 1つの⏺応答ブロックを選択
+  local function select_claude_block(inner)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+    local line_count = vim.api.nvim_buf_line_count(0)
+
+    -- カーソル位置から上方向に ⏺ 行を探す
+    local block_start = nil
+    for i = row, 1, -1 do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_claude_block_line(line) then
+        block_start = i
+        break
+      end
+      -- ❯行に到達したら、このカーソル位置は⏺ブロック内ではない
+      if is_user_prompt_line(line) and i < row then
+        return
+      end
+    end
+    if not block_start then
+      return
+    end
+
+    -- ブロック開始行の下から、次の⏺または❯を探す（ブロック終端）
+    local end_row = line_count
+    for i = block_start + 1, line_count do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_claude_block_line(line) or is_user_prompt_line(line) then
+        end_row = i - 1
+        break
+      end
+    end
+
+    -- 末尾の空行を除外
+    while end_row > block_start do
+      local line = vim.api.nvim_buf_get_lines(0, end_row - 1, end_row, false)[1]
+      if line:match("^%s*$") then
+        end_row = end_row - 1
+      else
+        break
+      end
+    end
+
+    if inner then
+      local start = block_start + 1
+      if start > end_row then
+        return
+      end
+      vim.api.nvim_win_set_cursor(0, { start, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    else
+      vim.api.nvim_win_set_cursor(0, { block_start, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    end
+  end
+
+  -- iC/aC: 1ターン全体（❯入力 + 全応答）を選択
+  local function select_claude_turn(inner)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+    local line_count = vim.api.nvim_buf_line_count(0)
+
+    -- カーソル位置から上方向に ❯ 行を探す
+    local turn_start = nil
+    for i = row, 1, -1 do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_user_prompt_line(line) then
+        turn_start = i
+        break
+      end
+    end
+    if not turn_start then
+      return
+    end
+
+    -- ターン開始行の下から、次の❯を探す（ターン終端）
+    local end_row = line_count
+    for i = turn_start + 1, line_count do
+      local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+      if is_user_prompt_line(line) then
+        end_row = i - 1
+        break
+      end
+    end
+
+    -- 末尾の空行を除外
+    while end_row > turn_start do
+      local line = vim.api.nvim_buf_get_lines(0, end_row - 1, end_row, false)[1]
+      if line:match("^%s*$") then
+        end_row = end_row - 1
+      else
+        break
+      end
+    end
+
+    if inner then
+      local start = turn_start + 1
+      if start > end_row then
+        return
+      end
+      vim.api.nvim_win_set_cursor(0, { start, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    else
+      vim.api.nvim_win_set_cursor(0, { turn_start, 0 })
+      vim.cmd("normal! V")
+      vim.api.nvim_win_set_cursor(0, { end_row, 0 })
+    end
+  end
+
+  -- ]c / [c: 次/前の⏺ブロックにジャンプ
+  -- ]C / [C: 次/前の❯ターンにジャンプ
+  local function jump_claude_block(forward)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+    local line_count = vim.api.nvim_buf_line_count(0)
+
+    if forward then
+      for i = row + 1, line_count do
+        local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+        if is_claude_block_line(line) then
+          vim.api.nvim_win_set_cursor(0, { i, 0 })
+          return
+        end
+      end
+    else
+      for i = row - 1, 1, -1 do
+        local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+        if is_claude_block_line(line) then
+          vim.api.nvim_win_set_cursor(0, { i, 0 })
+          return
+        end
+      end
+    end
+  end
+
+  local function jump_claude_turn(forward)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+    local line_count = vim.api.nvim_buf_line_count(0)
+
+    if forward then
+      for i = row + 1, line_count do
+        local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+        if is_user_prompt_line(line) then
+          vim.api.nvim_win_set_cursor(0, { i, 0 })
+          return
+        end
+      end
+    else
+      for i = row - 1, 1, -1 do
+        local line = vim.api.nvim_buf_get_lines(0, i - 1, i, false)[1]
+        if is_user_prompt_line(line) then
+          vim.api.nvim_win_set_cursor(0, { i, 0 })
+          return
+        end
+      end
+    end
+  end
+
+  vim.api.nvim_create_autocmd("TermOpen", {
+    callback = function(ev)
+      local buf_opts = { buffer = ev.buf, silent = true }
+      -- テキストオブジェクト
+      vim.keymap.set({ "o", "x" }, "ic", function()
+        select_claude_block(true)
+      end, vim.tbl_extend("force", buf_opts, { desc = "inner claude block" }))
+      vim.keymap.set({ "o", "x" }, "ac", function()
+        select_claude_block(false)
+      end, vim.tbl_extend("force", buf_opts, { desc = "around claude block" }))
+      vim.keymap.set({ "o", "x" }, "iC", function()
+        select_claude_turn(true)
+      end, vim.tbl_extend("force", buf_opts, { desc = "inner claude turn" }))
+      vim.keymap.set({ "o", "x" }, "aC", function()
+        select_claude_turn(false)
+      end, vim.tbl_extend("force", buf_opts, { desc = "around claude turn" }))
+      -- ジャンプ
+      vim.keymap.set("n", "]c", function()
+        jump_claude_block(true)
+      end, vim.tbl_extend("force", buf_opts, { desc = "next claude block" }))
+      vim.keymap.set("n", "[c", function()
+        jump_claude_block(false)
+      end, vim.tbl_extend("force", buf_opts, { desc = "prev claude block" }))
+      vim.keymap.set("n", "}", function()
+        jump_claude_turn(true)
+      end, vim.tbl_extend("force", buf_opts, { desc = "next claude turn" }))
+      vim.keymap.set("n", "{", function()
+        jump_claude_turn(false)
+      end, vim.tbl_extend("force", buf_opts, { desc = "prev claude turn" }))
+    end,
+  })
+end
+
 require("ai")
 
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
@@ -243,7 +527,6 @@ end, {
   silent = true,
   desc = "Paste clipboard content inside HTML <details> tag",
 })
-
 
 -- <C-d> の再マッピング
 vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
@@ -373,3 +656,6 @@ vim.keymap.set("n", "<leader>upe", function()
 		:e /tmp/nvim-profile.log
 	]])
 end, { desc = "Profile End" })
+
+vim.keymap.set("t", "<ESC>", "<ESC>", { desc = "description", noremap = true, silent = true })
+
