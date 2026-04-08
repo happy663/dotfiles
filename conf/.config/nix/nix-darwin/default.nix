@@ -209,6 +209,7 @@
       "coursier"
       "pngpaste"
       "luarocks"
+      "newrelic-cli"
     ];
     casks = [
       "arc"
