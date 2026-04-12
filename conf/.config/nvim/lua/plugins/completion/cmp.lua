@@ -442,6 +442,14 @@ return {
         end,
       })
 
+      -- claude_inputバッファ用の補完候補数制限
+      local function claude_input_performance()
+        if vim.b.claude_input then
+          return { max_view_entries = 5 }
+        end
+        return {}
+      end
+
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-enable-pre",
         callback = function()
@@ -455,6 +463,7 @@ return {
                 cmp.config.compare.sort_text,
               },
             },
+            performance = claude_input_performance(),
           })
 
           cmp.setup.cmdline("/", {
@@ -479,6 +488,7 @@ return {
             debug = true,
             sources = default_sources,
             sorting = default_sorting,
+            performance = claude_input_performance(),
           })
 
           cmp.setup.cmdline("/", {
