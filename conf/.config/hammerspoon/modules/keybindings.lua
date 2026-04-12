@@ -52,3 +52,16 @@ hs.hotkey.bind({ "alt" }, "D", function()
     hs.application.launchOrFocus("Discord")
   end
 end)
+
+hs.hotkey.bind({ "alt" }, "Z", function()
+  local app = hs.application.get("com.spotify.client")
+  if app then
+    if app:isFrontmost() then
+      app:hide()
+    else
+      app:activate()
+    end
+  else
+    hs.application.launchOrFocus("Spotify")
+  end
+end)
