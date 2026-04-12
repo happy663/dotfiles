@@ -123,6 +123,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude session-end"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
           }
         ]
       }
@@ -134,6 +138,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude user-prompt-submit"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh running"
           }
         ]
       }
@@ -181,6 +189,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude stop"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh done"
           }
         ]
       }
@@ -192,6 +204,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude stop-failure"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh error"
           }
         ]
       }
@@ -211,6 +227,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude notification"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh waiting"
           }
         ]
       }
