@@ -240,6 +240,9 @@ snippets:
     keyword: mwt
     snippet: wt=$(git worktree list | fzf --prompt='Worktree> ' | awk '{print $1}') && [ -n "$wt" ] && scripts/link.sh "$wt"
 
+  - name: claude nvim
+    keyword: cn
+    snippet: 
   # - name:
   #   keyword:
   #   snippet:

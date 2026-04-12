@@ -73,7 +73,7 @@ function codexterm() {
   command nvim -c "$ex_cmd"
 }
 
-function claudeAI() {
+function claudeNvim() {
   local ex_cmd="ClaudeAI"
   if (( $# > 0 )); then
     ex_cmd+=" ${(q)@}"
