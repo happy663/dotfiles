@@ -10,7 +10,6 @@ conf/.config/lazygit/state.yml
 conf/.config/git/attributes
 conf/.config/git/config
 conf/.config/git/ignore
-conf/.config/tmux/tmux.conf
 conf/.config/raycast/extensions
 conf/.config/ai-agents/skills/.system
 conf/.config/karabiner/automatic_backups/
@@ -22,3 +21,4 @@ conf/.config/nvim/.env
 # Claude Code local settings
 .claude/logs
 .claude/settings.local.json
+conf/.config/tmux/plugins

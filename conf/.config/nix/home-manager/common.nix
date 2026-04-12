@@ -94,9 +94,15 @@ in
     # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
     stateVersion = "24.05";
 
-    activation.myScript = lib.hm.dag.entryAfter [ "postActivation" ] ''
+    activation.myScript = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       export PATH="$HOME/src/github.com/wachikun/yaskkserv2/target/release:$PATH"
       sh $HOME/src/github.com/happy663/dotfiles/scripts/skkserv.sh
+    '';
+
+    activation.installTpm = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      if [ ! -d "$HOME/.config/tmux/plugins/tpm" ]; then
+        ${pkgs.git}/bin/git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/plugins/tpm"
+      fi
     '';
 
 
