@@ -172,10 +172,10 @@ function M.send_command(target, command, opts)
         vim.cmd("startinsert")
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "t", false)
         -- 元のウィンドウに戻る
-        vim.defer_fn(function()
-          vim.cmd("stopinsert")
-          vim.api.nvim_set_current_win(current_win)
-        end, 50)
+        -- vim.defer_fn(function()
+        --   vim.cmd("stopinsert")
+        --   vim.api.nvim_set_current_win(current_win)
+        -- end, 50)
         break
       end
     end
