@@ -6,10 +6,10 @@ M.adapters = {
       return require("codecompanion.adapters").extend("copilot", {
         schema = {
           model = {
-            default = "claude-3.5-sonnet",
+            default = "claude-sonnet-4",
           },
           choices = {
-            "claude-3.5-sonnet",
+            "claude-sonnet-4",
             "claude-3.7-sonnet",
             "gpt-4o-2024-08-06",
           },
@@ -43,7 +43,7 @@ M.adapters = {
           },
           choices = {
             "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
-            "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K                                                                                                                                     ─╯",
+            "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K",
             "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
           },
         },
