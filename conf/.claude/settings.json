@@ -105,6 +105,39 @@
   },
   "model": "opusplan",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude session-start"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude session-end"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude user-prompt-submit"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit|MultiEdit",
@@ -122,6 +155,15 @@
             "command": "jq -r '.tool_input.file_path | select(endswith(\".json\"))' | xargs -r npx prettier --write "
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude activity-log"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -132,6 +174,26 @@
             "command": "echo \"Claude Code: $(jq -r '.hook_event_name')\" | terminal-notifier -title 'Claude Code' -sound 'Blow'"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude stop"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude stop-failure"
+          }
+        ]
       }
     ],
     "Notification": [
@@ -140,6 +202,114 @@
           {
             "type": "command",
             "command": "echo \"Claude Code: $(jq -r '.message')\" | terminal-notifier -title 'Claude Code'"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude notification"
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude permission-denied"
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude cwd-changed"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude subagent-start"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude subagent-stop"
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude task-created"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude task-completed"
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude teammate-idle"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude worktree-create"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude worktree-remove"
           }
         ]
       }
@@ -161,4 +331,5 @@
   "enabledPlugins": {
     "permissions-audit@makikub-plugins": true
   }
+  "effortLevel": "high"
 }
