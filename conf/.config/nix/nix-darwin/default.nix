@@ -209,6 +209,7 @@
       "coursier"
       "pngpaste"
       "luarocks"
+      "newrelic-cli"
     ];
     casks = [
       "arc"
@@ -243,7 +244,6 @@
       "ovim"
       "cmux"
       "hammerspoon"
-      "newrelic-cli"
     ];
   };
 
