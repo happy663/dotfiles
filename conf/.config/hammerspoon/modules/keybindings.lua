@@ -65,3 +65,19 @@ hs.hotkey.bind({ "alt" }, "Z", function()
     hs.application.launchOrFocus("Spotify")
   end
 end)
+
+hs.hotkey.bind({ "alt" }, "X", function()
+  local app = hs.application.get("com.google.Chrome.app.kjgfgldnnfoeklkmfkjfagphfepbbdan")
+  if app then
+    if app:isFrontmost() then
+      app:hide()
+    else
+      app:activate()
+    end
+  else
+    hs.application.launchOrFocus("Google Meet")
+  end
+end)
+
+
+
