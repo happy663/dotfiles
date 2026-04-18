@@ -24,7 +24,6 @@ return {
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
-    version = "v19.8.0",
     keys = {
       -- { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
@@ -147,14 +146,24 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local success = chat.acp_connection:set_mode("plan")
-              if success then
-                -- モデルをopusplanに切り替え
-                chat:change_model({ model = "opus" })
-                vim.notify("Switched to plan mode (opus)", vim.log.levels.INFO, { title = "CodeCompanion" })
-                chat:update_metadata()
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local success = chat.acp_connection:set_config_option(mode_opt.id, "plan")
+                if success then
+                  chat:change_model({ model = "opus" })
+                  vim.notify("Switched to plan mode (opus)", vim.log.levels.INFO, { title = "CodeCompanion" })
+                  chat:update_metadata()
+                else
+                  vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                end
               else
-                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -167,14 +176,24 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local success = chat.acp_connection:set_mode("default")
-              if success then
-                -- モデルをsonnetに切り替え
-                chat:change_model({ model = "default" })
-                vim.notify("Switched to default mode (sonnet)", vim.log.levels.INFO, { title = "CodeCompanion" })
-                chat:update_metadata()
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local success = chat.acp_connection:set_config_option(mode_opt.id, "default")
+                if success then
+                  chat:change_model({ model = "default" })
+                  vim.notify("Switched to default mode (sonnet)", vim.log.levels.INFO, { title = "CodeCompanion" })
+                  chat:update_metadata()
+                else
+                  vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                end
               else
-                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -192,8 +211,8 @@ return {
               return
             end
 
-            -- modeスラッシュコマンドを直接実行
-            local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.mode")
+            -- acp_session_optionsスラッシュコマンドでモード選択
+            local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.acp_session_options")
             local cmd = SlashCommand.new({
               Chat = chat,
               config = require("codecompanion.config"),
@@ -209,11 +228,17 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local modes = chat.acp_connection:get_modes()
-              if modes then
-                local next_mode = (modes.currentModeId == "plan") and "default" or "plan"
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local next_mode = (mode_opt.currentValue == "plan") and "default" or "plan"
                 local next_model = (next_mode == "plan") and "opus" or "default"
-                local success = chat.acp_connection:set_mode(next_mode)
+                local success = chat.acp_connection:set_config_option(mode_opt.id, next_mode)
                 if success then
                   chat:change_model({ model = next_model })
                   vim.notify(
@@ -226,7 +251,7 @@ return {
                   vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
                 end
               else
-                vim.notify("Modes not supported", vim.log.levels.WARN, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -246,6 +271,7 @@ return {
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
+            show_reasoning = true,
             acp = {
               max_title_length = 15, -- Maximum title length (nil = unlimited)
             },
@@ -349,55 +375,6 @@ return {
           default_text = "",
         })
       end, { desc = "Search CodeCompanion Chat Markdown" })
-
-      -- Markdown保存用ヘルパー関数
-      local function save_chat_as_markdown(chat)
-        if not chat or not chat.opts or not chat.opts.save_id then
-          return
-        end
-
-        local save_id = chat.opts.save_id
-        local bufnr = chat.bufnr
-
-        if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-          return
-        end
-
-        -- Markdownディレクトリの作成
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        vim.fn.mkdir(md_dir, "p")
-
-        -- バッファの内容をそのまま取得
-        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-        -- ファイルへの書き込み
-        local md_path = md_dir .. "/" .. save_id .. "_" .. chat.opts.title .. ".md"
-        local file = io.open(md_path, "w")
-        if file then
-          file:write(table.concat(lines, "\n"))
-          file:close()
-        end
-      end
-      -- チャット保存時にMarkdownファイルも保存
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "CodeCompanion*Finished",
-        callback = vim.schedule_wrap(function(opts)
-          if opts.match == "CodeCompanionRequestFinished" or opts.match == "CodeCompanionToolsFinished" then
-            if opts.match == "CodeCompanionRequestFinished" and opts.data.interaction ~= "chat" then
-              return
-            end
-            local chat_module = require("codecompanion.interactions.chat")
-            local bufnr = opts.data.bufnr
-            if not bufnr then
-              return
-            end
-            local chat = chat_module.buf_get_chat(bufnr)
-            if chat then
-              save_chat_as_markdown(chat)
-            end
-          end
-        end),
-      })
     end,
   },
 }

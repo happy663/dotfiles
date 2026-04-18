@@ -25,14 +25,21 @@ function M:update_status()
   local parts = {}
 
   -- モード情報
-  local modes = chat.acp_connection:get_modes()
-  if modes and modes.currentModeId then
+  local config_options = chat.acp_connection:get_config_options()
+  local mode_opt = nil
+  for _, opt in ipairs(config_options) do
+    if opt.category == "mode" then
+      mode_opt = opt
+      break
+    end
+  end
+  if mode_opt and mode_opt.currentValue then
     local mode_icons = {
       plan = "📋",
       default = "💬",
     }
-    local icon = mode_icons[modes.currentModeId] or "🤖"
-    table.insert(parts, icon .. " " .. modes.currentModeId)
+    local icon = mode_icons[mode_opt.currentValue] or "🤖"
+    table.insert(parts, icon .. " " .. mode_opt.currentValue)
   end
 
   -- モデル情報
