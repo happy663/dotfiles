@@ -103,8 +103,8 @@
       "WebSearch"
     ],
     "deny": ["Bash(rm:*)"],
+    "defaultMode": "default"
   },
-  "model": "opusplan",
   "hooks": {
     "PreToolUse": [
       {
@@ -352,6 +352,9 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-script.sh"
   },
+  "enabledPlugins": {
+    "permissions-audit@makikub-plugins": true
+  },
   "extraKnownMarketplaces": {
     "makikub-plugins": {
       "source": {
@@ -360,9 +363,7 @@
       }
     }
   },
+  "effortLevel": "medium",
   "plansDirectory": "./plans",
-  "enabledPlugins": {
-    "permissions-audit@makikub-plugins": true
-  }
-  "effortLevel": "high"
+  "skipAutoPermissionPrompt": true
 }
