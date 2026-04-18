@@ -172,6 +172,21 @@ M.interactions = {
   cmd = {
     adapter = "openai",
   },
+  cli = {
+    agent = "claude_code",
+    agents = {
+      claude_code = {
+        cmd = "claude",
+        args = {},
+        description = "Claude Code CLI",
+        provider = "terminal",
+      },
+    },
+    opts = {
+      auto_insert = true,
+      reload = true,
+    },
+  },
   background = {
     adapter = {
       name = "copilot",
