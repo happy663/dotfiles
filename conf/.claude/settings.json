@@ -61,6 +61,7 @@
       "Bash(tr:*)",
       "Bash(awk:*)",
       "Bash(grep:*)",
+      "Bash(head:*)",
       "mcp__serena__search_for_pattern",
       "mcp__serena__list_dir",
       "mcp__serena__find_file",
@@ -101,10 +102,22 @@
       "Bash(gh search:*)",
       "WebSearch"
     ],
-    "deny": ["Bash(rm:*)"]
+    "deny": ["Bash(rm:*)"],
   },
   "model": "opusplan",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/pipe-stage-permissions.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",

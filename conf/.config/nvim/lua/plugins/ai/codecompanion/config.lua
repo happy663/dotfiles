@@ -6,9 +6,12 @@ M.adapters = {
       return require("codecompanion.adapters").extend("copilot", {
         schema = {
           model = {
-            default = "claude-sonnet-4",
+            default = "claude-opus-4.6",
           },
           choices = {
+            "claude-opus-4.6",
+            "claude-sonnet-4.6",
+            "claude-sonnet-4",
             "claude-sonnet-4",
             "claude-3.7-sonnet",
             "gpt-4o-2024-08-06",

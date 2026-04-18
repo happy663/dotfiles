@@ -151,14 +151,14 @@ function M.open_input_buffer(opts)
   vim.wo.winfixheight = true
 
   -- 補完ポップアップが下に表示されるよう候補数を制限
-  local cmp_ok, cmp = pcall(require, "cmp")
-  if cmp_ok then
-    cmp.setup.buffer({
-      performance = {
-        max_view_entries = 5,
-      },
-    })
-  end
+  -- local cmp_ok, cmp = pcall(require, "cmp")
+  -- if cmp_ok then
+  --   cmp.setup.buffer({
+  --     performance = {
+  --       max_view_entries = 5,
+  --     },
+  --   })
+  -- end
 
   vim.cmd("startinsert")
 

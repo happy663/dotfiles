@@ -364,6 +364,9 @@ return {
             keyword_length = 2,
             group_index = 1,
           },
+          { name = "coding_agent_slash" },
+          { name = "coding_agent_dollar" },
+          { name = "coding_agent_at" },
         },
         sorting = default_sorting,
         formatting = {
@@ -495,6 +498,33 @@ return {
                 { name = "coding_agent_slash" },
                 { name = "coding_agent_dollar" },
                 { name = "coding_agent_at" },
+                {
+                  name = "rg",
+                  group_index = 1,
+                  option = {
+                    additional_arguments = {
+                      "--hidden",
+                      "--glob",
+                      "!.git/",
+                      "--glob",
+                      "!*lock.json",
+                      "--glob",
+                      "!.p10k.zsh",
+                      "--glob",
+                      "!*startuptime-logs/",
+                      "--glob",
+                      "!*.L",
+                      "--glob",
+                      "!*.plist",
+                    },
+                  },
+                },
+                {
+                  name = "dictionary",
+                  keyword_length = 2,
+                  group_index = 1,
+                },
+                buffer_source,
               }
             or default_sources
           config.sorting = default_sorting

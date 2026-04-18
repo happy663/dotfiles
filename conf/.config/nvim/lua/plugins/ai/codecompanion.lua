@@ -271,7 +271,7 @@ return {
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
-            show_reasoning = true,
+            show_reasoning = false,
             acp = {
               max_title_length = 15, -- Maximum title length (nil = unlimited)
             },
