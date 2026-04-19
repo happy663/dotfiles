@@ -613,7 +613,7 @@ return {
               preserve_at_prefix = true,
               show_hidden = true,
               preview_lines = 20,
-              deep_search = false,
+              deep_search = true,
               root = "git",
             },
             skills = {
