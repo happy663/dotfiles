@@ -38,7 +38,7 @@ local function set_lsp_keymaps(bufnr)
   local buf_map = keymap(bufnr)
   buf_map("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-  buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+  -- buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
   buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
   buf_map("n", "gn", "<cmd>lua vim.lsp.buf.rename()<CR>")
@@ -224,9 +224,21 @@ return {
       require("mason-lspconfig").setup()
 
       -- LSPのハイライト設定
-      vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
-      vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
-      vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" })
+      vim.api.nvim_set_hl(
+        0,
+        "LspReferenceText",
+        { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" }
+      )
+      vim.api.nvim_set_hl(
+        0,
+        "LspReferenceRead",
+        { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" }
+      )
+      vim.api.nvim_set_hl(
+        0,
+        "LspReferenceWrite",
+        { underline = true, ctermfg = 1, ctermbg = 8, fg = "#A00000", bg = "#104040" }
+      )
     end,
     dependencies = {
       "neovim/nvim-lspconfig",
