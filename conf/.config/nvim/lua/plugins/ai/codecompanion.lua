@@ -19,7 +19,8 @@ local short_names = {
 
 return {
   {
-    "olimorris/codecompanion.nvim",
+    "happy663/codecompanion.nvim",
+    branch = "personal",
     -- dir = "~/src/github.com/olimorris/codecompanion.nvim",
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
@@ -381,4 +382,3 @@ return {
     end,
   },
 }
-
