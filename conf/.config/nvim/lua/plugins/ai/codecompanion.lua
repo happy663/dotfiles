@@ -98,6 +98,12 @@ return {
       },
       { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
       {
+        "<leader>ccx",
+        "<cmd>CodeCompanionChat adapter=codex<cr>",
+        mode = { "n", "v" },
+        desc = "CodeCompanion Codex Chat",
+      },
+      {
         "<leader>ccc",
         string.format("<cmd>CodeCompanion /%s<cr>", short_names.CHAT_WITH_BUFFER),
         mode = "n",

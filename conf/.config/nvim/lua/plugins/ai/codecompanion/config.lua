@@ -73,6 +73,21 @@ M.adapters = {
         },
       })
     end,
+    codex = function()
+      return require("codecompanion.adapters").extend("codex", {
+        defaults = {
+          auth_method = vim.env.CODEX_ACP_AUTH_METHOD or "openai-api-key",
+        },
+        env = {
+          OPENAI_API_KEY = function()
+            return vim.fn.getenv("OPENAI_API_KEY")
+          end,
+          CODEX_API_KEY = function()
+            return vim.fn.getenv("CODEX_API_KEY")
+          end,
+        },
+      })
+    end,
   },
 }
 
@@ -179,6 +194,12 @@ M.interactions = {
         cmd = "claude",
         args = {},
         description = "Claude Code CLI",
+        provider = "terminal",
+      },
+      codex = {
+        cmd = "codex",
+        args = {},
+        description = "OpenAI Codex CLI",
         provider = "terminal",
       },
     },
