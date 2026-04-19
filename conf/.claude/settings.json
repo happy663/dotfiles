@@ -10,6 +10,7 @@
       "List(*)",
       "Fetch(https://*)",
       "Read(*)",
+      "Grep(*)",
       "Read(~/.zshrc)",
       "Read(~/src/github.com/**)",
       "Read(~/dotfiles/**)",
@@ -100,6 +101,7 @@
       "Bash(mise ls-remote:*)",
       "Bash(npm install:*)",
       "Bash(gh search:*)",
+      "Bash(sed:*)",
       "WebSearch"
     ],
     "deny": ["Bash(rm:*)"],
