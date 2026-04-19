@@ -6,13 +6,13 @@ return {
     config = function()
       require("toggleterm").setup({
         size = 20,
-        open_mapping = [[<C-\>]],
+        -- open_mapping = [[<C-\>]],
         hide_numbers = true,
         shade_filetypes = {},
         shade_terminals = true,
         shading_factor = 2,
         start_in_insert = true,
-        insert_mappings = true,
+        -- insert_mappings = true,
         persist_size = true,
         direction = "float",
         float_opts = {
@@ -47,6 +47,32 @@ return {
       end, { desc = "Open new Codex terminal" })
 
       vim.keymap.set("n", "<leader>ts", ":TermSelect<CR>", { desc = "Select terminal to open" })
+
+      -- editor insert → terminal → editor に戻った時に insert mode を復元する
+      local prev_was_insert = false
+      vim.keymap.set("n", [[<C-\>]], "<Cmd>ToggleTerm<CR>", { desc = "Toggle terminal from normal mode" })
+      vim.keymap.set("i", [[<C-\>]], function()
+        print("Toggling terminal from insert mode")
+        prev_was_insert = true
+        vim.cmd("ToggleTerm")
+      end, { desc = "Toggle terminal from insert mode" })
+
+      -- terminal insertモード中でも<C-\>でトグルできるようにする
+      vim.keymap.set("t", [[<C-\>]], function()
+        local is_toggleterm = vim.bo.filetype == "toggleterm"
+        if is_toggleterm then
+          vim.cmd("ToggleTerm")
+          if prev_was_insert then
+            prev_was_insert = false
+            vim.schedule(function()
+              vim.cmd("startinsert")
+            end)
+          end
+        else
+          prev_was_insert = true
+          vim.cmd("ToggleTerm")
+        end
+      end, { desc = "Toggle terminal from terminal mode" })
 
       -- ターミナルモード表示: ボーダー色でInsert/Normalを区別
       local augroup = vim.api.nvim_create_augroup("ToggleTermModes", { clear = true })
