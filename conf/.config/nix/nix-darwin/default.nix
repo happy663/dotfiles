@@ -245,6 +245,10 @@
       "cmux"
       "hammerspoon"
     ];
+    masApps = {
+      Kindle = 302584613;
+      HazeOver = 430798174;
+    };
   };
 
   fonts = {
@@ -315,3 +319,4 @@
     };
   };
 }
+
