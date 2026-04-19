@@ -81,6 +81,15 @@ function claudeNvim() {
   command nvim -c "$ex_cmd"
 }
 
+function dualClaude() {
+  local ex_cmd="DualClaude"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
+
 # -----------------------------------------------------------------------------
 # Profiling and Performance Functions
 # -----------------------------------------------------------------------------
