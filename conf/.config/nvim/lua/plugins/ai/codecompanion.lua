@@ -114,7 +114,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "ravitemer/codecompanion-history.nvim",
     },
     config = function()
       local codecompanion = require("codecompanion")
@@ -269,7 +268,6 @@ return {
 
       local config = require("plugins.ai.codecompanion.config")
       local prompts = require("plugins.ai.codecompanion.prompts")
-      local history = require("plugins.ai.codecompanion.history")
 
       codecompanion.setup({
         display = {
@@ -278,7 +276,7 @@ return {
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
-            show_reasoning = false,
+            show_reasoning = true,
             acp = {
               max_title_length = 15, -- Maximum title length (nil = unlimited)
             },
@@ -323,9 +321,6 @@ return {
         },
         interactions = config.interactions,
         prompt_library = prompts.get(roles, short_names),
-        extensions = {
-          history = history.config,
-        },
       })
 
       vim.g.codecompanion_auto_tool_mode = "true"
@@ -361,24 +356,6 @@ return {
           end
         end,
       })
-      -- Markdownファイルをlive_grepするキーマップ
-      vim.keymap.set("n", "<leader>ccm", function()
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        require("telescope.builtin").live_grep({
-          prompt_title = "CodeCompanion Chat History",
-          cwd = md_dir,
-          default_text = "",
-        })
-      end, { desc = "Search CodeCompanion Chat Markdown" })
-
-      vim.keymap.set("n", "<leader>ccp", function()
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        require("telescope.builtin").find_files({
-          prompt_title = "CodeCompanion Chat History",
-          cwd = md_dir,
-          default_text = "",
-        })
-      end, { desc = "Search CodeCompanion Chat Markdown" })
     end,
   },
 }
