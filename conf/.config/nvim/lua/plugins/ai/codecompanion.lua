@@ -290,31 +290,13 @@ return {
           },
           diff = {
             enabled = true,
-            provider = "split", -- inline|split|mini.diff
-            provider_opts = {
-              inline = {
-                layout = "float", -- float|buffer - Where to display the diff
-                opts = {
-                  context_lines = 3, -- Number of context lines in hunks
-                  dim = 25, -- Background dim level for floating diff (0-100, [100 full transparent], only applies when layout = "float")
-                  full_width_removed = true, -- Make removed lines span full width
-                  show_keymap_hints = true, -- Show "gda: accept | gdr: reject" hints above diff
-                  show_removed = true, -- Show removed lines as virtual text
-                },
-              },
-              split = {
-                close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
-                layout = "vertical", -- vertical|horizontal split
-                opts = {
-                  "internal",
-                  "filler",
-                  "closeoff",
-                  "algorithm:histogram", -- https://adamj.eu/tech/2024/01/18/git-improve-diff-histogram/
-                  "indent-heuristic", -- https://blog.k-nut.eu/better-git-diffs
-                  "followwrap",
-                  "linematch:120",
-                },
-              },
+            threshold_for_chat = 30, -- At or below this, always display the diff in the chat buffer
+            window = {
+              opts = {},
+            },
+            word_highlights = {
+              additions = true,
+              deletions = true,
             },
           },
         },
@@ -325,7 +307,7 @@ return {
         },
         rules = {
           default = {
-            description = "Collection of common files for all projects",
+           description = "Collection of common files for all projects",
             files = {
               ".clinerules",
               ".cursorrules",
