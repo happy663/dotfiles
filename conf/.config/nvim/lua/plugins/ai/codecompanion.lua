@@ -323,6 +323,21 @@ return {
           language = "Japanese",
           -- log_level = "DEBUG",
         },
+        rules = {
+          default = {
+            description = "Collection of common files for all projects",
+            files = {
+              ".clinerules",
+              ".cursorrules",
+              ".goosehints",
+              ".rules",
+              ".windsurfrules",
+              ".github/copilot-instructions.md",
+              -- AGENT.md, AGENTS.md, CLAUDE.md系はClaude Codeが内部で読み込むため除外
+            },
+            is_preset = true,
+          },
+        },
         interactions = config.interactions,
         prompt_library = prompts.get(roles, short_names),
         extensions = {
@@ -384,3 +399,4 @@ return {
     end,
   },
 }
+
