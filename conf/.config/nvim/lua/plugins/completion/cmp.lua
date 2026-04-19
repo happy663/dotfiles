@@ -500,7 +500,6 @@ return {
                 { name = "coding_agent_at" },
                 {
                   name = "rg",
-                  group_index = 1,
                   option = {
                     additional_arguments = {
                       "--hidden",
@@ -522,9 +521,12 @@ return {
                 {
                   name = "dictionary",
                   keyword_length = 2,
-                  group_index = 1,
                 },
-                buffer_source,
+                {
+                  name = "buffer",
+                  priority = 1000,
+                  option = { get_bufnrs = buffer_get_bufnrs },
+                },
               }
             or default_sources
           config.sorting = default_sorting
