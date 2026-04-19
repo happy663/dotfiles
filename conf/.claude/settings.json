@@ -21,6 +21,7 @@
       "Bash(cp:*)",
       "Bash(cat:*)",
       "Bash(find:*)",
+      "Bash(diff:*)",
       "Bash(terminal-notifier:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
@@ -64,6 +65,7 @@
       "Bash(grep:*)",
       "Bash(head:*)",
       "Bash(xargs:*)",
+      "Bash(tail:*)",
       "mcp__serena__search_for_pattern",
       "mcp__serena__list_dir",
       "mcp__serena__find_file",
@@ -105,7 +107,9 @@
       "Bash(sed:*)",
       "WebSearch"
     ],
-    "deny": ["Bash(rm:*)"],
+    "deny": [
+      "Bash(rm:*)"
+    ],
     "defaultMode": "default"
   },
   "hooks": {
@@ -370,3 +374,4 @@
   "plansDirectory": "./plans",
   "skipAutoPermissionPrompt": true
 }
+
