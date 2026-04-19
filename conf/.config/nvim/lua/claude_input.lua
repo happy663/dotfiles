@@ -114,6 +114,20 @@ local function open_split_below_target(target_bufnr, target_pattern, draft_heigh
     if type(draft_height) == "number" and draft_height > 0 then
       vim.cmd("resize " .. tostring(draft_height))
     end
+
+    -- split で target terminal window が縮小した時、cursor 位置が visible 領域外になるのを防ぐため最下部へ移動する
+    local draft_winid = vim.api.nvim_get_current_win()
+    if vim.api.nvim_win_is_valid(target_winid) then
+      local term_bufnr = vim.api.nvim_win_get_buf(target_winid)
+      if is_valid_buf(term_bufnr) then
+        local line_count = vim.api.nvim_buf_line_count(term_bufnr)
+        pcall(vim.api.nvim_win_set_cursor, target_winid, { line_count, 0 })
+      end
+    end
+    if vim.api.nvim_win_is_valid(draft_winid) then
+      vim.api.nvim_set_current_win(draft_winid)
+    end
+
     return true
   end
 
