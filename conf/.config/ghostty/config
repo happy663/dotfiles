@@ -13,7 +13,7 @@ theme = Ayu Mirage
 # Window Settings
 # ============================================================================
 # ウィンドウの不透明度 (0.0 - 1.0)
-background-opacity = 0.8
+background-opacity = 0.80
 
 # ウィンドウのパディング
 window-padding-x = 5
@@ -134,6 +134,4 @@ window-theme = auto
 notify-on-command-finish = always
 notify-on-command-finish-action = no-bell,notify
 notify-on-command-finish-after = 20s
-
-
 
