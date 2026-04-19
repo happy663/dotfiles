@@ -21,13 +21,12 @@ end, { nargs = "*" })
 
 local claude_input_ok, claude_input = pcall(require, "claude_input")
 if claude_input_ok then
+  claude_input.setup()
+
   vim.api.nvim_create_user_command("ClaudeDraftSend", function()
-    local success, message = claude_input.send_draft()
+    -- send_draft は成功時に内部で clear + hide (default) を行う
+    local success, message = claude_input.send_draft({ hide_after = true })
     if success then
-      local cleared, clear_message = claude_input.clear_draft()
-      if not cleared then
-        vim.notify(clear_message, vim.log.levels.WARN)
-      end
       vim.notify(message, vim.log.levels.INFO)
     else
       vim.notify(message, vim.log.levels.ERROR)
@@ -74,46 +73,35 @@ if claude_input_ok then
     return nil
   end
 
-  local function move_to_best_previous_window(excluded_winid)
-    local prev_winid = vim.t.claude_input_prev_winid
-    if prev_winid and vim.api.nvim_win_is_valid(prev_winid) and prev_winid ~= excluded_winid then
-      vim.api.nvim_set_current_win(prev_winid)
-      return
-    end
-
-    local windows = vim.api.nvim_tabpage_list_wins(0)
-    for _, winid in ipairs(windows) do
-      if vim.api.nvim_win_is_valid(winid) and winid ~= excluded_winid then
-        vim.api.nvim_set_current_win(winid)
-        return
-      end
-    end
-  end
-
   local function toggle_claude_draft_buffer()
     local current_winid = vim.api.nvim_get_current_win()
     local draft_winid = find_claude_draft_winid()
 
+    -- claude-input 内から押下 → hide（フォーカス復帰は hide() 内部で処理）
     if draft_winid and draft_winid == current_winid then
-      move_to_best_previous_window(draft_winid)
+      claude_input.hide()
       return
     end
 
     vim.t.claude_input_prev_winid = current_winid
 
+    -- 可視ウィンドウがあればそこに focus
     if draft_winid then
       vim.api.nvim_set_current_win(draft_winid)
       vim.cmd("startinsert")
       return
     end
 
+    -- ウィンドウが無い（初回 or hidden）→ target の下に再表示
     local current_bufnr = vim.api.nvim_get_current_buf()
     local focus_opts = {
       draft_height = dual_ai_config.draft_height,
       target_pattern = dual_ai_config.draft_target_pattern,
     }
+    -- terminal から押された場合は current terminal に再リンク
     if vim.bo[current_bufnr].buftype == "terminal" then
       focus_opts.claude_bufnr = current_bufnr
+      vim.t.claude_terminal_bufnr = current_bufnr
     end
 
     local success, message = claude_input.focus_or_open(focus_opts)
