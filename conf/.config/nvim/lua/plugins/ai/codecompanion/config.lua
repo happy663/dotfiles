@@ -93,7 +93,7 @@ M.adapters = {
 
 M.interactions = {
   chat = {
-    adapter = "claude_code",
+    adapter = "codex",
     opts = {
       system_prompt = function(opts)
         local language = opts.language or "Japanese"

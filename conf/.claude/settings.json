@@ -105,6 +105,9 @@
       "Bash(npm install:*)",
       "Bash(gh search:*)",
       "Bash(sed:*)",
+      "Bash(echo:*)",
+      "Bash(stylua:*)",
+      "Bash(which:*)",
       "WebSearch"
     ],
     "deny": [
