@@ -346,6 +346,17 @@ function M.send_draft(opts)
   end
 
   local target = target_index or target_pattern
+
+  -- 送信前に claude-input を hide して、claudecode 側の window を拡張後のサイズに整える
+  -- （送信直後に hide すると claudecode TUI の描画途中で resize が割り込み、行の残像や重複が発生する）
+  -- redraw だけでは Vim 内部の描画のみで、子プロセス claudecode の SIGWINCH 受信 → 再描画 ANSI 出力 → Vim ターミナル描画
+  -- までは同期されないため、vim.wait で短時間イベントループを回してから送信する
+  if hide_after then
+    M.hide()
+    vim.cmd("redraw")
+    vim.wait(250)
+  end
+
   local success, message =
     terminal_bridge.send_command(target, content, { add_newline = true, exclude_current = false })
   if not success then
@@ -353,11 +364,8 @@ function M.send_draft(opts)
     return false, message
   end
 
-  -- 送信成功後、内部で clear と（オプションで）hide を実行する
+  -- 送信成功後、draft の内容をクリア
   M.clear_draft()
-  if hide_after then
-    M.hide()
-  end
 
   -- 送信後は常に target terminal の window にフォーカスを移す（hide() の prev_winid 復帰より優先）
   if is_valid_buf(claude_bufnr) then
