@@ -26,10 +26,10 @@ Scope: このディレクトリ配下すべて。
   - `make link`
   - `make brew`
 - Nix / Home Manager:
-  - `nix run .#update`
-  - `nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin`
-  - `sudo nix run nix-darwin -- switch --flake .#happy-darwin`
-  - `nix flake update`
+  - `make apply-nix`
+  - `make apply-nix-just-home`
+  - `make apply-nix-just-darwin`
+  - `make update-apply-npm`
 - ビルド確認（必要時のみ）:
   - `nix build .#darwinConfigurations.happy-mbp.system`
   - `nix build .#homeConfigurations.happy.activationPackage`

@@ -6,14 +6,14 @@
 
 **対応プラットフォーム**:
 
-- macOS (Apple Silicon)
-- Linux (x86_64)
+* macOS (Apple Silicon)
+* Linux (x86_64)
 
 **主要技術スタック**:
 
-- Nix + Home Manager - 環境の宣言的管理
-- nix-darwin - macOS固有設定
-- 30以上のツール設定を統合管理
+* Nix + Home Manager - 環境の宣言的管理
+* nix-darwin - macOS固有設定
+* 30以上のツール設定を統合管理
 
 ## Directory Structure
 
@@ -60,18 +60,17 @@ make brew
 ### Nix/Home Manager操作
 
 ```bash
+# home-manager + nix-darwinを適用
+make apply-nix
 
-# 依存関係を更新してhome-manager+nix-darwinを適用
-nix run .#update
+# Home Manager設定のみを適用
+make apply-nix-just-home
 
-# Home Manager設定を適用
-nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+# nix-darwin設定のみを適用
+make apply-nix-just-darwin
 
-# macOS設定を適用（nix-darwin）
-sudo nix run nix-darwin -- switch --flake .#happy-darwin
-
-# 依存関係を更新
-nix flake update
+# node-pkgsを更新してhome-managerを適用
+make update-apply-npm
 
 # ビルド確認（CI相当）
 nix build .#darwinConfigurations.happy-mbp.system
@@ -82,24 +81,16 @@ nix build .#homeConfigurations.happy.activationPackage
 
 ### ファイル構成
 
-- **`conf/.config/nix/home-manager/common.nix`** - クロスプラットフォーム共通パッケージ
-- **`conf/.config/nix/home-manager/darwin.nix`** - macOS固有設定
-- **`conf/.config/nix/home-manager/linux.nix`** - Linux固有設定
-- **`conf/.config/nix/nix-darwin/default.nix`** - nix-darwin設定
+* **`conf/.config/nix/home-manager/common.nix`** - クロスプラットフォーム共通パッケージ
+* **`conf/.config/nix/home-manager/darwin.nix`** - macOS固有設定
+* **`conf/.config/nix/home-manager/linux.nix`** - Linux固有設定
+* **`conf/.config/nix/nix-darwin/default.nix`** - nix-darwin設定
 
 ### パッケージ追加手順
 
 1. `conf/.config/nix/home-manager/common.nix`の`home.packages`に追加
 2. `home-manager switch --flake .`で適用
 3. コミット（`feat: Add <package-name> to Nix packages`）
-
-### 管理されている主要ツール
-
-- **CLI**: bat, fd, ripgrep, fzf, gh, ghq, mise, zoxide, delta
-- **開発**: cargo, docker, docker-compose, colima, deno, nodejs
-- **言語**: PHP 7.4/8.4, Go, Python, Rust, Haskell
-- **エディタ**: neovim, neovim-remote
-- **その他**: lazygit, firefox, neofetch
 
 ## Neovim Configuration
 
@@ -134,77 +125,13 @@ conf/.config/nvim/
         └── misc/              # その他
 ```
 
-### プラグイン管理（lazy.nvim）
-
-**lazy.nvim**を使用してプラグインを遅延読み込み・管理しています。
-
-**新規プラグイン追加手順**:
-
-1. 適切なカテゴリディレクトリを選択（例: `lua/plugins/tools/`）
-2. 新しいLuaファイルを作成（例: `my-plugin.lua`）
-3. プラグイン定義を記述:
-   ```lua
-   return {
-     "author/plugin-name",
-     event = "VeryLazy",  -- 遅延読み込みトリガー
-     config = function()
-       -- プラグイン設定
-     end,
-   }
-   ```
-4. Neovimを再起動すると自動でインストールされる
-5. `:Lazy`でプラグインマネージャーUI確認
-
-**よく使うevent**:
-
-- `VeryLazy` - 起動後の遅延読み込み
-- `BufRead` - バッファ読み込み時
-- `InsertEnter` - インサートモード時
-- `LspAttach` - LSP接続時
-
 ### コードフォーマット（StyLua）
 
 **pre-commitフック**が設定されており、Luaファイル編集時に自動整形されます。
 
-- 設定: `.pre-commit-config.yaml`
-- StyLua v0.20.0を使用
-- コミット前に自動実行
-
-### 主要プラグイン
-
-- **CodeCompanion** - Claude統合（ローカルビルド版使用）
-- **GitHub Copilot** - AI補完
-- **nvim-cmp** - 補完エンジン
-- **mason.nvim** - LSPサーバー管理
-- **Telescope** - ファジーファインダー
-- **nvim-tree** - ファイラー
-- **orgmode** - Org-mode対応
-
-## Shell Configuration
-
-### Zsh構成
-
-```
-conf/.config/zsh/
-├── init.zsh             # 初期化
-├── environment.zsh      # 環境変数
-├── plugins.zsh          # プラグイン管理（Zinit）
-├── completion.zsh       # 補完設定
-├── functions.zsh        # カスタム関数
-├── aliases.zsh          # エイリアス
-├── keybindings.zsh      # キーバインディング
-├── navigation.zsh       # ナビゲーション
-└── history.zsh          # 履歴管理
-```
-
-**プラグインマネージャー**: Zinit
-
-**主要プラグイン**:
-
-- Powerlevel10k - プロンプトテーマ
-- zsh-autosuggestions - コマンド補完提案
-- fast-syntax-highlighting - シンタックスハイライト
-- zeno.zsh - シェルコマンド補完UI
+* 設定: `.pre-commit-config.yaml`
+* StyLua v0.20.0を使用
+* コミット前に自動実行
 
 ## Development Workflow
 
@@ -226,23 +153,8 @@ docs: ドキュメント更新
 
 **命名規則**:
 
-- `feat-*` または `feat/*` - 新機能
-- `fix-*` または `fix/*` - バグ修正
-- `refactor-*` または `refactor/*` - リファクタリング
-- `update/*` - 更新
-- `auto-updates` - 自動更新用（GitHub Actions）
-
-### 自動化ワークフロー
-
-**GitHub Actions**:
-
-1. **build.yaml** - Nix設定ビルド検証
-
-   - トリガー: `.nix`または`flake.lock`変更時、PR
-   - macOS 15で実行
-   - Cachix統合
-
-2. **update.yaml** - 自動依存更新
-   - スケジュール: 3日ごと（UTC 15:00 = JST 00:00）
-   - `nix flake update`実行
-   - `auto-updates`ブランチにPR自動作成
+* `feat-*` または `feat/*` - 新機能
+* `fix-*` または `fix/*` - バグ修正
+* `refactor-*` または `refactor/*` - リファクタリング
+* `update/*` - 更新
+* `auto-updates` - 自動更新用（GitHub Actions）
