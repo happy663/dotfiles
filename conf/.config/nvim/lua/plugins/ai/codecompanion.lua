@@ -277,11 +277,13 @@ return {
             show_reference_info = true,
             show_system_messages = true,
             show_reasoning = true,
-            acp = {
-              max_title_length = 15, -- Maximum title length (nil = unlimited)
-            },
+            -- acp = {
+            --   max_title_length = 15, -- Maximum title length (nil = unlimited)
+            -- },
             window = {
-              layout = "vertical", -- vertical|horizontal|float
+              layout = "float", -- vertical|horizontal|float
+              height = 0.9,
+              width = 0.8,
             },
           },
           action_palette = {
@@ -306,7 +308,7 @@ return {
         },
         rules = {
           default = {
-           description = "Collection of common files for all projects",
+            description = "Collection of common files for all projects",
             files = {
               ".clinerules",
               ".cursorrules",
@@ -359,3 +361,4 @@ return {
     end,
   },
 }
+
