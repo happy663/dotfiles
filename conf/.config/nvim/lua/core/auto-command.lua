@@ -48,8 +48,16 @@ end
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
 
--- カーソルを画面中央になるようにする
-autocmd("CursorMoved", { pattern = "*", command = "normal! zz" })
+
+-- buftypeがterminal以外の時カーソルを画面中央にする
+autocmd("CursorMoved", {
+  pattern = "*",
+  callback = function()
+    if vim.bo.buftype ~= "terminal" then
+      vim.cmd("normal! zz")
+    end
+  end,
+})
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
