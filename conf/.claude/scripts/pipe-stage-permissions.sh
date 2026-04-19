@@ -60,7 +60,7 @@ if re.search(r'(?:^|[\s;|&])(PATH=|LD_PRELOAD=|LD_LIBRARY_PATH=|DYLD_)', command
     sys.exit(0)
 
 def split_stages(cmd):
-    """Split command by | && ; while respecting quotes."""
+    """Split command by | && ; while respecting quotes and backslash escapes."""
     stages = []
     stage = ""
     in_sq = False
@@ -68,7 +68,25 @@ def split_stages(cmd):
     i = 0
     while i < len(cmd):
         c = cmd[i]
-        if c == "'" and not in_dq:
+        # Backslash escape handling
+        if c == '\\' and not in_sq:
+            if in_dq:
+                # In double quotes: \ only escapes " \ $ ` and newline
+                if i + 1 < len(cmd) and cmd[i+1] in ('"', '\\', '$', '`', '\n'):
+                    stage += c + cmd[i+1]
+                    i += 2
+                    continue
+                else:
+                    stage += c
+            else:
+                # Outside quotes: \ escapes next char (prevents pipe splitting)
+                if i + 1 < len(cmd):
+                    stage += c + cmd[i+1]
+                    i += 2
+                    continue
+                else:
+                    stage += c
+        elif c == "'" and not in_dq:
             in_sq = not in_sq
             stage += c
         elif c == '"' and not in_sq:
