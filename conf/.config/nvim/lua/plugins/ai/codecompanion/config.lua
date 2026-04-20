@@ -6,9 +6,12 @@ M.adapters = {
       return require("codecompanion.adapters").extend("copilot", {
         schema = {
           model = {
-            default = "claude-sonnet-4",
+            default = "claude-opus-4.6",
           },
           choices = {
+            "claude-opus-4.6",
+            "claude-sonnet-4.6",
+            "claude-sonnet-4",
             "claude-sonnet-4",
             "claude-3.7-sonnet",
             "gpt-4o-2024-08-06",
@@ -70,12 +73,27 @@ M.adapters = {
         },
       })
     end,
+    codex = function()
+      return require("codecompanion.adapters").extend("codex", {
+        defaults = {
+          auth_method = vim.env.CODEX_ACP_AUTH_METHOD or "openai-api-key",
+        },
+        env = {
+          OPENAI_API_KEY = function()
+            return vim.fn.getenv("OPENAI_API_KEY")
+          end,
+          CODEX_API_KEY = function()
+            return vim.fn.getenv("CODEX_API_KEY")
+          end,
+        },
+      })
+    end,
   },
 }
 
 M.interactions = {
   chat = {
-    adapter = "claude_code",
+    adapter = "codex",
     opts = {
       system_prompt = function(opts)
         local language = opts.language or "Japanese"
@@ -168,6 +186,27 @@ M.interactions = {
   inline = { adapter = "copilot" },
   cmd = {
     adapter = "openai",
+  },
+  cli = {
+    agent = "claude_code",
+    agents = {
+      claude_code = {
+        cmd = "claude",
+        args = {},
+        description = "Claude Code CLI",
+        provider = "terminal",
+      },
+      codex = {
+        cmd = "codex",
+        args = {},
+        description = "OpenAI Codex CLI",
+        provider = "terminal",
+      },
+    },
+    opts = {
+      auto_insert = true,
+      reload = true,
+    },
   },
   background = {
     adapter = {

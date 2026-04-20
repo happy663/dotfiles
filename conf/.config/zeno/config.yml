@@ -242,7 +242,10 @@ snippets:
 
   - name: claude nvim
     keyword: cn
-    snippet: 
+    snippet: claudeNvim
+  - name: dual claude
+    keyword: cnd
+    snippet: dualClaude
   # - name:
   #   keyword:
   #   snippet:

@@ -4,8 +4,8 @@ Personal dotfiles repository. Development environment is declaratively managed u
 
 ## Supported Platforms
 
-- macOS (Apple Silicon)
-- Linux (x86_64)
+* macOS (Apple Silicon)
+* Linux (x86_64)
 
 ## Setup
 
@@ -51,28 +51,28 @@ dotfiles/
 
 ### Editors & Development
 
-- **Neovim**: Main editor (lazy.nvim + numerous plugins)
+* **Neovim**: Main editor (lazy.nvim + numerous plugins)
 
 ### Terminal & Shell
 
-- **Wezterm**: Main terminal emulator
-- **Zsh**: Main shell (Powerlevel10k theme)
-- **Tmux**: Terminal multiplexer
+* **Wezterm**: Main terminal emulator
+* **Zsh**: Main shell (Powerlevel10k theme)
+* **Tmux**: Terminal multiplexer
 
 ### Git Related
 
-- **Git**: Version control configuration
-- **Lazygit**: Git TUI client
-- **GitHub CLI**: GitHub operations tool
+* **Git**: Version control configuration
+* **Lazygit**: Git TUI client
+* **GitHub CLI**: GitHub operations tool
 
 ### Other Tools
 
-- **Karabiner-Elements**: Keyboard customization
-- **Hammerspoon**: macOS automation
-- **AeroSpace**: Window manager
-- **Raycast**: Launcher
-- **SKK**: Japanese input method
-- **Mise**: Runtime version management
+* **Karabiner-Elements**: Keyboard customization
+* **Hammerspoon**: macOS automation
+* **AeroSpace**: Window manager
+* **Raycast**: Launcher
+* **SKK**: Japanese input method
+* **Mise**: Runtime version management
 
 ## Commands
 

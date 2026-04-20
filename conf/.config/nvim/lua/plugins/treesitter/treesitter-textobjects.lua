@@ -18,10 +18,10 @@ return {
               ["aa"] = "@assignment.outer",
               ["lh"] = "@assignment.lhs",
               ["rh"] = "@assignment.rhs",
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+              -- ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
               ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
-              ["ib"] = { query = "@codeblock.inner", desc = "Select inner part of a code block" },
-              ["ab"] = { query = "@codeblock.outer", desc = "Select around a code block" },
+              ["ic"] = { query = "@codeblock.inner", desc = "Select inner part of a code block" },
+              ["ac"] = { query = "@codeblock.outer", desc = "Select around a code block" },
             },
             selection_modes = {
               ["@parameter.outer"] = "v", -- charwise

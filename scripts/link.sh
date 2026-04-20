@@ -55,7 +55,7 @@ echo "=== ~/.claude ==="
 mkdir -p "$HOME/.claude"
 
 # ディレクトリ
-for target in commands commands.old output-styles skills; do
+for target in commands commands.old output-styles skills scripts; do
     if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi
@@ -83,3 +83,4 @@ for target in AGENT.md config.toml; do
         ln -snfv "${DOTFILES_DIR}/.codex/${target}" "$HOME/.codex/${target}"
     fi
 done
+

@@ -26,10 +26,10 @@ Scope: このディレクトリ配下すべて。
   - `make link`
   - `make brew`
 - Nix / Home Manager:
-  - `nix run .#update`
-  - `nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin`
-  - `sudo nix run nix-darwin -- switch --flake .#happy-darwin`
-  - `nix flake update`
+  - `make apply-nix`
+  - `make apply-nix-just-home`
+  - `make apply-nix-just-darwin`
+  - `make update-apply-npm`
 - ビルド確認（必要時のみ）:
   - `nix build .#darwinConfigurations.happy-mbp.system`
   - `nix build .#homeConfigurations.happy.activationPackage`
@@ -58,6 +58,13 @@ Scope: このディレクトリ配下すべて。
 - まず変更箇所に近い軽量検証を優先すること。
 - 大規模・長時間の検証は、必要性がある場合のみ実行すること。
 - 無関係な不具合修正は行わないこと。
+
+## Command Safety
+- `rg` / `find` / `du` などの再帰検索は、対象ディレクトリを必要最小限に絞ること。
+- `~/.npm`, `~/.local/share`, `~/.cache`, `node_modules`, `.git`, `mise` などの巨大なキャッシュ・依存ディレクトリ全体を安易に検索しないこと。
+- ホーム配下や共有データ配下を調査する場合は、まず具体的なファイル・プラグイン・ログディレクトリに限定すること。
+- 広めの検索が必要な場合は、`--glob` による除外、`--max-filesize`、`-m` / `--max-count` などで走査量と出力量を制限すること。
+- `2>/dev/null` で stderr を捨てても stdout の大量出力は残るため、CodeCompanion / Codex 上で固まる原因になる。大量出力が予想される場合は、検索対象や件数を先に絞ること。
 
 ## Commit Convention
 - Conventional Commits 準拠:

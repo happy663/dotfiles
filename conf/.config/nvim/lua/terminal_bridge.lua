@@ -161,23 +161,12 @@ function M.send_command(target, command, opts)
     return false, err_msg
   end
 
-  -- 改行が必要な場合、ターミナルバッファに移動してEnterキーをシミュレート
+  -- 改行が必要な場合、ジョブに直接 "\r" を送って同期的に実行させる
+  -- feedkeys + window切替は typeahead キューに入るため、呼び出し元が直後に window を切り替えると取りこぼされる
   if add_newline then
-    local current_win = vim.api.nvim_get_current_win()
-    -- ターミナルバッファのウィンドウを探す
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      if vim.api.nvim_win_get_buf(win) == terminal.bufnr then
-        vim.api.nvim_set_current_win(win)
-        -- ターミナルモードに入ってEnterを送信
-        vim.cmd("startinsert")
-        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "t", false)
-        -- 元のウィンドウに戻る
-        -- vim.defer_fn(function()
-        --   vim.cmd("stopinsert")
-        --   vim.api.nvim_set_current_win(current_win)
-        -- end, 50)
-        break
-      end
+    local ok_nl, err_nl = pcall(vim.fn.chansend, terminal.job_id, "\r")
+    if not ok_nl then
+      M.log("WARN", "Failed to send newline: " .. tostring(err_nl))
     end
   end
 

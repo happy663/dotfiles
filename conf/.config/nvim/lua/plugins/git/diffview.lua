@@ -49,6 +49,12 @@ return {
       end
 
       require("diffview").setup({
+        hooks = {
+          view_opened = function()
+            vim.cmd("wincmd l")
+            vim.cmd("wincmd l")
+          end,
+        },
         keymaps = {
           view = {
             { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },

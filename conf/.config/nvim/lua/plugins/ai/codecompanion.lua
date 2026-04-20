@@ -19,12 +19,12 @@ local short_names = {
 
 return {
   {
-    "olimorris/codecompanion.nvim",
+    "happy663/codecompanion.nvim",
+    branch = "personal",
     -- dir = "~/src/github.com/olimorris/codecompanion.nvim",
     cond = vim.g.not_in_vscode,
     cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
     lazy = true,
-    version = "v19.8.0",
     keys = {
       -- { "<leader>ccc", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
       { "<leader>cca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
@@ -99,6 +99,12 @@ return {
       },
       { "ga", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "Add to Chat" },
       {
+        "<leader>ccx",
+        "<cmd>CodeCompanionChat adapter=codex<cr>",
+        mode = { "n", "v" },
+        desc = "CodeCompanion Codex Chat",
+      },
+      {
         "<leader>ccc",
         string.format("<cmd>CodeCompanion /%s<cr>", short_names.CHAT_WITH_BUFFER),
         mode = "n",
@@ -108,7 +114,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "ravitemer/codecompanion-history.nvim",
     },
     config = function()
       local codecompanion = require("codecompanion")
@@ -147,14 +152,24 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local success = chat.acp_connection:set_mode("plan")
-              if success then
-                -- モデルをopusplanに切り替え
-                chat:change_model({ model = "opus" })
-                vim.notify("Switched to plan mode (opus)", vim.log.levels.INFO, { title = "CodeCompanion" })
-                chat:update_metadata()
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local success = chat.acp_connection:set_config_option(mode_opt.id, "plan")
+                if success then
+                  chat:change_model({ model = "opus" })
+                  vim.notify("Switched to plan mode (opus)", vim.log.levels.INFO, { title = "CodeCompanion" })
+                  chat:update_metadata()
+                else
+                  vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                end
               else
-                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -167,14 +182,24 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local success = chat.acp_connection:set_mode("default")
-              if success then
-                -- モデルをsonnetに切り替え
-                chat:change_model({ model = "default" })
-                vim.notify("Switched to default mode (sonnet)", vim.log.levels.INFO, { title = "CodeCompanion" })
-                chat:update_metadata()
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local success = chat.acp_connection:set_config_option(mode_opt.id, "default")
+                if success then
+                  chat:change_model({ model = "default" })
+                  vim.notify("Switched to default mode (sonnet)", vim.log.levels.INFO, { title = "CodeCompanion" })
+                  chat:update_metadata()
+                else
+                  vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                end
               else
-                vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -192,8 +217,8 @@ return {
               return
             end
 
-            -- modeスラッシュコマンドを直接実行
-            local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.mode")
+            -- acp_session_optionsスラッシュコマンドでモード選択
+            local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.acp_session_options")
             local cmd = SlashCommand.new({
               Chat = chat,
               config = require("codecompanion.config"),
@@ -209,11 +234,17 @@ return {
             local chat = Chat.buf_get_chat(bufnr)
 
             if chat and chat.acp_connection then
-              local modes = chat.acp_connection:get_modes()
-              if modes then
-                local next_mode = (modes.currentModeId == "plan") and "default" or "plan"
+              local mode_opt = nil
+              for _, opt in ipairs(chat.acp_connection:get_config_options()) do
+                if opt.category == "mode" then
+                  mode_opt = opt
+                  break
+                end
+              end
+              if mode_opt then
+                local next_mode = (mode_opt.currentValue == "plan") and "default" or "plan"
                 local next_model = (next_mode == "plan") and "opus" or "default"
-                local success = chat.acp_connection:set_mode(next_mode)
+                local success = chat.acp_connection:set_config_option(mode_opt.id, next_mode)
                 if success then
                   chat:change_model({ model = next_model })
                   vim.notify(
@@ -226,7 +257,7 @@ return {
                   vim.notify("Failed to switch mode", vim.log.levels.ERROR, { title = "CodeCompanion" })
                 end
               else
-                vim.notify("Modes not supported", vim.log.levels.WARN, { title = "CodeCompanion" })
+                vim.notify("Mode option not available", vim.log.levels.WARN, { title = "CodeCompanion" })
               end
             else
               vim.notify("ACP connection not available", vim.log.levels.WARN, { title = "CodeCompanion" })
@@ -237,7 +268,6 @@ return {
 
       local config = require("plugins.ai.codecompanion.config")
       local prompts = require("plugins.ai.codecompanion.prompts")
-      local history = require("plugins.ai.codecompanion.history")
 
       codecompanion.setup({
         display = {
@@ -246,6 +276,7 @@ return {
             show_key = true,
             show_reference_info = true,
             show_system_messages = true,
+            show_reasoning = true,
             acp = {
               max_title_length = 15, -- Maximum title length (nil = unlimited)
             },
@@ -258,31 +289,13 @@ return {
           },
           diff = {
             enabled = true,
-            provider = "split", -- inline|split|mini.diff
-            provider_opts = {
-              inline = {
-                layout = "float", -- float|buffer - Where to display the diff
-                opts = {
-                  context_lines = 3, -- Number of context lines in hunks
-                  dim = 25, -- Background dim level for floating diff (0-100, [100 full transparent], only applies when layout = "float")
-                  full_width_removed = true, -- Make removed lines span full width
-                  show_keymap_hints = true, -- Show "gda: accept | gdr: reject" hints above diff
-                  show_removed = true, -- Show removed lines as virtual text
-                },
-              },
-              split = {
-                close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
-                layout = "vertical", -- vertical|horizontal split
-                opts = {
-                  "internal",
-                  "filler",
-                  "closeoff",
-                  "algorithm:histogram", -- https://adamj.eu/tech/2024/01/18/git-improve-diff-histogram/
-                  "indent-heuristic", -- https://blog.k-nut.eu/better-git-diffs
-                  "followwrap",
-                  "linematch:120",
-                },
-              },
+            threshold_for_chat = 30, -- At or below this, always display the diff in the chat buffer
+            window = {
+              opts = {},
+            },
+            word_highlights = {
+              additions = true,
+              deletions = true,
             },
           },
         },
@@ -291,11 +304,23 @@ return {
           language = "Japanese",
           -- log_level = "DEBUG",
         },
+        rules = {
+          default = {
+           description = "Collection of common files for all projects",
+            files = {
+              ".clinerules",
+              ".cursorrules",
+              ".goosehints",
+              ".rules",
+              ".windsurfrules",
+              ".github/copilot-instructions.md",
+              -- AGENT.md, AGENTS.md, CLAUDE.md系はClaude Codeが内部で読み込むため除外
+            },
+            is_preset = true,
+          },
+        },
         interactions = config.interactions,
         prompt_library = prompts.get(roles, short_names),
-        extensions = {
-          history = history.config,
-        },
       })
 
       vim.g.codecompanion_auto_tool_mode = "true"
@@ -330,73 +355,6 @@ return {
             vim.lsp.buf.format({ async = false, bufnr = request.bufnr })
           end
         end,
-      })
-      -- Markdownファイルをlive_grepするキーマップ
-      vim.keymap.set("n", "<leader>ccm", function()
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        require("telescope.builtin").live_grep({
-          prompt_title = "CodeCompanion Chat History",
-          cwd = md_dir,
-          default_text = "",
-        })
-      end, { desc = "Search CodeCompanion Chat Markdown" })
-
-      vim.keymap.set("n", "<leader>ccp", function()
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        require("telescope.builtin").find_files({
-          prompt_title = "CodeCompanion Chat History",
-          cwd = md_dir,
-          default_text = "",
-        })
-      end, { desc = "Search CodeCompanion Chat Markdown" })
-
-      -- Markdown保存用ヘルパー関数
-      local function save_chat_as_markdown(chat)
-        if not chat or not chat.opts or not chat.opts.save_id then
-          return
-        end
-
-        local save_id = chat.opts.save_id
-        local bufnr = chat.bufnr
-
-        if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-          return
-        end
-
-        -- Markdownディレクトリの作成
-        local md_dir = vim.fn.stdpath("data") .. "/codecompanion-history/markdown"
-        vim.fn.mkdir(md_dir, "p")
-
-        -- バッファの内容をそのまま取得
-        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-        -- ファイルへの書き込み
-        local md_path = md_dir .. "/" .. save_id .. "_" .. chat.opts.title .. ".md"
-        local file = io.open(md_path, "w")
-        if file then
-          file:write(table.concat(lines, "\n"))
-          file:close()
-        end
-      end
-      -- チャット保存時にMarkdownファイルも保存
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "CodeCompanion*Finished",
-        callback = vim.schedule_wrap(function(opts)
-          if opts.match == "CodeCompanionRequestFinished" or opts.match == "CodeCompanionToolsFinished" then
-            if opts.match == "CodeCompanionRequestFinished" and opts.data.interaction ~= "chat" then
-              return
-            end
-            local chat_module = require("codecompanion.interactions.chat")
-            local bufnr = opts.data.bufnr
-            if not bufnr then
-              return
-            end
-            local chat = chat_module.buf_get_chat(bufnr)
-            if chat then
-              save_chat_as_markdown(chat)
-            end
-          end
-        end),
       })
     end,
   },

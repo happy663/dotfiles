@@ -79,6 +79,9 @@ return {
             vim.opt_local.conceallevel = 2
             -- Ensure fold display is visible
             vim.opt_local.fillchars:append({ fold = " " })
+            -- octo.nvimの<details>fold extmarkを削除（overlay表示・編集不可との競合を防ぐ）
+            local details_ns = vim.api.nvim_create_namespace("octo_details_folds")
+            vim.api.nvim_buf_clear_namespace(0, details_ns, 0, -1)
           end)
 
           require("plugins.git.octo.buffer_keymaps").octo_buffer_keymaps()

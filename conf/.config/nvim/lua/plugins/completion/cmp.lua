@@ -156,7 +156,7 @@ return {
         { name = "codecompanion_models", group_index = 1 },
         { name = "codecompanion_slash_commands", group_index = 1 },
         { name = "codecompanion_tools", group_index = 1 },
-        { name = "codecompanion_variables", group_index = 1 },
+        { name = "codecompanion_editor_context", group_index = 1 },
         { name = "codecompanion_acp_commands", group_index = 1 },
         { name = "avante_commands" },
         { name = "avante_mentions" },
@@ -166,9 +166,6 @@ return {
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
         { name = "luasnip", group_index = 1 },
-        { name = "coding_agent_slash" },
-        { name = "coding_agent_dollar" },
-        { name = "coding_agent_at" },
         -- {
         --   name = "spell",
         --   option = {
@@ -367,6 +364,9 @@ return {
             keyword_length = 2,
             group_index = 1,
           },
+          { name = "coding_agent_slash" },
+          { name = "coding_agent_dollar" },
+          { name = "coding_agent_at" },
         },
         sorting = default_sorting,
         formatting = {
@@ -442,63 +442,114 @@ return {
         end,
       })
 
-      -- claude_inputバッファ用の補完候補数制限
-      local function claude_input_performance()
-        if vim.b.claude_input then
-          return { max_view_entries = 5 }
+      -- Configuration constants
+      local CLAUDE_INPUT_MAX_ENTRIES = 5
+      local DEFAULT_MAX_ENTRIES = 20
+
+      local skkeleton_config = {
+        sources = cmp.config.sources({
+          { name = "skkeleton", max_item_count = DEFAULT_MAX_ENTRIES },
+        }),
+        sorting = {
+          priority_weight = 1,
+          comparators = {
+            cmp.config.compare.sort_text,
+          },
+        },
+      }
+
+      local cmdline_config = {
+        enable = {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {
+            { name = "skkeleton" },
+          },
+          sorting = {
+            priority_weight = 1,
+            comparators = {
+              cmp.config.compare.sort_text,
+            },
+          },
+        },
+        disable = {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {
+            { name = "buffer" },
+          },
+        },
+      }
+
+      local function create_buffer_config(is_enabled)
+        local config = {
+          -- claude_inputバッファの縦幅は小さめのためcmpの補完候補数を制限する
+          performance = {
+            max_view_entries = vim.b.claude_input and CLAUDE_INPUT_MAX_ENTRIES or DEFAULT_MAX_ENTRIES,
+          },
+        }
+
+        if is_enabled then
+          config.sources = skkeleton_config.sources
+          config.sorting = skkeleton_config.sorting
+        else
+          config.debug = true
+          config.sources = vim.b.claude_input
+              and {
+                { name = "path" },
+                { name = "coding_agent_slash" },
+                { name = "coding_agent_dollar" },
+                { name = "coding_agent_at" },
+                {
+                  name = "rg",
+                  option = {
+                    additional_arguments = {
+                      "--hidden",
+                      "--glob",
+                      "!.git/",
+                      "--glob",
+                      "!*lock.json",
+                      "--glob",
+                      "!.p10k.zsh",
+                      "--glob",
+                      "!*startuptime-logs/",
+                      "--glob",
+                      "!*.L",
+                      "--glob",
+                      "!*.plist",
+                    },
+                  },
+                },
+                {
+                  name = "dictionary",
+                  keyword_length = 2,
+                },
+                {
+                  name = "buffer",
+                  priority = 1000,
+                  option = { get_bufnrs = buffer_get_bufnrs },
+                },
+              }
+            or default_sources
+          config.sorting = default_sorting
         end
-        return {}
+
+        return config
       end
 
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "skkeleton-enable-pre",
-        callback = function()
-          cmp.setup.buffer({
-            sources = cmp.config.sources({
-              { name = "skkeleton", max_item_count = 20 },
-            }),
-            sorting = {
-              priority_weight = 1,
-              comparators = {
-                cmp.config.compare.sort_text,
-              },
-            },
-            performance = claude_input_performance(),
-          })
+      local function setup_autocmd(pattern, is_enabled)
+        vim.api.nvim_create_autocmd("User", {
+          pattern = pattern,
+          callback = function()
+            cmp.setup.buffer(create_buffer_config(is_enabled))
 
-          cmp.setup.cmdline("/", {
-            mapping = cmp.mapping.preset.cmdline(),
-            sources = {
-              { name = "skkeleton" },
-            },
-            sorting = {
-              priority_weight = 1,
-              comparators = {
-                cmp.config.compare.sort_text,
-              },
-            },
-          })
-        end,
-      })
+            local cmdline_key = is_enabled and "enable" or "disable"
+            cmp.setup.cmdline("/", cmdline_config[cmdline_key])
+          end,
+        })
+      end
 
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "skkeleton-disable-pre",
-        callback = function()
-          cmp.setup.buffer({
-            debug = true,
-            sources = default_sources,
-            sorting = default_sorting,
-            performance = claude_input_performance(),
-          })
-
-          cmp.setup.cmdline("/", {
-            mapping = cmp.mapping.preset.cmdline(),
-            sources = {
-              { name = "buffer" },
-            },
-          })
-        end,
-      })
+      -- Setup autocmds
+      setup_autocmd("skkeleton-enable-pre", true)
+      setup_autocmd("skkeleton-disable-pre", false)
 
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-handled",
@@ -564,7 +615,7 @@ return {
               preserve_at_prefix = true,
               show_hidden = true,
               preview_lines = 20,
-              deep_search = false,
+              deep_search = true,
               root = "git",
             },
             skills = {
