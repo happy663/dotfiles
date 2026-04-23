@@ -1,6 +1,9 @@
 return {
   {
     "nvim-orgmode/orgmode",
+    -- Pin to avoid e448c72 which introduces E36: Not enough room on TODO toggle
+    -- See: https://github.com/nvim-orgmode/orgmode/issues/1109
+    commit = "dc9864f",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
     },
