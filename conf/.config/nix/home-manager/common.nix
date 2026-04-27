@@ -41,7 +41,6 @@ in
       docker-compose
       colima
       awscli2
-      snowflake-cli
       fastfetch
       neovim-remote
       fastfetch

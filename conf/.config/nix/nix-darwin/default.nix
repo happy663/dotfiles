@@ -210,6 +210,7 @@
       "pngpaste"
       "luarocks"
       "newrelic-cli"
+      "snoflake-cli"
     ];
     casks = [
       "arc"
