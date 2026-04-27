@@ -210,7 +210,7 @@
       "pngpaste"
       "luarocks"
       "newrelic-cli"
-      "snoflake-cli"
+      "snowflake-cli"
     ];
     casks = [
       "arc"
@@ -245,6 +245,7 @@
       "ovim"
       "cmux"
       "hammerspoon"
+      "obsidian"
     ];
     masApps = {
       Kindle = 302584613;
