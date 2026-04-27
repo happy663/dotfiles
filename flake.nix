@@ -37,24 +37,6 @@
       linuxPkgs = nixpkgs.legacyPackages.${system.linux};
       overlays = [
         inputs.neovim-nightly-overlay.overlays.default
-        (final: prev: {
-          python3Packages = prev.python3Packages.overrideScope (
-            pyFinal: pyPrev: {
-              snowflake-connector-python =
-                pyPrev.snowflake-connector-python.overridePythonAttrs (_: {
-                  doCheck = false;
-                });
-            }
-          );
-
-          snowflake-cli =
-            (prev.snowflake-cli.override {
-              python3Packages = final.python3Packages;
-            }).overridePythonAttrs
-              (_: {
-                doCheck = false;
-              });
-        })
       ];
 
     in
