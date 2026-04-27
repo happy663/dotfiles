@@ -27,12 +27,11 @@ if claude_input_ok then
     -- send_draft は成功時に内部で clear + hide (default) を行う
     local success, message = claude_input.send_draft({ hide_after = true })
     if success then
-      vim.notify(message, vim.log.levels.INFO)
+      -- vim.notify(message, vim.log.levels.INFO)
     else
       vim.notify(message, vim.log.levels.ERROR)
     end
   end, { desc = "Send draft buffer to Claude terminal" })
-
   vim.api.nvim_create_user_command("ClaudeDraftClear", function()
     local success, message = claude_input.clear_draft()
     if success then
