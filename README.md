@@ -16,11 +16,11 @@ make init
 # 2. Install Nix
 sh <(curl -L https://nixos.org/nix/install)
 
-# 3. Build Nix environment (flake update + Home Manager + nix-darwin)
-nix run .#update
-
-# 4. Create symlinks for dotfiles
+# 3. Create symlinks for dotfiles
 make link
+
+# 4. Build Nix environment (flake update + Home Manager + nix-darwin)
+nix run .#update
 
 # 5. Install Neovim plugins
 nvim -c "Lazy install"
