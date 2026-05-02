@@ -68,7 +68,7 @@ function nvim-restart() {
 function codexterm() {
   local ex_cmd="CodexTerm"
   if (( $# > 0 )); then
-    ex_cmd+=" ${(q)@}"
+    ex_cmd+=" $*"
   fi
   command nvim -c "$ex_cmd"
 }
