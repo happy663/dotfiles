@@ -371,8 +371,11 @@ function M.send_draft(opts)
     vim.wait(250)
   end
 
+  -- paste = true で本文をブラケットペーストで囲む。
+  -- 本文中の \n が claudecode TUI 側で「Enter（送信）」として解釈され、
+  -- 複数行ドラフトを 1 度の <C-CR> で送信できない問題への対策。
   local success, message =
-    terminal_bridge.send_command(target, content, { add_newline = true, exclude_current = false })
+    terminal_bridge.send_command(target, content, { add_newline = true, exclude_current = false, paste = true })
   if not success then
     notify(message, vim.log.levels.ERROR)
     return false, message
@@ -382,13 +385,19 @@ function M.send_draft(opts)
   M.clear_draft()
 
   -- 送信後は常に target terminal の window にフォーカスを移す（hide() の prev_winid 復帰より優先）
+  -- フォーカス成功時はそのままターミナルモード（insert）に入る。
+  local focused_terminal = false
   if is_valid_buf(claude_bufnr) then
     for _, winid in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
       if vim.api.nvim_win_is_valid(winid) and vim.api.nvim_win_get_buf(winid) == claude_bufnr then
         vim.api.nvim_set_current_win(winid)
+        focused_terminal = true
         break
       end
     end
+  end
+  if focused_terminal then
+    vim.cmd("startinsert")
   end
 
   return true, message

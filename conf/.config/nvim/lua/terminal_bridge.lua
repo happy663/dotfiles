@@ -125,7 +125,7 @@ end
 -- ターミナルにコマンドを送信
 -- @param target string|number パターン文字列またはインデックス
 -- @param command string 送信するコマンド
--- @param opts table オプション {add_newline: boolean, exclude_current: boolean}
+-- @param opts table オプション {add_newline: boolean, exclude_current: boolean, paste: boolean}
 -- @return boolean, string 成功/失敗とメッセージ
 ---
 function M.send_command(target, command, opts)
@@ -134,6 +134,7 @@ function M.send_command(target, command, opts)
   opts = opts or {}
   local add_newline = opts.add_newline ~= false -- デフォルトでtrue
   local exclude_current = opts.exclude_current or false -- デフォルトでfalse
+  local paste = opts.paste == true -- デフォルトでfalse（オプトイン）
 
   local terminal
 
@@ -149,9 +150,11 @@ function M.send_command(target, command, opts)
     return false, err_msg
   end
 
-  local cmd_to_send = command
+  -- paste オプション有効時はブラケットペーストシーケンスで囲む。
+  -- TUI 側 (claudecode 等) で本文中の \n が「Enter（送信）」として解釈される問題を回避するため。
+  local cmd_to_send = paste and ("\27[200~" .. command .. "\27[201~") or command
 
-  M.log("DEBUG", string.format("  Sending to job_id=%d: %s", terminal.job_id, cmd_to_send))
+  M.log("DEBUG", string.format("  Sending to job_id=%d (paste=%s): %s", terminal.job_id, tostring(paste), cmd_to_send))
 
   -- まずコマンドテキストを送信
   local ok, err = pcall(vim.fn.chansend, terminal.job_id, cmd_to_send)
@@ -230,3 +233,4 @@ function M.list_terminals()
 end
 
 return M
+
