@@ -110,20 +110,27 @@ function M.cycle_backward()
   end
 end
 
-function M.open()
+function M.open(opts)
+  opts = opts or {}
+  local args = opts.args or ""
+  local claude_cmd = M.config.command
+  if args ~= "" then
+    claude_cmd = claude_cmd .. " " .. args
+  end
+
   local claude_input_ok, claude_input = pcall(require, "claude_input")
 
   -- Step 1: 新タブ作成
   vim.cmd("tabnew")
 
   -- Step 2: claude1ターミナルを起動（上段左）
-  vim.cmd("terminal " .. M.config.command)
+  vim.cmd("terminal " .. claude_cmd)
   local claude1_bufnr = vim.api.nvim_get_current_buf()
   local claude1_winid = vim.api.nvim_get_current_win()
 
   -- Step 3: 右にclaude2ターミナルを配置（上段右）
   vim.cmd("rightbelow vsplit")
-  vim.cmd("terminal " .. M.config.command)
+  vim.cmd("terminal " .. claude_cmd)
   local claude2_bufnr = vim.api.nvim_get_current_buf()
   local claude2_winid = vim.api.nvim_get_current_win()
 

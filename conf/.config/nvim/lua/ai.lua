@@ -135,9 +135,14 @@ if claude_input_ok then
 end
 
 -- Claude Code + Claude入力バッファ を2分割で起動
-vim.api.nvim_create_user_command("ClaudeAI", function()
+vim.api.nvim_create_user_command("ClaudeAI", function(command)
+  local claude_cmd = dual_ai_config.primary_command
+  if command.args ~= "" then
+    claude_cmd = claude_cmd .. " " .. command.args
+  end
+
   vim.cmd("tabnew")
-  vim.cmd("terminal " .. dual_ai_config.primary_command)
+  vim.cmd("terminal " .. claude_cmd)
   local claude_bufnr = vim.api.nvim_get_current_buf()
   vim.t.claude_terminal_bufnr = claude_bufnr
 
@@ -158,7 +163,7 @@ vim.api.nvim_create_user_command("ClaudeAI", function()
     vim.bo.filetype = "markdown"
     vim.cmd("startinsert")
   end
-end, { desc = "Open Claude Code + Claude draft buffer" })
+end, { nargs = "*", desc = "Open Claude Code + Claude draft buffer" })
 
 -- Claude Code / Codex / Claude入力バッファ を3分割で起動
 vim.api.nvim_create_user_command("DualAI", function()
@@ -250,9 +255,9 @@ end
 -- DualClaude: 2つのClaude Codeターミナル + 中央寄せ入力バッファ
 local dual_claude_ok, dual_claude = pcall(require, "dual_claude")
 if dual_claude_ok then
-  vim.api.nvim_create_user_command("DualClaude", function()
-    dual_claude.open()
-  end, { desc = "Open dual Claude terminals with centered input" })
+  vim.api.nvim_create_user_command("DualClaude", function(command)
+    dual_claude.open({ args = command.args })
+  end, { nargs = "*", desc = "Open dual Claude terminals with centered input" })
 
   vim.keymap.set("n", "<leader>aD", ":DualClaude<CR>", {
     noremap = true,
