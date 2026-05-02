@@ -59,6 +59,7 @@ return {
           view = {
             { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },
             { "n", "-", actions.toggle_stage_entry, { desc = "ステージング/アンステージング" } },
+            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
             {
               "n",
               "<leader>cc",
@@ -78,6 +79,7 @@ return {
           },
           file_panel = {
             { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
             {
               "n",
               "<leader>cc",
@@ -97,6 +99,7 @@ return {
           },
           file_history_panel = {
             { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
           },
         },
       })
