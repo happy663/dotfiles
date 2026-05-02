@@ -125,6 +125,41 @@ cd $(ghq root)/github.com/neovim/nvim-lspconfig
 * 存在確認せずに他リポジトリを探索
 * 単純な情報取得に広範な探索を使用
 
+## Shell Command Policy
+
+### HEREDOC によるテキスト渡しの罠
+
+シェルから長い本文（GitHub コメント、PR 本文、メールなど）を渡す際の挙動の違いに注意する。
+
+#### クォート付き HEREDOC（`<<'EOF'`）の場合
+
+* 変数展開・コマンド置換・バックスラッシュ処理がすべて無効
+* 本文中のバックティック ` はそのまま書く（エスケープ不要）
+* `\`` と書くとリテラルの「バックスラッシュ + バックティック」がそのまま残り、GitHub などの markdown レンダリングを壊す
+
+#### クォートなし HEREDOC（`<<EOF`）の場合
+
+* バックティックはコマンド置換として解釈されるため `\`` でエスケープ必須
+* `${VAR}` は展開される
+
+### 長文・コードブロックを含む場合はファイル経由を推奨
+
+エスケープの罠を構造的に回避するため、本文が長い・コードブロックを含む場合はファイル経由で渡す。
+
+```bash
+# 本文をファイルに書いてから投稿
+gh issue comment 123 -F body=@/tmp/body.md
+gh pr create --title "タイトル" -F body=@/tmp/body.md
+```
+
+### 投稿後の確認
+
+GitHub コメント投稿後、特にコードブロックや バックティックを含む場合は、生本文を取得して意図せぬバックスラッシュ混入がないか確認する。
+
+```bash
+gh api repos/{owner}/{repo}/issues/comments/{id} --jq .body | grep '\\`' || echo "OK"
+```
+
 ## Skills Usage Policy
 
 ### Mandatory Skill Usage
