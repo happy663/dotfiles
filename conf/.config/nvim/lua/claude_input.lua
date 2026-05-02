@@ -26,6 +26,45 @@ local function get_draft_bufnr()
   return nil
 end
 
+local function normalize_height(height)
+  if type(height) == "number" and height > 0 then
+    return height
+  end
+  return nil
+end
+
+local function get_draft_height(default_height)
+  return normalize_height(vim.t.claude_input_height) or normalize_height(default_height)
+end
+
+local function resize_current_draft_window(default_height)
+  local height = get_draft_height(default_height)
+  if height then
+    vim.cmd("resize " .. tostring(height))
+  end
+end
+
+local function save_visible_draft_height(bufnr)
+  if not is_valid_buf(bufnr) then
+    return
+  end
+
+  local current_tabpage = vim.api.nvim_get_current_tabpage()
+  for _, winid in ipairs(vim.fn.win_findbuf(bufnr)) do
+    if
+      vim.api.nvim_win_is_valid(winid)
+      and vim.api.nvim_win_get_tabpage(winid) == current_tabpage
+      and vim.api.nvim_win_get_buf(winid) == bufnr
+    then
+      local height = vim.api.nvim_win_get_height(winid)
+      if height > 0 then
+        vim.t.claude_input_height = height
+      end
+      return
+    end
+  end
+end
+
 local function trim_trailing_empty_lines(lines)
   while #lines > 0 and lines[#lines] == "" do
     table.remove(lines, #lines)
@@ -111,9 +150,7 @@ local function open_split_below_target(target_bufnr, target_pattern, draft_heigh
   if target_winid then
     vim.api.nvim_set_current_win(target_winid)
     vim.cmd("belowright split")
-    if type(draft_height) == "number" and draft_height > 0 then
-      vim.cmd("resize " .. tostring(draft_height))
-    end
+    resize_current_draft_window(draft_height)
 
     -- split で target terminal window が縮小した時、cursor 位置が visible 領域外になるのを防ぐため最下部へ移動する
     local draft_winid = vim.api.nvim_get_current_win()
@@ -132,9 +169,7 @@ local function open_split_below_target(target_bufnr, target_pattern, draft_heigh
   end
 
   vim.cmd("botright split")
-  if type(draft_height) == "number" and draft_height > 0 then
-    vim.cmd("resize " .. tostring(draft_height))
-  end
+  resize_current_draft_window(draft_height)
   return false
 end
 
@@ -238,6 +273,7 @@ function M.open_input_buffer(opts)
   end
 
   vim.api.nvim_win_set_buf(0, bufnr)
+  resize_current_draft_window(opts.draft_height)
   vim.wo.winfixheight = true
 
   -- 補完ポップアップが下に表示されるよう候補数を制限
@@ -277,6 +313,8 @@ function M.hide()
   if #windows == 0 then
     return false, "Claude draft buffer is not visible"
   end
+
+  save_visible_draft_height(bufnr)
 
   -- フォーカス候補を閉じる前に確定する
   local prev_winid = vim.t.claude_input_prev_winid

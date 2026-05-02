@@ -49,11 +49,11 @@ if claude_input_ok then
     end
 
     vim.cmd("belowright split")
-    if dual_ai_config.draft_height and dual_ai_config.draft_height > 0 then
-      vim.cmd("resize " .. tostring(dual_ai_config.draft_height))
-    end
 
-    claude_input.open_input_buffer({ claude_bufnr = target_bufnr })
+    claude_input.open_input_buffer({
+      claude_bufnr = target_bufnr,
+      draft_height = dual_ai_config.draft_height,
+    })
   end, { desc = "Open draft buffer linked to current terminal" })
 
   local function find_claude_draft_winid()
@@ -147,12 +147,12 @@ vim.api.nvim_create_user_command("ClaudeAI", function(command)
   vim.t.claude_terminal_bufnr = claude_bufnr
 
   vim.cmd("belowright split")
-  vim.cmd("resize " .. tostring(15))
 
   if claude_input_ok then
     claude_input.open_input_buffer({
       claude_bufnr = claude_bufnr,
       target_pattern = dual_ai_config.draft_target_pattern,
+      draft_height = 15,
     })
   else
     vim.notify("[ClaudeAI] claude_input module not found", vim.log.levels.WARN)
@@ -183,14 +183,12 @@ vim.api.nvim_create_user_command("DualAI", function()
   -- Claude側に戻って下段に入力バッファを開く
   vim.cmd("wincmd h")
   vim.cmd("belowright split")
-  if dual_ai_config.draft_height and dual_ai_config.draft_height > 0 then
-    vim.cmd("resize " .. tostring(dual_ai_config.draft_height))
-  end
 
   if claude_input_ok then
     claude_input.open_input_buffer({
       claude_bufnr = claude_bufnr,
       target_pattern = dual_ai_config.draft_target_pattern,
+      draft_height = dual_ai_config.draft_height,
     })
   else
     vim.notify("[DualAI] claude_input module not found", vim.log.levels.WARN)
