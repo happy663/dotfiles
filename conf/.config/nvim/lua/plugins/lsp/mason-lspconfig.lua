@@ -192,7 +192,41 @@ return {
         on_attach = on_attach,
       })
       -- Typos設定
+      -- filetypesを明示する。未指定だとorgmodeのagenda TODOトグルで使う一時バッファに
+      -- もアタッチを試み、attach完了前にバッファが破棄されて _changetracking で
+      -- "Invalid buffer id" エラーになるため、org/orgagendaを除外する。
       vim.lsp.config("typos_lsp", {
+        filetypes = {
+          "lua",
+          "python",
+          "rust",
+          "go",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "php",
+          "kotlin",
+          "nix",
+          "tex",
+          "latex",
+          "markdown",
+          "text",
+          "html",
+          "css",
+          "scss",
+          "json",
+          "jsonc",
+          "yaml",
+          "toml",
+          "sh",
+          "bash",
+          "zsh",
+          "vim",
+          "c",
+          "cpp",
+          "gitcommit",
+        },
         init_options = {
           config = "~/.config/nvim/.typos.toml",
           diagnosticSeverity = "Warning",
