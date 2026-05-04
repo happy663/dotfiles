@@ -67,7 +67,7 @@
             ]
           },
           {
-            "description": "Ctrl+C and Ctrl+V to Cmd+C and Cmd+V and Cmd+W and Cmd+Z on PowerPoint & Chrome",
+            "description": "Ctrl+C and Ctrl+V to Cmd+C and Cmd+V and Cmd+W and Cmd+Z on PowerPoint & Chrome & Slack & Vivaldi",
             "manipulators": [
               {
                 "conditions": [
@@ -75,7 +75,8 @@
                     "bundle_identifiers": [
                       "^com\\.google\\.Chrome",
                       "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.tinyspeck\\.slackmacgap"
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.vivaldi\\.Vivaldi$"
                     ],
                     "type": "frontmost_application_if"
                   }
@@ -107,7 +108,8 @@
                     "bundle_identifiers": [
                       "^com\\.google\\.Chrome",
                       "^com\\.microsoft\\.Powerpoint",
-                      "^com\\.tinyspeck\\.slackmacgap"
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.vivaldi\\.Vivaldi$"
                     ],
                     "type": "frontmost_application_if"
                   }
@@ -139,7 +141,8 @@
                     "bundle_identifiers": [
                       "^com\\.microsoft\\.Powerpoint",
                       "^com\\.google\\.Chrome",
-                      "^com\\.tinyspeck\\.slackmacgap"
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.vivaldi\\.Vivaldi$"
                     ],
                     "type": "frontmost_application_if"
                   }
@@ -171,7 +174,8 @@
                     "bundle_identifiers": [
                       "^com\\.microsoft\\.Powerpoint",
                       "^com\\.google\\.Chrome",
-                      "^com\\.tinyspeck\\.slackmacgap"
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.vivaldi\\.Vivaldi$"
                     ],
                     "type": "frontmost_application_if"
                   }
