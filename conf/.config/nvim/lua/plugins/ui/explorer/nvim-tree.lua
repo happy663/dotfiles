@@ -101,7 +101,7 @@ return {
       })
 
       -- カスタムバッファトラッキングをセットアップ
-      setup_active_buffer_tracking()
+     setup_active_buffer_tracking()
 
       -- BufEnterイベントでアクティブバッファを更新し、nvim-treeを再描画
       vim.api.nvim_create_autocmd("BufEnter", {
@@ -119,11 +119,15 @@ return {
           -- アクティブバッファのフルパスを保存
           current_active_buffer = vim.fn.fnamemodify(bufname, ":p")
 
-          -- nvim-treeが開いている場合のみ再描画
-          local api = require("nvim-tree.api")
-          if api.tree.is_visible() then
-            api.tree.reload()
-          end
+          -- reloadはgit runnerのwait()でイベントループを譲るため、
+          -- BufEnter同期処理中に呼ぶとno-neck-painのウィンドウ操作と競合する。
+          -- vim.scheduleで現在のautocmd連鎖が完了してから走らせる。
+          vim.schedule(function()
+            local api = require("nvim-tree.api")
+            if api.tree.is_visible() then
+              api.tree.reload()
+            end
+          end)
         end,
       })
 
@@ -135,11 +139,13 @@ return {
             return
           end
 
-          local api = require("nvim-tree.api")
-          if api.tree.is_visible() then
-            api.tree.change_root(cwd)
-            api.tree.reload()
-          end
+          vim.schedule(function()
+            local api = require("nvim-tree.api")
+            if api.tree.is_visible() then
+              api.tree.change_root(cwd)
+              api.tree.reload()
+            end
+          end)
         end,
       })
     end,
@@ -147,3 +153,4 @@ return {
     dependencies = "nvim-tree/nvim-web-devicons",
   },
 }
+
