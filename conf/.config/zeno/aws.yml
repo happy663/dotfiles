@@ -91,14 +91,14 @@ completions:
   - name: aws ecs cluster select
     patterns:
       - "aws ecs .+ --cluster $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); aws-vault exec $profile -- aws ecs list-clusters --query 'clusterArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");aws-vault exec $profile -- aws ecs list-clusters --query 'clusterArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
     options:
       --prompt: "'ECS Cluster> '"
 
   - name: aws ecs service select
     patterns:
       - "aws ecs .+ --cluster (\\S+) --services $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); cluster=$(echo $LBUFFER | grep -oE '\\-\\-cluster [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws ecs list-services --cluster $cluster --query 'serviceArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");cluster=$(echo $LBUFFER | grep -oE '\\-\\-cluster [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws ecs list-services --cluster $cluster --query 'serviceArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
     options:
       --prompt: "'ECS Service> '"
 
@@ -106,14 +106,14 @@ completions:
     patterns:
       - "aws logs filter-log-events --log-group-name $"
       - "aws logs tail $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); aws-vault exec $profile -- aws logs describe-log-groups --query 'logGroups[].logGroupName' --output text 2>/dev/null | tr '\\t' '\\n'"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");aws-vault exec $profile -- aws logs describe-log-groups --query 'logGroups[].logGroupName' --output text 2>/dev/null | tr '\\t' '\\n'"
     options:
       --prompt: "'Log Group> '"
 
   - name: aws s3 bucket select
     patterns:
       - "aws s3api .+ --bucket $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); aws-vault exec $profile -- aws s3api list-buckets --query 'Buckets[].Name' --output text 2>/dev/null | tr '\\t' '\\n'"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");aws-vault exec $profile -- aws s3api list-buckets --query 'Buckets[].Name' --output text 2>/dev/null | tr '\\t' '\\n'"
     options:
       --prompt: "'S3 Bucket> '"
 
@@ -121,14 +121,14 @@ completions:
     patterns:
       - "aws s3api .+ --prefix $"
       - "aws s3api .+ --key $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-objects-v2 --bucket $bucket --query 'Contents[].Key' --output text 2>/dev/null | tr '\\t' '\\n'"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-objects-v2 --bucket $bucket --query 'Contents[].Key' --output text 2>/dev/null | tr '\\t' '\\n'"
     options:
       --prompt: "'S3 Key> '"
 
   - name: aws s3 version-id select
     patterns:
       - "aws s3api get-object .+ --version-id $"
-    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); key=$(echo $LBUFFER | grep -oE '\\-\\-key [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-object-versions --bucket $bucket --prefix $key --query 'Versions[].{id:VersionId,date:LastModified,size:Size}' --output text 2>/dev/null | sort -k1 -r"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); profile=$(eval echo \"$profile\");bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); key=$(echo $LBUFFER | grep -oE '\\-\\-key [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-object-versions --bucket $bucket --prefix $key --query 'Versions[].{id:VersionId,date:LastModified,size:Size}' --output text 2>/dev/null | sort -k1 -r"
     options:
       --prompt: "'S3 Version> '"
       --no-sort: true
@@ -147,3 +147,4 @@ completions:
   #   options:
   #     --prompt: "'AWS CLI> '"
   #     --no-sort: true
+  
