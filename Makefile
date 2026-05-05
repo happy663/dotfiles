@@ -28,5 +28,10 @@ update-apply-npm:
 	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
 	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
 
+# Hammerspoon等の自動実行から呼ぶ用。home-manager評価ファイルが
+# clean な場合のみ update-apply-npm を実行する。
+auto-update-node-pkgs:
+	scripts/auto-update-node-pkgs.sh
+
 
 

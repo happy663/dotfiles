@@ -11,10 +11,9 @@ dofile(hs.configdir .. "/modules/skk-sync.lua")
 -- dofile(hs.configdir .. "/modules/discord-mute.lua")
 dofile(hs.configdir .. "/modules/google-meet-mute.lua")
 dofile(hs.configdir .. "/modules/octo.lua")
+dofile(hs.configdir .. "/modules/auto-update.lua")
 dofile(hs.configdir .. "/modules/keybindings.lua")
 
 local log = hs.logger.new("myLogger", "debug")
 
 hs.alert.show("メイン設定ファイルを読み込みました")
-
-
