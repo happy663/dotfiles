@@ -5,10 +5,7 @@ let
   username = "happy";
 
   # npmパッケージをNixで管理
-  nodeTools = pkgs.importNpmLock.buildNodeModules {
-    npmRoot = ../node-pkgs;
-    nodejs = pkgs.nodejs_24;
-  };
+  nodeTools = import ../node-pkgs { inherit pkgs; };
 in
 {
   nixpkgs = {
@@ -254,5 +251,4 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
 

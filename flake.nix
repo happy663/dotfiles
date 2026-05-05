@@ -35,6 +35,7 @@
       };
       darwinPkgs = nixpkgs.legacyPackages.${system.darwin};
       linuxPkgs = nixpkgs.legacyPackages.${system.linux};
+      nodeToolsFor = pkgs: import ./conf/.config/nix/node-pkgs { inherit pkgs; };
       overlays = [
         inputs.neovim-nightly-overlay.overlays.default
       ];
@@ -68,6 +69,15 @@
           '');
       };
 
+      packages.${system.darwin} = rec {
+        nodeTools = nodeToolsFor darwinPkgs;
+        default = nodeTools;
+      };
+
+      packages.${system.linux} = rec {
+        nodeTools = nodeToolsFor linuxPkgs;
+        default = nodeTools;
+      };
 
       homeConfigurations = {
 

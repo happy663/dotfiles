@@ -24,9 +24,6 @@ apply-nix-just-darwin:
 	sudo nix run nix-darwin -- switch --flake .#happy-darwin
 		
 update-apply-npm:
-	cd conf/.config/nix/node-pkgs && rm package-lock.json
-	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
-	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
-
+	scripts/update-node-tools.sh --force
 
 
