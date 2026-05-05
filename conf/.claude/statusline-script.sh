@@ -13,14 +13,43 @@ GRAY='\033[90m'      # 区切り文字用
 RED='\033[31m'       # 高使用率警告用
 RESET='\033[0m'      # リセット
 
-# 定数
-COMPACTION_THRESHOLD=160000  # 200000 * 0.8
+# モデルIDからコンテキストウィンドウサイズを返す
+get_context_window() {
+    local model_id="$1"
+    case "$model_id" in
+        *1m* | *-1m | *_1m)
+            echo 1000000
+            ;;
+        *)
+            echo 200000
+            ;;
+    esac
+}
+
+# パーセンテージから色を返す
+get_usage_color() {
+    local pct="$1"
+    if [ "$pct" -ge 90 ]; then
+        echo "$RED"
+    elif [ "$pct" -ge 70 ]; then
+        echo "$YELLOW"
+    else
+        echo "$GREEN"
+    fi
+}
 
 # JSONデータを取得
 input=$(cat)
 model_name=$(echo "$input" | jq -r '.model.display_name')
+model_id=$(echo "$input" | jq -r '.model.id // empty')
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
 session_id=$(echo "$input" | jq -r '.session_id // empty')
+five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+
+# モデルに応じてコンパクション閾値を設定（コンテキストウィンドウの80%）
+context_window=$(get_context_window "$model_id")
+COMPACTION_THRESHOLD=$((context_window * 80 / 100))
 
 # 現在のディレクトリ名のみ取得
 dir_name=$(basename "$current_dir")
@@ -123,6 +152,27 @@ if [ -n "$session_id" ]; then
     fi
 fi
 
+# レート制限使用率の表示
+rate_limit_info=""
+if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ]; then
+    parts=""
+    if [ -n "$five_hour_pct" ]; then
+        five_hour_int=$(echo "$five_hour_pct" | awk '{printf "%d", $1}')
+        five_color=$(get_usage_color "$five_hour_int")
+        parts="5h:${five_color}${five_hour_int}%${RESET}"
+    fi
+    if [ -n "$seven_day_pct" ]; then
+        seven_day_int=$(echo "$seven_day_pct" | awk '{printf "%d", $1}')
+        seven_color=$(get_usage_color "$seven_day_int")
+        if [ -n "$parts" ]; then
+            parts="$parts ${GRAY}/${RESET} 7d:${seven_color}${seven_day_int}%${RESET}"
+        else
+            parts="7d:${seven_color}${seven_day_int}%${RESET}"
+        fi
+    fi
+    rate_limit_info="$parts"
+fi
+
 # ccusage情報取得（必要なフィールドがある場合のみ）
 ccusage_info=""
 if command -v npx >/dev/null 2>&1; then
@@ -175,6 +225,10 @@ output="$output ${GRAY}|${RESET} ${BLUE}${model_name}${RESET}"
 
 if [ -n "$token_info" ]; then
     output="$output ${GRAY}|${RESET} ${token_info}"
+fi
+
+if [ -n "$rate_limit_info" ]; then
+    output="$output ${GRAY}|${RESET} ${rate_limit_info}"
 fi
 
 if [ -n "$ccusage_info" ]; then
