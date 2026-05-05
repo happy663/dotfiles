@@ -3,14 +3,14 @@ return {
   -- dir = "~/src/github.com/carlos-algms/agentic.nvim",
   -- these are just suggested keymaps; customize as desired
   keys = {
-    {
-      "<C-;>",
-      function()
-        require("agentic").toggle()
-      end,
-      mode = { "n", "v", "i" },
-      desc = "Toggle Agentic Chat",
-    },
+    -- {
+    --   "<C-;>",
+    --   function()
+    --     require("agentic").toggle()
+    --   end,
+    --   mode = { "n", "v", "i" },
+    --   desc = "Toggle Agentic Chat",
+    -- },
     {
       "<C-'>",
       function()
@@ -68,7 +68,6 @@ return {
               mode = { "n", "v", "i" },
             },
           },
-
           paste_image = {
             {
               "<localLeader>p",
@@ -99,3 +98,6 @@ return {
     })
   end,
 }
+
+
+

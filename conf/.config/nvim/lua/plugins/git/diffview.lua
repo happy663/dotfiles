@@ -48,18 +48,55 @@ return {
         vim.cmd("startinsert")
       end
 
+      -- 変更前(左)ペインを縮め、変更後(右)ペインを広く取る (約 4:6)
+      local function apply_diff_ratio()
+        local panel_width = 0
+        local diff_wins = {}
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })
+          if ft == "DiffviewFiles" or ft == "DiffviewFileHistory" then
+            panel_width = vim.api.nvim_win_get_width(win)
+          elseif vim.api.nvim_get_option_value("diff", { win = win }) then
+            table.insert(diff_wins, win)
+          end
+        end
+        if #diff_wins ~= 2 then
+          return
+        end
+        table.sort(diff_wins, function(a, b)
+          return vim.api.nvim_win_get_position(a)[2] < vim.api.nvim_win_get_position(b)[2]
+        end)
+        local available = vim.o.columns - panel_width
+        local left_width = math.floor(available * 0.3)
+        vim.api.nvim_win_set_width(diff_wins[1], left_width)
+      end
+
+      -- file panel トグル時にdiffview内部で wincmd = が走るため、直後に比率を再適用する
+      local function toggle_files_with_ratio()
+        actions.toggle_files()
+        vim.schedule(apply_diff_ratio)
+      end
+
       require("diffview").setup({
         hooks = {
           view_opened = function()
-            vim.cmd("wincmd l")
-            vim.cmd("wincmd l")
+            vim.schedule(function()
+              vim.cmd("wincmd l")
+              vim.cmd("wincmd l")
+            end)
+          end,
+          -- 各diffバッファがウィンドウに乗るたびに比率を再適用する
+          -- (view_openedだけでは初回のみで、ファイル切替に追随できない)
+          diff_buf_win_enter = function()
+            vim.schedule(apply_diff_ratio)
           end,
         },
         keymaps = {
           view = {
             { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },
             { "n", "-", actions.toggle_stage_entry, { desc = "ステージング/アンステージング" } },
-            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
+            { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
             {
               "n",
               "<leader>cc",
@@ -79,7 +116,7 @@ return {
           },
           file_panel = {
             { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
-            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
+            { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
             {
               "n",
               "<leader>cc",
@@ -99,7 +136,7 @@ return {
           },
           file_history_panel = {
             { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
-            { "n", "<C-b>", actions.toggle_files, { desc = "ファイルパネルをトグル" } },
+            { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
           },
         },
       })

@@ -10,7 +10,6 @@ snippets:
   - name: zeno preprompt snippet
     keyword: zps
     snippet: zeno-preprompt-snippet
-
   - name: git status
     keyword: gs
     snippet: git status --short --branch
@@ -243,9 +242,92 @@ snippets:
   - name: claude nvim
     keyword: cn
     snippet: claudeNvim
+
   - name: dual claude
     keyword: cnd
     snippet: dualClaude
+
+  # AWS基本
+  # - name: aws-vault exec
+  #   keyword: a
+  #   snippet: aws-vault exec {{profile}} --
+
+  - name: aws-vault exec default profile
+    keyword: a
+    snippet: aws-vault exec $AWS_VAULT_DEFAULT_PROFILE --
+
+  - name: aws sts get-caller-identity
+    keyword: awho
+    snippet: aws-vault exec {{profile}} -- aws sts get-caller-identity
+
+  - name: aws sso login
+    keyword: awsso
+    snippet: aws sso login
+
+  # ECS操作（aws-vault exec xxx -- の後で展開）
+  - name: aws ecs list-clusters
+    keyword: ecsl
+    snippet: aws ecs list-clusters --query 'clusterArns[]' --output json | jq -r '.[]'
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws ecs list-services
+    keyword: ecss
+    snippet: aws ecs list-services --cluster {{cluster}} --output json | jq -r '.serviceArns[]'
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws ecs describe-services
+    keyword: ecsd
+    snippet: aws ecs describe-services --cluster {{cluster}} --services {{service}} --query 'services[].{Name:serviceName,Status:status,Running:runningCount,Desired:desiredCount,TaskDef:taskDefinition,LaunchType:launchType}' --output table
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws ecs list-tags-for-resource
+    keyword: ecst
+    snippet: aws ecs list-tags-for-resource --resource-arn {{arn}}
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  # EC2（aws-vault exec xxx -- の後で展開）
+  - name: aws ec2 describe-instances running
+    keyword: ec2r
+    snippet: aws ec2 describe-instances --filter 'Name=instance-state-name,Values=running' --query 'Reservations[].Instances[].{ID:InstanceId,Name:Tags[?Key==`Name`].Value|[0],Type:InstanceType,IP:PrivateIpAddress,PublicIP:PublicIpAddress,State:State.Name}' --output table
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  # CloudWatch Logs（aws-vault exec xxx -- の後で展開）
+  - name: aws logs groups
+    keyword: cwlg
+    snippet: aws logs describe-log-groups --query 'logGroups[].{Name:logGroupName,Retention:retentionInDays,Size:storedBytes}' --output table
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws logs tail
+    keyword: cwlt
+    snippet: "aws logs tail "
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws logs filter
+    keyword: cwlf
+    snippet: "aws logs filter-log-events --log-group-name {{log_group}} --filter-pattern '{{pattern}}' --start-time $(( $(date +%s) - 3600 ))000 --limit 100"
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  # S3バージョニング操作（aws-vault exec xxx -- の後で展開）
+  - name: aws s3 version list
+    keyword: s3ver
+    snippet: aws s3api list-object-versions --bucket {{bucket}} --prefix {{key}} --query 'Versions[?LastModified>=`{{from}}`&&LastModified<=`{{to}}`].{VersionId:VersionId,LastModified:LastModified,Size:Size}' --output table
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
+  - name: aws s3 version get
+    keyword: s3get
+    snippet: aws s3api get-object --bucket {{bucket}} --key {{key}} --version-id {{version_id}} ./{{output_file}}
+    context:
+      lbuffer: 'aws-vault exec \S+ -- \s*'
+
   # - name:
   #   keyword:
   #   snippet:
@@ -328,6 +410,73 @@ completions:
     options:
       --prompt: "'make> '"
 
+  - name: aws-vault exec profile
+    patterns:
+      - "^aws-vault exec $"
+    sourceCommand: "aws-vault list --profiles"
+    options:
+      --prompt: "'AWS Profile> '"
+
+  - name: aws ecs cluster select
+    patterns:
+      - "aws ecs .+ --cluster $"
+    sourceCommand: "aws-vault exec $AWS_VAULT_DEFAULT_PROFILE -- aws ecs list-clusters --query 'clusterArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
+    options:
+      --prompt: "'ECS Cluster> '"
+
+  - name: aws ecs service select
+    patterns:
+      - "aws ecs .+ --cluster (\\S+) --services $"
+    sourceCommand: "cluster=$(echo $LBUFFER | grep -oE '\\-\\-cluster [^ ]+' | awk '{print $2}'); aws-vault exec $AWS_VAULT_DEFAULT_PROFILE -- aws ecs list-services --cluster $cluster --query 'serviceArns[]' --output text 2>/dev/null | tr '\\t' '\\n' | xargs -I{} basename {}"
+    options:
+      --prompt: "'ECS Service> '"
+
+  - name: aws logs log-group select
+    patterns:
+      - "aws logs filter-log-events --log-group-name $"
+      - "aws logs tail $"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); aws-vault exec $profile -- aws logs describe-log-groups --query 'logGroups[].logGroupName' --output text 2>/dev/null | tr '\\t' '\\n'"
+    options:
+      --prompt: "'Log Group> '"
+
+  - name: aws s3 bucket select
+    patterns:
+      - "aws s3api .+ --bucket $"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); aws-vault exec $profile -- aws s3api list-buckets --query 'Buckets[].Name' --output text 2>/dev/null | tr '\\t' '\\n'"
+    options:
+      --prompt: "'S3 Bucket> '"
+
+  - name: aws s3 key select
+    patterns:
+      - "aws s3api .+ --prefix $"
+      - "aws s3api .+ --key $"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-objects-v2 --bucket $bucket --query 'Contents[].Key' --output text 2>/dev/null | tr '\\t' '\\n'"
+    options:
+      --prompt: "'S3 Key> '"
+
+  - name: aws s3 version-id select
+    patterns:
+      - "aws s3api get-object .+ --version-id $"
+    sourceCommand: "profile=$(echo $LBUFFER | grep -oE 'aws-vault exec [^ ]+' | awk '{print $3}'); bucket=$(echo $LBUFFER | grep -oE '\\-\\-bucket [^ ]+' | awk '{print $2}'); key=$(echo $LBUFFER | grep -oE '\\-\\-key [^ ]+' | awk '{print $2}'); aws-vault exec $profile -- aws s3api list-object-versions --bucket $bucket --prefix $key --query 'Versions[].{id:VersionId,date:LastModified,size:Size}' --output text 2>/dev/null | sort -k1 -r"
+    options:
+      --prompt: "'S3 Version> '"
+      --no-sort: true
+    callback: "awk '{print $2}'"
+
+  # AWS CLI公式の汎用補完（サービス名・サブコマンド・オプション）
+  # 値の動的補完（--cluster等）や既存スニペット（ecsd等）とは発火条件が異なるため競合しない
+  # aws-vault exec <profile> -- aws ... 形式でも素の aws ... 形式でも動作する
+  # - name: aws cli completer
+  #   patterns:
+  #     - "(^|-- )aws $"
+  #     - "(^|-- )aws [a-z0-9-]+ $"
+  #     - "(^|-- )aws [a-z0-9-]+ [a-z0-9-]+ $"
+  #     - "(^|-- )aws .+ --$"
+  #   sourceCommand: 'line="$LBUFFER"; aws_part="${line##*-- }"; COMP_LINE="$aws_part" COMP_POINT=${#aws_part} aws_completer 2>/dev/null'
+  #   options:
+  #     --prompt: "'AWS CLI> '"
+  #     --no-sort: true
+
 history:
   defaultScope: global
   fzfCommand: fzf-tmux
@@ -340,4 +489,4 @@ history:
     deleteSoft: ctrl-d
     deleteHard: alt-d
     toggleScope: ctrl-r
-    togglePreview: "?"
+    togglePreview: "?"    

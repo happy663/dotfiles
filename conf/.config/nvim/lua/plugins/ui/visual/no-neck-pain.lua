@@ -3,9 +3,9 @@ return {
   config = function()
     require("no-neck-pain").setup({
       width = 150,
-      autocmds = {
-        enableOnVimEnter = "safe",
-      },
+      -- autocmds = {
+      --   enableOnVimEnter = "safe",
+      -- },
     })
 
     vim.keymap.set("n", "<leader>zz", function()
