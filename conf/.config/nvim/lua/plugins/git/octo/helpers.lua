@@ -150,4 +150,79 @@ function M.create_child_issue_and_open()
   })
 end
 
+-- List subissues of the current issue and jump to the selected one
+function M.list_subissues_and_jump()
+  local octo_utils = require("octo.utils")
+  local gh = require("octo.gh")
+
+  local buffer = octo_utils.get_current_buffer()
+  if not buffer or not buffer:isIssue() then
+    octo_utils.error("Current buffer is not an issue")
+    return
+  end
+
+  local repo = buffer.repo
+  local owner, name = octo_utils.split_repo(repo)
+  local number = buffer.number
+
+  local query = [[
+    query($owner: String!, $name: String!, $number: Int!) {
+      repository(owner: $owner, name: $name) {
+        issue(number: $number) {
+          subIssues(first: 100) {
+            nodes {
+              number
+              title
+              state
+              stateReason
+            }
+          }
+        }
+      }
+    }
+  ]]
+
+  gh.api.graphql({
+    query = query,
+    fields = {
+      owner = owner,
+      name = name,
+      number = number,
+    },
+    jq = ".data.repository.issue.subIssues.nodes",
+    opts = {
+      cb = gh.create_callback({
+        success = function(output)
+          local nodes = vim.json.decode(output)
+          if not nodes or #nodes == 0 then
+            octo_utils.info("No sub-issues linked to this issue")
+            return
+          end
+
+          local issue_icons = octo_utils.icons.issue
+          vim.ui.select(nodes, {
+            prompt = "Select sub-issue to jump:",
+            format_item = function(node)
+              local icon
+              if node.state == "OPEN" then
+                icon = issue_icons.open[1]
+              elseif node.stateReason == "NOT_PLANNED" then
+                icon = issue_icons.not_planned[1]
+              else
+                icon = issue_icons.closed[1]
+              end
+              return string.format("%s #%d  %s", icon, node.number, node.title)
+            end,
+          }, function(choice)
+            if not choice then
+              return
+            end
+            octo_utils.get_issue(choice.number, repo)
+          end)
+        end,
+      }),
+    },
+  })
+end
+
 return M

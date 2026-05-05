@@ -12,7 +12,6 @@ function M.octo_buffer_keymaps()
     vim.cmd("normal! o")
     vim.cmd("normal! 5k")
   end
-
   -- Buffer-specific keymaps
   vim.keymap.set("n", "<leader>gn", ":Octo comment url<CR>", {
     buffer = true,
@@ -32,6 +31,16 @@ function M.octo_buffer_keymaps()
     noremap = true,
     silent = true,
     desc = "Octo: Reply to comment",
+  })
+
+  -- Jump to a sub-issue from the current parent issue
+  vim.keymap.set("n", "<leader>oj", function()
+    require("plugins.git.octo.helpers").list_subissues_and_jump()
+  end, {
+    buffer = true,
+    noremap = true,
+    silent = true,
+    desc = "Octo: Jump to a sub-issue",
   })
 
   -- Custom reload: Works correctly even after buffer name changes
@@ -61,3 +70,5 @@ function M.octo_buffer_keymaps()
 end
 
 return M
+
+
