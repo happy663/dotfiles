@@ -255,7 +255,13 @@ return {
         },
       })
       -- Mason-LSPConfigの設定
-      require("mason-lspconfig").setup()
+      require("mason-lspconfig").setup({
+        automatic_enable = {
+          exclude = {
+            "stylua",
+          },
+        },
+      })
 
       -- LSPのハイライト設定
       vim.api.nvim_set_hl(
