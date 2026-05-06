@@ -80,7 +80,7 @@ local function runUpdate()
       hs.notify
         .new({
           title = "node-pkgs自動更新スキップ",
-          informativeText = "home-manager関連ファイルに変更があるため今日はスキップ",
+          informativeText = "home-manager関連ファイルに変更があるためスキップ",
         })
         :send()
     elseif exitCode == EXIT_SKIP_NETWORK then
