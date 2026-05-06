@@ -135,7 +135,7 @@ return {
         -- Configuration for the floating window in oil.open_float
         float = {
           -- Padding around the floating window
-          padding = 2,
+          padding = 0,
           -- max_width and max_height can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
           max_width = 0,
           max_height = 0,
@@ -243,7 +243,7 @@ return {
       --   require("oil").open_float(nil, { preview = { vertical = true } })
       -- end, { desc = "Open oil float with preview" })
 
-      vim.keymap.set("n", "go", open_oil_from_tree, {
+      vim.keymap.set("n", "-", open_oil_from_tree, {
         noremap = true,
         silent = true,
         desc = "Open Oil in nvim-tree",

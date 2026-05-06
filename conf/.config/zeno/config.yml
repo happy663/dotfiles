@@ -219,6 +219,9 @@ snippets:
   - name: nvim diffview
     keyword: nd
     snippet: nvim -c DiffviewOpen
+  - name: nvim viewer
+    keyword: nv
+    snippet: nvim-view
   - name: "home-manager switch"
     keyword: "hm"
     snippet: "home-manager switch --flake ~/src/github.com/happy663/dotfiles"
