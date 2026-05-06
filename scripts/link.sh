@@ -55,14 +55,14 @@ echo "=== ~/.claude ==="
 mkdir -p "$HOME/.claude"
 
 # ディレクトリ
-for target in commands commands.old output-styles skills scripts; do
+for target in commands commands.old output-styles skills scripts hooks; do
     if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi
 done
 
 # ファイル
-for target in CLAUDE.md statusline-script.sh; do
+for target in CLAUDE.md statusline-script.sh RTK.md; do
     if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi

@@ -62,6 +62,7 @@ in
       deno
       bun
       php84Extensions.xdebug
+      rtk
     ];
 
     sessionVariables = {

@@ -207,3 +207,5 @@ gh api repos/{owner}/{repo}/issues/comments/{id} --jq .body | grep '\\`' || echo
 2. 不確かな情報のみ明示する
 3. 判断はユーザーに委ねる
 4. 迷ったら明示する
+
+@RTK.md
