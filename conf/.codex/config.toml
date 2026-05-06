@@ -1,15 +1,18 @@
 # Codex configuration based on conf/.claude/settings.json
 # Only keys supported by Codex CLI are included.
 
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_provider = "openai"
-model_reasoning_effort = "high"
+model_reasoning_effort = "medium"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
 service_tier = "fast"
 # ~が展開されないため、絶対パスを使用
 notify = ["/Users/happy/src/github.com/happy663/dotfiles/conf/.codex/codex-notify"]
+
+[sandbox_workspace_write]
+network_access = true
 
 [shell_environment_policy]
 inherit = "all"
@@ -22,15 +25,50 @@ set = { BASH_DEFAULT_TIMEOUT_MS = "9600000", BASH_MAX_TIMEOUT_MS = "9600000" }
 notifications = true
 animations = true
 show_tooltips = true
-status_line = ["model-with-reasoning", "context-remaining", "current-dir"]
+status_line = ["model-with-reasoning", "context-remaining", "current-dir", "context-used", "five-hour-limit", "weekly-limit"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
 # notification_method = "auto"
 
 
 [projects."/Users/happy/src/github.com/happy663/dotfiles"]
 trust_level = "trusted"
 
+[projects."/Users/happy/src/github.com"]
+trust_level = "trusted"
+
+[projects."/Users/happy/Documents/Playground"]
+trust_level = "trusted"
+
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 "gpt-5.3-codex" = "gpt-5.4"
 
+[marketplaces.openai-bundled]
+last_updated = "2026-04-28T05:33:10Z"
+source_type = "local"
+source = "/Users/happy/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-04-28T06:01:35Z"
+source_type = "local"
+source = "/Users/happy/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."slack@openai-curated"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
