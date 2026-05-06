@@ -13,6 +13,14 @@ return {
       local i = ls.insert_node
       local c = ls.choice_node
 
+      ls.add_snippets("all", {
+        -- 汎用コードブロック
+        s("comment", {
+          t("review-comment:"),
+          i(1, ""),
+        }),
+      })
+
       -- markdown用とOctoバッファ用のスニペットを追加
       ls.add_snippets("markdown", {
         -- 汎用コードブロック
