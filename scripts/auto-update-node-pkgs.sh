@@ -3,11 +3,11 @@
 # home-managerが評価するファイルがdirtyでないことを確認してから
 # make update-apply-npm を実行する。
 #
-# Exit codes:
-#   0  : 更新成功
-#   2  : home-manager関連ファイルがdirtyでスキップ
-#   3  : ネットワーク未接続でスキップ
-#   その他: 実際の失敗
+# Exit codes（10/11 はGNU makeのError 2と衝突しないように2桁を採用）:
+#   0   : 更新成功
+#   10  : home-manager関連ファイルがdirtyでスキップ
+#   11  : ネットワーク未接続でスキップ
+#   その他: 実際の失敗（make/curl/git からの伝播）
 
 set -euo pipefail
 
@@ -30,12 +30,12 @@ DIRTY="$(git diff --name-only HEAD -- "${WATCHED_FILES[@]}")"
 if [[ -n "$DIRTY" ]]; then
   echo "Skipping auto-update: home-manager related files are dirty:" >&2
   echo "$DIRTY" >&2
-  exit 2
+  exit 10
 fi
 
 if ! curl -sfI --max-time 5 https://registry.npmjs.org/ -o /dev/null; then
   echo "Skipping auto-update: cannot reach registry.npmjs.org" >&2
-  exit 3
+  exit 11
 fi
 
 echo "Running make update-apply-npm ..."

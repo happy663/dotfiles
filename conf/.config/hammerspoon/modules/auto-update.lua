@@ -7,8 +7,13 @@ AutoUpdate.logger = hs.logger.new("auto-update", "info")
 
 local home = os.getenv("HOME")
 local dotfilesPath = home .. "/src/github.com/happy663/dotfiles"
+local scriptPath = dotfilesPath .. "/scripts/auto-update-node-pkgs.sh"
 local stateDir = home .. "/.cache/hammerspoon"
 local stateFile = stateDir .. "/auto-update-node-pkgs-last-run"
+
+-- スクリプトの終了コード（scripts/auto-update-node-pkgs.sh と一致させる）
+local EXIT_SKIP_DIRTY = 10
+local EXIT_SKIP_NETWORK = 11
 
 -- 最終実行日（YYYY-MM-DD）を読み込む。なければnil。
 local function getLastRunDate()
@@ -49,8 +54,10 @@ local function runUpdate()
     })
     :send()
 
-  local task = hs.task.new("/usr/bin/make", function(exitCode, stdOut, stdErr)
-    AutoUpdate.logger.i("make exit=" .. tostring(exitCode))
+  -- 直接スクリプトを呼ぶ。makeを経由するとレシピ失敗時に終了コードが
+  -- 一律2に丸められるため、SKIPと実失敗の区別がつかなくなる。
+  local task = hs.task.new(scriptPath, function(exitCode, stdOut, stdErr)
+    AutoUpdate.logger.i("script exit=" .. tostring(exitCode))
     if stdOut and stdOut ~= "" then
       AutoUpdate.logger.i("stdout: " .. stdOut)
     end
@@ -66,7 +73,7 @@ local function runUpdate()
           informativeText = "更新が完了しました",
         })
         :send()
-    elseif exitCode == 2 then
+    elseif exitCode == EXIT_SKIP_DIRTY then
       -- home-manager評価ファイルがdirtyでスキップ。今日は再試行しない。
       saveLastRunDate(today())
       AutoUpdate.logger.i("Skipped: watched files dirty")
@@ -76,7 +83,7 @@ local function runUpdate()
           informativeText = "home-manager関連ファイルに変更があるため今日はスキップ",
         })
         :send()
-    elseif exitCode == 3 then
+    elseif exitCode == EXIT_SKIP_NETWORK then
       -- ネットワーク未接続。state fileは更新しないので次回起動時に再試行。
       AutoUpdate.logger.i("Skipped: no network")
     else
@@ -88,11 +95,17 @@ local function runUpdate()
         })
         :send()
     end
-  end, { "-C", dotfilesPath, "auto-update-node-pkgs" })
+  end, {})
 
-  -- PATHを引き継いでnix/npmを解決できるようにする
+  -- nix/npm/git/curl が解決できるPATHと、home-manager等が参照する
+  -- HOME/USER/LOGNAME/LANG をセットする。setEnvironmentは環境を完全に
+  -- 置き換えるので、必要なものは明示的に渡す必要がある。
+  local user = os.getenv("USER") or ""
   task:setEnvironment({
     HOME = home,
+    USER = user,
+    LOGNAME = os.getenv("LOGNAME") or user,
+    LANG = os.getenv("LANG") or "en_US.UTF-8",
     PATH = (os.getenv("PATH") or "")
       .. ":/run/current-system/sw/bin:"
       .. home
