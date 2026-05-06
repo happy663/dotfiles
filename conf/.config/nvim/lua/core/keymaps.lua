@@ -466,8 +466,6 @@ do
   })
 end
 
-require("ai")
-
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,
 --   silent = true,
@@ -658,4 +656,3 @@ vim.keymap.set("n", "<leader>upe", function()
 end, { desc = "Profile End" })
 
 vim.keymap.set("t", "<ESC>", "<ESC>", { desc = "description", noremap = true, silent = true })
-
