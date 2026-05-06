@@ -21,7 +21,7 @@ return {
       end
 
       -- 日本語対応版HopWordをメインキーに設定
-      vim.keymap.set("n", "<leader>f", hop_japanese_words, {
+      vim.keymap.set("n", "f", hop_japanese_words, {
         noremap = true,
         silent = true,
         desc = "Hop Words (日本語対応)",
@@ -36,5 +36,3 @@ return {
     end,
   },
 }
-
-
