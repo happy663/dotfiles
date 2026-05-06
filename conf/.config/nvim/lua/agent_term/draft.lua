@@ -329,7 +329,7 @@ function M.send_draft(opts)
   if hide_after then
     M.hide()
     vim.cmd("redraw")
-    vim.wait(250)
+    vim.wait(350)
   end
 
   local success, message =
