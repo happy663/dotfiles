@@ -1,20 +1,27 @@
 local M = {}
 
-M.defaults = {
-  primary_command = "claude",
-  secondary_command = "codex",
-  draft_target_pattern = "claude",
+M.draft = {
+  fallback_target_patterns = { "claude", "codex" },
+  attached_height = 8,
+}
+
+M.claude = {
+  draft_height = 12,
+}
+
+M.codex = {
+  draft_height = 12,
+}
+
+M.claude_codex = {
   draft_height = 8,
-  claude_ai_draft_height = 15,
   open_in_new_tab = true,
 }
 
-M.dual_claude = {
-  command = "claude",
+M.claude_pair = {
   input_height = 15,
   padding_width = 15,
-  draft_height = 8,
-  draft_target_pattern = "claude",
+  fallback_target_patterns = { "claude" },
 }
 
 return M

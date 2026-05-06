@@ -41,11 +41,11 @@ local function toggle_draft_buffer()
 
   local current_bufnr = vim.api.nvim_get_current_buf()
   local focus_opts = {
-    draft_height = config.defaults.draft_height,
-    target_pattern = config.defaults.draft_target_pattern,
+    draft_height = config.draft.attached_height,
+    fallback_target_patterns = config.draft.fallback_target_patterns,
   }
   if vim.bo[current_bufnr].buftype == "terminal" then
-    focus_opts.claude_bufnr = current_bufnr
+    focus_opts.target_bufnr = current_bufnr
     state.set_target_terminal_bufnr(current_bufnr)
   end
 
@@ -63,62 +63,66 @@ function M.setup()
 
   draft.setup()
 
-  vim.api.nvim_create_user_command("CodexTerm", function(command)
-    layouts.open_codex_term({ args = command.args })
-  end, { nargs = "*" })
+  vim.api.nvim_create_user_command("AgentCodex", function(command)
+    layouts.open_agent_codex({ args = command.args })
+  end, { nargs = "*", desc = "Open Codex agent terminal" })
 
-  vim.api.nvim_create_user_command("ClaudeDraftSend", function()
+  vim.api.nvim_create_user_command("AgentDraftSend", function()
     local success, message = draft.send_draft({ hide_after = true })
     if not success then
       vim.notify(message, vim.log.levels.ERROR)
     end
-  end, { desc = "Send draft buffer to Claude terminal" })
+  end, { desc = "Send agent draft buffer to target terminal" })
 
-  vim.api.nvim_create_user_command("ClaudeDraftClear", function()
+  vim.api.nvim_create_user_command("AgentDraftClear", function()
     local success, message = draft.clear_draft()
     if success then
       vim.notify(message, vim.log.levels.INFO)
     else
       vim.notify(message, vim.log.levels.WARN)
     end
-  end, { desc = "Clear Claude draft buffer" })
+  end, { desc = "Clear agent draft buffer" })
 
-  vim.api.nvim_create_user_command("TermDraft", function()
-    layouts.open_term_draft({ draft_height = config.defaults.draft_height })
-  end, { desc = "Open draft buffer linked to current terminal" })
+  vim.api.nvim_create_user_command("AgentDraft", function()
+    layouts.open_term_draft({ draft_height = config.draft.attached_height })
+  end, { desc = "Open agent draft buffer linked to current terminal" })
 
   vim.keymap.set({ "n", "i", "t", "v" }, "<M-a>", toggle_draft_buffer, {
     noremap = true,
     silent = true,
-    desc = "Toggle Claude draft buffer",
+    desc = "Toggle agent draft buffer",
   })
 
-  vim.api.nvim_create_user_command("ClaudeDraftQuote", function()
+  vim.api.nvim_create_user_command("AgentDraftQuote", function()
     local l1 = vim.fn.line("'<")
     local l2 = vim.fn.line("'>")
     local lines = vim.api.nvim_buf_get_lines(0, l1 - 1, l2, false)
 
     draft.quote_to_draft(lines, {
-      draft_height = config.defaults.draft_height,
-      target_pattern = config.defaults.draft_target_pattern,
+      draft_height = config.draft.attached_height,
+      fallback_target_patterns = config.draft.fallback_target_patterns,
     })
-  end, { range = true, desc = "Quote selected text to Claude draft buffer" })
+  end, { range = true, desc = "Quote selected text to agent draft buffer" })
 
-  vim.keymap.set("v", "<leader>iq", ":<C-u>ClaudeDraftQuote<CR>", {
+  vim.keymap.set("v", "<leader>iq", ":<C-u>AgentDraftQuote<CR>", {
     noremap = true,
     silent = true,
-    desc = "Quote selection to Claude draft",
+    desc = "Quote selection to agent draft",
   })
 
-  vim.api.nvim_create_user_command("ClaudeAI", function(command)
-    layouts.open_claude_ai({ args = command.args })
-  end, { nargs = "*", desc = "Open Claude Code + Claude draft buffer" })
+  vim.api.nvim_create_user_command("AgentClaude", function(command)
+    layouts.open_agent_claude({ args = command.args })
+  end, { nargs = "*", desc = "Open Claude agent terminal + draft buffer" })
 
-  vim.api.nvim_create_user_command("DualAI", function()
-    layouts.open_dual_ai()
-  end, { desc = "Open Claude + Codex + Claude draft buffer" })
+  vim.api.nvim_create_user_command("AgentClaudeCodex", function(command)
+    layouts.open_agent_claude_codex({ args = command.args })
+  end, { nargs = "*", desc = "Open Claude + Codex agent terminals + draft buffer" })
 
-  vim.keymap.set("n", "<leader>ai", ":DualAI<CR>", { noremap = true, silent = true, desc = "Open Claude Code + Codex" })
+  vim.keymap.set("n", "<leader>ai", ":AgentClaudeCodex<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "Open Claude + Codex agent terminals",
+  })
 
   vim.api.nvim_create_user_command("TermList", function()
     local terms = terminals.get_all_terminals()
@@ -155,14 +159,14 @@ function M.setup()
     end
   end, { nargs = "+", desc = "Send command to terminal by index" })
 
-  vim.api.nvim_create_user_command("DualClaude", function(command)
-    layouts.open_dual_claude({ args = command.args })
-  end, { nargs = "*", desc = "Open dual Claude terminals with centered input" })
+  vim.api.nvim_create_user_command("AgentClaudePair", function(command)
+    layouts.open_agent_claude_pair({ args = command.args })
+  end, { nargs = "*", desc = "Open two Claude agent terminals with centered input" })
 
-  vim.keymap.set("n", "<leader>aD", ":DualClaude<CR>", {
+  vim.keymap.set("n", "<leader>aD", ":AgentClaudePair<CR>", {
     noremap = true,
     silent = true,
-    desc = "Open DualClaude",
+    desc = "Open Claude agent pair",
   })
 end
 

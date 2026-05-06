@@ -231,21 +231,25 @@ snippets:
   - name: docker compose
     keyword: dc
     snippet: docker compose
-  - name: codex terminal nvim
-    keyword: ct
-    snippet: codexterm
+  - name: nvim codex
+    keyword: nx
+    snippet: nvim-codex
 
   - name: make link worktree
     keyword: mwt
     snippet: wt=$(git worktree list | fzf --prompt='Worktree> ' | awk '{print $1}') && [ -n "$wt" ] && scripts/link.sh "$wt"
 
-  - name: claude nvim
-    keyword: cn
-    snippet: claudeNvim
+  - name: nvim claude
+    keyword: nc
+    snippet: nvim-claude
 
-  - name: dual claude
-    keyword: cnd
-    snippet: dualClaude
+  - name: nvim claude codex
+    keyword: ncc
+    snippet: nvim-claude-codex
+
+  - name: nvim claude pair
+    keyword: ncp
+    snippet: nvim-claude-pair
 
   # - name:
   #   keyword:

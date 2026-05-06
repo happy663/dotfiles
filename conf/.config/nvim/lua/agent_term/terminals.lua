@@ -64,27 +64,48 @@ function M.find_terminal_by_index(index, exclude_current)
   return result
 end
 
-function M.find_terminal_by_pattern(pattern, exclude_current)
+local function normalize_patterns(patterns)
+  if type(patterns) == "table" then
+    return patterns
+  end
+  return { patterns }
+end
+
+local function pattern_label(patterns)
+  if type(patterns) == "table" then
+    return table.concat(patterns, ",")
+  end
+  return tostring(patterns)
+end
+
+function M.find_terminal_by_pattern(patterns, exclude_current)
   M.log(
     "DEBUG",
-    string.format("find_terminal_by_pattern(pattern=%s, exclude_current=%s)", pattern, tostring(exclude_current))
+    string.format(
+      "find_terminal_by_pattern(pattern=%s, exclude_current=%s)",
+      pattern_label(patterns),
+      tostring(exclude_current)
+    )
   )
 
   local current_bufnr = vim.api.nvim_get_current_buf()
+  local normalized_patterns = normalize_patterns(patterns)
   for _, term in ipairs(M.get_all_terminals()) do
     if exclude_current and term.bufnr == current_bufnr then
       goto continue
     end
 
-    if string.match(term.name:lower(), pattern:lower()) then
-      M.log("INFO", string.format("find_terminal_by_pattern() found: bufnr=%d, name=%s", term.bufnr, term.name))
-      return term
+    for _, pattern in ipairs(normalized_patterns) do
+      if type(pattern) == "string" and string.match(term.name:lower(), pattern:lower()) then
+        M.log("INFO", string.format("find_terminal_by_pattern() found: bufnr=%d, name=%s", term.bufnr, term.name))
+        return term
+      end
     end
 
     ::continue::
   end
 
-  M.log("WARN", string.format("find_terminal_by_pattern() not found for pattern=%s", pattern))
+  M.log("WARN", string.format("find_terminal_by_pattern() not found for pattern=%s", pattern_label(patterns)))
   return nil
 end
 

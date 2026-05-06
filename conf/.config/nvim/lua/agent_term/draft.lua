@@ -3,15 +3,13 @@ local state = require("agent_term.state")
 local terminals = require("agent_term.terminals")
 
 local M = {}
-M.defaults = {
-  target_pattern = config.defaults.draft_target_pattern,
-}
+M.fallback_target_patterns = config.draft.fallback_target_patterns
 
 local tab_bufnr_registry = {}
 local setup_done = false
 
 local function notify(msg, level)
-  vim.notify("[claude_input] " .. msg, level or vim.log.levels.INFO)
+  vim.notify("[agent_input] " .. msg, level or vim.log.levels.INFO)
 end
 
 local function trim_trailing_empty_lines(lines)
@@ -57,13 +55,13 @@ local function focus_existing_draft(bufnr)
   return false
 end
 
-local function resolve_target_terminal_bufnr(target_pattern)
+local function resolve_target_terminal_bufnr(fallback_target_patterns)
   local target_bufnr = state.get_target_terminal_bufnr()
   if state.is_valid_buf(target_bufnr) then
     return target_bufnr
   end
 
-  local terminal = terminals.find_terminal_by_pattern(target_pattern, false)
+  local terminal = terminals.find_terminal_by_pattern(fallback_target_patterns, false)
   if terminal and state.is_valid_buf(terminal.bufnr) then
     return terminal.bufnr
   end
@@ -71,7 +69,7 @@ local function resolve_target_terminal_bufnr(target_pattern)
   return nil
 end
 
-local function resolve_target_terminal_winid(target_bufnr, target_pattern)
+local function resolve_target_terminal_winid(target_bufnr, fallback_target_patterns)
   local current_tab_wins = vim.api.nvim_tabpage_list_wins(0)
 
   local function find_winid_for(bufnr)
@@ -91,18 +89,16 @@ local function resolve_target_terminal_winid(target_bufnr, target_pattern)
     return winid
   end
 
-  if type(target_pattern) == "string" and target_pattern ~= "" then
-    local terminal = terminals.find_terminal_by_pattern(target_pattern, false)
-    if terminal and state.is_valid_buf(terminal.bufnr) then
-      return find_winid_for(terminal.bufnr)
-    end
+  local terminal = terminals.find_terminal_by_pattern(fallback_target_patterns, false)
+  if terminal and state.is_valid_buf(terminal.bufnr) then
+    return find_winid_for(terminal.bufnr)
   end
 
   return nil
 end
 
-local function open_split_below_target(target_bufnr, target_pattern, draft_height)
-  local target_winid = resolve_target_terminal_winid(target_bufnr, target_pattern)
+local function open_split_below_target(target_bufnr, fallback_target_patterns, draft_height)
+  local target_winid = resolve_target_terminal_winid(target_bufnr, fallback_target_patterns)
   if target_winid then
     vim.api.nvim_set_current_win(target_winid)
     vim.cmd("belowright split")
@@ -129,36 +125,37 @@ local function open_split_below_target(target_bufnr, target_pattern, draft_heigh
 end
 
 local function ensure_buffer_keymaps(bufnr)
-  vim.keymap.set("n", "<C-CR>", "<Cmd>ClaudeDraftSend<CR>", {
+  vim.keymap.set("n", "<C-CR>", "<Cmd>AgentDraftSend<CR>", {
     buffer = bufnr,
     noremap = true,
     silent = true,
-    desc = "Send draft to Claude",
+    desc = "Send agent draft",
   })
-  vim.keymap.set("i", "<C-CR>", "<Esc><Cmd>ClaudeDraftSend<CR>", {
+  vim.keymap.set("i", "<C-CR>", "<Esc><Cmd>AgentDraftSend<CR>", {
     buffer = bufnr,
     noremap = true,
     silent = true,
-    desc = "Send draft to Claude",
+    desc = "Send agent draft",
   })
-  vim.keymap.set("n", "<leader>ic", "<Cmd>ClaudeDraftClear<CR>", {
+  vim.keymap.set("n", "<leader>ic", "<Cmd>AgentDraftClear<CR>", {
     buffer = bufnr,
     noremap = true,
     silent = true,
-    desc = "Clear Claude draft buffer",
+    desc = "Clear agent draft buffer",
   })
-  vim.keymap.set("n", "<leader>is", "<Cmd>ClaudeDraftSend<CR>", {
+  vim.keymap.set("n", "<leader>is", "<Cmd>AgentDraftSend<CR>", {
     buffer = bufnr,
     noremap = true,
     silent = true,
-    desc = "Send Claude draft buffer",
+    desc = "Send agent draft buffer",
   })
 end
 
 function M.focus_or_open(opts)
   opts = opts or {}
 
-  local target_pattern = opts.target_pattern or state.get_target_pattern(M.defaults.target_pattern)
+  local fallback_target_patterns = opts.fallback_target_patterns
+    or state.get_fallback_target_patterns(M.fallback_target_patterns)
   local draft_bufnr = state.get_draft_bufnr()
 
   if draft_bufnr then
@@ -166,12 +163,12 @@ function M.focus_or_open(opts)
       return true, "Focused existing draft buffer"
     end
 
-    local target_bufnr = opts.claude_bufnr
+    local target_bufnr = opts.target_bufnr
     if not state.is_valid_buf(target_bufnr) then
       target_bufnr = state.get_target_terminal_bufnr()
     end
 
-    local via_target = open_split_below_target(target_bufnr, target_pattern, opts.draft_height)
+    local via_target = open_split_below_target(target_bufnr, fallback_target_patterns, opts.draft_height)
     vim.api.nvim_win_set_buf(0, draft_bufnr)
     resize_current_draft_window(opts.draft_height)
     vim.wo.winfixheight = true
@@ -182,18 +179,18 @@ function M.focus_or_open(opts)
     return true, "Opened existing draft buffer"
   end
 
-  local terminal_bufnr = opts.claude_bufnr
+  local terminal_bufnr = opts.target_bufnr
   if not state.is_valid_buf(terminal_bufnr) then
-    terminal_bufnr = resolve_target_terminal_bufnr(target_pattern)
+    terminal_bufnr = resolve_target_terminal_bufnr(fallback_target_patterns)
   end
   if not state.is_valid_buf(terminal_bufnr) then
     return false, "Target terminal not found for draft buffer"
   end
 
-  local via_target = open_split_below_target(terminal_bufnr, target_pattern, opts.draft_height)
+  local via_target = open_split_below_target(terminal_bufnr, fallback_target_patterns, opts.draft_height)
   M.open_input_buffer({
-    claude_bufnr = terminal_bufnr,
-    target_pattern = target_pattern,
+    target_bufnr = terminal_bufnr,
+    fallback_target_patterns = fallback_target_patterns,
     draft_height = opts.draft_height,
   })
   if not via_target then
@@ -208,22 +205,22 @@ function M.open_input_buffer(opts)
   local bufnr = state.get_draft_bufnr()
   if not bufnr then
     bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_name(bufnr, "[Claude Input]")
+    vim.api.nvim_buf_set_name(bufnr, "[Agent Input]")
     vim.bo[bufnr].buftype = "nofile"
     vim.bo[bufnr].bufhidden = "hide"
     vim.bo[bufnr].swapfile = false
     vim.bo[bufnr].filetype = "markdown"
     vim.bo[bufnr].modifiable = true
     ensure_buffer_keymaps(bufnr)
-    vim.b[bufnr].claude_input = true
+    vim.b[bufnr].agent_input = true
   end
 
   state.set_draft_bufnr(bufnr)
   tab_bufnr_registry[vim.api.nvim_get_current_tabpage()] = bufnr
-  if opts.claude_bufnr and state.is_valid_buf(opts.claude_bufnr) then
-    state.set_target_terminal_bufnr(opts.claude_bufnr)
+  if opts.target_bufnr and state.is_valid_buf(opts.target_bufnr) then
+    state.set_target_terminal_bufnr(opts.target_bufnr)
   end
-  state.set_target_pattern(opts.target_pattern)
+  state.set_fallback_target_patterns(opts.fallback_target_patterns)
 
   vim.api.nvim_win_set_buf(0, bufnr)
   resize_current_draft_window(opts.draft_height)
@@ -236,22 +233,22 @@ end
 function M.clear_draft()
   local bufnr = state.get_draft_bufnr()
   if not bufnr then
-    return false, "Claude draft buffer not found"
+    return false, "Agent draft buffer not found"
   end
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
-  return true, "Claude draft buffer cleared"
+  return true, "Agent draft buffer cleared"
 end
 
 function M.hide()
   local bufnr = state.get_draft_bufnr()
   if not bufnr then
-    return false, "Claude draft buffer not found"
+    return false, "Agent draft buffer not found"
   end
 
   local windows = vim.fn.win_findbuf(bufnr)
   if #windows == 0 then
-    return false, "Claude draft buffer is not visible"
+    return false, "Agent draft buffer is not visible"
   end
 
   save_visible_draft_height(bufnr)
@@ -286,7 +283,7 @@ function M.hide()
     try_focus(fallback_winid)
   end
 
-  return true, "Claude draft buffer hidden"
+  return true, "Agent draft buffer hidden"
 end
 
 function M.send_draft(opts)
@@ -300,7 +297,7 @@ function M.send_draft(opts)
 
   local draft_bufnr = state.get_draft_bufnr()
   if not draft_bufnr then
-    local message = "Claude draft buffer not found"
+    local message = "Agent draft buffer not found"
     notify(message, vim.log.levels.WARN)
     return false, message
   end
@@ -317,7 +314,7 @@ function M.send_draft(opts)
 
   local target_index
   local target_bufnr = state.get_target_terminal_bufnr()
-  local target_pattern = state.get_target_pattern(M.defaults.target_pattern)
+  local fallback_target_patterns = state.get_fallback_target_patterns(M.fallback_target_patterns)
   if state.is_valid_buf(target_bufnr) then
     for index, term in ipairs(terminals.get_all_terminals()) do
       if term.bufnr == target_bufnr then
@@ -327,7 +324,7 @@ function M.send_draft(opts)
     end
   end
 
-  local target = target_index or target_pattern
+  local target = target_index or fallback_target_patterns
 
   if hide_after then
     M.hide()
@@ -375,8 +372,8 @@ function M.quote_to_draft(lines, opts)
   if need_open then
     local success, message = M.focus_or_open({
       draft_height = opts.draft_height,
-      target_pattern = opts.target_pattern,
-      claude_bufnr = opts.claude_bufnr,
+      fallback_target_patterns = opts.fallback_target_patterns,
+      target_bufnr = opts.target_bufnr,
     })
     if not success then
       return false, message
@@ -426,14 +423,14 @@ function M.setup()
   end
   setup_done = true
 
-  local group = vim.api.nvim_create_augroup("ClaudeInputTabCleanup", { clear = true })
+  local group = vim.api.nvim_create_augroup("AgentInputTabCleanup", { clear = true })
 
   vim.api.nvim_create_autocmd("TabClosed", {
     group = group,
     callback = function()
       local live_bufnrs = {}
       for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
-        local ok, bufnr = pcall(vim.api.nvim_tabpage_get_var, tabpage, "claude_input_bufnr")
+        local ok, bufnr = pcall(vim.api.nvim_tabpage_get_var, tabpage, "agent_input_bufnr")
         if ok and state.is_valid_buf(bufnr) then
           live_bufnrs[bufnr] = true
         end

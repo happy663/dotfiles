@@ -2,11 +2,14 @@ local config = require("agent_term.config")
 local draft = require("agent_term.draft")
 local state = require("agent_term.state")
 
+local CLAUDE_COMMAND = "claude"
+local CODEX_COMMAND = "codex"
+
 local M = {}
-M.dual_claude_config = config.dual_claude
+M.claude_pair_config = config.claude_pair
 
 local function open_fallback_input_buffer(label)
-  vim.notify(label .. " claude_input module not found", vim.log.levels.WARN)
+  vim.notify(label .. " agent draft module not found", vim.log.levels.WARN)
   vim.cmd("enew")
   vim.bo.buftype = "nofile"
   vim.bo.bufhidden = "wipe"
@@ -16,66 +19,85 @@ local function open_fallback_input_buffer(label)
   return vim.api.nvim_get_current_buf()
 end
 
-function M.open_codex_term(opts)
-  opts = opts or {}
-  local codex_cmd = opts.command or config.defaults.secondary_command
-  if opts.args and opts.args ~= "" then
-    codex_cmd = codex_cmd .. " " .. opts.args
-  end
-
-  vim.cmd("terminal " .. codex_cmd)
-  local bufnr = vim.api.nvim_get_current_buf()
-  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = bufnr, noremap = true, silent = true })
-  return bufnr
-end
-
 function M.open_term_draft(opts)
   opts = opts or {}
   local target_bufnr = vim.api.nvim_get_current_buf()
   if vim.bo[target_bufnr].buftype ~= "terminal" then
-    vim.notify("[TermDraft] Run this command from a terminal buffer", vim.log.levels.WARN)
+    vim.notify("[AgentDraft] Run this command from a terminal buffer", vim.log.levels.WARN)
     return nil
   end
 
   vim.cmd("belowright split")
   return draft.open_input_buffer({
-    claude_bufnr = target_bufnr,
-    draft_height = opts.draft_height or config.defaults.draft_height,
+    target_bufnr = target_bufnr,
+    draft_height = opts.draft_height or config.draft.attached_height,
   })
 end
 
-function M.open_claude_ai(opts)
+function M.open_agent_codex(opts)
   opts = opts or {}
-  local claude_cmd = opts.command or config.defaults.primary_command
+  local codex_cmd = opts.command or CODEX_COMMAND
+  if opts.args and opts.args ~= "" then
+    codex_cmd = codex_cmd .. " " .. opts.args
+  end
+
+  if opts.open_in_new_tab ~= false then
+    vim.cmd("tabnew")
+  end
+  vim.cmd("terminal " .. codex_cmd)
+  local target_bufnr = vim.api.nvim_get_current_buf()
+  -- codex termの固有設定
+  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
+
+  state.set_target_terminal_bufnr(target_bufnr)
+
+  vim.cmd("belowright split")
+  return draft.open_input_buffer({
+    target_bufnr = target_bufnr,
+    fallback_target_patterns = CODEX_COMMAND,
+    draft_height = config.codex.draft_height,
+  })
+end
+
+function M.open_agent_claude(opts)
+  opts = opts or {}
+  local claude_cmd = opts.command or CLAUDE_COMMAND
   if opts.args and opts.args ~= "" then
     claude_cmd = claude_cmd .. " " .. opts.args
   end
 
   vim.cmd("tabnew")
   vim.cmd("terminal " .. claude_cmd)
-  local claude_bufnr = vim.api.nvim_get_current_buf()
-  state.set_target_terminal_bufnr(claude_bufnr)
+  local target_bufnr = vim.api.nvim_get_current_buf()
+  state.set_target_terminal_bufnr(target_bufnr)
 
   vim.cmd("belowright split")
   return draft.open_input_buffer({
-    claude_bufnr = claude_bufnr,
-    target_pattern = opts.target_pattern or config.defaults.draft_target_pattern,
-    draft_height = opts.draft_height or config.defaults.claude_ai_draft_height,
+    target_bufnr = target_bufnr,
+    fallback_target_patterns = opts.fallback_target_patterns or config.draft.fallback_target_patterns,
+    -- draft_height = config.claude.draft_height,
+    draft_height = config.claude.draft_height,
   })
 end
 
-function M.open_dual_ai(opts)
+function M.open_agent_claude_codex(opts)
   opts = opts or {}
-  if opts.open_in_new_tab ~= false and config.defaults.open_in_new_tab then
+  if opts.open_in_new_tab ~= false and config.claude_codex.open_in_new_tab then
     vim.cmd("tabnew")
   end
 
-  vim.cmd("terminal " .. (opts.primary_command or config.defaults.primary_command))
-  local claude_bufnr = vim.api.nvim_get_current_buf()
-  state.set_target_terminal_bufnr(claude_bufnr)
+  local claude_cmd = opts.claude_command or CLAUDE_COMMAND
+  if opts.args and opts.args ~= "" then
+    claude_cmd = claude_cmd .. " " .. opts.args
+  end
+
+  vim.cmd("terminal " .. claude_cmd)
+  local claude_target_bufnr = vim.api.nvim_get_current_buf()
+  state.set_target_terminal_bufnr(claude_target_bufnr)
 
   vim.cmd("vsplit")
-  vim.cmd("terminal " .. (opts.secondary_command or config.defaults.secondary_command))
+  local codex_cmd = opts.codex_command or CODEX_COMMAND
+  vim.cmd("terminal " .. codex_cmd)
   local codex_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
 
@@ -83,13 +105,13 @@ function M.open_dual_ai(opts)
   vim.cmd("belowright split")
 
   return draft.open_input_buffer({
-    claude_bufnr = claude_bufnr,
-    target_pattern = opts.target_pattern or config.defaults.draft_target_pattern,
-    draft_height = opts.draft_height or config.defaults.draft_height,
+    target_bufnr = claude_target_bufnr,
+    fallback_target_patterns = opts.fallback_target_patterns or config.draft.fallback_target_patterns,
+    draft_height = opts.draft_height or config.claude_codex.draft_height,
   })
 end
 
-vim.api.nvim_set_hl(0, "DualClaudePadding", { bg = "#1a1a2e" })
+vim.api.nvim_set_hl(0, "AgentClaudePairPadding", { bg = "#1a1a2e" })
 
 local function create_padding_buf()
   local buf = vim.api.nvim_create_buf(false, true)
@@ -106,7 +128,7 @@ local function setup_padding_win(winid)
   vim.wo[winid].relativenumber = false
   vim.wo[winid].signcolumn = "no"
   vim.wo[winid].statuscolumn = ""
-  vim.wo[winid].winhighlight = "Normal:DualClaudePadding,EndOfBuffer:DualClaudePadding"
+  vim.wo[winid].winhighlight = "Normal:AgentClaudePairPadding,EndOfBuffer:AgentClaudePairPadding"
 end
 
 local function find_index(tbl, value)
@@ -120,34 +142,34 @@ end
 
 local function send_to_target(target_bufnr)
   state.set_target_terminal_bufnr(target_bufnr)
-  vim.cmd("ClaudeDraftSend")
+  vim.cmd("AgentDraftSend")
 end
 
-local function setup_send_keymaps(input_bufnr, claude1_bufnr, claude2_bufnr)
+local function setup_send_keymaps(input_bufnr, left_bufnr, right_bufnr)
   vim.keymap.set({ "n", "i" }, "<C-CR>", function()
-    send_to_target(claude1_bufnr)
+    send_to_target(left_bufnr)
   end, { buffer = input_bufnr, noremap = true, silent = true, desc = "Send draft to Claude 1" })
 
   vim.keymap.set({ "n", "i" }, "<S-CR>", function()
-    send_to_target(claude2_bufnr)
+    send_to_target(right_bufnr)
   end, { buffer = input_bufnr, noremap = true, silent = true, desc = "Send draft to Claude 2" })
 end
 
 local function setup_cycle_keymaps(bufnr)
   vim.keymap.set({ "n", "t" }, "<C-k>", function()
     M.cycle_forward()
-  end, { buffer = bufnr, noremap = true, silent = true, desc = "DualClaude: cycle forward" })
+  end, { buffer = bufnr, noremap = true, silent = true, desc = "AgentClaudePair: cycle forward" })
 
   vim.keymap.set({ "n", "t" }, "<C-j>", function()
     M.cycle_backward()
-  end, { buffer = bufnr, noremap = true, silent = true, desc = "DualClaude: cycle backward" })
+  end, { buffer = bufnr, noremap = true, silent = true, desc = "AgentClaudePair: cycle backward" })
 end
 
 function M.cycle_forward()
-  if not state.is_dual_claude_active() then
+  if not state.is_agent_claude_pair_active() then
     return
   end
-  local cycle = state.get_dual_claude_cycle()
+  local cycle = state.get_agent_claude_pair_cycle()
   local current = vim.api.nvim_get_current_win()
   local idx = find_index(cycle, current) or 0
   local next_win = cycle[(idx % #cycle) + 1]
@@ -157,10 +179,10 @@ function M.cycle_forward()
 end
 
 function M.cycle_backward()
-  if not state.is_dual_claude_active() then
+  if not state.is_agent_claude_pair_active() then
     return
   end
-  local cycle = state.get_dual_claude_cycle()
+  local cycle = state.get_agent_claude_pair_cycle()
   local current = vim.api.nvim_get_current_win()
   local idx = find_index(cycle, current) or 0
   local prev_win = cycle[((idx - 2) % #cycle) + 1]
@@ -169,10 +191,10 @@ function M.cycle_backward()
   end
 end
 
-function M.open_dual_claude(opts)
+function M.open_agent_claude_pair(opts)
   opts = opts or {}
   local args = opts.args or ""
-  local claude_cmd = M.dual_claude_config.command
+  local claude_cmd = opts.command or CLAUDE_COMMAND
   if args ~= "" then
     claude_cmd = claude_cmd .. " " .. args
   end
@@ -180,16 +202,16 @@ function M.open_dual_claude(opts)
   vim.cmd("tabnew")
 
   vim.cmd("terminal " .. claude_cmd)
-  local claude1_bufnr = vim.api.nvim_get_current_buf()
-  local claude1_winid = vim.api.nvim_get_current_win()
+  local left_bufnr = vim.api.nvim_get_current_buf()
+  local left_winid = vim.api.nvim_get_current_win()
 
   vim.cmd("rightbelow vsplit")
   vim.cmd("terminal " .. claude_cmd)
-  local claude2_bufnr = vim.api.nvim_get_current_buf()
-  local claude2_winid = vim.api.nvim_get_current_win()
+  local right_bufnr = vim.api.nvim_get_current_buf()
+  local right_winid = vim.api.nvim_get_current_win()
 
   vim.cmd("botright split")
-  vim.cmd("resize " .. tostring(M.dual_claude_config.input_height))
+  vim.cmd("resize " .. tostring(M.claude_pair_config.input_height))
   local bottom_winid = vim.api.nvim_get_current_win()
 
   local left_pad_buf = create_padding_buf()
@@ -201,11 +223,11 @@ function M.open_dual_claude(opts)
   local input_bufnr
   if draft then
     input_bufnr = draft.open_input_buffer({
-      claude_bufnr = claude1_bufnr,
-      target_pattern = M.dual_claude_config.draft_target_pattern,
+      target_bufnr = left_bufnr,
+      fallback_target_patterns = M.claude_pair_config.fallback_target_patterns,
     })
   else
-    input_bufnr = open_fallback_input_buffer("[DualClaude]")
+    input_bufnr = open_fallback_input_buffer("[AgentClaudePair]")
   end
 
   vim.cmd("rightbelow vsplit")
@@ -221,21 +243,21 @@ function M.open_dual_claude(opts)
   setup_padding_win(right_pad_winid)
   vim.api.nvim_win_set_width(right_pad_winid, pad_width)
 
-  state.set_dual_claude_state({
-    claude1_winid = claude1_winid,
-    claude2_winid = claude2_winid,
+  state.set_agent_claude_pair_state({
+    left_winid = left_winid,
+    right_winid = right_winid,
     input_winid = input_winid,
-    claude1_bufnr = claude1_bufnr,
-    claude2_bufnr = claude2_bufnr,
+    left_bufnr = left_bufnr,
+    right_bufnr = right_bufnr,
   })
 
-  for _, bufnr in ipairs({ claude1_bufnr, claude2_bufnr, input_bufnr, left_pad_buf, right_pad_buf }) do
+  for _, bufnr in ipairs({ left_bufnr, right_bufnr, input_bufnr, left_pad_buf, right_pad_buf }) do
     if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
       setup_cycle_keymaps(bufnr)
     end
   end
 
-  setup_send_keymaps(input_bufnr, claude1_bufnr, claude2_bufnr)
+  setup_send_keymaps(input_bufnr, left_bufnr, right_bufnr)
 
   vim.api.nvim_set_current_win(input_winid)
   vim.cmd("startinsert")

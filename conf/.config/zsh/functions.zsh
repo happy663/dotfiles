@@ -64,25 +64,33 @@ function nvim-restart() {
   done
 }
 
-# codexterm - open Neovim and run :CodexTerm with optional args
-function codexterm() {
-  local ex_cmd="CodexTerm"
-  if (( $# > 0 )); then
-    ex_cmd+=" $*"
-  fi
-  command nvim -c "$ex_cmd"
-}
-
-function claudeNvim() {
-  local ex_cmd="ClaudeAI"
+# nvim-codex - open Neovim and run :AgentCodex with optional args
+function nvim-codex() {
+  local ex_cmd="AgentCodex"
   if (( $# > 0 )); then
     ex_cmd+=" ${(q)@}"
   fi
   command nvim -c "$ex_cmd"
 }
 
-function dualClaude() {
-  local ex_cmd="DualClaude"
+function nvim-claude() {
+  local ex_cmd="AgentClaude"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
+function nvim-claude-codex() {
+  local ex_cmd="AgentClaudeCodex"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
+function nvim-claude-pair() {
+  local ex_cmd="AgentClaudePair"
   if (( $# > 0 )); then
     ex_cmd+=" ${(q)@}"
   fi

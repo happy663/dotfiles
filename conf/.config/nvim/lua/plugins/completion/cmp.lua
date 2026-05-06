@@ -443,7 +443,7 @@ return {
       })
 
       -- Configuration constants
-      local CLAUDE_INPUT_MAX_ENTRIES = 5
+      local AGENT_INPUT_MAX_ENTRIES = 5
       local DEFAULT_MAX_ENTRIES = 20
 
       local skkeleton_config = {
@@ -481,9 +481,9 @@ return {
 
       local function create_buffer_config(is_enabled)
         local config = {
-          -- claude_inputバッファの縦幅は小さめのためcmpの補完候補数を制限する
+          -- agent_inputバッファの縦幅は小さめのためcmpの補完候補数を制限する
           performance = {
-            max_view_entries = vim.b.claude_input and CLAUDE_INPUT_MAX_ENTRIES or DEFAULT_MAX_ENTRIES,
+            max_view_entries = vim.b.agent_input and AGENT_INPUT_MAX_ENTRIES or DEFAULT_MAX_ENTRIES,
           },
         }
 
@@ -492,7 +492,7 @@ return {
           config.sorting = skkeleton_config.sorting
         else
           config.debug = true
-          config.sources = vim.b.claude_input
+          config.sources = vim.b.agent_input
               and {
                 { name = "path" },
                 { name = "coding_agent_slash" },
