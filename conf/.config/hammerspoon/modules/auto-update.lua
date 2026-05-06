@@ -118,6 +118,12 @@ local function checkAndRun(reason)
   AutoUpdate.logger.i("checkAndRun triggered: " .. (reason or "unknown"))
   if alreadyRanToday() then
     AutoUpdate.logger.i("Already ran today (" .. today() .. "), skipping")
+    hs.notify
+      .new({
+        title = "node-pkgs自動更新スキップ",
+        informativeText = "本日 (" .. today() .. ") は実行済み",
+      })
+      :send()
     return
   end
   runUpdate()
