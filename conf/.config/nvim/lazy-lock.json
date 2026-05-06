@@ -48,6 +48,7 @@
   "gitsigns.nvim": { "branch": "main", "commit": "4ed47e8c4c66c921dc1d6643977e0526e1f44396" },
   "gruvbox": { "branch": "master", "commit": "180ad85971343df68be3422a5630fa84e45a9ab2" },
   "gyazo.vim": { "branch": "master", "commit": "236c82140b0b04337cbfa9f31ad38d536e1d88c8" },
+  "hlchunk.nvim": { "branch": "main", "commit": "3bc2bd7aef28fbed6643534a0fdd0f19966544bc" },
   "hop.nvim": { "branch": "v2", "commit": "90db1b2c61b820e230599a04fedcd2679e64bd07" },
   "iceberg-tokyo.nvim": { "branch": "iceberg-tokyo", "commit": "4c1b53fa94889b65a9b19835e5adf7b3a4452ebb" },
   "kotlin-vim": { "branch": "master", "commit": "53fe045906df8eeb07cb77b078fc93acda6c90b8" },
