@@ -15,37 +15,58 @@ return {
         -- Diffviewタブを強制的に閉じる（tabclose!は変更があっても閉じる）
         vim.cmd("tabclose! " .. pagenr)
 
-        -- 新しいタブでターミナルを開く
-        vim.cmd("tabnew")
-        vim.cmd("terminal git commit -v -t ~/.config/git/commit_template_with_prompt_japanese.txt")
+        local function start_commit_tab()
+          -- 新しいタブでターミナルを開く
+          vim.cmd("tabnew")
+          vim.cmd("terminal git commit -v -t ~/.config/git/commit_template_with_prompt_japanese.txt")
+
+          -- ターミナル終了時の処理
+          vim.api.nvim_create_autocmd("TermClose", {
+            buffer = 0,
+            once = true,
+            callback = function()
+              vim.cmd("bdelete!")
+              if not close_after then
+                vim.cmd("DiffviewOpen")
+              end
+            end,
+          })
+
+          -- インサートモードで開始
+          vim.cmd("startinsert")
+        end
 
         -- Copilotのコンテキストリセット
-        vim.schedule(function()
-          if _G.toggle_copilot then
-            print("Toggling Copilot (disable)...")
-            _G.toggle_copilot() -- 1回目：無効化
-            -- サーバーが確実に停止するまで待機してから再有効化
-            vim.defer_fn(function()
-              print("Toggling Copilot (enable)...")
-              _G.toggle_copilot() -- 2回目：有効化（コンテキストリセット）
-            end, 500) -- 500ms待機
-          end
-        end)
+        -- enable() は同期だがLSP `initialized` ハンドシェイクは非同期に進む。
+        -- 完了を待たずに gitcommit バッファ(nvr経由)が開くと
+        -- ServerNotInitialized エラーが出るため initialized フラグを polling で待つ。
+        local copilot_client_ok, copilot_client = pcall(require, "copilot.client")
+        if _G.toggle_copilot and copilot_client_ok and not copilot_client.is_disabled() then
+          _G.toggle_copilot() -- disable: agent teardown
+          vim.defer_fn(function()
+            copilot_client.initialized = false
+            _G.toggle_copilot() -- enable: agent起動 (非同期init開始)
 
-        -- ターミナル終了時の処理
-        vim.api.nvim_create_autocmd("TermClose", {
-          buffer = 0,
-          once = true,
-          callback = function()
-            vim.cmd("bdelete!")
-            if not close_after then
-              vim.cmd("DiffviewOpen")
-            end
-          end,
-        })
-
-        -- インサートモードで開始
-        vim.cmd("startinsert")
+            local timer = vim.uv.new_timer()
+            local elapsed = 0
+            local interval = 50
+            local timeout = 5000
+            timer:start(
+              interval,
+              interval,
+              vim.schedule_wrap(function()
+                elapsed = elapsed + interval
+                if copilot_client.initialized or elapsed >= timeout then
+                  timer:stop()
+                  timer:close()
+                  start_commit_tab()
+                end
+              end)
+            )
+          end, 100)
+        else
+          start_commit_tab()
+        end
       end
 
       -- 変更前(左)ペインを縮め、変更後(右)ペインを広く取る (約 4:6)
@@ -88,9 +109,9 @@ return {
           end,
           -- 各diffバッファがウィンドウに乗るたびに比率を再適用する
           -- (view_openedだけでは初回のみで、ファイル切替に追随できない)
-          diff_buf_win_enter = function()
-            vim.schedule(apply_diff_ratio)
-          end,
+          -- diff_buf_win_enter = function()
+          --   vim.schedule(apply_diff_ratio)
+          -- end,
         },
         keymaps = {
           view = {
