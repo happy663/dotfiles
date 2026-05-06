@@ -112,8 +112,7 @@
     ],
     "deny": [
       "Bash(rm:*)"
-    ],
-    "defaultMode": "default"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -363,7 +362,12 @@
     "command": "bash ~/.claude/statusline-script.sh"
   },
   "enabledPlugins": {
-    "permissions-audit@makikub-plugins": true
+    "permissions-audit@makikub-plugins": true,
+    "lua-lsp@claude-plugins-official": true,
+    "slack@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "php-lsp@claude-plugins-official": true,
+    "codex@openai-codex": true
   },
   "extraKnownMarketplaces": {
     "makikub-plugins": {
@@ -371,10 +375,24 @@
         "source": "git",
         "url": "https://github.com/makikub/claude-code-plugin.git"
       }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      },
+      "autoUpdate": false
     }
   },
-  "effortLevel": "medium",
+  "autoUpdatesChannel": "stable",
+  "minimumVersion": "2.1.129",
   "plansDirectory": "./plans",
+  "preferredNotifChannel": "terminal_bell",
   "skipAutoPermissionPrompt": true
 }
-

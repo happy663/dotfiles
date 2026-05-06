@@ -62,11 +62,14 @@ for target in commands commands.old output-styles skills scripts; do
 done
 
 # ファイル
-for target in CLAUDE.md settings.json statusline-script.sh; do
+for target in CLAUDE.md statusline-script.sh; do
     if [[ -e "${DOTFILES_DIR}/.claude/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.claude/${target}" "$HOME/.claude/${target}"
     fi
 done
+
+# settings.json は base.json + ~/.claude/settings.local.json をマージして実ファイル生成
+"${SCRIPT_DIR}/claude-settings.sh" push
 
 echo ""
 echo "=== ~/.codex ==="

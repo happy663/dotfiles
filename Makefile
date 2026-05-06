@@ -28,4 +28,12 @@ update-apply-npm:
 	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
 	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
 
+# ~/.claude/settings.json から base.json と ~/.claude/settings.local.json を再構築
+claude-pull:
+	scripts/claude-settings.sh pull
+
+# base.json と ~/.claude/settings.local.json をマージして ~/.claude/settings.json を生成
+claude-push:
+	scripts/claude-settings.sh push
+
 

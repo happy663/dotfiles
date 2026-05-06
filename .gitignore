@@ -21,4 +21,5 @@ conf/.config/nvim/.env
 # Claude Code local settings
 .claude/logs
 .claude/settings.local.json
+conf/.claude/settings.json
 conf/.config/tmux/plugins

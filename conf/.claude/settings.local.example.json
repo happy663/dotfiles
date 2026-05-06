@@ -1,0 +1,7 @@
+{
+  "model": "opus[1m]",
+  "effortLevel": "high",
+  "permissions": {
+    "defaultMode": "default"
+  }
+}
