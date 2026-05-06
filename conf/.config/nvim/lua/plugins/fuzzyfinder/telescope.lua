@@ -10,6 +10,24 @@ return {
       local builtin = require("telescope.builtin")
       -- local lga_actions = require("telescope-live-grep-args.actions")
 
+      local grep_additional_args = function()
+        return {
+          "--hidden",
+          "--glob",
+          "!.git/",
+          "--glob",
+          "!*lock.json",
+          "--glob",
+          "!.p10k.zsh",
+          "--glob",
+          "!*startuptime-logs/",
+          "--glob",
+          "!*.L",
+          "--glob",
+          "!*.plist",
+        }
+      end
+
       -- Utility functions
       local function highlight_search_term(search_term)
         vim.fn.setreg("/", search_term)
@@ -102,23 +120,7 @@ return {
             file_ignore_patterns = { "node_modules/*", "startuptime-logs/*", ".p10k.zsh" },
           },
           live_grep = {
-            additional_args = function()
-              return {
-                "--hidden",
-                "--glob",
-                "!.git/",
-                "--glob",
-                "!*lock.json",
-                "--glob",
-                "!.p10k.zsh",
-                "--glob",
-                "!*startuptime-logs/",
-                "--glob",
-                "!*.L",
-                "--glob",
-                "!*.plist",
-              }
-            end,
+            additional_args = grep_additional_args,
             layout_config = {
               width = 0.9,
               preview_width = 0.5,
@@ -134,6 +136,9 @@ return {
                 ["<CR>"] = custom_actions.select_with_highlight(),
               },
             },
+          },
+          grep_string = {
+            additional_args = grep_additional_args,
           },
           buffers = {
             sort_mru = true,
