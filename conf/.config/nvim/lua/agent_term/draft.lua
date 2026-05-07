@@ -155,6 +155,49 @@ local function ensure_buffer_keymaps(bufnr)
     silent = true,
     desc = "Send agent draft buffer (keep terminal input)",
   })
+  vim.keymap.set("n", "<C-p>", function()
+    require("telescope").load_extension("smart_open")
+    require("telescope").extensions.smart_open.smart_open({
+      attach_mappings = function(prompt_bufnr, _)
+        local actions = require("telescope.actions")
+        local action_state = require("telescope.actions.state")
+        actions.select_default:replace(function()
+          local picker = action_state.get_current_picker(prompt_bufnr)
+          local multi = picker:get_multi_selection()
+          actions.close(prompt_bufnr)
+
+          local paths = {}
+          if #multi > 0 then
+            for _, entry in ipairs(multi) do
+              local fp = entry.path or entry.filename
+              if fp then
+                table.insert(paths, "@" .. vim.fn.fnamemodify(fp, ":."))
+              end
+            end
+          else
+            local entry = action_state.get_selected_entry()
+            local fp = entry and (entry.path or entry.filename)
+            if fp then
+              table.insert(paths, "@" .. vim.fn.fnamemodify(fp, ":."))
+            end
+          end
+
+          if #paths == 0 then
+            return
+          end
+
+          local insert_text = table.concat(paths, " ")
+          local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+          local line = vim.api.nvim_get_current_line()
+          local new_line = line:sub(1, col) .. insert_text .. line:sub(col + 1)
+          vim.api.nvim_set_current_line(new_line)
+          vim.api.nvim_win_set_cursor(0, { row, col + #insert_text })
+          vim.cmd("startinsert")
+        end)
+        return true
+      end,
+    })
+  end, { buffer = bufnr, noremap = true, silent = true, desc = "Pick file(s) with smart_open (@path)" })
 end
 
 function M.focus_or_open(opts)
