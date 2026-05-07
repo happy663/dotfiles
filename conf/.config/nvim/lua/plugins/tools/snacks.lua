@@ -17,6 +17,7 @@ return {
       -- refer to the configuration section below
       bigfile = { enabled = false },
       dashboard = { enabled = false },
+      image = { enabled = true },
       explorer = {
         enabled = false,
         finder = "explorer",
