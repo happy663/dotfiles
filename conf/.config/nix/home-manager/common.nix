@@ -22,6 +22,7 @@ in
 
     packages = with pkgs; [
       # CLI tools
+      imagemagick
       bat
       fd
       ripgrep
