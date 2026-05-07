@@ -67,12 +67,15 @@ function M.setup()
     layouts.open_agent_codex({ args = command.args })
   end, { nargs = "*", desc = "Open Codex agent terminal" })
 
-  vim.api.nvim_create_user_command("AgentDraftSend", function()
-    local success, message = draft.send_draft({ hide_after = true })
+  vim.api.nvim_create_user_command("AgentDraftSend", function(cmd_opts)
+    local success, message = draft.send_draft({
+      hide_after = true,
+      clear_input = not cmd_opts.bang,
+    })
     if not success then
       vim.notify(message, vim.log.levels.ERROR)
     end
-  end, { desc = "Send agent draft buffer to target terminal" })
+  end, { bang = true, desc = "Send agent draft buffer to target terminal (! to keep terminal input)" })
 
   vim.api.nvim_create_user_command("AgentDraftClear", function()
     local success, message = draft.clear_draft()

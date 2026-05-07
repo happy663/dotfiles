@@ -3,6 +3,11 @@ local M = {}
 M.draft = {
   fallback_target_patterns = { "claude", "codex" },
   attached_height = 8,
+  -- 送信前にターゲットターミナルへ送る入力クリアシーケンス。
+  -- デフォルトは backspace (\x7f) を多めに送ることで、改行込みの複数行入力も
+  -- TUI 実装に依存せず削除する。Ctrl+U (\x15) は readline multiline や一部 TUI で
+  -- 現在行しかクリアできないためデフォルトでは使わない。
+  clear_input_sequence = string.rep("\x7f", 5000),
 }
 
 M.claude = {

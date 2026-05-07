@@ -149,6 +149,12 @@ local function ensure_buffer_keymaps(bufnr)
     silent = true,
     desc = "Send agent draft buffer",
   })
+  vim.keymap.set("n", "<leader>iS", "<Cmd>AgentDraftSend!<CR>", {
+    buffer = bufnr,
+    noremap = true,
+    silent = true,
+    desc = "Send agent draft buffer (keep terminal input)",
+  })
 end
 
 function M.focus_or_open(opts)
@@ -295,6 +301,13 @@ function M.send_draft(opts)
     hide_after = opts.hide_after and true or false
   end
 
+  local clear_input
+  if opts.clear_input == nil then
+    clear_input = true
+  else
+    clear_input = opts.clear_input and true or false
+  end
+
   local draft_bufnr = state.get_draft_bufnr()
   if not draft_bufnr then
     local message = "Agent draft buffer not found"
@@ -330,6 +343,13 @@ function M.send_draft(opts)
     M.hide()
     vim.cmd("redraw")
     vim.wait(350)
+  end
+
+  if clear_input then
+    local clear_seq = config.draft.clear_input_sequence
+    if type(clear_seq) == "string" and clear_seq ~= "" then
+      terminals.send_command(target, clear_seq, { add_newline = false, exclude_current = false, paste = false })
+    end
   end
 
   local success, message =
