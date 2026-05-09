@@ -10,6 +10,91 @@ return {
     -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
     lazy = false,
     config = function()
+      local function get_current_terminal_cwd()
+        if vim.bo.buftype == "terminal" and vim.b.terminal_cwd and vim.fn.isdirectory(vim.b.terminal_cwd) == 1 then
+          return vim.b.terminal_cwd
+        end
+        return nil
+      end
+
+      -- terminal上で操作している時は、そのterminalのcwdを使う
+      -- Oil上などterminal以外にいる時は、最後に見たterminal cwdを使う
+      local function get_last_terminal_cwd()
+        local cwd = get_current_terminal_cwd()
+        if cwd then
+          return cwd
+        end
+        if vim.g.last_terminal_cwd and vim.fn.isdirectory(vim.g.last_terminal_cwd) == 1 then
+          return vim.g.last_terminal_cwd
+        end
+        return nil
+      end
+
+      local function open_zoxide_directory()
+        if vim.fn.executable("zoxide") == 0 then
+          vim.notify("zoxide command not found", vim.log.levels.WARN)
+          return
+        end
+
+        vim.system({ "zoxide", "query", "-l" }, { text = true }, function(result)
+          if result.code ~= 0 then
+            vim.schedule(function()
+              vim.notify("zoxide query failed: " .. vim.trim(result.stderr or ""), vim.log.levels.WARN)
+            end)
+            return
+          end
+
+          local directories = vim.split(result.stdout or "", "\n", { trimempty = true })
+          vim.schedule(function()
+            if #directories == 0 then
+              vim.notify("zoxide directory history is empty", vim.log.levels.INFO)
+              return
+            end
+
+            vim.ui.select(directories, {
+              prompt = "Open Oil directory",
+              format_item = function(item)
+                return vim.fn.fnamemodify(item, ":~")
+              end,
+            }, function(choice)
+              if not choice then
+                return
+              end
+              require("oil").open(choice)
+            end)
+          end)
+        end)
+      end
+
+      local function sync_visible_oil_to_terminal_cwd(cwd)
+        vim.schedule(function()
+          for _, winid in ipairs(vim.api.nvim_list_wins()) do
+            local bufnr = vim.api.nvim_win_get_buf(winid)
+            if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].filetype == "oil" then
+              vim.api.nvim_win_call(winid, function()
+                require("oil").open(cwd)
+              end)
+            end
+          end
+        end)
+      end
+
+      local function track_terminal_cwd_from_osc7(ev)
+        local sequence = ev.data and ev.data.sequence or ""
+        if sequence:sub(1, 4) ~= "\027]7;" then
+          return
+        end
+
+        local cwd = sequence:gsub("\027%]7;file://[^/]*", "")
+        if vim.fn.isdirectory(cwd) == 0 then
+          return
+        end
+
+        vim.b[ev.buf].terminal_cwd = cwd
+        vim.g.last_terminal_cwd = cwd
+        sync_visible_oil_to_terminal_cwd(cwd)
+      end
+
       require("oil").setup({
         -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
         -- Set to false if you want some other plugin (e.g. netrw) to open when you edit directories.
@@ -85,6 +170,19 @@ return {
               require("oil").open(vim.fn.expand("~"))
             end,
             desc = "Open home directory",
+            mode = "n",
+          },
+          ["go"] = {
+            callback = function()
+              local cwd = get_last_terminal_cwd() or vim.fn.getcwd()
+              require("oil").open(cwd)
+            end,
+            desc = "Open terminal cwd",
+            mode = "n",
+          },
+          ["gz"] = {
+            callback = open_zoxide_directory,
+            desc = "Open zoxide directory",
             mode = "n",
           },
           ["`"] = { "actions.cd", mode = "n" },
@@ -220,8 +318,23 @@ return {
         },
       })
 
+      vim.api.nvim_create_autocmd("TermRequest", {
+        desc = "Track terminal cwd from OSC 7 for Oil",
+        callback = track_terminal_cwd_from_osc7,
+      })
+
       -- nvim-tree上でOilを開く
       local function open_oil_from_tree()
+        local terminal_cwd = get_current_terminal_cwd()
+        if terminal_cwd then
+          require("oil").open_float(terminal_cwd, {
+            preview = {
+              vertical = true,
+            },
+          })
+          return
+        end
+
         local node = require("nvim-tree.api").tree.get_node_under_cursor()
         local preview_opts = {
           preview = {
