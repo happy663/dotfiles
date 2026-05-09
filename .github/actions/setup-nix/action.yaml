@@ -16,9 +16,9 @@ runs:
       uses: cachix/install-nix-action@v31
     - name: Setup Cachix
       uses: cachix/cachix-action@v16
+      continue-on-error: true
       with:
         name: happy663 # ここを自分のキャッシュ名に変更
         authToken: ${{ inputs.authToken }}
         extraPullNames: nix-community
         skipPush: ${{ inputs.skipPush }}
-
