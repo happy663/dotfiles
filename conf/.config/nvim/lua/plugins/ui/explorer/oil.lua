@@ -189,6 +189,21 @@ return {
           ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
           ["gs"] = { "actions.change_sort", mode = "n" },
           ["gx"] = "actions.open_external",
+          ["gF"] = {
+            callback = function()
+              if vim.fn.executable("open") == 0 then
+                vim.notify("open command not found", vim.log.levels.WARN)
+                return
+              end
+
+              local dir = require("oil").get_current_dir()
+              if dir then
+                vim.system({ "open", dir })
+              end
+            end,
+            desc = "Open current directory in Finder",
+            mode = "n",
+          },
           ["g."] = { "actions.toggle_hidden", mode = "n" },
           ["g\\"] = { "actions.toggle_trash", mode = "n" },
         },
