@@ -80,6 +80,13 @@ return {
           ["<C-l>"] = "actions.refresh",
           ["-"] = { "actions.parent", mode = "n" },
           ["="] = { "actions.open_cwd", mode = "n" },
+          ["gh"] = {
+            callback = function()
+              require("oil").open(vim.fn.expand("~"))
+            end,
+            desc = "Open home directory",
+            mode = "n",
+          },
           ["`"] = { "actions.cd", mode = "n" },
           ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
           ["gs"] = { "actions.change_sort", mode = "n" },
