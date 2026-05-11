@@ -113,6 +113,12 @@ function M.setup()
     desc = "Quote selection to agent draft",
   })
 
+  vim.keymap.set("v", "<leader>>", ":<C-u>AgentDraftQuote<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "Quote selection to agent draft",
+  })
+
   vim.api.nvim_create_user_command("AgentClaude", function(command)
     layouts.open_agent_claude({ args = command.args })
   end, { nargs = "*", desc = "Open Claude agent terminal + draft buffer" })
