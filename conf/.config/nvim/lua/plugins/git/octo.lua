@@ -106,6 +106,28 @@ return {
           vim.cmd("silent! loadview")
         end,
       })
+
+      vim.api.nvim_create_autocmd("BufEnter", {
+        callback = function()
+          local ok = pcall(vim.api.nvim_buf_get_var, 0, "octo_diff_props")
+          if not ok then
+            return
+          end
+          local reviews = require("octo.reviews")
+          vim.keymap.set("n", "<Tab>", function()
+            local layout = reviews.get_current_layout()
+            if layout then
+              layout:select_next_file()
+            end
+          end, { buffer = true, noremap = true, silent = true, desc = "Octo: move to next changed file" })
+          vim.keymap.set("n", "<S-Tab>", function()
+            local layout = reviews.get_current_layout()
+            if layout then
+              layout:select_prev_file()
+            end
+          end, { buffer = true, noremap = true, silent = true, desc = "Octo: move to previous changed file" })
+        end,
+      })
     end,
   },
 }
