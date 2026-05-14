@@ -62,6 +62,9 @@ return {
       },
       -- :ObsidianXxx 形式（旧）ではなく :Obsidian xxx 形式（新）を使う
       legacy_commands = false,
+      -- デフォルトマッピング（<CR> の smart_action 等）を無効化
+      -- グローバルの <CR> → A<Return><Esc>（core/keymaps.lua）を温存するため
+      mappings = {},
     },
     keys = {
       { "<leader>nn", "<cmd>Obsidian new<cr>", desc = "Obsidian: new note" },
