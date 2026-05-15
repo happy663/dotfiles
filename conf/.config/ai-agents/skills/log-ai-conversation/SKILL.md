@@ -1,13 +1,13 @@
 ---
 name: log-ai-conversation
-description: AIとの会話をまとめてGitHub issueにコメントとして追加する。手動で呼び出して使用。
+description: AIとの会話をまとめてGitHub IssueまたはPull Requestにコメントとして追加する。手動で呼び出して使用。
 allowed-tools: Bash, Read, mcp__acp__Read, WebFetch
 disable-model-invocation: false
 ---
 
-# AIとの会話をissueにログする
+# AIとの会話をGitHubにログする
 
-現在の会話をまとめて、GitHub issueにコメントとして追加します。
+現在の会話をまとめて、GitHub IssueまたはPull Requestにコメントとして追加します。
 
 ## 対象の会話
 
@@ -17,9 +17,17 @@ disable-model-invocation: false
 ## 出力先の特定
 
 1. Octoバッファ（`octo://`で始まるバッファ）が開いている場合
-   * ユーザーにissue番号を確認する
+   * バッファの種類（Issue/PR）と番号を文脈から推定する
+   * ユーザーに出力先（Issue/PR、番号、リポジトリ）を確認する
 2. Octoバッファがない場合
-   * ユーザーにリポジトリとissue番号を確認する
+   * 会話文脈からIssue/PRのどちらへ残すべきかを推定する
+   * 推定できない場合は、ユーザーにリポジトリ、出力先種別（Issue/PR）、番号を確認する
+
+判断基準:
+
+* Issueにコメントする: 調査ログ、作業方針、未着手タスク、問題整理、issue本文やissueコメントに紐づく会話
+* PRにコメントする: 実装済み変更の説明、レビュー対応ログ、CI修正、PRレビューコメントに紐づく会話
+* 迷う場合: コメント投稿前の確認ステップで、Issue/PRどちらに投稿するかを明示してユーザーに確認する
 
 ## まとめ方
 
@@ -27,7 +35,17 @@ disable-model-invocation: false
 * トピックごとに `### {トピック}` で見出しをつける
 * 1コメント = 1まとまり
 * 「問題→調査→試行→結果」の流れを意識する
-* 直前のissueコメントを `gh issue view {number} --repo {owner/repo} --comments` で確認し、前のコメントと内容が重複しないよう・話の流れが自然につながるよう意識する
+* 直前のコメントを確認し、前のコメントと内容が重複しないよう・話の流れが自然につながるよう意識する
+
+直前コメントの確認コマンド:
+
+```bash
+# Issueの場合
+gh issue view {number} --repo {owner/repo} --comments
+
+# PRの場合
+gh pr view {number} --repo {owner/repo} --comments
+```
 
 ## コード参照ルール
 
@@ -66,20 +84,33 @@ git remote get-url origin | sed 's|.*github.com[:/]||' | sed 's|\.git$||'
 
 ### 確認ステップ（必須）
 
-`gh issue comment` を実行する前に、必ずユーザーに確認を取ること。
+`gh issue comment` または `gh pr comment` を実行する前に、必ずユーザーに確認を取ること。
 
 1. 追加予定のコメント全文をチャットに表示する
-2. 「このコメントをissue #{number} に追加してよいですか？」と確認する
+2. 「このコメントを{Issue/PR} #{number} に追加してよいですか？」と確認する
 3. ユーザーが明示的に承認した場合のみコマンドを実行する
 
 ```bash
+# Issueの場合
 gh issue comment {number} --repo {owner/repo} --body "..."
+
+# PRの場合
+gh pr comment {number} --repo {owner/repo} --body "..."
 ```
 
 HEREDOCを使用してコメント本文を渡す:
 
 ```bash
+# Issueの場合
 gh issue comment {number} --repo {owner/repo} --body "$(cat <<'EOF'
+## トピック名
+
+内容...
+EOF
+)"
+
+# PRの場合
+gh pr comment {number} --repo {owner/repo} --body "$(cat <<'EOF'
 ## トピック名
 
 内容...
@@ -150,3 +181,4 @@ qで終了すると反映され、Shift+Qだと反映しない。
 - OK: ~/dotfiles = main, ~/dotfiles-wt = feat/x
 - OK: ~/dotfiles = main, ~/dotfiles-wt = detached(mainのコミット)
 - NG: ~/dotfiles = main, ~/dotfiles-wt = main
+````
