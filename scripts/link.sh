@@ -44,7 +44,7 @@ for dir in "${DOTFILES_DIR}"/.config/*/; do
 
     # リンクしないディレクトリ（git管理対象なし）
     case "$dirname" in
-        colima|gh|fish|github-copilot) continue ;;
+        colima|gh|fish|github-copilot|git) continue ;;
     esac
 
     ln -snfv "$dir" "$HOME/.config/$dirname"

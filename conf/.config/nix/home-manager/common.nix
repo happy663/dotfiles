@@ -190,6 +190,13 @@ in
   };
 
 
+  # git関連の実ファイルもhome-manager管理に統一
+  xdg.configFile."git/commit_template_with_prompt.txt".source =
+    ../../git/commit_template_with_prompt.txt;
+  xdg.configFile."git/commit_template_with_prompt_japanese.txt".source =
+    ../../git/commit_template_with_prompt_japanese.txt;
+  xdg.configFile."git/gitconfig_sub".source = ../../git/gitconfig_sub;
+
   # gitattributes config
   xdg.configFile."git/attributes".text = ''
     **/SKK-JISYO.L linguist-vendored
