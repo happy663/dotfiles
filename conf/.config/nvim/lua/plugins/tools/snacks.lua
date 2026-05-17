@@ -10,6 +10,7 @@ return {
     end,
     priority = 1000,
     lazy = true,
+    event = "VeryLazy",
     ---@type snacks.Config
     opts = {
       -- your configuration comes here
@@ -102,6 +103,10 @@ return {
       statuscolumn = { enabled = false },
       words = { enabled = false },
     },
+    config = function(_, opts)
+      require("snacks").setup(opts)
+      require("snacks.image").setup()
+    end,
     keys = {
       {
         "<leader>.",
