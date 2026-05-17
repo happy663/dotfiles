@@ -311,9 +311,26 @@ return {
           preview_method = "fast_scratch",
           -- A function that returns true to disable preview on a file e.g. to avoid lag
           disable_preview = function(filename)
-            return false
+            local ext = filename:match("%.([^.]+)$")
+            if not ext then
+              return false
+            end
+
+            ext = ext:lower()
+
+            if ext == "pdf" then
+              local fd = io.open(filename, "rb")
+              if not fd then
+                return true
+              end
+              local header = fd:read(5)
+              fd:close()
+              return header ~= "%PDF-"
+            end
+
+            local disabled_exts = { dmg = true, mp4 = true, zip = true }
+            return disabled_exts[ext] or false
           end,
-          -- Window-local options to use for preview window buffers
           win_options = {},
         },
         -- Configuration for the floating action confirmation window
@@ -429,4 +446,3 @@ return {
     end,
   },
 }
-
