@@ -7,6 +7,15 @@ return {
     config = function()
       local actions = require("diffview.actions")
 
+      local function close_diffview()
+        vim.cmd("DiffviewClose")
+        vim.schedule(function()
+          if vim.env.NVIM_IN_POPUP == "1" then
+            vim.cmd("qa!")
+          end
+        end)
+      end
+
       -- コミット用のターミナルを開く関数
       local function open_commit_terminal(close_after)
         -- 現在のDiffviewタブのページ番号を取得
@@ -115,7 +124,7 @@ return {
         },
         keymaps = {
           view = {
-            { "n", "q", actions.close, { desc = "ヘルプメニューを閉じる" } },
+            { "n", "q", close_diffview, { desc = "ヘルプメニューを閉じる" } },
             { "n", "-", actions.toggle_stage_entry, { desc = "ステージング/アンステージング" } },
             { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
             {
@@ -136,7 +145,7 @@ return {
             },
           },
           file_panel = {
-            { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+            { "n", "q", close_diffview, { desc = "ヘルプメニューを閉じる" } },
             { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
             {
               "n",
@@ -156,7 +165,7 @@ return {
             },
           },
           file_history_panel = {
-            { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "ヘルプメニューを閉じる" } },
+            { "n", "q", close_diffview, { desc = "ヘルプメニューを閉じる" } },
             { "n", "<C-b>", toggle_files_with_ratio, { desc = "ファイルパネルをトグル" } },
           },
         },
