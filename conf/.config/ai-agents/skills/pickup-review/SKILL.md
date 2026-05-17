@@ -1,7 +1,7 @@
 ---
 name: pickup-review
 description: AIが編集したコードファイルから人間のインラインレビューマーカー(review-comment:)を抽出し、指摘の意図を整理して議論し、必要な場合だけ修正・マーカー削除まで行う。「レビュー拾って」「コメント拾って」「review-comment対応して」「なぜそうしたか確認して」等の依頼で使用。
-argument-hint: "[path...]"
+argument-hint: "[path...|--all]"
 allowed-tools: Bash, Read, Edit, Grep, Glob, mcp__acp__Read, mcp__acp__Edit
 disable-model-invocation: false
 ---
@@ -31,19 +31,32 @@ function calculate(x) {
 
 ### 1. 検索範囲の決定
 
-* 引数なし → `git ls-files` の出力（git追跡ファイル全体）
 * 引数あり → 指定パス（ファイル or ディレクトリ）に限定。複数パス可
+* 引数なし + git管理下 → `main` との差分ファイルを優先する
+    * `git diff --name-only main...HEAD`
+    * `git diff --name-only`
+    * `git diff --cached --name-only`
+    * 必要に応じて `git ls-files --others --exclude-standard`
+* `main` が存在しない場合は `origin/main`、`master`、`origin/master` の順で利用可能なベースを探す
+* `--all` 指定時のみ → `git ls-files` の出力（git追跡ファイル全体）
 * git管理外のディレクトリで引数なし起動 → ユーザーに対象パスの指定を求める
 
 ### 2. マーカー抽出
 
-`rg` を優先で使用する。
+git管理下の追跡ファイルは `git grep` を優先で使用する。
 
 ```bash
-rg -n --no-heading 'review-comment:' <scope>
+git grep -n 'review-comment:' -- <scope>
+```
+
+指定パス、未追跡ファイル、または `git grep` で扱いにくい対象は `rg --hidden` を使用する。
+
+```bash
+rg --hidden -n --no-heading 'review-comment:' <scope>
 ```
 
 * `rg` が利用不能な場合は Grep ツールへフォールバック
+* 文字列リテラルやスキル仕様本文など、レビューコメントではない可能性が高い検出結果は「候補外」として分類し、実レビュー件数に含めない
 * 結果を以下の構造にまとめる
     * path: 絶対パス
     * line: 1始まり行番号
