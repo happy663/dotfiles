@@ -64,6 +64,7 @@ in
       bun
       php84Extensions.xdebug
       rtk
+      ghostscript
     ];
 
     sessionVariables = {
@@ -263,5 +264,4 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-
 
