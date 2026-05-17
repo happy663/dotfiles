@@ -46,7 +46,6 @@ function M.open_agent_codex(opts)
   end
   vim.cmd("terminal " .. codex_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
-  -- codex termの固有設定
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
 
   state.set_target_terminal_bufnr(target_bufnr)
@@ -69,6 +68,7 @@ function M.open_agent_claude(opts)
   vim.cmd("tabnew")
   vim.cmd("terminal " .. claude_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
+  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
   state.set_target_terminal_bufnr(target_bufnr)
 
   vim.cmd("belowright split")
