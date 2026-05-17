@@ -34,8 +34,8 @@ return {
       -- 入力ありの場合は対応する ASCII バイトを job に直接送って補う。
       local control_chars = {
         h = "\008", -- BS (C-h)
-        j = "\010", -- LF (C-j)
-        k = "\011", -- VT (C-k)
+        -- j = "\010", -- LF (C-j)
+        -- k = "\011", -- VT (C-k)
         l = "\012", -- FF (C-l)
       }
 
@@ -131,8 +131,9 @@ return {
         end
 
         set_terminal_tmux_navigate_keymap(bufnr, "h", "Left")
-        set_terminal_tmux_navigate_keymap(bufnr, "j", "Down")
-        set_terminal_tmux_navigate_keymap(bufnr, "k", "Up")
+        -- skkeletonの<C-j>と被っているのでDown/Upは無効にしておく
+        -- set_terminal_tmux_navigate_keymap(bufnr, "j", "Down")
+        -- set_terminal_tmux_navigate_keymap(bufnr, "k", "Up")
         set_terminal_tmux_navigate_keymap(bufnr, "l", "Right")
       end
 
