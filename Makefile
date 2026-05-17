@@ -36,4 +36,14 @@ claude-pull:
 claude-push:
 	scripts/claude-settings.sh push
 
+# firenvim 専用 Neovim 設定 (NVIM_APPNAME=firenvim-nvim) のセットアップ
+# 1. 専用設定で lazy.nvim を起動し firenvim プラグインを取得
+# 2. firenvim#install で wrapper と native messaging manifest を生成
+# 3. wrapper に NVIM_APPNAME を注入してブラウザ起動時に専用設定が読まれるようにする
+setup-firenvim:
+	NVIM_APPNAME=firenvim-nvim nvim --headless "+Lazy! sync" +qa
+	NVIM_APPNAME=firenvim-nvim nvim --headless "+call firenvim#install(0)" +qa
+	./scripts/patch-firenvim-wrapper.sh
+
+
 
