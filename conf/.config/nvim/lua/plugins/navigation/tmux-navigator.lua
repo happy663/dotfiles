@@ -20,17 +20,19 @@ return {
       -- { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
     },
     config = function()
-      local directions = {
-        h = "Left",
-        j = "Down",
-        k = "Up",
-        l = "Right",
-      }
-
       local function is_agent_terminal(bufnr)
         local name = vim.api.nvim_buf_get_name(bufnr)
-        -- review-comment:%f[%A]って何？
         return vim.bo[bufnr].buftype == "terminal" and name:match(":(claude|codex)%f[%A]") ~= nil
+      end
+
+      local function set_terminal_tmux_navigate_keymap(bufnr, key, direction)
+        vim.keymap.set("t", "<C-" .. key .. ">", function()
+          vim.cmd("TmuxNavigate" .. direction)
+        end, {
+          buffer = bufnr,
+          silent = true,
+          desc = "Tmux navigate " .. direction,
+        })
       end
 
       local function set_agent_terminal_keymaps(bufnr)
@@ -38,16 +40,10 @@ return {
           return
         end
 
-        -- review-comment: for文使用しない方針の方が好きかな。関数定義してそれぞれ指定するとよさそう。10個ぐらいあるなら話は別だけど今回4個だし量が動的に増える訳でもない
-        for key, direction in pairs(directions) do
-          vim.keymap.set("t", "<C-" .. key .. ">", function()
-            vim.cmd("TmuxNavigate" .. direction)
-          end, {
-            buffer = bufnr,
-            silent = true,
-            desc = "Tmux navigate " .. direction,
-          })
-        end
+        set_terminal_tmux_navigate_keymap(bufnr, "h", "Left")
+        set_terminal_tmux_navigate_keymap(bufnr, "j", "Down")
+        set_terminal_tmux_navigate_keymap(bufnr, "k", "Up")
+        set_terminal_tmux_navigate_keymap(bufnr, "l", "Right")
       end
 
       vim.api.nvim_create_autocmd("TermOpen", {
