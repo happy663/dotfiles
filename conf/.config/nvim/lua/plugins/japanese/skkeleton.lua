@@ -50,6 +50,9 @@ return {
             keepState = true,
             debug = false,
             registerConvertResult = true,
+            -- skkServerPortは数値リテラルで指定する (is.Numberバリデーション)。
+            -- skkServerResEncはサーバ仕様によりUTF-8固定。
+            -- 詳細: https://github.com/happy663/dotfiles/issues/255#issuecomment-4470747322
             skkServerHost = "127.0.0.1",
             skkServerPort = 1180,
             skkServerReqEnc = "euc-jp",
