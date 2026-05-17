@@ -211,7 +211,7 @@ function M.list_subissues_and_jump()
               else
                 icon = issue_icons.closed[1]
               end
-              return string.format("%s #%d  %s", icon, node.number, node.title)
+              return string.format("%s #%d  %s", icon .. node.state, node.number, node.title)
             end,
           }, function(choice)
             if not choice then
