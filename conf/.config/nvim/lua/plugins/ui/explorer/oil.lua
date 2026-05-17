@@ -195,7 +195,8 @@ return {
               local entry = oil.get_cursor_entry()
               if entry and entry.type == "file" then
                 local ext = entry.name:match("%.([^.]+)$")
-                local external_exts = { dmg = true, pdf = true, png = true, jpg = true, mp4 = true, zip = true }
+                local external_exts =
+                  { dmg = true, pdf = true, png = true, jpg = true, mp4 = true, zip = true, mov = true }
                 if ext and external_exts[ext:lower()] then
                   require("oil.actions").open_external.callback()
                   return
