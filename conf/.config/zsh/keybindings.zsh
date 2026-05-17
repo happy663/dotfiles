@@ -80,3 +80,39 @@ zle -N ghq-list
 bindkey '^g' ghq-list
 
 
+# -----------------------------------------------------------------------------
+# vim-tmux-navigator: バッファ空判定によるシームレスなペイン移動
+# バッファが空の時はtmuxペイン移動、入力中は通常のreadline操作
+# -----------------------------------------------------------------------------
+function _tmux_navigate_or() {
+  local pane_dir=$1
+  local fallback=$2
+  if [[ -n $TMUX && -z $BUFFER ]]; then
+    tmux select-pane $pane_dir
+  else
+    zle $fallback
+  fi
+}
+
+function _navigate_left()  { _tmux_navigate_or -L backward-delete-char }
+function _navigate_right() {
+  if [[ -n $TMUX && -z $BUFFER ]]; then
+    tmux select-pane -R
+  else
+    zle -I
+    clear
+    zle reset-prompt
+  fi
+}
+function _navigate_down()  { _tmux_navigate_or -D accept-line }
+function _navigate_up()    { _tmux_navigate_or -U kill-line }
+
+zle -N _navigate_left
+zle -N _navigate_right
+zle -N _navigate_down
+zle -N _navigate_up
+
+bindkey '^h' _navigate_left
+bindkey '^l' _navigate_right
+bindkey '^j' _navigate_down
+bindkey '^k' _navigate_up

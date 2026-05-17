@@ -3,10 +3,7 @@ local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
 -- Normal mode keymaps
-map("n", "<C-h>", "<C-w>h", opts)
-map("n", "<C-l>", "<C-w>l", opts)
-map("n", "<C-j>", "<C-w>j", opts)
-map("n", "<C-k>", "<C-w>k", opts)
+-- <C-h/j/k/l> は vim-tmux-navigator が担当
 
 -- easy-motion
 --
@@ -27,9 +24,8 @@ map("i", "<C-b>", "<Left>", opts)
 map("v", "<leader>/", "gcc", { noremap = false, silent = true })
 -- terminal mode
 -- escapeでnormal modeに戻る
-map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
-map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
-map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
+-- <C-j/l> は vim-tmux-navigator が担当
+-- map("t", "<C-w>", [[<C-\><C-n><C-w>]], opts)
 
 -- 定義にジャンプする前に縦分割を行い、そのウィンドウで定義を開く関数
 _G.goto_definition_vsplit = function()
