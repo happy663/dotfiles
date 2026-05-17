@@ -328,7 +328,7 @@ return {
               return header ~= "%PDF-"
             end
 
-            local disabled_exts = { dmg = true, mp4 = true, zip = true }
+            local disabled_exts = { dmg = true, mp4 = true, zip = true, mov = true }
             return disabled_exts[ext] or false
           end,
           win_options = {},
