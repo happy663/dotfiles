@@ -41,14 +41,19 @@ return {
             completionRankFile = "~/src/github.com/ppha3260-web/my-skk-dict/userCompletionRankFile.json",
             immediatelyOkuriConvert = true,
             sources = {
+              -- 変換する時(getHenkanResult)の優先順位(cmp補完の候補の順番ではない)
               "skk_dictionary",
-              -- skkserverが動いていないとエラーになる、google_japanese_inputにfallbackが望ましい
               "skk_server",
+              -- skkserverが動いていないとエラーになる、google_japanese_inputにfallbackが望ましい
               "google_japanese_input",
             },
             keepState = true,
             debug = false,
             registerConvertResult = true,
+            skkServerHost = "127.0.0.1",
+            skkServerPort = 1180,
+            skkServerReqEnc = "euc-jp",
+            skkServerResEnc = "utf-8",
           })
 
           vim.fn["skkeleton#register_kanatable"]("rom", {
