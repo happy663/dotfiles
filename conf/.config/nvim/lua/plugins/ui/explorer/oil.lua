@@ -156,8 +156,8 @@ return {
         -- See :help oil-actions for a list of all available actions
         keymaps = {
           ["g?"] = { "actions.show_help", mode = "n" },
-          ["<CR>"] = "actions.select",
-          ["<C-s>"] = { "actions.select", opts = { vertical = true } },
+          -- ["<CR>"] = "actions.select",
+          -- ["<C-s>"] = { "actions.select", opts = { vertical = true } },
           ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
           ["<C-t>"] = { "actions.select", opts = { tab = true } },
           ["<C-p>"] = "actions.preview",
@@ -180,7 +180,7 @@ return {
             desc = "Open terminal cwd",
             mode = "n",
           },
-          ["gz"] = {
+          ["<C-s>"] = {
             callback = open_zoxide_directory,
             desc = "Open zoxide directory",
             mode = "n",
@@ -188,7 +188,24 @@ return {
           ["`"] = { "actions.cd", mode = "n" },
           ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
           ["gs"] = { "actions.change_sort", mode = "n" },
-          ["gx"] = "actions.open_external",
+          -- ["gx"] = "actions.open_external",
+          ["<CR>"] = {
+            callback = function()
+              local oil = require("oil")
+              local entry = oil.get_cursor_entry()
+              if entry and entry.type == "file" then
+                local ext = entry.name:match("%.([^.]+)$")
+                local external_exts = { dmg = true, pdf = true, png = true, jpg = true, mp4 = true, zip = true }
+                if ext and external_exts[ext:lower()] then
+                  require("oil.actions").open_external.callback()
+                  return
+                end
+              end
+              require("oil.actions").select.callback()
+            end,
+            desc = "Select or open external for binary files",
+            mode = "n",
+          },
           ["gF"] = {
             callback = function()
               if vim.fn.executable("open") == 0 then
@@ -206,6 +223,19 @@ return {
           },
           ["g."] = { "actions.toggle_hidden", mode = "n" },
           ["g\\"] = { "actions.toggle_trash", mode = "n" },
+          ["gy"] = {
+            callback = function()
+              local oil = require("oil")
+              local entry = oil.get_cursor_entry()
+              local dir = oil.get_current_dir()
+              if not entry or not dir then
+                return
+              end
+              vim.fn.setreg("+", dir .. entry.name)
+              vim.notify("Copied " .. entry.name .. " to clipboard", vim.log.levels.INFO)
+            end,
+            mode = "n",
+          },
         },
         -- Set to false to disable all of the above keymaps
         use_default_keymaps = true,
@@ -383,6 +413,20 @@ return {
         silent = true,
         desc = "Open Oil in nvim-tree",
       })
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "oil",
+        desc = "Set Oil sort on FileType",
+        callback = function()
+          if vim.g.oil_view_mode then
+            require("oil").set_sort({
+              { "type", "asc" },
+              { "birthtime", "desc" },
+            })
+          end
+        end,
+      })
     end,
   },
 }
+

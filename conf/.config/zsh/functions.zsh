@@ -67,7 +67,7 @@ function nvim-restart() {
 # nvim-view - open Neovim as an Oil file viewer with optional path
 function nvim-view() {
   local target="${1:-.}"
-  command nvim -c "Oil --float --preview ${(q)target}"
+  command nvim -c "let g:oil_view_mode= 1" -c "Oil --float --preview ${(q)target}"
 }
 
 # nvim-codex - open Neovim and run :AgentCodex with optional args
