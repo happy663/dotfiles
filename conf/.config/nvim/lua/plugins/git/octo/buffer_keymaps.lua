@@ -43,6 +43,16 @@ function M.octo_buffer_keymaps()
     desc = "Octo: Jump to a sub-issue",
   })
 
+  -- Jump to the parent issue from the current sub-issue
+  vim.keymap.set("n", "<leader>oJ", function()
+    require("octo.commands").commands.parent.edit()
+  end, {
+    buffer = true,
+    noremap = true,
+    silent = true,
+    desc = "Octo: Jump to the parent issue",
+  })
+
   -- Custom reload: Works correctly even after buffer name changes
   -- Uses _G.octo_buffers metadata for reload
   vim.keymap.set("n", "<leader>or", function()
