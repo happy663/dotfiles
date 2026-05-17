@@ -104,7 +104,7 @@
   "registers.nvim": { "branch": "main", "commit": "c217f8f369e0886776cda6c94eab839b30a8940d" },
   "render-markdown.nvim": { "branch": "main", "commit": "2247dcd1ff0c223cfa7e317783f89b8d00457ce6" },
   "showkeys": { "branch": "main", "commit": "cb0a50296f11f1e585acffba8c253b9e8afc1f84" },
-  "skkeleton": { "branch": "main", "commit": "c070a3e88f154223e54ea9ac9ed50851a57f3420" },
+  "skkeleton": { "branch": "main", "commit": "cb2fb1e8cad2be3c926a0f7144a27916b43579bb" },
   "skkeleton_indicator.nvim": { "branch": "v2", "commit": "f08532787cf842b996c8a5065be7e85cd3376c1f" },
   "smart-open.nvim": { "branch": "0.2.x", "commit": "7763800068bef69334870c10cb595d49ce27580a" },
   "smear-cursor.nvim": { "branch": "main", "commit": "9e9378d6ee34bb3782e0e8c63d9ec8ca618b479b" },
