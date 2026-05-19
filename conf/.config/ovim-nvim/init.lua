@@ -23,6 +23,17 @@ vim.opt.rtp:prepend(lazypath)
 -- メイン nvim に plugin/ や after/plugin/ がないため auto-loading の副作用はない
 vim.opt.rtp:append(vim.fn.expand("~/.config/nvim"))
 
+-- Ovim の一時ファイル編集時に <C-CR> で保存終了
+vim.api.nvim_create_autocmd("BufRead", {
+  pattern = "*/Library/Caches/ovim/*",
+  callback = function()
+    vim.keymap.set("i", "<C-CR>", function()
+      vim.cmd("wq")
+    end, { buffer = true, silent = true })
+    vim.keymap.set("n", "<C-CR>", ":wq<CR>", { buffer = true, silent = true })
+  end,
+})
+
 require("lazy").setup({
   spec = {
     { import = "plugins.japanese" },
