@@ -36,14 +36,14 @@ return {
 
       vim.keymap.set(
         "n",
-        "<leader>gn",
+        "<leader>gN",
         ':lua require("gitlinker").get_buf_range_url("n")<CR>',
         { desc = "Copy git link" }
       )
 
       vim.keymap.set(
         "v",
-        "<leader>gn",
+        "<leader>gN",
         ':lua require("gitlinker").get_buf_range_url("v")<CR>',
         { desc = "Copy git link" }
       )
@@ -83,7 +83,7 @@ return {
         print("Copied git link with code snippet to clipboard:")
       end
 
-      vim.keymap.set("v", "<leader>gN", copy_gitlinker_with_snippet, { desc = "Copy git link with code snippet" })
+      vim.keymap.set("v", "<leader>gn", copy_gitlinker_with_snippet, { desc = "Copy git link with code snippet" })
     end,
   },
 }
