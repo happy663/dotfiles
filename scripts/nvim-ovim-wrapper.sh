@@ -10,5 +10,6 @@ if [ -d "$HOME/.local/share/mise/shims" ]; then
   export PATH="$HOME/.local/share/mise/shims:$PATH"
 fi
 
+export DOTFILES_DIR = "$HOME/src/github.com/happy663/dotfiles";
 export NVIM_APPNAME=ovim-nvim
 exec nvim "$@"
