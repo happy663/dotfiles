@@ -28,6 +28,12 @@ update-apply-npm:
 	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
 	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
 
+# nippo (Claude Code / Codex 日報スキル) を導入
+# Rust バイナリのインストールと skill symlink の作成
+setup-nippo:
+	scripts/install-nippo.sh
+	scripts/link.sh
+
 # ~/.claude/settings.json から base.json と ~/.claude/settings.local.json を再構築
 claude-pull:
 	scripts/claude-settings.sh pull
@@ -46,4 +52,5 @@ setup-ovim:
 	cp scripts/nvim-ovim-wrapper.sh ~/.local/bin/nvim-ovim
 	chmod +x ~/.local/bin/nvim-ovim
 	@echo "Done. Set nvim_path to $$HOME/.local/bin/nvim-ovim in Ovim settings."
+
 

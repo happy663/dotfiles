@@ -87,3 +87,14 @@ for target in AGENT.md config.toml; do
     fi
 done
 
+echo ""
+echo "=== nippo (skill symlink) ==="
+NIPPO_REPO="${NIPPO_REPO:-$(ghq root 2>/dev/null)/github.com/nwiizo/nippo}"
+NIPPO_SKILL_DIR="${DOTFILES_DIR}/.config/ai-agents/skills/nippo"
+if [[ -d "$NIPPO_REPO/.claude/skills/nippo" ]]; then
+    ln -snfv "$NIPPO_REPO/.claude/skills/nippo" "$NIPPO_SKILL_DIR"
+else
+    echo "Note: nippo repo not found at $NIPPO_REPO."
+    echo "      Run 'make setup-nippo' or 'ghq get github.com/nwiizo/nippo' first."
+fi
+
