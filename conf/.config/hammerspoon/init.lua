@@ -12,6 +12,7 @@ dofile(hs.configdir .. "/modules/skk-sync.lua")
 dofile(hs.configdir .. "/modules/google-meet-mute.lua")
 dofile(hs.configdir .. "/modules/octo.lua")
 dofile(hs.configdir .. "/modules/auto-update.lua")
+-- dofile(hs.configdir .. "/modules/auto-ovim.lua")
 dofile(hs.configdir .. "/modules/keybindings.lua")
 
 local log = hs.logger.new("myLogger", "debug")
