@@ -4,13 +4,11 @@
 vim.g.mapleader = " "
 vim.g.not_in_vscode = vim.g.vscode == nil
 
--- メイン nvim の設定を rtp に追加する
--- lazy.nvim の { import = "plugins.xxx" } は nvim_get_runtime_file でディレクトリを探すため rtp が必要
--- メイン nvim に plugin/ や after/plugin/ がないため auto-loading の副作用はない
+-- メイン nvim の core/* を require するために package.path のみ追加する
+-- rtp:append は意図的にしない: lazy.nvim の { import = "plugins.xxx" } が
+-- メイン nvim の lua/plugins/ も拾ってしまい、Ovim で不要なプラグインまで
+-- 読み込まれるのを避けるため。プラグイン設定は ovim-nvim/lua/plugins/ 配下に置く。
 local nvim_config = vim.fn.expand("~/.config/nvim")
-vim.opt.rtp:append(nvim_config)
-
--- rtp:append だけでは vim.loader のキャッシュに反映されないため package.path に直接追加する
 package.path = nvim_config .. "/lua/?.lua;" .. nvim_config .. "/lua/?/init.lua;" .. package.path
 vim.loader.enable()
 
@@ -38,10 +36,12 @@ vim.api.nvim_create_autocmd("BufRead", {
   end,
 })
 
+
 require("lazy").setup({
   spec = {
     { import = "plugins.japanese" },
     { import = "plugins.completion" },
+    { import = "plugins.colorschemas" },
   },
   performance = {
     rtp = {
@@ -61,3 +61,7 @@ require("lazy").setup({
 
 require("core.keymaps")
 require("core.settings")
+require("core.auto-command")
+
+-- Ovim では colorscheme を固定する
+vim.cmd("colorscheme tokyonight-moon")
