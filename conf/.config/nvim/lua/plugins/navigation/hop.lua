@@ -1,8 +1,9 @@
 return {
   {
-    -- TODO: pluginsがarchiveされているので、代替を探す
-    "phaazon/hop.nvim",
-    branch = "v2", -- optional but strongly recommended
+    -- NOTE: upstream phaazon/hop.nvim は削除済み。happy663/hop.nvim にバックアップ済み
+    -- TODO: メンテされている代替プラグインへの移行を検討
+    "happy663/hop.nvim",
+    branch = "v2",
     config = function()
       local hop = require("hop")
       hop.setup({ keys = "etovxqpdygfblzhckisuran" })
