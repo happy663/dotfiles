@@ -169,18 +169,47 @@ function M.list_subissues_and_jump()
     query($owner: String!, $name: String!, $number: Int!) {
       repository(owner: $owner, name: $name) {
         issue(number: $number) {
-          subIssues(first: 100) {
+          subIssues(first: 50) {
             nodes {
               number
               title
               state
               stateReason
+              subIssues(first: 50) {
+                nodes {
+                  number
+                  title
+                  state
+                  stateReason
+                  subIssues(first: 50) {
+                    nodes {
+                      number
+                      title
+                      state
+                      stateReason
+                    }
+                  }
+                }
+              }
             }
           }
         }
       }
     }
   ]]
+
+  -- Flatten the sub-issue tree into a depth-tagged list so that
+  -- grandchild issues are shown (indented) alongside their parents.
+  local function flatten(nodes, depth, acc)
+    for _, node in ipairs(nodes) do
+      node.depth = depth
+      table.insert(acc, node)
+      if node.subIssues and node.subIssues.nodes and #node.subIssues.nodes > 0 then
+        flatten(node.subIssues.nodes, depth + 1, acc)
+      end
+    end
+    return acc
+  end
 
   gh.api.graphql({
     query = query,
@@ -199,8 +228,10 @@ function M.list_subissues_and_jump()
             return
           end
 
+          local items = flatten(nodes, 0, {})
+
           local issue_icons = octo_utils.icons.issue
-          vim.ui.select(nodes, {
+          vim.ui.select(items, {
             prompt = "Select sub-issue to jump:",
             format_item = function(node)
               local icon
@@ -211,7 +242,8 @@ function M.list_subissues_and_jump()
               else
                 icon = issue_icons.closed[1]
               end
-              return string.format("%s #%d  %s", icon .. node.state, node.number, node.title)
+              local indent = string.rep("  ", node.depth)
+              return string.format("%s%s #%d  %s", indent, icon .. node.state, node.number, node.title)
             end,
           }, function(choice)
             if not choice then
