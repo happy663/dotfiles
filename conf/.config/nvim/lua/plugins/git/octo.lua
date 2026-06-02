@@ -11,6 +11,11 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
       "nvim-tree/nvim-web-devicons",
+      {
+        "projekt0n/github-nvim-theme",
+        lazy = true,
+        config = function() end,
+      },
     },
     keys = {
       {
@@ -69,6 +74,11 @@ return {
           -- Use markdown parser in octo buffers
           vim.treesitter.language.register("markdown", "octo")
 
+          -- GitHub風配色をこのウィンドウだけに適用
+          pcall(function()
+            require("plugins.git.octo.github_highlights").apply_to_window()
+          end)
+
           -- プラグイン側に上書きされないように、遅延して実行
           -- https://github.com/pwntester/octo.nvim/blob/4a3a4fc5a9d3a372c91041f5b846f33b8d6b31fa/lua/octo/model/octo-buffer.lua#L213
           vim.schedule(function()
@@ -86,6 +96,21 @@ return {
 
           require("plugins.git.octo.buffer_keymaps").octo_buffer_keymaps()
           require("utils.markdown-helpers").setup_keymaps()
+        end,
+      })
+
+      -- winhighlightはウィンドウ単位の設定なので、octoバッファを開いた
+      -- ウィンドウで別ファイルに切り替えたらGitHub配色を元に戻す。
+      local octo_theme_group = vim.api.nvim_create_augroup("OctoGithubTheme", { clear = true })
+      vim.api.nvim_create_autocmd({ "BufWinEnter", "BufEnter" }, {
+        group = octo_theme_group,
+        callback = function(ev)
+          local gh = require("plugins.git.octo.github_highlights")
+          if vim.bo[ev.buf].filetype == "octo" then
+            gh.apply_to_window()
+          else
+            gh.restore_window()
+          end
         end,
       })
 
@@ -125,7 +150,12 @@ return {
             if layout then
               layout:select_prev_file()
             end
-          end, { buffer = true, noremap = true, silent = true, desc = "Octo: move to previous changed file" })
+          end, {
+            buffer = true,
+            noremap = true,
+            silent = true,
+            desc = "Octo: move to previous changed file",
+          })
         end,
       })
     end,
