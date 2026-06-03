@@ -50,6 +50,10 @@ function M.open_agent_codex(opts)
 
   state.set_target_terminal_bufnr(target_bufnr)
 
+  if opts.open_draft == false then
+    return target_bufnr
+  end
+
   vim.cmd("belowright split")
   return draft.open_input_buffer({
     target_bufnr = target_bufnr,
@@ -70,6 +74,10 @@ function M.open_agent_claude(opts)
   local target_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
   state.set_target_terminal_bufnr(target_bufnr)
+
+  if opts.open_draft == false then
+    return target_bufnr
+  end
 
   vim.cmd("belowright split")
   return draft.open_input_buffer({

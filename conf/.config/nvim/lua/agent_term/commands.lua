@@ -64,7 +64,10 @@ function M.setup()
   draft.setup()
 
   vim.api.nvim_create_user_command("AgentCodex", function(command)
-    layouts.open_agent_codex({ args = command.args })
+    layouts.open_agent_codex({
+      args = command.args,
+      open_draft = true,
+    })
   end, { nargs = "*", desc = "Open Codex agent terminal" })
 
   vim.api.nvim_create_user_command("AgentDraftSend", function(cmd_opts)
@@ -120,8 +123,19 @@ function M.setup()
   })
 
   vim.api.nvim_create_user_command("AgentClaude", function(command)
-    layouts.open_agent_claude({ args = command.args })
+    layouts.open_agent_claude({
+      args = command.args,
+      open_draft = true,
+    })
   end, { nargs = "*", desc = "Open Claude agent terminal + draft buffer" })
+
+  vim.api.nvim_create_user_command("AgentClaudeSession", function()
+    layouts.open_agent_claude({
+      command = "ccsession",
+      fallback_target_patterns = { "claude", "ccsession" },
+      open_draft = false,
+    })
+  end, { desc = "Open Claude session picker terminal" })
 
   vim.api.nvim_create_user_command("AgentClaudeCodex", function(command)
     layouts.open_agent_claude_codex({ args = command.args })

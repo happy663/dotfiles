@@ -87,6 +87,10 @@ function nvim-claude() {
   command nvim -c "$ex_cmd"
 }
 
+function nvim-claude-session() {
+  command nvim -c "AgentClaudeSession"
+}
+
 function nvim-claude-codex() {
   local ex_cmd="AgentClaudeCodex"
   if (( $# > 0 )); then
