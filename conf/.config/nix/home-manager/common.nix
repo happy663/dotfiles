@@ -46,6 +46,9 @@ in
       neovim-remote
       fastfetch
       nodejs_24
+      (inputs.ccsession.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
+        vendorHash = "sha256-pbA/AlBz3cQYRTMnQ/qBPcinYOKokrBLNhkbRTq54gE=";
+      }))
       # Node.js tools managed by Nix
       nodeTools
       # Development tools
@@ -264,4 +267,3 @@ in
   # gitignore_globalを削除する
   home.file.".gitignore_global".enable = false;
 }
-

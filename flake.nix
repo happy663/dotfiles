@@ -15,6 +15,10 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ccsession = {
+      url = "github:sorafujitani/ccsession";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
 
@@ -27,7 +31,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay} @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, ccsession} @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";
