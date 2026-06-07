@@ -176,8 +176,20 @@ return {
       vim.keymap.set("n", "<leader>dvl", "<Cmd>.DiffviewFileHistory --follow<CR>", { desc = "Line history" })
 
       local function get_default_branch_name()
-        local res = vim.system({ "git", "rev-parse", "--verify", "main" }, { capture_output = true }):wait()
-        return res.code == 0 and "main" or "master"
+        local res = vim.system({ "git", "symbolic-ref", "refs/remotes/origin/HEAD" }, { capture_output = true }):wait()
+        if res.code == 0 then
+          local ref = vim.trim(res.stdout)
+          return ref:match("refs/remotes/origin/(.+)$") or "main"
+        end
+
+        for _, branch in ipairs({ "main", "master" }) do
+          local check = vim.system({ "git", "rev-parse", "--verify", branch }, { capture_output = true }):wait()
+          if check.code == 0 then
+            return branch
+          end
+        end
+
+        return "main"
       end
 
       -- Diff against local master branch
