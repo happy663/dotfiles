@@ -40,12 +40,25 @@ get_usage_color() {
 
 # JSONデータを取得
 input=$(cat)
-model_name=$(echo "$input" | jq -r '.model.display_name')
+model_name=$(echo "$input" | jq -r '.model.display_name' | sed -E 's/\(1M context\)/(1m)/')
 model_id=$(echo "$input" | jq -r '.model.id // empty')
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
 session_id=$(echo "$input" | jq -r '.session_id // empty')
 five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+five_hour_resets_at=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+seven_day_resets_at=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
+
+# Unix epoch秒をローカル時刻にフォーマット（macOS / Linux 両対応）
+format_epoch() {
+    local epoch="$1"
+    local fmt="$2"
+    if [ -z "$epoch" ]; then
+        return
+    fi
+    # macOS の date は -r、GNU date は -d @
+    date -r "$epoch" "+$fmt" 2>/dev/null || date -d "@$epoch" "+$fmt" 2>/dev/null
+}
 
 # モデルに応じてコンパクション閾値を設定（コンテキストウィンドウの80%）
 context_window=$(get_context_window "$model_id")
@@ -160,14 +173,23 @@ if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ]; then
         five_hour_int=$(echo "$five_hour_pct" | awk '{printf "%d", $1}')
         five_color=$(get_usage_color "$five_hour_int")
         parts="5h:${five_color}${five_hour_int}%${RESET}"
+        five_hour_reset_str=$(format_epoch "$five_hour_resets_at" "%H:%M")
+        if [ -n "$five_hour_reset_str" ]; then
+            parts="${parts}${GRAY}:${RESET}${five_hour_reset_str}"
+        fi
     fi
     if [ -n "$seven_day_pct" ]; then
         seven_day_int=$(echo "$seven_day_pct" | awk '{printf "%d", $1}')
         seven_color=$(get_usage_color "$seven_day_int")
+        seven_day_reset_str=$(format_epoch "$seven_day_resets_at" "%m/%d")
+        seven_day_part="7d:${seven_color}${seven_day_int}%${RESET}"
+        if [ -n "$seven_day_reset_str" ]; then
+            seven_day_part="${seven_day_part}${GRAY}:${RESET}${seven_day_reset_str}"
+        fi
         if [ -n "$parts" ]; then
-            parts="$parts ${GRAY}/${RESET} 7d:${seven_color}${seven_day_int}%${RESET}"
+            parts="$parts ${GRAY}/${RESET} ${seven_day_part}"
         else
-            parts="7d:${seven_color}${seven_day_int}%${RESET}"
+            parts="$seven_day_part"
         fi
     fi
     rate_limit_info="$parts"
