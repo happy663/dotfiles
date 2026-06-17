@@ -1,7 +1,7 @@
 ---
 name: explain-pr
 description: Pull Requestを客観的に分析・解説する。PR内容、コメント、技術的妥当性を評価し、忖度なしで総合的な意見を提示する。設計原則との整合性もチェックし、代替案やトレードオフを明示する。
-argument-hint: "[PR番号またはURL]"
+argument-hint: "[PR番号またはURL] [--all]"
 allowed-tools: Bash, Read, mcp__acp__Read
 disable-model-invocation: false
 ---
@@ -9,6 +9,64 @@ disable-model-invocation: false
 # PR解説スキル
 
 Pull Request（PR）について、客観的に分析・解説します。
+
+## 引数の扱い
+
+引数は `[PR番号またはURL] [--all]` の形式で受け取る。
+
+- デフォルト（`--all` なし）: 未resolveのレビューコメントのみを対象に分析する
+- `--all` を含む場合: resolve状態に関わらず、すべてのコメントを対象に分析する
+
+冒頭で対象モードを明示する。
+
+```
+モード: 未resolveのみ / 全件 ( --all )
+```
+
+## ステップ0: レビューコメントの取得とフィルタリング
+
+GitHub REST API はレビュースレッドのresolve状態を返さないため、resolve状態を含めて取得するには GraphQL を使う。
+
+### 取得コマンド例
+
+```bash
+# {owner}, {repo}, {number} を置き換える
+gh api graphql -f query='
+query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $number) {
+      reviewThreads(first: 100) {
+        nodes {
+          isResolved
+          isOutdated
+          path
+          comments(first: 50) {
+            nodes {
+              databaseId
+              author { login }
+              body
+              path
+              line
+              originalLine
+              diffHunk
+              createdAt
+            }
+          }
+        }
+      }
+    }
+  }
+}' -F owner={owner} -F repo={repo} -F number={number}
+```
+
+一般コメント（コードに紐づかない issue comments）は `gh pr view {number} --json comments` で取得する。一般コメントには resolve 概念がないため、モードに関わらず常に全件を扱う。
+
+### フィルタリングルール
+
+- デフォルト: `reviewThreads.nodes[]` のうち `isResolved == false` のスレッドのみ採用
+- `--all`: `reviewThreads.nodes[]` のすべてを採用し、各コメントに `resolved=true/false` を併記する
+
+採用したレビュースレッドに含まれる各コメントを「ステップ2: コードに紐づくコメント」のテンプレートに流し込む。
 
 ## ステップ1: PR情報の収集
 
@@ -30,6 +88,8 @@ Pull Request（PR）について、客観的に分析・解説します。
 各コメントについて：
 
 #### コメント1: [ファイル名:行番号]
+
+**スレッド状態：** resolved=true/false （`--all` モード時のみ表示。デフォルトモードでは全件未resolveなので省略）
 
 **コメント内容：**
 ```
@@ -147,9 +207,11 @@ Pull Request（PR）について、客観的に分析・解説します。
 
 各コメントへの総合的な意見：
 
-| コメント | 妥当性 | 重要度 | 対応推奨 | 理由 |
-|---------|--------|--------|---------|------|
-| [ID] | ✅/⚠️/❌ | 高/中/低 | 必須/推奨/任意 | [...] |
+| コメント | resolved | 妥当性 | 重要度 | 対応推奨 | 理由 |
+|---------|---------|--------|--------|---------|------|
+| [ID] | true/false | ✅/⚠️/❌ | 高/中/低 | 必須/推奨/任意 | [...] |
+
+`resolved` 列はデフォルトモードでは全て `false` になるので省略可。`--all` モード時のみ表示する。
 
 ### 議論の方向性
 
