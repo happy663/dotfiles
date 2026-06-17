@@ -5,6 +5,21 @@
 * 常に日本語で会話する
 * Markdownの強調構文（`**太字**`）を使用しない。代わりにシンプルな文章表現を使う
 
+## Environment Management
+
+### 基本方針
+
+* PC全体の環境構築はNix（Nix + Home Manager + nix-darwin）で宣言的に管理している
+* パッケージやツールの追加・変更を提案する際は、原則としてNix（nixpkgs）での導入を第一選択とする
+
+### Homebrew の位置づけ
+
+* Homebrewも一部利用しているが、それもNixの管理下にある（nix-darwinのhomebrew設定経由で宣言的に管理）
+* brewを使うのは以下の例外的ケースに限る：
+  * nixpkgsに存在せず導入が難しいもの
+  * nixpkgsだと動作が不安定なもの
+* 上記以外は基本的にNixで導入する
+
 ## Development Philosophy
 
 ### Test-Driven Development (TDD)
@@ -89,7 +104,10 @@
 #### ワークフロー
 
 1. **ローカル存在確認**: `ghq list | grep [repo名]`
-2. **存在しない場合**: `ghq get [GitHubリポジトリURL]`でクローン
+2. **存在しない場合**: `ghq get` でクローン
+   * まず `ghq get git@github.com:[owner]/[repo].git`（SSH）を試す
+   * HTTPS（`ghq get [owner]/[repo]`）が `could not read Username` 等で失敗しても「クローン不可」と即断せず、SSH 経路を試す
+   * 両経路を試して失敗した場合に限りクローン不可と報告する
 3. **調査実行**:
    * `cd $(ghq root)/github.com/[org]/[repo]`で移動
    * 利用可能なツールで調査
