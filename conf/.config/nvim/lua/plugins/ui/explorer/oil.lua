@@ -416,8 +416,15 @@ return {
             require("oil").open_float(parent_path, preview_opts)
           end
         else
-          -- 現在のファイルpathを開く
+          -- 現在のバッファのディレクトリを開く。
+          -- octo:// などの仮想バッファでは expand("%:p:h") が URL 文字列を返し、
+          -- oil がそれを octo バッファとして開こうとして
+          -- "Provide query directly or in the f table." エラーになる。
+          -- 実在ディレクトリでなければ現在の cwd にフォールバックする。
           local path = vim.fn.expand("%:p:h")
+          if vim.fn.isdirectory(path) ~= 1 then
+            path = vim.fn.getcwd()
+          end
           require("oil").open_float(path, preview_opts)
         end
       end
