@@ -23,7 +23,7 @@ return {
         org_capture_templates = {
           t = {
             description = "タスク追加",
-            template = "* TODO [#D] %? [/] :%^{タグ|work|dev|private}:",
+            template = "* TODO [#B] %? [/] :%^{タグ|work|dev|private}:",
             target = "~/src/github.com/happy663/org-memo/org/todo.org",
             -- headline = "%^{カテゴリ|Work|Dev|Private}", -- nvim-orgmodeではプロンプト構文は使えない
           },
@@ -34,7 +34,7 @@ return {
           },
           l = {
             description = "作業ログ付きタスク",
-            template = [[* TODO [#D] %? [/] :%^{タグ|work|dev|private}:
+            template = [[* TODO [#B] %? [/] :%^{タグ|work|dev|private}:
    :LOGBOOK:
    - Note taken on [%U] \\
      開始: 
