@@ -26,14 +26,20 @@ local TARGET_APPS = {
   ["com.google.Chrome"] = "Google Chrome",
 }
 
--- このドメイン (ホスト名の suffix 一致) では自動起動しない。
--- 例: "github.com" は "github.com" と "gist.github.com" の両方にマッチする。
-local DENYLIST_DOMAINS = {
-  -- "github.com",
-  -- "mail.google.com",
-  "google.com",
-  "docs.google.com",
-  "app.devin.ai",
+-- ここに列挙した URL パターンに一致するページでのみ自動起動する (allowlist 方式)。
+-- denylist だと新しいサイトが増えるたびに誤起動するため、明示的に許可した場所
+-- だけで起動する。
+--   host:     ホスト名の suffix 一致 ("github.com" は "*.github.com" にもマッチ)
+--   patterns: パスに対する Lua パターン。いずれか1つでも一致すれば許可。
+-- 現状の要件は「GitHub の issue と PR でだけ起動」。
+local ALLOWLIST = {
+  {
+    host = "github.com",
+    patterns = {
+      "^/[^/]+/[^/]+/issues/", -- issue 詳細・新規作成
+      "^/[^/]+/[^/]+/pull/", -- PR 詳細
+    },
+  },
 }
 
 -- Hammerspoon config reload 時に古い watcher が残ってリークしないよう、
@@ -140,15 +146,36 @@ local function extractHostname(url)
   return host:lower()
 end
 
--- ホスト名が denylist に suffix 一致するかを判定する。
+-- URL文字列からパス部分 (クエリ・フラグメントを除く) を抽出する。
+-- パスがない場合は "/" を返す。
+local function extractPath(url)
+  local path = url:match("^[%w+%-.]+://[^/]+(/[^?#]*)")
+  return path or "/"
+end
+
+-- ホスト名が allowlist の host に suffix 一致するかを判定する。
 -- "github.com" は "github.com" と "*.github.com" の両方にマッチする。
-local function isDeniedHost(host)
+local function hostMatches(host, allowedHost)
+  return host == allowedHost or host:sub(-(#allowedHost + 1)) == "." .. allowedHost
+end
+
+-- URL が allowlist のいずれかのエントリ (host + path パターン) に一致するかを判定する。
+local function isAllowedUrl(url)
+  if not url then
+    return false
+  end
+  local host = extractHostname(url)
   if not host then
     return false
   end
-  for _, denied in ipairs(DENYLIST_DOMAINS) do
-    if host == denied or host:sub(-(#denied + 1)) == "." .. denied then
-      return true
+  local path = extractPath(url)
+  for _, entry in ipairs(ALLOWLIST) do
+    if hostMatches(host, entry.host) then
+      for _, pattern in ipairs(entry.patterns) do
+        if path:match(pattern) then
+          return true
+        end
+      end
     end
   end
   return false
@@ -158,9 +185,8 @@ local function triggerOvimEdit(appName)
   -- AppleScript呼び出しは ~100ms かかるが、発火タイミングが稀 (テキストエリア
   -- へのフォーカス時のみ) なので毎回叩いて問題ない。
   local url = getActiveTabURL(appName)
-  local host = url and extractHostname(url)
-  if isDeniedHost(host) then
-    hs_logger.d("Skip ovim edit on denied host: " .. tostring(host))
+  if not isAllowedUrl(url) then
+    hs_logger.d("Skip ovim edit on non-allowed url: " .. tostring(url))
     return
   end
 
