@@ -1,6 +1,7 @@
 local config = require("agent_term.config")
 local draft = require("agent_term.draft")
 local layouts = require("agent_term.layouts")
+local routing = require("agent_term.routing")
 local state = require("agent_term.state")
 local terminals = require("agent_term.terminals")
 
@@ -39,6 +40,14 @@ local function toggle_draft_buffer()
     return
   end
 
+  -- 現在タブに Agent ドラフトが無い場合は、別タブの Agent ドラフトへ移動する（要望2）。
+  -- Agent タブが見つからなければ、従来どおり現在タブで fallback して開く。
+  if not state.get_draft_bufnr() then
+    if routing.goto_agent_draft() then
+      return
+    end
+  end
+
   local current_bufnr = vim.api.nvim_get_current_buf()
   local focus_opts = {
     draft_height = config.draft.attached_height,
@@ -62,6 +71,7 @@ function M.setup()
   setup_done = true
 
   draft.setup()
+  routing.setup()
 
   vim.api.nvim_create_user_command("AgentCodex", function(command)
     layouts.open_agent_codex({
@@ -194,3 +204,4 @@ function M.setup()
 end
 
 return M
+

@@ -81,8 +81,13 @@ return {
         sync_cwd_from_lazygit()
         -- ウィンドウレイアウトの修復
         vim.schedule(function()
+          -- クリーンアップ・フォーカス処理は現在のタブページ内に限定する。
+          -- nvim_list_wins() は全タブのウィンドウを返すため、これを使うと
+          -- lazygit を Agent タブで閉じた際に別タブへ飛んでしまう。
+          local tabpage = vim.api.nvim_get_current_tabpage()
+
           -- フローティングウィンドウやターミナルバッファをクリーンアップ
-          for _, win in pairs(vim.api.nvim_list_wins()) do
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
             if vim.api.nvim_win_is_valid(win) then
               local buf = vim.api.nvim_win_get_buf(win)
               local ft = vim.api.nvim_buf_get_option(buf, "filetype")
@@ -90,21 +95,24 @@ return {
 
               -- 不要なバッファタイプを削除
               if ft == "lazygit" or ft == "cmp_menu" or ft == "NvimSeparator" or name == "" then
-                if vim.api.nvim_buf_is_valid(buf) and #vim.api.nvim_list_wins() > 1 then
+                if vim.api.nvim_buf_is_valid(buf) and #vim.api.nvim_tabpage_list_wins(tabpage) > 1 then
                   pcall(vim.api.nvim_win_close, win, true)
                 end
               end
             end
           end
 
-          -- メインエディタウィンドウにフォーカス
-          for _, win in pairs(vim.api.nvim_list_wins()) do
-            if vim.api.nvim_win_is_valid(win) then
-              local buf = vim.api.nvim_win_get_buf(win)
-              local ft = vim.api.nvim_buf_get_option(buf, "filetype")
-              if ft == "lua" or ft == "python" or ft == "javascript" or ft ~= "NvimTree" then
-                vim.api.nvim_set_current_win(win)
-                break
+          -- lazygit.nvim は終了時に起動元ウィンドウへ戻すため、通常はそのままで良い。
+          -- 現在ウィンドウが無効になった場合のみ、同じタブ内のウィンドウへフォーカスする。
+          if not vim.api.nvim_win_is_valid(vim.api.nvim_get_current_win()) then
+            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+              if vim.api.nvim_win_is_valid(win) then
+                local buf = vim.api.nvim_win_get_buf(win)
+                local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+                if ft ~= "NvimTree" then
+                  vim.api.nvim_set_current_win(win)
+                  break
+                end
               end
             end
           end
