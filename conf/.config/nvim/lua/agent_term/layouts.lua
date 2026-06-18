@@ -70,6 +70,7 @@ function M.open_agent_claude(opts)
   end
 
   vim.cmd("tabnew")
+  vim.cmd("startinsert")
   vim.cmd("terminal " .. claude_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
