@@ -68,6 +68,7 @@ in
       php84Extensions.xdebug
       rtk
       ghostscript
+      mermaid-cli
     ];
 
     sessionVariables = {
