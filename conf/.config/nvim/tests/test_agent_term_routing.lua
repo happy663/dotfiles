@@ -23,10 +23,19 @@ end
 -- ヘルパー: Agentタブを1枚作り、ドラフトバッファを表示した状態にする
 local function make_agent_tab()
   vim.cmd("tabnew")
+  state.mark_current_tab_as_agent()
   local tabpage = vim.api.nvim_get_current_tabpage()
   -- 擬似的なターミナル代わりに draft を開く（agent_input_bufnr がセットされる）
   local draft_bufnr = draft.open_input_buffer({ draft_height = 8 })
   return tabpage, draft_bufnr
+end
+
+-- ヘルパー: マーカー無しでドラフトだけ持つ hybrid タブ
+local function make_hybrid_tab()
+  vim.cmd("tabnew")
+  local tabpage = vim.api.nvim_get_current_tabpage()
+  draft.open_input_buffer({ draft_height = 8 })
+  return tabpage
 end
 
 -- 1. is_relocatable_file_buf: 通常ファイルのみ移送対象
@@ -55,8 +64,13 @@ do
   assert_eq(state.is_agent_tabpage(first_tab), false, "plain tab is not agent tab")
 
   local agent_tab = make_agent_tab()
-  assert_eq(state.is_agent_tabpage(agent_tab), true, "tab with draft buffer is agent tab")
+  assert_eq(state.is_agent_tabpage(agent_tab), true, "tab with marker + draft buffer is agent tab")
   assert_eq(state.is_agent_tabpage(first_tab), false, "first tab stays non-agent")
+
+  -- マーカーが無ければ draft があっても Agent タブとはみなさない（hybrid 運用）
+  local hybrid_tab = make_hybrid_tab()
+  assert_eq(state.is_agent_tabpage(hybrid_tab), false, "hybrid tab without marker is not agent tab")
+  vim.cmd("tabclose")
 
   -- 非Agentタブへ戻る（TabLeave で agent_tab が agent MRU に記録される）
   vim.api.nvim_set_current_tabpage(first_tab)

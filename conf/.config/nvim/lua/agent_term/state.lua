@@ -8,11 +8,20 @@ end
 local mru_work_tabpage = nil
 local mru_agent_tabpage = nil
 
--- 指定タブが Agent タブ（ドラフト入力またはターミナルを持つ）かどうか。
+-- 指定タブが Agent 専用タブかどうか。
+-- 「Agent 専用」は明示マーカー (t:agent_pure) で判定する。
+-- ドラフト/ターミナルの有無だけで判定すると、ファイル編集ウィンドウを併設した
+-- hybrid レイアウトまで Agent タブ扱いされてしまうため。
 -- tabpage 省略時は 0 = 現在タブ。
 function M.is_agent_tabpage(tabpage)
   tabpage = tabpage or 0
 
+  local ok, pure = pcall(vim.api.nvim_tabpage_get_var, tabpage, "agent_pure")
+  if not ok or not pure then
+    return false
+  end
+
+  -- マーカーが残っていても中身が空のタブまで Agent と扱わないよう、最低限の構成は確認する
   local ok_input, input_bufnr = pcall(vim.api.nvim_tabpage_get_var, tabpage, "agent_input_bufnr")
   if ok_input and M.is_valid_buf(input_bufnr) then
     return true
@@ -24,6 +33,12 @@ function M.is_agent_tabpage(tabpage)
   end
 
   return false
+end
+
+-- 現在タブを Agent 専用タブとしてマークする。
+-- レイアウト生成関数 (open_agent_claude 等) から呼ぶこと。
+function M.mark_current_tab_as_agent()
+  vim.t.agent_pure = true
 end
 
 -- タブを Agent / 非Agent に分類して MRU に記録する。

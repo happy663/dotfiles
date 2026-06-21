@@ -43,6 +43,7 @@ function M.open_agent_codex(opts)
 
   if opts.open_in_new_tab ~= false then
     vim.cmd("tabnew")
+    state.mark_current_tab_as_agent()
   end
   vim.cmd("terminal " .. codex_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
@@ -70,6 +71,7 @@ function M.open_agent_claude(opts)
   end
 
   vim.cmd("tabnew")
+  state.mark_current_tab_as_agent()
   vim.cmd("startinsert")
   vim.cmd("terminal " .. claude_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
@@ -93,6 +95,7 @@ function M.open_agent_claude_codex(opts)
   opts = opts or {}
   if opts.open_in_new_tab ~= false and config.claude_codex.open_in_new_tab then
     vim.cmd("tabnew")
+    state.mark_current_tab_as_agent()
   end
 
   local claude_cmd = opts.claude_command or CLAUDE_COMMAND
@@ -209,6 +212,7 @@ function M.open_agent_claude_pair(opts)
   end
 
   vim.cmd("tabnew")
+  state.mark_current_tab_as_agent()
 
   vim.cmd("terminal " .. claude_cmd)
   local left_bufnr = vim.api.nvim_get_current_buf()
