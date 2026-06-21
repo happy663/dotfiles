@@ -30,7 +30,7 @@
   # システムの設定（nix-darwinが効いているかのテスト）
   system = {
     stateVersion = 6;
-
+    
     defaults = {
       NSGlobalDomain = {
         AppleShowAllExtensions = true;
@@ -84,15 +84,21 @@
         show-process-indicators = true; # 実行中インジケータを表示
         static-only = false; # 開いているアプリのみ表示
         persistent-apps = [
-          {
-            app = "/Applications/Google Chrome.app";
-          }
-          {
-            app = "/Applications/WezTerm.app";
-          }
+          # {
+          #   app = "/Applications/Google Chrome.app";
+          # }
+          # {
+          #   app = "/Applications/WezTerm.app";
+          # }
           # {
           #   app = "/Applications/Slack.app";
           # }
+          {
+            app = "/Applications/Ghostty.app";
+          }
+          {
+            app = "/Applications/Vivaldi.app";
+          }
         ]; # 常駐アプリなし
         mru-spaces = false; # 最近使用したスペースを並べ替えない
         expose-animation-duration = 0.1; # Exposéアニメーション速度
