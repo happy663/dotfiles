@@ -89,20 +89,40 @@ return {
 
       require("tokyonight").setup(merged_config)
 
+      local function set_ghostty_opacity(opacity)
+        local config_path = vim.fn.expand("~/.config/ghostty/config")
+        local file = io.open(config_path, "r")
+        if not file then
+          return
+        end
+        local content = file:read("*a")
+        file:close()
+        content = content:gsub("background%-opacity = [%d%.]+", "background-opacity = " .. opacity)
+        file = io.open(config_path, "w")
+        if not file then
+          return
+        end
+        file:write(content)
+        file:close()
+        vim.fn.system(
+          [[osascript -e 'tell application "System Events" to keystroke "," using {command down, shift down}']]
+        )
+      end
+
       vim.g.tokyonight_transparent_toggle = false
       function _G.toggle_transparent()
-        print("toggle_transparent")
-        print(vim.g.tokyonight_transparent_toggle)
         if vim.g.tokyonight_transparent_toggle then
           require("tokyonight").setup(vim.tbl_deep_extend("force", merged_config, {
             transparent = false,
           }))
           vim.g.tokyonight_transparent_toggle = false
+          set_ghostty_opacity("1")
         else
           require("tokyonight").setup(vim.tbl_deep_extend("force", merged_config, {
             transparent = true,
           }))
           vim.g.tokyonight_transparent_toggle = true
+          set_ghostty_opacity("0.8")
         end
 
         vim.cmd("colorscheme tokyonight")
