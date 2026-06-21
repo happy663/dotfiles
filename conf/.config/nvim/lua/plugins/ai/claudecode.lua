@@ -95,7 +95,28 @@ return {
       end,
       desc = "Focus Claude (terminal-normal mode)",
     },
-    { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+    {
+      "<leader>ar",
+      function()
+        local snacks_term = require("claudecode.terminal.snacks")
+        local server = require("claudecode.server")
+        snacks_term.close()
+        local env = {
+          ENABLE_IDE_INTEGRATION = "true",
+          FORCE_CODE_TERMINAL = "true",
+        }
+        if server.state and server.state.port then
+          env.CLAUDE_CODE_SSE_PORT = tostring(server.state.port)
+        end
+        snacks_term.open("ccsession", env, {
+          split_side = "right",
+          split_width_percentage = 0.4,
+          auto_close = false,
+          snacks_win_opts = {},
+        }, true)
+      end,
+      desc = "Resume Claude (session picker)",
+    },
     { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
     { "<leader>at", "<cmd>ClaudeDraftFocus<cr>", desc = "Focus Claude draft" },
     { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
