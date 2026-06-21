@@ -106,13 +106,22 @@ function _navigate_right() {
 }
 function _navigate_down()  { _tmux_navigate_or -D accept-line }
 function _navigate_up()    { _tmux_navigate_or -U kill-line }
+function _resize_or_end_of_line() {
+  if [[ -n $TMUX && -z $BUFFER ]]; then
+    tmux switch-client -T resize
+  else
+    zle end-of-line
+  fi
+}
 
 zle -N _navigate_left
 zle -N _navigate_right
 zle -N _navigate_down
 zle -N _navigate_up
+zle -N _resize_or_end_of_line
 
 bindkey '^h' _navigate_left
 bindkey '^l' _navigate_right
 bindkey '^j' _navigate_down
 bindkey '^k' _navigate_up
+bindkey '^e' _resize_or_end_of_line
