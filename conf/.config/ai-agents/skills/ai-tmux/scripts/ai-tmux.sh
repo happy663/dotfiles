@@ -170,6 +170,7 @@ cmd_run() {
   {
     printf '[ai-tmux] finished_at=%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
     printf '[ai-tmux] exit_code=%s\n' "$cmd_status"
+    printf '[ai-tmux] log=%s\n' "$log"
   } | tee -a "$log"
 
   if [[ "$cmd_status" -eq 0 ]]; then
