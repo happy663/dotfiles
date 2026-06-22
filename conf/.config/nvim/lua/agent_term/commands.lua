@@ -147,6 +147,13 @@ function M.setup()
     })
   end, { desc = "Open Claude session picker terminal" })
 
+  vim.api.nvim_create_user_command("AgentCodexSession", function()
+    layouts.open_agent_codex({
+      command = "ccsession --codex",
+      open_draft = false,
+    })
+  end, { desc = "Open Codex session picker terminal" })
+
   vim.api.nvim_create_user_command("AgentClaudeCodex", function(command)
     layouts.open_agent_claude_codex({ args = command.args })
   end, { nargs = "*", desc = "Open Claude + Codex agent terminals + draft buffer" })
@@ -204,4 +211,3 @@ function M.setup()
 end
 
 return M
-

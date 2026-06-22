@@ -47,7 +47,7 @@ in
       fastfetch
       nodejs_24
       (inputs.ccsession.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
-        vendorHash = "sha256-pbA/AlBz3cQYRTMnQ/qBPcinYOKokrBLNhkbRTq54gE=";
+        vendorHash = "sha256-87X5go1iG4gqUTHXbZoxWuAhk+jWv6OBIQVb5UfFfzs=";
       }))
       # Node.js tools managed by Nix
       nodeTools
