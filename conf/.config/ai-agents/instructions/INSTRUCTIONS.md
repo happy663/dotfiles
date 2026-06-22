@@ -147,6 +147,18 @@ cd $(ghq root)/github.com/neovim/nvim-lspconfig
 * 存在確認せずに他リポジトリを探索
 * 単純な情報取得に広範な探索を使用
 
+## GitHub Issue Creation Policy
+
+### デフォルトの投稿先
+
+* このリポジトリ（dotfiles）で起動しているセッションでは、原則として `happy663/dotfiles` にissueを作成する
+* 他のリポジトリにissueを立てたい場合は、ユーザーが明示的にリポジトリを指定する
+
+### 外部リポジトリへの投稿
+
+* ユーザーから明示的な指示がない限り、外部リポジトリ（OSS等）にissueを作成しない
+* 外部リポジトリへの投稿が必要な場合は、投稿先を確認してから実行する
+
 ## Shell Command Policy
 
 ### HEREDOC によるテキスト渡しの罠
