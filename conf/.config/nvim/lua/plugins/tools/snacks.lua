@@ -18,7 +18,10 @@ return {
       -- refer to the configuration section below
       bigfile = { enabled = false },
       dashboard = { enabled = false },
-      image = { enabled = true },
+      image = {
+        enabled = true,
+        resolve = require("utils.github-image-resolver").resolve,
+      },
       explorer = {
         enabled = false,
         finder = "explorer",
