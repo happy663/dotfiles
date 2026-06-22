@@ -110,9 +110,7 @@
       "Bash(which:*)",
       "WebSearch"
     ],
-    "deny": [
-      "Bash(rm:*)"
-    ]
+    "deny": ["Bash(rm:*)"]
   },
   "hooks": {
     "PreToolUse": [
@@ -176,6 +174,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh running"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/claude-session-register.sh"
           }
         ]
       }

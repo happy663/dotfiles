@@ -160,17 +160,49 @@ function M.setup()
       return
     end
 
-    local session_file = "/tmp/claude-sessions/" .. job_pid
-    local f = io.open(session_file, "r")
-    if not f then
-      vim.notify("[AgentClaudeFork] No session file: " .. session_file, vim.log.levels.ERROR)
-      return
+    local function find_session_id(pid)
+      local f = io.open("/tmp/claude-sessions/" .. pid, "r")
+      if f then
+        local id = f:read("*l")
+        f:close()
+        if id and id ~= "" then
+          return id
+        end
+      end
+      local handle = io.popen("ps -eo pid=,ppid=,comm= 2>/dev/null")
+      if not handle then
+        return nil
+      end
+      local children = {}
+      for line in handle:lines() do
+        local cpid, cppid = line:match("^%s*(%d+)%s+(%d+)")
+        if cpid and cppid then
+          children[cppid] = children[cppid] or {}
+          table.insert(children[cppid], cpid)
+        end
+      end
+      handle:close()
+      local queue = children[tostring(pid)] or {}
+      while #queue > 0 do
+        local cpid = table.remove(queue, 1)
+        f = io.open("/tmp/claude-sessions/" .. cpid, "r")
+        if f then
+          local id = f:read("*l")
+          f:close()
+          if id and id ~= "" then
+            return id
+          end
+        end
+        for _, grandchild in ipairs(children[cpid] or {}) do
+          table.insert(queue, grandchild)
+        end
+      end
+      return nil
     end
-    local session_id = f:read("*l")
-    f:close()
 
-    if not session_id or session_id == "" then
-      vim.notify("[AgentClaudeFork] Empty session ID", vim.log.levels.ERROR)
+    local session_id = find_session_id(job_pid)
+    if not session_id then
+      vim.notify("[AgentClaudeFork] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
     end
 
