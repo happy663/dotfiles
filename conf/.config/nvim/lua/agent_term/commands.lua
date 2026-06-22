@@ -147,6 +147,42 @@ function M.setup()
     })
   end, { desc = "Open Claude session picker terminal" })
 
+  vim.api.nvim_create_user_command("AgentClaudeFork", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if vim.bo[bufnr].buftype ~= "terminal" then
+      vim.notify("[AgentClaudeFork] Run from a Claude terminal buffer", vim.log.levels.WARN)
+      return
+    end
+
+    local job_pid = vim.b[bufnr].terminal_job_pid
+    if not job_pid then
+      vim.notify("[AgentClaudeFork] No terminal job PID found", vim.log.levels.ERROR)
+      return
+    end
+
+    local session_file = "/tmp/claude-sessions/" .. job_pid
+    local f = io.open(session_file, "r")
+    if not f then
+      vim.notify("[AgentClaudeFork] No session file: " .. session_file, vim.log.levels.ERROR)
+      return
+    end
+    local session_id = f:read("*l")
+    f:close()
+
+    if not session_id or session_id == "" then
+      vim.notify("[AgentClaudeFork] Empty session ID", vim.log.levels.ERROR)
+      return
+    end
+
+    local cwd = vim.fn.getcwd()
+    local cmd = string.format(
+      "tmux split-window -h -c %s \"nvim +'AgentClaude --resume %s --fork-session'\"",
+      vim.fn.shellescape(cwd),
+      session_id
+    )
+    vim.fn.system(cmd)
+  end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
+
   vim.api.nvim_create_user_command("AgentCodexSession", function()
     layouts.open_agent_codex({
       command = "ccsession --codex",

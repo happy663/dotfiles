@@ -138,6 +138,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude session-start"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/claude-session-register.sh"
           }
         ]
       }
@@ -153,6 +157,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/claude-session-cleanup.sh"
           }
         ]
       }
