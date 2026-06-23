@@ -8,4 +8,6 @@
   home.packages = with pkgs;[
     terminal-notifier
   ];
+
+  home.file."Library/Fonts/akkurat.ttf".source = ../../fonts/akkurat.ttf;
 }
