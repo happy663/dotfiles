@@ -23,6 +23,46 @@ local function find_draft_winid()
   return nil
 end
 
+local function find_claude_session_id(pid)
+  local f = io.open("/tmp/claude-sessions/" .. pid, "r")
+  if f then
+    local id = f:read("*l")
+    f:close()
+    if id and id ~= "" then
+      return id
+    end
+  end
+  local handle = io.popen("ps -eo pid=,ppid=,comm= 2>/dev/null")
+  if not handle then
+    return nil
+  end
+  local children = {}
+  for line in handle:lines() do
+    local cpid, cppid = line:match("^%s*(%d+)%s+(%d+)")
+    if cpid and cppid then
+      children[cppid] = children[cppid] or {}
+      table.insert(children[cppid], cpid)
+    end
+  end
+  handle:close()
+  local queue = children[tostring(pid)] or {}
+  while #queue > 0 do
+    local cpid = table.remove(queue, 1)
+    f = io.open("/tmp/claude-sessions/" .. cpid, "r")
+    if f then
+      local id = f:read("*l")
+      f:close()
+      if id and id ~= "" then
+        return id
+      end
+    end
+    for _, grandchild in ipairs(children[cpid] or {}) do
+      table.insert(queue, grandchild)
+    end
+  end
+  return nil
+end
+
 local function toggle_draft_buffer()
   local current_winid = vim.api.nvim_get_current_win()
   local draft_winid = find_draft_winid()
@@ -160,47 +200,7 @@ function M.setup()
       return
     end
 
-    local function find_session_id(pid)
-      local f = io.open("/tmp/claude-sessions/" .. pid, "r")
-      if f then
-        local id = f:read("*l")
-        f:close()
-        if id and id ~= "" then
-          return id
-        end
-      end
-      local handle = io.popen("ps -eo pid=,ppid=,comm= 2>/dev/null")
-      if not handle then
-        return nil
-      end
-      local children = {}
-      for line in handle:lines() do
-        local cpid, cppid = line:match("^%s*(%d+)%s+(%d+)")
-        if cpid and cppid then
-          children[cppid] = children[cppid] or {}
-          table.insert(children[cppid], cpid)
-        end
-      end
-      handle:close()
-      local queue = children[tostring(pid)] or {}
-      while #queue > 0 do
-        local cpid = table.remove(queue, 1)
-        f = io.open("/tmp/claude-sessions/" .. cpid, "r")
-        if f then
-          local id = f:read("*l")
-          f:close()
-          if id and id ~= "" then
-            return id
-          end
-        end
-        for _, grandchild in ipairs(children[cpid] or {}) do
-          table.insert(queue, grandchild)
-        end
-      end
-      return nil
-    end
-
-    local session_id = find_session_id(job_pid)
+    local session_id = find_claude_session_id(job_pid)
     if not session_id then
       vim.notify("[AgentClaudeFork] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
@@ -214,6 +214,40 @@ function M.setup()
     )
     vim.fn.system(cmd)
   end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
+
+  vim.api.nvim_create_user_command("AgentClaudeRestart", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if vim.bo[bufnr].buftype ~= "terminal" then
+      vim.notify("[AgentClaudeRestart] Run from a Claude terminal buffer", vim.log.levels.WARN)
+      return
+    end
+
+    local job_pid = vim.b[bufnr].terminal_job_pid
+    if not job_pid then
+      vim.notify("[AgentClaudeRestart] No terminal job PID found", vim.log.levels.ERROR)
+      return
+    end
+
+    local session_id = find_claude_session_id(job_pid)
+    if not session_id then
+      vim.notify("[AgentClaudeRestart] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
+      return
+    end
+
+    local winid = vim.api.nvim_get_current_win()
+    local job_id = vim.b[bufnr].terminal_job_id
+    if job_id then
+      vim.fn.jobstop(job_id)
+    end
+
+    vim.api.nvim_set_current_win(winid)
+    vim.cmd("enew")
+    local resume_cmd = "claude --resume " .. session_id
+    vim.cmd("terminal " .. resume_cmd)
+    local new_bufnr = vim.api.nvim_get_current_buf()
+    state.set_target_terminal_bufnr(new_bufnr)
+    vim.cmd("startinsert")
+  end, { desc = "Restart Claude Code with --resume in the same window" })
 
   vim.api.nvim_create_user_command("AgentCodexSession", function()
     layouts.open_agent_codex({
