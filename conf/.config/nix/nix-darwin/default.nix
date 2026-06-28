@@ -198,14 +198,19 @@
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
+      cleanup = "none";
     };
     taps = [
       # "homebrew/bundle"
-      "nikitabobko/AeroSpace"
-      "FelixKratz/formulae"
+      {
+        name = "FelixKratz/formulae";
+        trusted = true;
+      }
       "manaflow-ai/cmux"
-      "tonisives/tap"
+      {
+        name = "tonisives/tap";
+        trusted = true;
+      }
     ];
     brews = [
       "sqlite"
@@ -223,7 +228,6 @@
       "emacs"
       "meetingbar"
       "alacritty"
-      "aerospace"
       "alt-tab"
       "figma"
       "visual-studio-code"
@@ -327,4 +331,3 @@
     };
   };
 }
-
