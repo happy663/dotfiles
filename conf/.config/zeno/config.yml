@@ -265,6 +265,26 @@ snippets:
     keyword: ncp
     snippet: nvim-claude-pair
 
+  - name: nvim octo
+    keyword: o
+    snippet: nvim-octo
+
+  - name: nvim octo issues
+    keyword: ol
+    snippet: nvim-octo-issues
+
+  - name: nvim octo my issues
+    keyword: om
+    snippet: nvim-octo-my-issues
+
+  - name: nvim octo prs
+    keyword: op
+    snippet: nvim-octo-prs
+
+  - name: nvim octo reviews
+    keyword: "or"
+    snippet: nvim-octo-reviews
+
   # - name:
   #   keyword:
   #   snippet:

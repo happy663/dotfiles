@@ -19,12 +19,12 @@ return {
     },
     keys = {
       {
-        "<leader>olh",
+        "<leader>olm",
         "<cmd>Octo issue list assignee=happy663 states=OPEN<CR>",
         desc = "Open Octo issues assigned to happy663",
       },
       {
-        "<leader>olch",
+        "<leader>olcm",
         "<cmd>Octo issue list assignee=happy663 states=CLOSED<CR>",
         desc = "Open Octo issues assigned to happy663",
       },

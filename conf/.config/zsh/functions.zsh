@@ -111,6 +111,38 @@ function nvim-claude-pair() {
   command nvim -c "$ex_cmd"
 }
 
+function nvim-octo() {
+  local ex_cmd="Octo"
+  if (( $# > 0 )); then
+    ex_cmd+=" $@"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
+function nvim-octo-issues() {
+  local ex_cmd="Octo issue list"
+  if [[ -n "$1" ]]; then
+    ex_cmd+=" $1"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
+function nvim-octo-my-issues() {
+  local ex_cmd="Octo issue list"
+  if [[ -n "$1" ]]; then
+    ex_cmd+=" $1"
+  fi
+  ex_cmd+=" assignee=happy663 states=OPEN"
+  command nvim -c "$ex_cmd"
+}
+
+function nvim-octo-prs() {
+  command nvim -c "Octo search author:@me is:open is:pr"
+}
+
+function nvim-octo-reviews() {
+  command nvim -c "Octo search review-requested:@me is:open is:pr"
+}
 
 # -----------------------------------------------------------------------------
 # Profiling and Performance Functions
