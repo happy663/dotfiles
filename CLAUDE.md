@@ -133,6 +133,13 @@ conf/.config/nvim/
 * StyLua v0.20.0を使用
 * コミット前に自動実行
 
+## Agent CLI Usage
+
+- Claude Code / Codex は Neovim のターミナルバッファ内で使用している
+- `conf/.config/nvim/lua/agent_term/` にターミナル管理モジュールがある
+- 主要コマンド: AgentClaude, AgentCodex, AgentClaudeRestart, AgentClaudeFork など
+- エージェント CLI に関する提案は、tmux 直接ではなく Neovim コマンド経由を優先すること
+
 ## Development Workflow
 
 ### コミット規約

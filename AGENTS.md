@@ -54,6 +54,12 @@ Scope: このディレクトリ配下すべて。
 - 新規プラグインは既存カテゴリへ配置し、`lazy.nvim` 前提で定義すること。
 - Lua 変更時は必要に応じて `stylua` で整形すること。
 
+## Agent CLI Usage
+- Claude Code / Codex は Neovim のターミナルバッファ内で使用している。
+- `conf/.config/nvim/lua/agent_term/` にターミナル管理モジュールがある。
+- 主要コマンド: AgentClaude, AgentCodex, AgentClaudeRestart, AgentClaudeFork など。
+- エージェント CLI に関する提案は、tmux 直接ではなく Neovim コマンド経由を優先すること。
+
 ## Validation Policy
 - まず変更箇所に近い軽量検証を優先すること。
 - 大規模・長時間の検証は、必要性がある場合のみ実行すること。
