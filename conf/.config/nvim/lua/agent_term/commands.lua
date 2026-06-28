@@ -147,6 +147,81 @@ function M.setup()
     })
   end, { desc = "Open Claude session picker terminal" })
 
+  vim.api.nvim_create_user_command("AgentClaudeFork", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if vim.bo[bufnr].buftype ~= "terminal" then
+      vim.notify("[AgentClaudeFork] Run from a Claude terminal buffer", vim.log.levels.WARN)
+      return
+    end
+
+    local job_pid = vim.b[bufnr].terminal_job_pid
+    if not job_pid then
+      vim.notify("[AgentClaudeFork] No terminal job PID found", vim.log.levels.ERROR)
+      return
+    end
+
+    local function find_session_id(pid)
+      local f = io.open("/tmp/claude-sessions/" .. pid, "r")
+      if f then
+        local id = f:read("*l")
+        f:close()
+        if id and id ~= "" then
+          return id
+        end
+      end
+      local handle = io.popen("ps -eo pid=,ppid=,comm= 2>/dev/null")
+      if not handle then
+        return nil
+      end
+      local children = {}
+      for line in handle:lines() do
+        local cpid, cppid = line:match("^%s*(%d+)%s+(%d+)")
+        if cpid and cppid then
+          children[cppid] = children[cppid] or {}
+          table.insert(children[cppid], cpid)
+        end
+      end
+      handle:close()
+      local queue = children[tostring(pid)] or {}
+      while #queue > 0 do
+        local cpid = table.remove(queue, 1)
+        f = io.open("/tmp/claude-sessions/" .. cpid, "r")
+        if f then
+          local id = f:read("*l")
+          f:close()
+          if id and id ~= "" then
+            return id
+          end
+        end
+        for _, grandchild in ipairs(children[cpid] or {}) do
+          table.insert(queue, grandchild)
+        end
+      end
+      return nil
+    end
+
+    local session_id = find_session_id(job_pid)
+    if not session_id then
+      vim.notify("[AgentClaudeFork] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
+      return
+    end
+
+    local cwd = vim.fn.getcwd()
+    local cmd = string.format(
+      "tmux split-window -h -c %s \"nvim +'AgentClaude --resume %s --fork-session'\"",
+      vim.fn.shellescape(cwd),
+      session_id
+    )
+    vim.fn.system(cmd)
+  end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
+
+  vim.api.nvim_create_user_command("AgentCodexSession", function()
+    layouts.open_agent_codex({
+      command = "ccsession --codex",
+      open_draft = false,
+    })
+  end, { desc = "Open Codex session picker terminal" })
+
   vim.api.nvim_create_user_command("AgentClaudeCodex", function(command)
     layouts.open_agent_claude_codex({ args = command.args })
   end, { nargs = "*", desc = "Open Claude + Codex agent terminals + draft buffer" })
@@ -204,4 +279,3 @@ function M.setup()
 end
 
 return M
-

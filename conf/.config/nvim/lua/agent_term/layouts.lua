@@ -45,6 +45,7 @@ function M.open_agent_codex(opts)
     vim.cmd("tabnew")
     state.mark_current_tab_as_agent()
   end
+  vim.cmd("startinsert")
   vim.cmd("terminal " .. codex_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })

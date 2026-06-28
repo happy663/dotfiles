@@ -253,6 +253,10 @@ snippets:
     keyword: ncs
     snippet: nvim-claude-session
 
+  - name: nvim codex session
+    keyword: nxs
+    snippet: nvim-codex-session
+
   - name: nvim claude codex
     keyword: ncc
     snippet: nvim-claude-codex
