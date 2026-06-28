@@ -80,5 +80,3 @@ function M.octo_buffer_keymaps()
 end
 
 return M
-
-

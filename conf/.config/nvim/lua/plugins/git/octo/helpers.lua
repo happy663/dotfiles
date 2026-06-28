@@ -150,43 +150,229 @@ function M.create_child_issue_and_open()
   })
 end
 
--- List subissues of the current issue and jump to the selected one
-function M.list_subissues_and_jump()
+-- Flatten the sub-issue tree into a depth-tagged list so that
+-- grandchild issues are shown (indented) alongside their parents.
+local function flatten_subissues(nodes, depth, acc)
+  for _, node in ipairs(nodes) do
+    node.depth = depth
+    table.insert(acc, node)
+    if node.subIssues and node.subIssues.nodes and #node.subIssues.nodes > 0 then
+      flatten_subissues(node.subIssues.nodes, depth + 1, acc)
+    end
+  end
+  return acc
+end
+
+-- Format a single issue node as a picker line (icon + state + #number + title),
+-- indented by its depth in the tree.
+local function format_issue_item(node, issue_icons)
+  local icon
+  if node.state == "OPEN" then
+    icon = issue_icons.open[1]
+  elseif node.stateReason == "NOT_PLANNED" then
+    icon = issue_icons.not_planned[1]
+  else
+    icon = issue_icons.closed[1]
+  end
+  local indent = string.rep("  ", node.depth or 0)
+  return string.format("%s%s #%d  %s", indent, icon .. node.state, node.number, node.title)
+end
+
+-- Sub-issue tree query: the issue itself plus three nested levels of subIssues.
+-- `first: 50` per level keeps the node estimate (50^3) under GitHub's 500k cap.
+local SUBISSUE_TREE_QUERY = [[
+  query($owner: String!, $name: String!, $number: Int!) {
+    repository(owner: $owner, name: $name) {
+      issue(number: $number) {
+        number
+        title
+        state
+        stateReason
+        subIssues(first: 50) {
+          nodes {
+            number
+            title
+            state
+            stateReason
+            subIssues(first: 50) {
+              nodes {
+                number
+                title
+                state
+                stateReason
+                subIssues(first: 50) {
+                  nodes {
+                    number
+                    title
+                    state
+                    stateReason
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]]
+
+-- Open a picker showing the sub-issue tree rooted at ctx.chain[ctx.index].
+-- ctx = { repo, owner, name, chain = {root .. current}, index }.
+-- Inside the picker, <a-,> widens the root one step toward the topmost ancestor
+-- and <a-.> narrows it back toward the current issue, re-rendering each time.
+local function open_subissue_picker(ctx)
   local octo_utils = require("octo.utils")
   local gh = require("octo.gh")
+
+  local start = ctx.chain[ctx.index]
+
+  gh.api.graphql({
+    query = SUBISSUE_TREE_QUERY,
+    fields = {
+      owner = ctx.owner,
+      name = ctx.name,
+      number = start.number,
+    },
+    jq = ".data.repository.issue",
+    opts = {
+      cb = gh.create_callback({
+        success = function(output)
+          local issue = vim.json.decode(output)
+          if not issue then
+            octo_utils.info("Issue not found")
+            return
+          end
+
+          -- Show the root issue itself at depth 0, then its sub-issue tree.
+          local items = {
+            {
+              number = issue.number,
+              title = issue.title,
+              state = issue.state,
+              stateReason = issue.stateReason,
+              depth = 0,
+            },
+          }
+          local sub_nodes = issue.subIssues and issue.subIssues.nodes or {}
+          flatten_subissues(sub_nodes, 1, items)
+
+          local can_widen = ctx.index > 1
+          local can_narrow = ctx.index < #ctx.chain
+          local hints = {}
+          if can_widen then
+            hints[#hints + 1] = "a-,:親へ"
+          end
+          if can_narrow then
+            hints[#hints + 1] = "a-.:子へ"
+          end
+          local hint_str = #hints > 0 and ("  " .. table.concat(hints, " ")) or ""
+          local prompt =
+            string.format("サブissue (起点 #%d  %d/%d%s):", start.number, ctx.index, #ctx.chain, hint_str)
+
+          local function reopen(picker, new_index)
+            picker:close()
+            vim.schedule(function()
+              ctx.index = new_index
+              open_subissue_picker(ctx)
+            end)
+          end
+
+          local issue_icons = octo_utils.icons.issue
+          vim.ui.select(items, {
+            prompt = prompt,
+            format_item = function(node)
+              return format_issue_item(node, issue_icons)
+            end,
+            snacks = {
+              actions = {
+                octo_widen_root = function(picker)
+                  if ctx.index > 1 then
+                    reopen(picker, ctx.index - 1)
+                  else
+                    octo_utils.info("既に最上位の親(ルート)です")
+                  end
+                end,
+                octo_narrow_root = function(picker)
+                  if ctx.index < #ctx.chain then
+                    reopen(picker, ctx.index + 1)
+                  else
+                    octo_utils.info("既にカレントissueです")
+                  end
+                end,
+              },
+              win = {
+                input = {
+                  keys = {
+                    ["<a-,>"] = { "octo_widen_root", mode = { "i", "n" } },
+                    ["<a-.>"] = { "octo_narrow_root", mode = { "i", "n" } },
+                  },
+                },
+                list = {
+                  keys = {
+                    ["<a-,>"] = "octo_widen_root",
+                    ["<a-.>"] = "octo_narrow_root",
+                  },
+                },
+              },
+            },
+          }, function(choice)
+            if not choice then
+              return
+            end
+            octo_utils.get_issue(choice.number, ctx.repo)
+          end)
+        end,
+      }),
+    },
+  })
+end
+
+-- Resolve repo / owner / name / number from the current octo issue buffer.
+-- Returns nil and reports an error when the buffer is not an issue.
+local function current_issue_location()
+  local octo_utils = require("octo.utils")
 
   local buffer = octo_utils.get_current_buffer()
   if not buffer or not buffer:isIssue() then
     octo_utils.error("Current buffer is not an issue")
-    return
+    return nil
   end
 
   local repo = buffer.repo
   local owner, name = octo_utils.split_repo(repo)
-  local number = buffer.number
+  return { repo = repo, owner = owner, name = name, number = buffer.number }
+end
 
-  local query = [[
+-- List sub-issues starting from the current issue, with the option to widen the
+-- root one ancestor at a time (up to the topmost root) from inside the picker.
+-- Defaults to the current issue's own sub-tree so deeply nested issues don't
+-- flood the list, while the whole tree stays reachable via <a-,>.
+function M.list_subissues_and_jump()
+  local octo_utils = require("octo.utils")
+  local gh = require("octo.gh")
+
+  local loc = current_issue_location()
+  if not loc then
+    return
+  end
+
+  -- Walk the parent chain upward. Sub-issues nest at most 8 levels deep on
+  -- GitHub, so an 8-deep parent chain always reaches the root.
+  local parent_query = [[
     query($owner: String!, $name: String!, $number: Int!) {
       repository(owner: $owner, name: $name) {
         issue(number: $number) {
-          subIssues(first: 50) {
-            nodes {
-              number
-              title
-              state
-              stateReason
-              subIssues(first: 50) {
-                nodes {
-                  number
-                  title
-                  state
-                  stateReason
-                  subIssues(first: 50) {
-                    nodes {
-                      number
-                      title
-                      state
-                      stateReason
+          number
+          parent { number
+            parent { number
+              parent { number
+                parent { number
+                  parent { number
+                    parent { number
+                      parent { number
+                        parent { number }
+                      }
                     }
                   }
                 }
@@ -198,59 +384,41 @@ function M.list_subissues_and_jump()
     }
   ]]
 
-  -- Flatten the sub-issue tree into a depth-tagged list so that
-  -- grandchild issues are shown (indented) alongside their parents.
-  local function flatten(nodes, depth, acc)
-    for _, node in ipairs(nodes) do
-      node.depth = depth
-      table.insert(acc, node)
-      if node.subIssues and node.subIssues.nodes and #node.subIssues.nodes > 0 then
-        flatten(node.subIssues.nodes, depth + 1, acc)
-      end
-    end
-    return acc
-  end
-
   gh.api.graphql({
-    query = query,
+    query = parent_query,
     fields = {
-      owner = owner,
-      name = name,
-      number = number,
+      owner = loc.owner,
+      name = loc.name,
+      number = loc.number,
     },
-    jq = ".data.repository.issue.subIssues.nodes",
+    jq = ".data.repository.issue",
     opts = {
       cb = gh.create_callback({
         success = function(output)
-          local nodes = vim.json.decode(output)
-          if not nodes or #nodes == 0 then
-            octo_utils.info("No sub-issues linked to this issue")
+          local issue = vim.json.decode(output)
+          if not issue then
+            octo_utils.error("Issue not found")
             return
           end
 
-          local items = flatten(nodes, 0, {})
+          -- Build the ancestor chain ordered root-first, current-last. Inserting
+          -- at the front while walking parents yields {root, ..., current}.
+          -- vim.json.decode maps JSON null to vim.NIL (userdata), not nil, so
+          -- guard with a table check to stop at the topmost real parent.
+          local chain = {}
+          local node = issue
+          while type(node) == "table" and node.number do
+            table.insert(chain, 1, { number = node.number })
+            node = node.parent
+          end
 
-          local issue_icons = octo_utils.icons.issue
-          vim.ui.select(items, {
-            prompt = "Select sub-issue to jump:",
-            format_item = function(node)
-              local icon
-              if node.state == "OPEN" then
-                icon = issue_icons.open[1]
-              elseif node.stateReason == "NOT_PLANNED" then
-                icon = issue_icons.not_planned[1]
-              else
-                icon = issue_icons.closed[1]
-              end
-              local indent = string.rep("  ", node.depth)
-              return string.format("%s%s #%d  %s", indent, icon .. node.state, node.number, node.title)
-            end,
-          }, function(choice)
-            if not choice then
-              return
-            end
-            octo_utils.get_issue(choice.number, repo)
-          end)
+          open_subissue_picker({
+            repo = loc.repo,
+            owner = loc.owner,
+            name = loc.name,
+            chain = chain,
+            index = #chain, -- start at the current issue
+          })
         end,
       }),
     },
