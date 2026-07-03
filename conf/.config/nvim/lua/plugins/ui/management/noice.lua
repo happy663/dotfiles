@@ -1,4 +1,5 @@
 return {
+
   {
     "folke/noice.nvim",
     cond = vim.g.not_in_vscode,
@@ -103,7 +104,17 @@ return {
       local noice_visible = false
       local function toggle_noice()
         if noice_visible then
-          vim.cmd("quit")
+          -- Neovim 0.12ではautocmd内のウィンドウレイアウト変更が厳格化され、
+          -- :quitで閉じるとBufEnter autocmdの連鎖でE1312が出る。
+          -- noiceのview:hide()はNuiViewのunmount経由で安全に閉じる。
+          -- get_viewはopts一致で同一インスタンスを返すため、:NoiceAllが使う
+          -- commands.allのoptsを渡す（optsなしだと別インスタンスが返り閉じない）。
+          local View = require("noice.view")
+          local cmd = require("noice.config").options.commands.all
+          local view = View.get_view(cmd.view, cmd.opts)
+          if view then
+            view:hide()
+          end
           noice_visible = false
         else
           vim.cmd("NoiceAll")
