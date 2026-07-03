@@ -21,7 +21,6 @@ return {
         },
       },
       completion = {
-        nvim_cmp = true,
         min_chars = 2,
       },
       -- 単体ノートは必ず Vault ルートに作る（デイリー編集中でも root に作られる）
