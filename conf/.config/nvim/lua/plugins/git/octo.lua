@@ -60,9 +60,16 @@ return {
       },
     },
     config = function()
-      require("octo.pickers.telescope.provider")
+      local octo_config = require("plugins.git.octo.base_config")
+      if octo_config.picker == "telescope" then
+        require("octo.pickers.telescope.provider")
+      end
       require("plugins.git.octo.buffer_rename").setup()
-      require("octo").setup(require("plugins.git.octo.base_config"))
+      require("octo").setup(octo_config)
+      -- Octo's undo-history clearing uses `undolevels=-1` + insert/delete.
+      -- On Neovim 0.12.3 this can corrupt undo state in freshly rendered Octo
+      -- buffers and crash when UI plugins handle the resulting error message.
+      require("octo.utils").clear_history = function() end
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "octo",

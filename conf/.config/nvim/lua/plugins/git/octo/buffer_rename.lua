@@ -31,7 +31,7 @@ function M.setup()
       -- Extract repository, kind, and number from buffer name
       local repo, kind, number = bufname:match("octo://([^/]+/[^/]+)/([^/]+)/([^/]+)")
 
-      if repo and kind == "issue" or kind == "pull" and number and tonumber(number) then
+      if repo and (kind == "issue" or kind == "pull") and number and tonumber(number) then
         -- Retry function for buffer content loading
         local function try_extract_title(attempt)
           attempt = attempt or 1
@@ -79,16 +79,20 @@ function M.setup()
               vim.lsp.buf_detach_client(event.buf, client.id)
             end
 
-            -- Change buffer name (with error handling)
-            local new_bufname = string.format("octo://%s/%s/%s", repo, kind, clean_title)
-            local ok = pcall(vim.api.nvim_buf_set_name, event.buf, new_bufname)
+            -- Change buffer name. Never delete an existing octo buffer on collision:
+            -- deleting buffers from this scheduled callback can crash Neovim while
+            -- octo/render-markdown extmarks are being adjusted.
+            local name_candidates = {
+              string.format("octo://%s/%s/%s", repo, kind, clean_title),
+              string.format("octo://%s/%s/%s-%s", repo, kind, number, clean_title),
+              string.format("octo://%s/%s/%s-%s-%d", repo, kind, number, clean_title, event.buf),
+            }
 
-            if not ok then
-              -- Handle name collision: Delete existing buffer and retry
-              local existing_buf = vim.fn.bufnr(new_bufname)
-              if existing_buf ~= -1 and existing_buf ~= event.buf then
-                vim.api.nvim_buf_delete(existing_buf, { force = true })
-                vim.api.nvim_buf_set_name(event.buf, new_bufname)
+            for _, new_bufname in ipairs(name_candidates) do
+              if vim.fn.bufnr(new_bufname) == -1 or vim.fn.bufnr(new_bufname) == event.buf then
+                if pcall(vim.api.nvim_buf_set_name, event.buf, new_bufname) then
+                  break
+                end
               end
             end
 
