@@ -2,12 +2,15 @@
 name: log-ai-conversation
 description: AIとの会話をまとめてGitHub IssueまたはPull Requestにコメントとして追加する。手動で呼び出して使用。
 allowed-tools: Bash, Read, mcp__acp__Read, WebFetch
+argument-hint: "[--confirm]"
 disable-model-invocation: false
 ---
 
 # AIとの会話をGitHubにログする
 
 現在の会話をまとめて、GitHub IssueまたはPull Requestにコメントとして追加します。
+
+デフォルトは確認なしで即座に投稿します。`--confirm` 引数を付けると、投稿前にユーザー確認を取ります。いずれの場合も、本文を書き出したファイルパスを提示します（Neovimで開いて確認する用途）。
 
 ## 対象の会話
 
@@ -94,41 +97,54 @@ git remote get-url origin | sed 's|.*github.com[:/]||' | sed 's|\.git$||'
 
 ## コメント追加方法
 
-### 確認ステップ（必須）
+### 確認モード（引数で切り替え）
 
-`gh issue comment` または `gh pr comment` を実行する前に、必ずユーザーに確認を取ること。
+* デフォルト（確認なし）: まとめをファイルに書き出し、パスを提示して即座に投稿する
+* `--confirm` 指定時（確認あり）: ファイルに書き出し、パスを提示したあと、ユーザーの承認を得てから投稿する
 
-1. 追加予定のコメント全文をチャットに表示する
-2. 「このコメントを{Issue/PR} #{number} に追加してよいですか？」と確認する
-3. ユーザーが明示的に承認した場合のみコマンドを実行する
+引数の判定は `args` に `--confirm` が含まれているかで行う。
+
+### 本文のファイル出力（必須・確認の有無に関わらない）
+
+コメント本文は必ず一時ファイルに書き出す。エスケープの罠（バックティック・`$` 展開）を構造的に回避するため、`gh` にはファイル経由（`-F`）で渡す。HEREDOCは使わない。
+
+```bash
+# ファイルパスは投稿先に応じて命名（上書き前提・投稿後も残す）
+body_file="/tmp/log-ai-conversation-${type}-${number}.md"  # type: issue | pr
+```
+
+本文の書き出しは Write ツールで行う。
+
+### ファイルパスの提示（必須・確認の有無に関わらない）
+
+書き出した本文ファイルのパスをチャットに提示する。Neovimで開いて内容を確認・修正できるようにするため:
+
+```
+コメント本文: /tmp/log-ai-conversation-issue-123.md
+```
+
+Neovimで開く場合（ユーザー側の操作）:
+
+```vim
+:e /tmp/log-ai-conversation-issue-123.md
+```
+
+### 投稿の実行
+
+確認モードに応じて実行タイミングを切り替える:
+
+* デフォルト: ファイル書き出し・パス提示後、即座に実行
+* `--confirm`: ユーザーに「このコメントを{Issue/PR} #{number} に追加してよいですか？」と確認し、承認した場合のみ実行
 
 ```bash
 # Issueの場合
-gh issue comment {number} --repo {owner/repo} --body "..."
+gh issue comment {number} --repo {owner/repo} -F "${body_file}"
 
 # PRの場合
-gh pr comment {number} --repo {owner/repo} --body "..."
+gh pr comment {number} --repo {owner/repo} -F "${body_file}"
 ```
 
-HEREDOCを使用してコメント本文を渡す:
-
-```bash
-# Issueの場合
-gh issue comment {number} --repo {owner/repo} --body "$(cat <<'EOF'
-## トピック名
-
-内容...
-EOF
-)"
-
-# PRの場合
-gh pr comment {number} --repo {owner/repo} --body "$(cat <<'EOF'
-## トピック名
-
-内容...
-EOF
-)"
-```
+投稿後は投稿先URLとファイルパスを併せて提示する（あとから Neovim で本文を確認できるよう、ファイルは残す）。
 
 ## 出力例
 
