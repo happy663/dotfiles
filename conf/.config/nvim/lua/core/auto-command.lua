@@ -48,7 +48,6 @@ end
 -- luaファイル保存時に設定をリロード
 autocmd("BufWritePost", { pattern = "*.lua", command = "source <afile> | echo 'Configuration reloaded!'" })
 
-
 -- buftypeがterminal以外の時カーソルを画面中央にする
 autocmd("CursorMoved", {
   pattern = "*",
@@ -205,11 +204,13 @@ local function apply_dir_based_colorscheme_once()
   apply_dir_based_colorscheme()
 end
 
-vim.api.nvim_create_autocmd("VimEnter", {
-  pattern = "",
-  once = true,
-  callback = function()
-    -- vim.schedule(apply_dir_based_colorscheme_once)
-    apply_dir_based_colorscheme()
-  end,
-})
+-- vim.api.nvim_create_autocmd("VimEnter", {
+--   pattern = "",
+--   once = true,
+--   callback = function()
+--     -- vim.schedule(apply_dir_based_colorscheme_once)
+--     apply_dir_based_colorscheme()
+--   end,
+-- })
+
+vim.cmd("colorscheme " .. "tokyonight-moon")
