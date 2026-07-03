@@ -324,7 +324,6 @@ return {
         "<cmd>lua require('telescope.builtin').quickfixhistory()<CR>",
       },
     },
-    version = "0.1.5",
   },
   -- TODO Telescopeプラグインの整理をする
   {

@@ -49,6 +49,9 @@ package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/shar
 vim.g.not_in_vscode = vim.g.vscode == nil
 
 require("lazy").setup({
+  -- git fetchの同時実行数を制限する。無制限だとmacOSのプロセス上限に当たり
+  -- "Failed to spawn process git" で更新が失敗する
+  concurrency = 8,
   performance = {
     cache = {
       enabled = true,
