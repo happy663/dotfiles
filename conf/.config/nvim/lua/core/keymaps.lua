@@ -654,9 +654,9 @@ end, { desc = "Profile End" })
 vim.keymap.set("t", "<ESC>", "<ESC>", { desc = "description", noremap = true, silent = true })
 
 -- タブ切り替え (mode非依存、単一キーで巡回)
-vim.keymap.set(
-  { "n", "i", "v", "t" },
-  "<M-t>",
-  "<Cmd>tabnext<CR>",
-  { noremap = true, silent = true, desc = "Cycle tab" }
-)
+-- vim.keymap.set(
+--   { "n", "i", "v", "t" },
+--   "<M-t>",
+--   "<Cmd>tabnext<CR>",
+--   { noremap = true, silent = true, desc = "Cycle tab" }
+-- )
