@@ -40,29 +40,13 @@ local function set_lsp_keymaps(bufnr)
   buf_map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
   -- buf_map("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
   buf_map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
-  buf_map("n", "<C-k>", "<cmd>lua vim.lsp.buf.hover()<CR>")
+  buf_map("n", "<C-k>", '<cmd>lua vim.lsp.buf.hover({ border = "double" })<CR>')
   buf_map("n", "gn", "<cmd>lua vim.lsp.buf.rename()<CR>")
   buf_map(
     "n",
     "<leader>di",
     '<cmd>lua vim.diagnostic.open_float(nil, {focus=true, border="double",source="always"})<CR>'
   )
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "double",
-  })
-  vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-    update_in_insert = false,
-    virtual_text = {
-      format = function(diagnostic)
-        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
-      end,
-    },
-    vertical_lines = {
-      format = function(diagnostic)
-        return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
-      end,
-    },
-  })
   vim.keymap.set("n", "<leader>dcc", function()
     copy_diagnostic_text(bufnr)
   end, {
@@ -94,6 +78,15 @@ return {
     event = "LspAttach",
     config = function()
       local lspconfig = require("lspconfig")
+      -- 診断表示設定（vim.lsp.with は0.12で削除されたため vim.diagnostic.config に移行）
+      vim.diagnostic.config({
+        update_in_insert = false,
+        virtual_text = {
+          format = function(diagnostic)
+            return string.format("%s (%s: %s)", diagnostic.message, diagnostic.source, diagnostic.code)
+          end,
+        },
+      })
       -- デフォルト設定（その他のサーバー向け）
       vim.lsp.config("*", {
         on_attach = on_attach,
