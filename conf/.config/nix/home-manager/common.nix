@@ -34,6 +34,7 @@ in
       mise
       coreutils
       coreutils-prefixed
+      tree-sitter # nvim-treesitter(main)のパーサービルドに必須
       zoxide
       delta
       cargo
