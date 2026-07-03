@@ -1,28 +1,24 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    -- lazy = true,
-    -- event = { "BufReadPost", "BufNewFile" },
-    build = function()
-      local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
-      ts_update()
-    end,
+    branch = "main", -- リライト版（リポジトリはアーカイブ済み。core後継が出たら移行する）
+    lazy = false, -- mainブランチはlazy-load非対応
+    build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        modules = {},
-        ensure_installed = "all",
-        sync_install = false,
-        auto_install = false,
-        ignore_install = { "ipkg" }, -- ipkgパーサーを除外（Idris用で通常不要）
-        highlight = {
-          enable = true,
-          disable = function(lang)
-            -- if lang == "latex" then
-            --   return true
-            -- end
-            return vim.g.vscode
-          end,
-        },
+      -- 旧 ensure_installed = "all" 相当（stable + unstable の全ティア）
+      require("nvim-treesitter").install({ "stable", "unstable" })
+
+      -- ハイライトはNeovim本体の機能になったため、FileTypeごとに有効化する
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function(args)
+          if vim.g.vscode then
+            return
+          end
+          local lang = vim.treesitter.language.get_lang(args.match)
+          if lang then
+            pcall(vim.treesitter.start, args.buf, lang)
+          end
+        end,
       })
 
       -- Treesitter folding settings
