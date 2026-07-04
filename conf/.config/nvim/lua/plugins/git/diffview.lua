@@ -45,34 +45,8 @@ return {
           vim.cmd("startinsert")
         end
 
-        -- Copilotのコンテキストリセット
-        -- enable() は同期だがLSP `initialized` ハンドシェイクは非同期に進む。
-        -- 完了を待たずに gitcommit バッファ(nvr経由)が開くと
-        -- ServerNotInitialized エラーが出るため initialized フラグを polling で待つ。
-        local copilot_client_ok, copilot_client = pcall(require, "copilot.client")
-        if _G.toggle_copilot and copilot_client_ok and not copilot_client.is_disabled() then
-          _G.toggle_copilot() -- disable: agent teardown
-          vim.defer_fn(function()
-            copilot_client.initialized = false
-            _G.toggle_copilot() -- enable: agent起動 (非同期init開始)
-
-            local timer = vim.uv.new_timer()
-            local elapsed = 0
-            local interval = 50
-            local timeout = 5000
-            timer:start(
-              interval,
-              interval,
-              vim.schedule_wrap(function()
-                elapsed = elapsed + interval
-                if copilot_client.initialized or elapsed >= timeout then
-                  timer:stop()
-                  timer:close()
-                  start_commit_tab()
-                end
-              end)
-            )
-          end, 100)
+        if _G.reset_copilot then
+          _G.reset_copilot(start_commit_tab)
         else
           start_commit_tab()
         end

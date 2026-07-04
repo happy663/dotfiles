@@ -13,7 +13,20 @@ return {
         vim.g.copilot_nes_debounce = 500
       end,
     },
-    cond = vim.g.not_in_vscode,
+    cond = function()
+      if not vim.g.not_in_vscode then
+        return false
+      end
+
+      local argv = table.concat(vim.v.argv or {}, " ")
+      for _, command in ipairs({ "AgentClaudeSession", "AgentCodex", "Octo" }) do
+        if argv:match("%f[%w]" .. command .. "%f[%W]") then
+          return false
+        end
+      end
+
+      return true
+    end,
     config = function()
       local setup_config = {
         suggestion = {
@@ -97,6 +110,57 @@ return {
         end
       end
 
+      local reset_callbacks = {}
+
+      function _G.reset_copilot(callback)
+        if callback then
+          table.insert(reset_callbacks, callback)
+        end
+
+        if vim.g.copilot_reset_in_progress then
+          return
+        end
+
+        local copilot_client = require("copilot.client")
+        if copilot_client.is_disabled() then
+          local callbacks = reset_callbacks
+          reset_callbacks = {}
+          for _, reset_callback in ipairs(callbacks) do
+            reset_callback()
+          end
+          return
+        end
+
+        vim.g.copilot_reset_in_progress = true
+        _G.toggle_copilot()
+        vim.defer_fn(function()
+          copilot_client.initialized = false
+          _G.toggle_copilot()
+
+          local timer = vim.uv.new_timer()
+          local elapsed = 0
+          local interval = 50
+          local timeout = 5000
+          timer:start(
+            interval,
+            interval,
+            vim.schedule_wrap(function()
+              elapsed = elapsed + interval
+              if copilot_client.initialized or elapsed >= timeout then
+                timer:stop()
+                timer:close()
+                vim.g.copilot_reset_in_progress = false
+                local callbacks = reset_callbacks
+                reset_callbacks = {}
+                for _, reset_callback in ipairs(callbacks) do
+                  reset_callback()
+                end
+              end
+            end)
+          )
+        end, 500)
+      end
+
       -- トグル用のキーマップを設定
       vim.keymap.set("n", "<leader>tc", "<cmd>lua toggle_copilot()<CR>", {
         noremap = true,
@@ -106,4 +170,3 @@ return {
     end,
   },
 }
-

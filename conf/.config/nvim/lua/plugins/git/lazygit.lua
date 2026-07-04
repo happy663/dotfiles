@@ -43,11 +43,8 @@ return {
 
       -- Copilotリセット処理を共通化
       local function reset_copilot()
-        if _G.toggle_copilot then
-          _G.toggle_copilot() -- 1回目：無効化
-          vim.defer_fn(function()
-            _G.toggle_copilot() -- 2回目：有効化（コンテキストリセット）
-          end, 500)
+        if _G.reset_copilot then
+          _G.reset_copilot()
         end
       end
 
