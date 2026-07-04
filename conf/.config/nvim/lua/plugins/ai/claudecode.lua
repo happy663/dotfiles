@@ -118,7 +118,6 @@ return {
       desc = "Resume Claude (session picker)",
     },
     { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
-    { "<leader>at", "<cmd>ClaudeDraftFocus<cr>", desc = "Focus Claude draft" },
     { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
     { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
     {
