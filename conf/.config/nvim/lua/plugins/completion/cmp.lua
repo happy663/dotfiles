@@ -590,15 +590,15 @@ return {
       },
       "hrsh7th/cmp-emoji",
       "saadparwaiz1/cmp_luasnip",
-      {
-        "zbirenbaum/copilot-cmp",
-        cond = vim.g.not_in_vscode,
-        lazy = true,
-        event = "InsertEnter",
-        config = function()
-          require("copilot_cmp").setup()
-        end,
-      },
+      -- {
+      --   "zbirenbaum/copilot-cmp",
+      --   cond = vim.g.not_in_vscode,
+      --   lazy = true,
+      --   event = "InsertEnter",
+      --   config = function()
+      --     require("copilot_cmp").setup()
+      --   end,
+      -- },
       -- {
       --   dir = "~/src/github.com/happy663/cmp-skkeleton",
       -- },
