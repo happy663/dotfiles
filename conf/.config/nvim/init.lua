@@ -93,6 +93,14 @@ require("lazy").setup({
     { import = "plugins.ui.statusline" },
     { import = "plugins.ui.visual" },
     { import = "plugins.ui.management" },
+    {
+      dir = vim.env.VIMRUNTIME .. "/pack/dist/opt/nvim.undotree",
+      name = "nvim.undotree",
+      cmd = "Undotree",
+      keys = {
+        { "<leader>uu", "<cmd>Undotree<cr>", desc = "Undo tree" },
+      },
+    },
   },
 })
 
