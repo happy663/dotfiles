@@ -166,7 +166,7 @@ function M.setup()
     desc = "Quote selection to agent draft",
   })
 
-  vim.keymap.set("v", "<leader>>", ":<C-u>AgentDraftQuote<CR>", {
+  vim.keymap.set({ "n", "v" }, "<leader>>", ":<C-u>AgentDraftQuote<CR>", {
     noremap = true,
     silent = true,
     desc = "Quote selection to agent draft",
@@ -214,6 +214,7 @@ function M.setup()
     )
     vim.fn.system(cmd)
   end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
+  vim.keymap.set("n", "<leader>ak", ":AgentClaudeFork<CR>", { desc = "AgentClaudeFork", noremap = true, silent = true })
 
   vim.api.nvim_create_user_command("AgentClaudeRestart", function()
     local bufnr = vim.api.nvim_get_current_buf()
@@ -248,6 +249,13 @@ function M.setup()
     state.set_target_terminal_bufnr(new_bufnr)
     vim.cmd("startinsert")
   end, { desc = "Restart Claude Code with --resume in the same window" })
+
+  vim.keymap.set(
+    "n",
+    "<leader>aj",
+    ":AgentClaudeRestart<CR>",
+    { desc = "AgentClaudeRestart", noremap = true, silent = true }
+  )
 
   vim.api.nvim_create_user_command("AgentCodexSession", function()
     layouts.open_agent_codex({
