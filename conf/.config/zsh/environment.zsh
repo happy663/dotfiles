@@ -53,10 +53,13 @@ unset __HM_SESS_VARS_SOURCED
 # fi
 
 # -----------------------------------------------------------------------------
-# Neovim Remote Settings (Commented out)
+# Neovim Remote Settings（Neovimのターミナル内ではnvrで親インスタンスに開く）
 # -----------------------------------------------------------------------------
-if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-  alias nvim=nvr -cc split --remote-wait +'set bufhidden=wipe'
+# 判定は$NVIM（Neovimがターミナルバッファの子プロセスに公式にセットする変数）で行う。
+# 旧来の$NVIM_LISTEN_ADDRESSはnvim-ghostの環境汚染で偶然渡っていただけで、
+# 汚染除去（issue #284, 5c513f5e）以降はターミナルに存在しない
+if [ -n "$NVIM" ]; then
+  alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
   export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
   export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 fi
