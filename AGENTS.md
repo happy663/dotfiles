@@ -147,6 +147,18 @@ conf/.config/nvim/
 * `update/*`: 更新
 * `auto-updates`: 自動更新用（GitHub Actions）
 
+### Worktree Usage
+* 既存のローカル変更と分離して作業する場合は `git worktree` を使う。
+* 標準配置は `../dotfiles-wt/<task-slug>`、branch は `wt/<task-slug>` とする。
+* worktree 作成後は、以降の編集・検証を作成先の worktree で行う。
+* 既存の変更を勝手に stash / commit / revert しない。
+
+### Applying Worktree Changes Locally
+* このリポジトリの設定は `conf/` から `$HOME` 配下へ symlink されるため、worktree 側の変更を実環境で試すには worktree で `make link` を実行する。
+* `make link` 実行後は `~/.config/nvim` などが worktree の `conf/` を指す。検証対象の worktree が正しく反映されているか `readlink ~/.config/nvim` などで確認する。
+* `make link` は `$HOME` 配下の symlink を張り替える操作なので、どの worktree を実環境へ向けているかを意識する。
+* `scripts/link.sh` は `conf/.config/ai-agents/skills/nippo` symlink を生成することがある。これは作業本体と無関係な未追跡差分として出る場合がある。
+
 ## Editing Policy
 * 変更は最小・局所的に行い、既存スタイルを維持すること。
 * 主な編集対象は `conf/` と `scripts/`。
