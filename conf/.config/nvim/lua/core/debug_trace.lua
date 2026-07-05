@@ -7,10 +7,13 @@ local uv = vim.uv or vim.loop
 local state = {
   active = false,
   started_at = nil,
+  started_localtime = nil,
   started_hrtime = nil,
   initial_messages = nil,
   initial_history_len = nil,
+  initial_noice_tick = nil,
   events = {},
+  event_seq = 0,
   pending_text = nil,
 }
 
@@ -48,9 +51,37 @@ end
 
 local function append_event(kind, fields)
   fields = fields or {}
+  state.event_seq = state.event_seq + 1
   fields.t = elapsed_ms()
+  fields.wall_time = os.time()
   fields.kind = kind
+  fields.seq = state.event_seq
   table.insert(state.events, fields)
+end
+
+local function noice_event_position(message)
+  if not message.mtime then
+    return elapsed_ms(), state.event_seq + 1
+  end
+
+  local matched
+  for _, event in ipairs(state.events) do
+    if
+      event.wall_time == message.mtime
+      and (event.kind == "FileType" and (event.filetype == "notify" or event.filetype == "noice"))
+    then
+      matched = event
+    end
+  end
+  if matched then
+    return matched.t, matched.seq + 0.1
+  end
+
+  if state.started_localtime then
+    return math.max(0, (message.mtime - state.started_localtime) * 1000), state.event_seq + 1
+  end
+
+  return elapsed_ms(), state.event_seq + 1
 end
 
 local function current_context()
@@ -250,6 +281,39 @@ local function messages_since_start()
   return result
 end
 
+local function noice_tick()
+  local ok, manager = pcall(require, "noice.message.manager")
+  if not ok then
+    return nil
+  end
+  return manager.tick()
+end
+
+local function noice_notifications_since_start()
+  local ok, manager = pcall(require, "noice.message.manager")
+  if not ok or not state.initial_noice_tick then
+    return nil
+  end
+
+  local notifications = {}
+  local messages = manager.get({ event = "notify" }, { history = true, sort = true })
+  for _, message in ipairs(messages) do
+    local content = message:content()
+    if message.tick and message.tick > state.initial_noice_tick and not content:match("^%[DebugTrace%]") then
+      local t, seq = noice_event_position(message)
+      table.insert(notifications, {
+        t = t,
+        seq = seq,
+        level = message.level or message.kind or "unknown",
+        title = message.opts and message.opts.title or nil,
+        content = content,
+      })
+    end
+  end
+
+  return notifications
+end
+
 local function command_history_since_start()
   local history_len = vim.fn.histnr(":")
   local start = (state.initial_history_len or history_len) + 1
@@ -333,12 +397,43 @@ local function event_to_line(event)
   if event.kind == "LspAttach" then
     return string.format("- +%dms LspAttach `%s` buf=%s", event.t, event.client, event.buf)
   end
+  if event.kind == "NoiceNotify" then
+    local title = event.title and (" title=" .. string.format("%q", event.title)) or ""
+    return string.format("- ~+%dms NoiceNotify level=`%s`%s message=%q", event.t, event.level, title, event.content)
+  end
   return "- +" .. event.t .. "ms " .. event.kind
+end
+
+local function sorted_events_with_notifications(notifications)
+  local events = vim.deepcopy(state.events)
+
+  if notifications then
+    for _, notification in ipairs(notifications) do
+      table.insert(events, {
+        kind = "NoiceNotify",
+        t = notification.t,
+        seq = notification.seq,
+        level = notification.level,
+        title = notification.title,
+        content = notification.content,
+      })
+    end
+  end
+
+  table.sort(events, function(a, b)
+    if a.t == b.t then
+      return (a.seq or 0) < (b.seq or 0)
+    end
+    return a.t < b.t
+  end)
+
+  return events
 end
 
 local function build_report()
   local final_context = current_context()
   local version = vim.version()
+  local notifications = noice_notifications_since_start()
   local lines = {
     "# Neovim Debug Trace",
     "",
@@ -364,10 +459,11 @@ local function build_report()
   vim.list_extend(lines, diagnostics_summary())
   vim.list_extend(lines, { "", "## Key And Editor Events", "" })
 
-  if #state.events == 0 then
+  local events = sorted_events_with_notifications(notifications)
+  if #events == 0 then
     table.insert(lines, "- none")
   else
-    for _, event in ipairs(state.events) do
+    for _, event in ipairs(events) do
       table.insert(lines, event_to_line(event))
     end
   end
@@ -388,6 +484,27 @@ local function build_report()
     vim.list_extend(lines, messages)
   end
 
+  vim.list_extend(lines, { "", "## Noice Notifications Since Start", "" })
+  if not notifications then
+    table.insert(lines, "unavailable")
+  elseif #notifications == 0 then
+    table.insert(lines, "none")
+  else
+    for _, notification in ipairs(notifications) do
+      local title = notification.title and (" title=" .. string.format("%q", notification.title)) or ""
+      table.insert(
+        lines,
+        string.format(
+          "- ~+%dms level=`%s`%s message=%q",
+          notification.t,
+          notification.level,
+          title,
+          notification.content
+        )
+      )
+    end
+  end
+
   return lines
 end
 
@@ -399,11 +516,14 @@ function M.start()
 
   state.active = true
   state.started_at = now_iso()
+  state.started_localtime = os.time()
   state.started_hrtime = uv.hrtime()
   state.initial_context = current_context()
   state.initial_messages = vim.split(vim.fn.execute("messages"), "\n", { plain = true })
   state.initial_history_len = vim.fn.histnr(":")
+  state.initial_noice_tick = noice_tick()
   state.events = {}
+  state.event_seq = 0
   state.pending_text = nil
 
   setup_autocmds()
