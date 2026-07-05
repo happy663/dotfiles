@@ -124,11 +124,6 @@ conf/.config/nvim/
 * 主要コマンド: AgentClaude, AgentCodex, AgentClaudeRestart, AgentClaudeFork など。
 * エージェント CLI に関する提案は、tmux 直接ではなく Neovim コマンド経由を優先すること。
 
-## AI Agent Skills
-* スキルの実体は `conf/.config/ai-agents/skills/` にあり、Claude Code と Codex で共有している。
-* `conf/.claude/skills` と `conf/.codex/skills` は上記ディレクトリへのシンボリックリンク。
-* 新しいスキルを作成・編集する場合は、実体である `conf/.config/ai-agents/skills/<name>/SKILL.md` を対象とすること（シンボリックリンク経由で書いても実体に反映されるが、パスの言及や git 操作では実体パスを使う）。
-
 ## Development Workflow
 
 ### Commit Message Convention

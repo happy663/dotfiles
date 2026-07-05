@@ -210,5 +210,11 @@ gh api repos/{owner}/{repo}/issues/comments/{id} --jq .body | grep '\\`' || echo
 
 **重要**: 自分で直接実装できる場合でも、スキルが利用可能な場合は**必ずスキルを使用する**こと。
 
+## AI Agent Skills
+
+* スキルは dotfiles リポジトリ（`ghq list | grep happy663/dotfiles` で場所を確認できる。通常は `$(ghq root)/github.com/happy663/dotfiles`）の `conf/.config/ai-agents/skills/` を実体として管理している。
+* そこから `~/.config/ai-agents/skills/` に symlink され、さらに `~/.claude/skills` と `~/.codex/skills` が同じディレクトリを指す symlink になっており、Claude Code と Codex で共有される。
+* 新しいスキルを作成・編集する場合は、実体である dotfiles 側の `conf/.config/ai-agents/skills/<name>/SKILL.md` を対象とすること（symlink 経由で書いても実体に反映されるが、パスの言及や git 操作では dotfiles 内の実体パスを使う）。
+
 
 @RTK.md
