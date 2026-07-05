@@ -1,7 +1,7 @@
 ---
 name: log-ai-conversation
 description: AIとの会話をまとめてGitHub IssueまたはPull Requestにコメントとして追加する。手動で呼び出して使用。
-allowed-tools: Bash, Read, mcp__acp__Read, WebFetch
+allowed-tools: Bash, Read, Write, mcp__acp__Read, WebFetch
 argument-hint: "[--confirm]"
 disable-model-invocation: false
 ---
@@ -10,14 +10,23 @@ disable-model-invocation: false
 
 現在の会話をまとめて、GitHub IssueまたはPull Requestにコメントとして追加します。
 
-デフォルトは確認なしで即座に投稿します。`--confirm` 引数を付けると、投稿前にユーザー確認を取ります。いずれの場合も、本文を書き出したファイルパスを提示します（Neovimで開いて確認する用途）。
+## 呼び出され方
+
+このスキルは以下のいずれかで呼ばれます:
+
+* 手動で `/log-ai-conversation` を実行（フォアグラウンド実行）
+* `AgentClaudeLogConversation` コマンド経由で fork 先セッション内で実行（バックグラウンド実行）
+
+後者の場合、メインセッションは fork 先を分割ペインで起動した直後に会話を継続できます。fork 先はこのスキルを実行し、完了後も終了せずペインに残ります（ユーザーが確認後に閉じる）。いずれの呼び出しでも、スキル本体の処理は同じです。
 
 ## 対象の会話
 
-* 前回このskillを呼び出した以降の会話を対象にする
-* 初回呼び出しの場合は全会話を対象にする
+* 現在のセッションで交わされた会話を対象にする
+* 「前回どこまで記録したか」は状態として管理しない
+* 代わりに、直前の GitHub コメントを確認し、内容が重複しないようサマリー作成時に判断する
+* セッションを跨いで同じ Issue/PR にログする場合も、直前コメントの確認で重複を回避する
 
-## 出力先の特定
+## 投稿先の特定
 
 1. Octoバッファ（`octo://`で始まるバッファ）が開いている場合
    * バッファの種類（Issue/PR）と番号を文脈から推定する
@@ -32,7 +41,9 @@ disable-model-invocation: false
 * PRにコメントする: 実装済み変更の説明、レビュー対応ログ、CI修正、PRレビューコメントに紐づく会話
 * 迷う場合: コメント投稿前の確認ステップで、Issue/PRどちらに投稿するかを明示してユーザーに確認する
 
-## まとめ方
+## サマリー作成
+
+### まとめ方
 
 * 作業ログ形式（時系列・試行錯誤・主観表現OK）
 * トピックごとに `### {トピック}` で見出しをつける
