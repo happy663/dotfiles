@@ -109,6 +109,7 @@ if vim.g.not_in_vscode then
   require("core.settings")
   require("core.keymaps")
   require("core.restart")
+  require("core.debug_trace").setup()
   require("discord")
   require("agent_term.commands").setup()
 else
