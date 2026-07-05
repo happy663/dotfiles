@@ -17,12 +17,12 @@ description: |
 * `nvim` は `nvr`（neovim-remote）にエイリアスされており、実行すると新規起動ではなく親Neovimへのリモート操作になる
 * このため `nvim --headless` を含め、Agentのシェルから nvim を直接実行すると、ユーザーの生きているセッションに干渉して落とした実績がある
 
-tmuxセッションは親Neovimの外側に独立したTTYを作れる。さらに `env NVIM= command nvim` で起動すれば、親NeovimのRPCソケットや `nvim` alias / wrapper の影響を避けて、素のNeovimをフル起動できる。ユーザーも `tmux attach` で同じ画面を見られるので、共同デバッグにも使える。
+tmuxセッションは親Neovimの外側に独立したTTYを作れる。さらに `env NVIM= command nvim` で起動すれば、親NeovimのRPCソケットや `nvim` alias / wrapper の影響を避けて、素のNeovimをフル起動できる。ユーザーが画面を見たい場合に備え、標準ではデタッチせず、ユーザーがそのまま見えるセッションとして扱う。
 
 ## Basic flow
 
 ```bash
-# 1. セッション作成（既存セッションがあれば必ず別名にする。
+# 1. セッション名を決める（既存セッションがあれば必ず別名にする。
 #    既にNeovimが開いているtmuxへsend-keysすると、コマンド文字列がバッファに入力される）
 session=nvim-debug
 if tmux has-session -t "$session" 2>/dev/null; then
@@ -31,32 +31,40 @@ fi
 
 ready="/tmp/${session}-ready"
 rm -f "$ready"
-tmux new-session -d -s "$session" -c /path/to/workdir \
-  "env NVIM= command nvim +'lua vim.fn.writefile({\"ready\"}, \"$ready\")'"
 
-# 2. nvim起動待ち（画面captureではなく、Neovim側が書いたreadyファイルを待つ）
+# 2. ユーザーが見える形でセッションを起動する（ここでtmuxに入る）
+tmux new-session -s "$session" -c /path/to/workdir \
+  "env NVIM= command nvim +'lua vim.fn.writefile({\"ready\"}, \"$ready\")'"
+```
+
+上の `tmux new-session` はデタッチしないため、そのシェルはtmux表示に入る。以降の確認・操作は、Agentの別シェルから同じ `session` 名を指定して実行する。
+
+```bash
+# 3. nvim起動待ち（画面captureではなく、Neovim側が書いたreadyファイルを待つ）
 for i in $(seq 1 16); do
   test -f "$ready" && break
   sleep 1
 done
 
-# 3. 画面確認
+# 4. 画面確認
 tmux capture-pane -t "$session" -p -S -50 | grep -v '^$'
 
-# 4. コマンド送信（実行後1-2秒待ってからcapture）
+# 5. コマンド送信（実行後1-2秒待ってからcapture）
 tmux send-keys -t "$session" ':messages' Enter
 sleep 2
 tmux capture-pane -t "$session" -p | grep -v '^$' | tail -20
 
-# 5. 終了と片付け
+# 6. 終了と片付け
 tmux send-keys -t "$session" ':qa!' Enter
 tmux kill-session -t "$session"
 ```
 
-ユーザーに共有する場合は `tmux attach -t "$session"` の実際のセッション名を案内する。
+Agentが同じセッションを操作する場合は、別のシェルから `tmux send-keys` / `tmux capture-pane` を使う。ユーザーには実際のセッション名を共有する。すでに別端末から見る必要がある場合だけ、`tmux attach -t "$session"` で同じ画面に入ってもらう。
 
 運用の原則:
 
+* ユーザーが見たいデバッグでは `tmux new-session -d` を使わない。最初から attached セッションを作る
+* Agent側の作業継続を優先してデタッチ起動する必要がある場合は、事前にユーザーへ理由を伝え、実際の `tmux attach -t "$session"` コマンドも同時に案内する
 * 「send-keys → sleep → capture」の連続操作は1つのBash呼び出しにまとめる。ツール呼び出しごとの往復オーバーヘッドが減り、手順の抜けも防げる
 * 正確な出力が必要なもの（エラー・スタックトレース・checkhealth等）は画面captureではなく次節のファイル経由で取る。captureは「今どういう画面状態か」の確認用と割り切る
 * tmux内で起動するときも `env NVIM= command nvim` を使う。tmux serverの環境やaliasの影響を避け、親Neovimへリモート接続しないことを明示する
