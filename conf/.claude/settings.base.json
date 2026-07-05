@@ -110,7 +110,9 @@
       "Bash(which:*)",
       "WebSearch"
     ],
-    "deny": ["Bash(rm:*)"]
+    "deny": [
+      "Bash(rm:*)"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -408,5 +410,6 @@
   "minimumVersion": "2.1.129",
   "plansDirectory": "./plans",
   "preferredNotifChannel": "terminal_bell",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "remoteControlAtStartup": true
 }
