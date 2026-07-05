@@ -42,6 +42,18 @@ claude-pull:
 claude-push:
 	scripts/claude-settings.sh push
 
+# GLM5.2 (z.ai) 接続モードに切替
+claude-glm:
+	scripts/claude-mode.sh glm
+
+# 素の Claude + Fable モードに切替
+claude-fable:
+	scripts/claude-mode.sh fable
+
+# 素の Claude + Opus 4.7 (1M) モードに切替
+claude-opus47:
+	scripts/claude-mode.sh opus47
+
 # Ovim 専用 Neovim 設定 (NVIM_APPNAME=ovim-nvim) のセットアップ
 # 1. 専用設定で lazy.nvim を起動しプラグインを取得
 # 2. ラッパースクリプトを ~/.local/bin に配置して実行可能にする

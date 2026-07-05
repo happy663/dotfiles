@@ -1,0 +1,11 @@
+[
+  ["model"],
+  ["effortLevel"],
+  ["permissions", "defaultMode"],
+  ["env", "ANTHROPIC_AUTH_TOKEN"],
+  ["env", "ANTHROPIC_BASE_URL"],
+  ["env", "API_TIMEOUT_MS"],
+  ["env", "ANTHROPIC_DEFAULT_HAIKU_MODEL"],
+  ["env", "ANTHROPIC_DEFAULT_SONNET_MODEL"],
+  ["env", "ANTHROPIC_DEFAULT_OPUS_MODEL"]
+]

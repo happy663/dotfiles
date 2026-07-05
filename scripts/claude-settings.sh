@@ -18,6 +18,7 @@ DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 BASE_PATH="${DOTFILES_DIR}/conf/.claude/settings.base.json"
 EXAMPLE_PATH="${DOTFILES_DIR}/conf/.claude/settings.local.example.json"
+MANAGED_PATHS_FILE="${DOTFILES_DIR}/conf/.claude/presets/managed-paths.json"
 ENV_PATH="${DOTFILES_DIR}/.env"
 ACTIVE_PATH="${HOME}/.claude/settings.json"
 LOCAL_PATH="${HOME}/.claude/settings.local.json"
@@ -32,15 +33,8 @@ load_env() {
 }
 
 JQ_FILTERS='
-def generic_local_keys:
-    [
-        ["model"],
-        ["effortLevel"],
-        ["permissions", "defaultMode"]
-    ];
-
 def all_local_keys:
-    generic_local_keys + $extra_local_keys;
+    $managed_paths + $extra_local_keys;
 
 def filter_del_local:
     delpaths(all_local_keys | sort);
@@ -56,8 +50,13 @@ def filter_pick_local:
 run_filter() {
     local source_path="$1"
     local entrypoint="$2"
+    if [[ ! -f "$MANAGED_PATHS_FILE" ]]; then
+        echo "Error: $MANAGED_PATHS_FILE not found" >&2
+        exit 1
+    fi
     jq --argjson extra_local_keys "${CLAUDE_EXTRA_LOCAL_KEYS:-[]}" \
-       "${JQ_FILTERS}
+       --slurpfile managed_paths_file "$MANAGED_PATHS_FILE" \
+       '($managed_paths_file[0]) as $managed_paths | '"${JQ_FILTERS}
 ${entrypoint}" "$source_path"
 }
 
