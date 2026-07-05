@@ -7,7 +7,7 @@ model_reasoning_effort = "medium"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 web_search = "cached"
-service_tier = "fast"
+service_tier = "default"
 # ~が展開されないため、絶対パスを使用
 notify = ["/Users/happy/src/github.com/happy663/dotfiles/conf/.codex/codex-notify"]
 
@@ -39,6 +39,9 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/happy/Documents/Playground"]
+trust_level = "trusted"
+
+[projects."/Users/happy/src/github.com/happy663/ai-chat-field"]
 trust_level = "trusted"
 
 [notice.model_migrations]
