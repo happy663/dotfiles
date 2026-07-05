@@ -65,9 +65,9 @@ disable-model-invocation: false
 
 ### 重複の回避手順
 
-1. 直前のコメント（ユーザー/AI問わず）を取得する
+1. 直近のコメント2件（ユーザー/AI問わず）を取得する
 2. 今回の会話で新しく出てきたトピックを特定する
-3. 前回のコメントと今回書く内容を見比べ、重複している箇所を特定する
+3. 直近のコメントと今回書く内容を見比べ、重複している箇所を特定する
    - 同じトピックについて書かれているか
    - 新しい情報が増えているか
 4. 重複しているトピックは除外、新規トピックだけを書く
@@ -76,11 +76,11 @@ disable-model-invocation: false
 直前コメントの確認コマンド:
 
 ```bash
-# Issueの場合（最新のコメントだけ）
-gh issue view {number} --repo {owner/repo} --json comments --jq '.comments[-1]'
+# Issueの場合（直近2件）
+gh issue view {number} --repo {owner/repo} --json comments --jq '.comments[-2:]'
 
-# PRの場合（最新のコメントだけ）
-gh pr view {number} --repo {owner/repo} --json comments --jq '.comments[-1]'
+# PRの場合（直近2件）
+gh pr view {number} --repo {owner/repo} --json comments --jq '.comments[-2:]'
 ```
 
 ## コード参照ルール
