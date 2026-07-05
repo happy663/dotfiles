@@ -151,6 +151,8 @@ conf/.config/nvim/
 * 既存のローカル変更と分離して作業する場合は `git worktree` を使う。
 * 標準配置は `../dotfiles-wt/<task-slug>`、branch は `wt/<task-slug>` とする。
 * worktree 作成後は、以降の編集・検証を作成先の worktree で行う。
+* worktree で PR を作成する前に、必ず `git fetch origin main` を実行し、ローカル `main` と `origin/main` に差分がないか確認する。
+* ローカル `main` が `origin/main` より古い、または PR ブランチが最新の `main` を取り込んでいない場合は、PR 作成前に最新の `main` を PR ブランチへ取り込む。
 * 既存の変更を勝手に stash / commit / revert しない。
 
 ### Applying Worktree Changes Locally
