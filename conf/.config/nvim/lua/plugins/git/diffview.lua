@@ -7,8 +7,52 @@ return {
     config = function()
       local actions = require("diffview.actions")
 
+      local function get_modified_file_buffers(tabpage)
+        local buffers = {}
+        local seen = {}
+
+        for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          if
+            not seen[buf]
+            and vim.bo[buf].modified
+            and vim.bo[buf].buftype == ""
+            and vim.api.nvim_buf_get_name(buf) ~= ""
+          then
+            table.insert(buffers, buf)
+            seen[buf] = true
+          end
+        end
+
+        return buffers
+      end
+
+      local function has_modified_buffers(tabpage)
+        local buffers = get_modified_file_buffers(tabpage)
+        if #buffers == 0 then
+          return false
+        end
+
+        vim.notify("Diffview has unsaved changes. Save or discard them before closing.", vim.log.levels.WARN)
+        return true
+      end
+
       local function close_diffview()
-        vim.cmd("DiffviewClose")
+        local ok, lib = pcall(require, "diffview.lib")
+        local view = ok and lib.get_current_view()
+
+        if view and view.tabpage and vim.api.nvim_tabpage_is_valid(view.tabpage) then
+          if has_modified_buffers(view.tabpage) then
+            return
+          end
+        end
+
+        local closed, err = pcall(vim.cmd, "DiffviewClose")
+        if not closed then
+          vim.notify(("Failed to close Diffview: %s"):format(err), vim.log.levels.ERROR)
+          return
+        end
+
         vim.schedule(function()
           if vim.env.NVIM_IN_POPUP == "1" then
             vim.cmd("qa!")
