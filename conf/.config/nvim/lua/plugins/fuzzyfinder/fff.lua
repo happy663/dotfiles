@@ -15,6 +15,28 @@ return {
         end,
         desc = "Open file picker",
       },
+      {
+        "<leader>fg",
+        function()
+          require("fff").live_grep()
+        end,
+        desc = "LiFFFe grep",
+      },
+      {
+        "<leader>fz",
+        function()
+          require("fff").live_grep({ grep = { modes = { "fuzzy", "plain" } } })
+        end,
+        desc = "Live fffuzy grep",
+      },
+      {
+        "<leader>fw",
+        function()
+          require("fff").live_grep_under_cursor()
+        end,
+        mode = { "n", "x" },
+        desc = "Search current word / selection",
+      },
     },
     config = function()
       -- ローカルパッチ: Neovim 0.12ではenter=falseで開いたfloatに後から
