@@ -255,6 +255,7 @@ function M.setup()
     end
 
     local winid = vim.api.nvim_get_current_win()
+    local bufnr = vim.api.nvim_get_current_buf()
     local job_id = vim.b[bufnr].terminal_job_id
     if job_id then
       vim.fn.jobstop(job_id)
