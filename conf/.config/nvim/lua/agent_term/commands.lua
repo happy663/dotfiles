@@ -63,6 +63,30 @@ local function find_claude_session_id(pid)
   return nil
 end
 
+-- 現在のターミナルバッファからClaudeセッションIDを特定する。
+-- 失敗時は notify して nil を返す。name は通知プレフィックス（コマンド名）。
+local function resolve_claude_session(name)
+  local bufnr = vim.api.nvim_get_current_buf()
+  if vim.bo[bufnr].buftype ~= "terminal" then
+    vim.notify("[" .. name .. "] Run from a Claude terminal buffer", vim.log.levels.WARN)
+    return nil
+  end
+
+  local job_pid = vim.b[bufnr].terminal_job_pid
+  if not job_pid then
+    vim.notify("[" .. name .. "] No terminal job PID found", vim.log.levels.ERROR)
+    return nil
+  end
+
+  local session_id = find_claude_session_id(job_pid)
+  if not session_id then
+    vim.notify("[" .. name .. "] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
+    return nil
+  end
+
+  return session_id
+end
+
 local function toggle_draft_buffer()
   local current_winid = vim.api.nvim_get_current_win()
   local draft_winid = find_draft_winid()
@@ -188,21 +212,8 @@ function M.setup()
   end, { desc = "Open Claude session picker terminal" })
 
   vim.api.nvim_create_user_command("AgentClaudeFork", function()
-    local bufnr = vim.api.nvim_get_current_buf()
-    if vim.bo[bufnr].buftype ~= "terminal" then
-      vim.notify("[AgentClaudeFork] Run from a Claude terminal buffer", vim.log.levels.WARN)
-      return
-    end
-
-    local job_pid = vim.b[bufnr].terminal_job_pid
-    if not job_pid then
-      vim.notify("[AgentClaudeFork] No terminal job PID found", vim.log.levels.ERROR)
-      return
-    end
-
-    local session_id = find_claude_session_id(job_pid)
+    local session_id = resolve_claude_session("AgentClaudeFork")
     if not session_id then
-      vim.notify("[AgentClaudeFork] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
     end
 
@@ -217,21 +228,8 @@ function M.setup()
   vim.keymap.set("n", "<leader>ak", ":AgentClaudeFork<CR>", { desc = "AgentClaudeFork", noremap = true, silent = true })
 
   vim.api.nvim_create_user_command("AgentClaudeLogConversation", function()
-    local bufnr = vim.api.nvim_get_current_buf()
-    if vim.bo[bufnr].buftype ~= "terminal" then
-      vim.notify("[AgentClaudeLogConversation] Run from a Claude terminal buffer", vim.log.levels.WARN)
-      return
-    end
-
-    local job_pid = vim.b[bufnr].terminal_job_pid
-    if not job_pid then
-      vim.notify("[AgentClaudeLogConversation] No terminal job PID found", vim.log.levels.ERROR)
-      return
-    end
-
-    local session_id = find_claude_session_id(job_pid)
+    local session_id = resolve_claude_session("AgentClaudeLogConversation")
     if not session_id then
-      vim.notify("[AgentClaudeLogConversation] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
     end
 
@@ -251,21 +249,8 @@ function M.setup()
   end, { desc = "Fork Claude session into a split pane and run log-ai-conversation" })
 
   vim.api.nvim_create_user_command("AgentClaudeRestart", function()
-    local bufnr = vim.api.nvim_get_current_buf()
-    if vim.bo[bufnr].buftype ~= "terminal" then
-      vim.notify("[AgentClaudeRestart] Run from a Claude terminal buffer", vim.log.levels.WARN)
-      return
-    end
-
-    local job_pid = vim.b[bufnr].terminal_job_pid
-    if not job_pid then
-      vim.notify("[AgentClaudeRestart] No terminal job PID found", vim.log.levels.ERROR)
-      return
-    end
-
-    local session_id = find_claude_session_id(job_pid)
+    local session_id = resolve_claude_session("AgentClaudeRestart")
     if not session_id then
-      vim.notify("[AgentClaudeRestart] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
     end
 
