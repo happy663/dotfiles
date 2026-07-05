@@ -43,7 +43,7 @@ return {
               "copilot",
               cond = function()
                 -- Copilotが読み込まれている場合のみ表示
-                return pcall(require, "copilot")
+                return package.loaded["copilot"] ~= nil
               end,
             },
             {

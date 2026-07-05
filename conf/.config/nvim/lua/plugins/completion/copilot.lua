@@ -1,33 +1,61 @@
+local function is_copilot_session()
+  if not vim.g.not_in_vscode then
+    return false
+  end
+
+  local argv = table.concat(vim.v.argv or {}, " ")
+  for _, command in ipairs({ "AgentClaudeSession", "AgentCodex", "Octo" }) do
+    if argv:find(command, 1, true) then
+      return false
+    end
+  end
+
+  return true
+end
+
+local function should_start_copilot(bufnr)
+  if not is_copilot_session() or not vim.api.nvim_buf_is_valid(bufnr) then
+    return false
+  end
+
+  return vim.bo[bufnr].buflisted and vim.bo[bufnr].buftype == ""
+end
+
 return {
   {
     "zbirenbaum/copilot.lua",
     lazy = true,
-    event = "InsertEnter",
     cmd = { "Copilot" },
     keys = {
       { "<leader>tc", desc = "Toggle Copilot" },
     },
+    init = function()
+      local group = vim.api.nvim_create_augroup("CopilotLazyLoad", { clear = true })
+      vim.api.nvim_create_autocmd("InsertEnter", {
+        group = group,
+        callback = function(args)
+          if not should_start_copilot(args.buf) then
+            return
+          end
+
+          require("lazy").load({ plugins = { "copilot.lua" } })
+          return true
+        end,
+        desc = "Load Copilot only for normal file buffers",
+      })
+    end,
     dependencies = {
       "copilotlsp-nvim/copilot-lsp",
       init = function()
         vim.g.copilot_nes_debounce = 500
       end,
     },
-    cond = function()
-      if not vim.g.not_in_vscode then
-        return false
-      end
-
-      local argv = table.concat(vim.v.argv or {}, " ")
-      for _, command in ipairs({ "AgentClaudeSession", "AgentCodex", "Octo" }) do
-        if argv:match("%f[%w]" .. command .. "%f[%W]") then
-          return false
-        end
-      end
-
-      return true
-    end,
+    cond = is_copilot_session,
     config = function()
+      if not is_copilot_session() then
+        return
+      end
+
       local setup_config = {
         suggestion = {
           auto_trigger = true,

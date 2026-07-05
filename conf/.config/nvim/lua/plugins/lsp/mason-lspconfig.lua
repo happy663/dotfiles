@@ -249,10 +249,10 @@ return {
       })
       -- Mason-LSPConfigの設定
       -- stylua v2.0で --lsp フラグが廃止されたため、LSPとしての自動起動を除外する。
-      -- フォーマットはnone-ls経由で動作するためLSP起動は不要。
+      -- Copilotはcopilot.lua側で起動条件を制御するため、Masonの自動起動から外す。
       require("mason-lspconfig").setup({
         automatic_enable = {
-          exclude = { "stylua" },
+          exclude = { "stylua", "copilot" },
         },
       })
 
