@@ -86,6 +86,21 @@ local function format_context(ctx)
   }
 end
 
+local function launch_command()
+  local argv = vim.v.argv or {}
+  local parts = {}
+
+  for _, arg in ipairs(argv) do
+    table.insert(parts, vim.fn.shellescape(tostring(arg)))
+  end
+
+  if #parts == 0 then
+    return "unknown"
+  end
+
+  return table.concat(parts, " ")
+end
+
 local function is_text_mode(mode)
   return mode:match("^[iR]") or mode:match("^t") or mode:match("^c")
 end
@@ -334,6 +349,7 @@ local function build_report()
     "- duration_ms: `" .. elapsed_ms() .. "`",
     "- nvim: `" .. version.major .. "." .. version.minor .. "." .. version.patch .. "`",
     "- os: `" .. uv.os_uname().sysname .. " " .. uv.os_uname().release .. "`",
+    "- launch_command: `" .. launch_command() .. "`",
     "",
     "## Initial Context",
     "",
