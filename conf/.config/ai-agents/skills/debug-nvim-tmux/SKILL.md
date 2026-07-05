@@ -30,7 +30,8 @@ if tmux has-session -t "$session" 2>/dev/null; then
 fi
 
 ready="/tmp/${session}-ready"
-rm -f "$ready"
+# rmは許可されていないため、事前に空にしてから「内容が空でないか」で完了を待つ
+: > "$ready" 2>/dev/null || true
 
 # 2. ユーザーが見える形でセッションを起動する（ここでtmuxに入る）
 tmux new-session -s "$session" -c /path/to/workdir \
@@ -41,8 +42,9 @@ tmux new-session -s "$session" -c /path/to/workdir \
 
 ```bash
 # 3. nvim起動待ち（画面captureではなく、Neovim側が書いたreadyファイルを待つ）
+#    rmを使わず、ファイルが「空でない（=Neovimが書いた）」ことで完了とする
 for i in $(seq 1 16); do
-  test -f "$ready" && break
+  [ -s "$ready" ] && break
   sleep 1
 done
 
@@ -75,12 +77,14 @@ Agentが同じセッションを操作する場合は、別のシェルから `t
 
 ```bash
 out="/tmp/nvim-debug-messages.txt"
-rm -f "$out"
+: > "$out" 2>/dev/null || true
 
 # :messages の全文（スタックトレース含む）を取る
-tmux send-keys -t "$session" ':lua vim.fn.writefile(vim.split(vim.fn.execute("messages"), "\n"), "'"$out"'")' Enter
+# 末尾に __DONE__ マーカーを必ず書く。メッセージが空でもファイルは非空になり、
+# 待ちループが「空＝未完了」と誤判定しない
+tmux send-keys -t "$session" ':lua local l = vim.split(vim.fn.execute("messages"), "\n"); table.insert(l, "__DONE__"); vim.fn.writefile(l, "'"$out"'")' Enter
 for i in $(seq 1 10); do
-  test -f "$out" && break
+  grep -q '__DONE__' "$out" 2>/dev/null && break
   sleep 1
 done
 cat "$out"
@@ -92,11 +96,11 @@ Noice / nvim-notify を使っている環境では、`vim.notify()` の警告や
 
 ```bash
 out="/tmp/nvim-debug-noice-notify.txt"
-rm -f "$out"
+: > "$out" 2>/dev/null || true
 
-tmux send-keys -t "$session" ':lua local ok, manager = pcall(require, "noice.message.manager"); local out = {}; if ok then for _, msg in ipairs(manager.get({ event = "notify" }, { history = true, sort = true })) do table.insert(out, string.format("[%s] %s", msg.level or msg.kind or "unknown", msg:content())) end else out = { "noice unavailable" } end; vim.fn.writefile(out, "'"$out"'")' Enter
+tmux send-keys -t "$session" ':lua local ok, manager = pcall(require, "noice.message.manager"); local out = {}; if ok then for _, msg in ipairs(manager.get({ event = "notify" }, { history = true, sort = true })) do table.insert(out, string.format("[%s] %s", msg.level or msg.kind or "unknown", msg:content())) end else out = { "noice unavailable" } end; table.insert(out, "__DONE__"); vim.fn.writefile(out, "'"$out"'")' Enter
 for i in $(seq 1 10); do
-  test -f "$out" && break
+  grep -q '__DONE__' "$out" 2>/dev/null && break
   sleep 1
 done
 cat "$out"
@@ -104,15 +108,15 @@ cat "$out"
 
 ```bash
 out="/tmp/nvim-debug-health.txt"
-rm -f "$out"
+: > "$out" 2>/dev/null || true
 
 # checkhealth のような長いバッファはバッファ内容ごと落とす
 # （G/zt でスクロールしながら複数回captureするより速くて確実）
 tmux send-keys -t "$session" ':checkhealth vim.deprecated' Enter
 sleep 5
-tmux send-keys -t "$session" ':lua vim.fn.writefile(vim.api.nvim_buf_get_lines(0, 0, -1, false), "'"$out"'")' Enter
+tmux send-keys -t "$session" ':lua local l = vim.api.nvim_buf_get_lines(0, 0, -1, false); table.insert(l, "__DONE__"); vim.fn.writefile(l, "'"$out"'")' Enter
 for i in $(seq 1 10); do
-  test -f "$out" && break
+  grep -q '__DONE__' "$out" 2>/dev/null && break
   sleep 1
 done
 cat "$out"
@@ -123,7 +127,7 @@ cat "$out"
 ```bash
 probe="/tmp/nvim-debug-probe.lua"
 out="/tmp/nvim-debug-probe-out.txt"
-rm -f "$out"
+: > "$out" 2>/dev/null || true
 
 cat > "$probe" <<'EOF'
 local out = {}
@@ -132,11 +136,12 @@ for _, b in ipairs(vim.api.nvim_list_bufs()) do
     table.insert(out, b .. " mod=" .. tostring(vim.bo[b].modified) .. " " .. vim.api.nvim_buf_get_name(b))
   end
 end
+table.insert(out, "__DONE__")
 vim.fn.writefile(out, "/tmp/nvim-debug-probe-out.txt")
 EOF
 tmux send-keys -t "$session" ':luafile '"$probe" Enter
 for i in $(seq 1 10); do
-  test -f "$out" && break
+  grep -q '__DONE__' "$out" 2>/dev/null && break
   sleep 1
 done
 cat "$out"
