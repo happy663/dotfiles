@@ -63,6 +63,30 @@ local function find_claude_session_id(pid)
   return nil
 end
 
+-- 現在のターミナルバッファからClaudeセッションIDを特定する。
+-- 失敗時は notify して nil を返す。name は通知プレフィックス（コマンド名）。
+local function resolve_claude_session(name)
+  local bufnr = vim.api.nvim_get_current_buf()
+  if vim.bo[bufnr].buftype ~= "terminal" then
+    vim.notify("[" .. name .. "] Run from a Claude terminal buffer", vim.log.levels.WARN)
+    return nil
+  end
+
+  local job_pid = vim.b[bufnr].terminal_job_pid
+  if not job_pid then
+    vim.notify("[" .. name .. "] No terminal job PID found", vim.log.levels.ERROR)
+    return nil
+  end
+
+  local session_id = find_claude_session_id(job_pid)
+  if not session_id then
+    vim.notify("[" .. name .. "] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
+    return nil
+  end
+
+  return session_id
+end
+
 local function toggle_draft_buffer()
   local current_winid = vim.api.nvim_get_current_win()
   local draft_winid = find_draft_winid()
@@ -188,21 +212,8 @@ function M.setup()
   end, { desc = "Open Claude session picker terminal" })
 
   vim.api.nvim_create_user_command("AgentClaudeFork", function()
-    local bufnr = vim.api.nvim_get_current_buf()
-    if vim.bo[bufnr].buftype ~= "terminal" then
-      vim.notify("[AgentClaudeFork] Run from a Claude terminal buffer", vim.log.levels.WARN)
-      return
-    end
-
-    local job_pid = vim.b[bufnr].terminal_job_pid
-    if not job_pid then
-      vim.notify("[AgentClaudeFork] No terminal job PID found", vim.log.levels.ERROR)
-      return
-    end
-
-    local session_id = find_claude_session_id(job_pid)
+    local session_id = resolve_claude_session("AgentClaudeFork")
     if not session_id then
-      vim.notify("[AgentClaudeFork] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
       return
     end
 
@@ -216,22 +227,30 @@ function M.setup()
   end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
   vim.keymap.set("n", "<leader>ak", ":AgentClaudeFork<CR>", { desc = "AgentClaudeFork", noremap = true, silent = true })
 
-  vim.api.nvim_create_user_command("AgentClaudeRestart", function()
-    local bufnr = vim.api.nvim_get_current_buf()
-    if vim.bo[bufnr].buftype ~= "terminal" then
-      vim.notify("[AgentClaudeRestart] Run from a Claude terminal buffer", vim.log.levels.WARN)
-      return
-    end
-
-    local job_pid = vim.b[bufnr].terminal_job_pid
-    if not job_pid then
-      vim.notify("[AgentClaudeRestart] No terminal job PID found", vim.log.levels.ERROR)
-      return
-    end
-
-    local session_id = find_claude_session_id(job_pid)
+  vim.api.nvim_create_user_command("AgentClaudeLogConversation", function()
+    local session_id = resolve_claude_session("AgentClaudeLogConversation")
     if not session_id then
-      vim.notify("[AgentClaudeRestart] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
+      return
+    end
+
+    local cwd = vim.fn.getcwd()
+    -- 現在のペインを分割して fork 先 Claude を起動し、/log-ai-conversation を実行させる。
+    -- prompt 引数でスキルを呼ぶだけで、スキル本文が指示として機能する（fork 元の文脈には引きずられない）。
+    -- 完了後の自動終了はしない（ユーザーが確認後にペインを閉じる）。
+    local fork_prompt = "/log-ai-conversation"
+    local inner = string.format("claude --resume %s --fork-session %s", session_id, vim.fn.shellescape(fork_prompt))
+    local cmd = string.format("tmux split-window -h -c %s %s", vim.fn.shellescape(cwd), vim.fn.shellescape(inner))
+    vim.fn.system(cmd)
+    if vim.v.shell_error ~= 0 then
+      vim.notify("[AgentClaudeLogConversation] Failed to open tmux pane", vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("[AgentClaudeLogConversation] Forked log-ai-conversation into a new pane", vim.log.levels.INFO)
+  end, { desc = "Fork Claude session into a split pane and run log-ai-conversation" })
+
+  vim.api.nvim_create_user_command("AgentClaudeRestart", function()
+    local session_id = resolve_claude_session("AgentClaudeRestart")
+    if not session_id then
       return
     end
 
