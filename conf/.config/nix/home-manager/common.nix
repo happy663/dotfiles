@@ -64,6 +64,7 @@ in
         };
       }))
       tmux
+      mosh # モバイルからAgent操作するための接続層（issue #229）
       deno
       bun
       php84Extensions.xdebug
