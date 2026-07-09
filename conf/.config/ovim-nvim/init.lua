@@ -33,9 +33,18 @@ vim.api.nvim_create_autocmd("BufRead", {
       vim.cmd("wq")
     end, { buffer = true, silent = true })
     vim.keymap.set("n", "<C-CR>", ":wq<CR>", { buffer = true, silent = true })
+    require("utils.markdown-helpers").setup_keymaps()
+
+    -- ## 見出し間の移動キーバインド
+    vim.keymap.set("n", "]]", function()
+      vim.fn.search("^##  User\\s", "W")
+    end, { buffer = true, desc = "Next ## heading" })
+
+    vim.keymap.set("n", "[[", function()
+      vim.fn.search("^##  User\\s", "bW")
+    end, { buffer = true, desc = "Previous ## heading" })
   end,
 })
-
 
 require("lazy").setup({
   spec = {
