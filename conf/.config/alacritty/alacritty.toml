@@ -3,7 +3,7 @@
 
 [window]
 # ウィンドウの不透明度 (0.0 - 1.0)
-opacity = 0.55
+opacity = 1
 startup_mode = "Maximized"  # または "SimpleFullscreen", "Maximized", "Fullscreen"
 
 # macOSでのブラー効果
