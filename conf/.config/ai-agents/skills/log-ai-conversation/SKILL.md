@@ -46,7 +46,7 @@ disable-model-invocation: false
 ### まとめ方
 
 * 作業ログ形式（時系列・試行錯誤・主観表現OK）
-* トピックごとに `### {トピック}` で見出しをつける
+* トピックごとに `## {トピック}` で見出しをつける
 * 1コメント = 1まとまり
 * 「問題→調査→試行→結果」の流れを意識する
 * 直前のコメントを確認し、前のコメントと内容が重複しないよう・話の流れが自然につながるよう意識する
@@ -172,7 +172,7 @@ gh pr comment {number} --repo {owner/repo} -F "${body_file}"
 以下はlazygitのworktree操作についてAIと会話した内容をまとめた例です。
 
 ````markdown
-### lazygitでworktree viewが表示されない
+## lazygitでworktree viewが表示されない
 
 lazygitでworktree viewが表示されない問題を調査した。
 
@@ -188,7 +188,7 @@ https://github.com/happy663/dotfiles/blob/xxx/conf/.config/lazygit/config.yml#L6
 - https://raw.githubusercontent.com/jesseduffield/lazygit/master/docs/keybindings/Keybindings_ja.md
 
 
-### lazygit終了後にworktreeのディレクトリが反映されない
+## lazygit終了後にworktreeのディレクトリが反映されない
 
 Neovim経由でlazygitを使っているため、lazygit内でworktreeを切り替えても親シェルのcwdは変わらない。
 次回起動時に元のディレクトリから始まってしまう問題があった。
@@ -217,7 +217,7 @@ https://github.com/happy663/dotfiles/blob/xxx/conf/.config/nvim/lua/plugins/git/
 qで終了すると反映され、Shift+Qだと反映しない。
 
 
-### worktreeとbranchの違いがわからなかった
+## worktreeとbranchの違いがわからなかった
 
 「同じmainを複数worktreeで同時checkoutできない」の意味が最初わからなかった。
 
