@@ -29,6 +29,10 @@ vim.opt.rtp:prepend(lazypath)
 vim.api.nvim_create_autocmd("BufRead", {
   pattern = "*/Library/Caches/ovim/*",
   callback = function()
+    -- ovim の一時ファイルは .txt 拡張子のため filetype が text になり、
+    -- render-markdown の ft トリガー / file_types に載らず描画されない。
+    -- markdown 扱いにして遅延ロードとレンダリングの両方を満たす。
+    vim.bo.filetype = "markdown"
     vim.keymap.set("i", "<C-CR>", function()
       vim.cmd("wq")
     end, { buffer = true, silent = true })
@@ -51,6 +55,7 @@ require("lazy").setup({
     { import = "plugins.japanese" },
     { import = "plugins.completion" },
     { import = "plugins.colorschemas" },
+    { import = "plugins.visual" },
   },
   performance = {
     rtp = {
