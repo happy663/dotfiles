@@ -79,5 +79,18 @@ hs.hotkey.bind({ "alt" }, "X", function()
   end
 end)
 
+hs.hotkey.bind({ "alt" }, "e", function()
+  local app = hs.application.get("org.alacritty")
+  if app then
+    if app:isFrontmost() then
+      app:hide()
+    else
+      app:activate()
+    end
+  else
+    hs.application.launchOrFocus("Alacritty")
+  end
+end)
+
 
 
