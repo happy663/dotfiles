@@ -29,12 +29,25 @@ lines=$n
 # Window list for the current session's line (keeps existing agent-status icons).
 win='#{W:#[push-default]#{T:window-status-format}#[pop-default],#[push-default]#{T:window-status-current-format}#[pop-default]}'
 
+# Column alignment: pad each session name to the longest name's width so the
+# window-list column starts at the same position regardless of which session
+# is current.
+maxlen=0
+for name in "${sessions[@]}"; do
+    len=${#name}
+    [ "$len" -gt "$maxlen" ] && maxlen=$len
+done
+
 for ((i = 0; i < lines; i++)); do
     name=${sessions[$i]}
+    pad_total=$((maxlen - ${#name}))
+    pad_left=$(((pad_total + 1) / 2))
+    pad_right=$((pad_total - pad_left))
+    padded="$(printf '%*s' "$pad_left" '')${name}$(printf '%*s' "$pad_right" '')"
     # Commas inside our own #[...] must be escaped as #, because they sit at the
     # top level of the #{?cond,true,false} conditional.
-    cur="#[bg=#bb9af7#,fg=#1a1b26#,bold] ▸ ${name} #[bg=#1a1b26#,fg=#bb9af7]#[default] ${win}"
-    oth="#[fg=#c0caf5]   ${name} "
+    cur="#[bg=#1a1b26#,fg=#bb9af7]#[bg=#bb9af7#,fg=#1a1b26#,bold] ${padded} #[bg=#1a1b26#,fg=#bb9af7]#[default] ${win}"
+    oth="#[fg=#c0caf5]  ${padded} "
     fmt="#[align=left]#{?#{==:#{client_session},${name}},${cur},${oth}}"
     tmux set-option -g "status-format[$i]" "$fmt"
 done
