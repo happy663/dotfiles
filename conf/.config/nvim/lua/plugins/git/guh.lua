@@ -35,7 +35,8 @@ return {
               local ok, buf = pcall(vim.api.nvim_win_get_buf, win)
               if ok then
                 local n = vim.api.nvim_buf_get_name(buf)
-                if n:match("guh://.*/pr(comments|logs)/") then
+                -- NOTE: Lua pattern には | (OR) がないので個別に match する
+                if n:match("/prcomments/") or n:match("/prlogs/") then
                   pcall(vim.api.nvim_win_close, win, true)
                 end
               end
