@@ -104,6 +104,10 @@ return {
       setup_active_buffer_tracking()
 
       -- BufEnterイベントでアクティブバッファを更新し、nvim-treeを再描画
+      -- reloadはgit subprocessを同期wait（loop_poll）するため、その間に
+      -- 他プラグイン（no-neck-pain等）のvim.scheduleコールバックが割り込むと
+      -- 既に閉じたwinidを触るレースが発生する。vim.schedule + debounceで回避する
+      local reload_timer = nil
       vim.api.nvim_create_autocmd("BufEnter", {
         callback = function()
           local bufname = vim.api.nvim_buf_get_name(0)
@@ -115,15 +119,39 @@ return {
           if bufname == "" then
             return
           end
+          -- no-neck-painのサイドバッファも無視（filetypeで判定）
+          if vim.bo.filetype == "no-neck-pain" then
+            return
+          end
 
           -- アクティブバッファのフルパスを保存
           current_active_buffer = vim.fn.fnamemodify(bufname, ":p")
 
-          -- nvim-treeが開いている場合のみ再描画
-          local api = require("nvim-tree.api")
-          if api.tree.is_visible() then
-            api.tree.reload()
+          -- reload呼び出しをdebounceして、連続BufEnter・他プラグインの
+          -- schedule callbackとのレースを避ける
+          if reload_timer then
+            reload_timer:stop()
+            reload_timer:close()
+            reload_timer = nil
           end
+          reload_timer = vim.uv.new_timer()
+          reload_timer:start(
+            100,
+            0,
+            vim.schedule_wrap(function()
+              if reload_timer then
+                reload_timer:close()
+                reload_timer = nil
+              end
+              local ok, api = pcall(require, "nvim-tree.api")
+              if not ok then
+                return
+              end
+              if api.tree.is_visible() then
+                api.tree.reload()
+              end
+            end)
+          )
         end,
       })
 
