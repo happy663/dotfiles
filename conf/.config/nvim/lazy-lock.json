@@ -33,6 +33,7 @@
   "ddt.vim": { "branch": "main", "commit": "dba407a02b070686b70bd9f6cce5bba575aaee40" },
   "denops.vim": { "branch": "main", "commit": "e82c5a94ca1154b05c9d74d6f6f58c9991b1424f" },
   "dial.nvim": { "branch": "master", "commit": "f2634758455cfa52a8acea6f142dcd6271a1bf57" },
+  "diffs.nvim": { "branch": "main", "commit": "5198772a48d6d782e8b04f7084d373094d29798c" },
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "discord-send.nvim": { "branch": "main", "commit": "5144efc9274459bf2facb2e8e3042693794db17b" },
   "everforest-nvim": { "branch": "main", "commit": "d235ca0aa6a29546e661a020e2618612acbbffbe" },
