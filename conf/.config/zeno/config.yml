@@ -269,6 +269,10 @@ snippets:
     keyword: o
     snippet: nvim-octo
 
+  - name: nvim guh
+    keyword: u
+    snippet: nvim-guh
+
   - name: nvim octo issues
     keyword: ol
     snippet: nvim-octo-issues
