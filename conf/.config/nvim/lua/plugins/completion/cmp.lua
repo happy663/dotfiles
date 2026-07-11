@@ -1,6 +1,9 @@
 return {
   {
     "hrsh7th/nvim-cmp",
+    -- Pin until nvim-cmp#2219 no longer prevents skkeleton completion updates.
+    -- https://github.com/happy663/dotfiles/issues/301
+    commit = "a1d504892f2bc56c2e79b65c6faded2fd21f3eca",
     cond = vim.g.not_in_vscode,
     lazy = true,
     event = { "InsertEnter", "CmdlineEnter" },
