@@ -47,7 +47,7 @@ for ((i = 0; i < lines; i++)); do
     # Commas inside our own #[...] must be escaped as #, because they sit at the
     # top level of the #{?cond,true,false} conditional.
     cur="#[bg=#1a1b26#,fg=#bb9af7]#[bg=#bb9af7#,fg=#1a1b26#,bold] ${padded} #[bg=#1a1b26#,fg=#bb9af7]#[default] ${win}"
-    oth="#[fg=#c0caf5]  ${padded} "
+    oth="#[bg=#1a1b26#,fg=#2d3149]#[bg=#2d3149#,fg=#c0caf5] ${padded} #[bg=#1a1b26#,fg=#2d3149]#[default] "
     fmt="#[align=left]#{?#{==:#{client_session},${name}},${cur},${oth}}"
     tmux set-option -g "status-format[$i]" "$fmt"
 done
