@@ -569,7 +569,10 @@ return {
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
       -- "uga-rosa/cmp-skkeleton",
-      "happy663/cmp-skkeleton",
+      {
+        "happy663/cmp-skkeleton",
+        commit = "60e621efd3f7797dd789f993adf296ad3523c364",
+      },
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",
