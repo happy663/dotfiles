@@ -1,6 +1,9 @@
 return {
   {
     "hrsh7th/nvim-cmp",
+    -- Pin until nvim-cmp#2219 no longer prevents skkeleton completion updates.
+    -- https://github.com/happy663/dotfiles/issues/301
+    commit = "a1d504892f2bc56c2e79b65c6faded2fd21f3eca",
     cond = vim.g.not_in_vscode,
     lazy = true,
     event = { "InsertEnter", "CmdlineEnter" },
@@ -566,7 +569,10 @@ return {
       "hrsh7th/cmp-calc",
       "onsails/lspkind.nvim",
       -- "uga-rosa/cmp-skkeleton",
-      "happy663/cmp-skkeleton",
+      {
+        "happy663/cmp-skkeleton",
+        commit = "60e621efd3f7797dd789f993adf296ad3523c364",
+      },
       "hrsh7th/cmp-vsnip",
       "hrsh7th/vim-vsnip",
       "micangl/cmp-vimtex",

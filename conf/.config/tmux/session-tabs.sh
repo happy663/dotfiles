@@ -52,4 +52,10 @@ for ((i = 0; i < lines; i++)); do
     tmux set-option -g "status-format[$i]" "$fmt"
 done
 
-tmux set-option -g status "$lines"
+# tmux accepts numeric values for two or more status lines, but a single line
+# must be specified as `on` rather than `1`.
+if [ "$lines" -eq 1 ]; then
+    tmux set-option -g status on
+else
+    tmux set-option -g status "$lines"
+fi
