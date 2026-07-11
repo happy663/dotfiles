@@ -119,6 +119,20 @@ function nvim-octo() {
   command nvim -c "$ex_cmd"
 }
 
+# nvim-guh - open Neovim and run :Guh with optional args
+#   guh のターゲット (PR番号 / issue番号 / GitHub URL / owner/repo#N) を引数に取る。
+#   # を含む slug もあるので ${(q)@} でクォートする。
+#   :Guh を -c で即実行すると、noice が ui_attach する前に guh の progress ログが
+#   cmdline に出て hit-enter (<CR>) を要求する。--cmd で VeryLazy (noice アタッチ後)
+#   に :Guh を実行することで回避する。
+function nvim-guh() {
+  local ex_cmd="Guh"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim --cmd "autocmd User VeryLazy ++once lua vim.cmd('$ex_cmd')"
+}
+
 function nvim-octo-issues() {
   local ex_cmd="Octo issue list"
   if [[ -n "$1" ]]; then
