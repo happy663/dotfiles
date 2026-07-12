@@ -99,26 +99,40 @@ end
 -- Chrome の該当タブに JS を送って data-source-line=N にスクロールさせる。
 -- mkdp のフロント側は isActive=true のときのみ scroll する仕様のため、
 -- shadow buffer を使う本モジュールでは Chrome を外から直接動かす経路にする。
-local function scroll_chrome_to_line(shadow_bufnr, shadow_line)
+--
+-- winline_ratio は Neovim 側での cursor 位置の viewport 内相対位置 (0.0..1.0)。
+-- 例えば cursor が Neovim の window 上端にあれば 0.0、中央 0.5、下端 1.0。
+-- これを Chrome viewport 内で再現するため、対象要素を viewport の同じ相対
+-- 位置に配置するようスクロール位置を計算する。
+local function scroll_chrome_to_line(shadow_bufnr, shadow_line, winline_ratio)
+  local ratio = winline_ratio or 0.5
   local js = string.format(
     [[
     (function(){
-      var el = document.querySelector('[data-source-line="' + %d + '"]');
+      var line = %d;
+      var ratio = %f;
+      var el = document.querySelector('[data-source-line="' + line + '"]');
       if (!el) {
         var els = document.querySelectorAll('[data-source-line]');
         var best = null, bestDiff = Infinity;
         for (var i = 0; i < els.length; i++) {
           var n = parseInt(els[i].getAttribute('data-source-line'), 10);
-          var d = %d - n;
+          var d = line - n;
           if (d >= 0 && d < bestDiff) { best = els[i]; bestDiff = d; }
         }
         el = best;
       }
-      if (el) el.scrollIntoView({behavior:'instant', block:'start'});
+      if (el) {
+        var rect = el.getBoundingClientRect();
+        // 要素の絶対位置から、viewport 上端 = 対象行が ratio 位置に来る scrollY を計算
+        var elTop = window.scrollY + rect.top;
+        var target = elTop - window.innerHeight * ratio;
+        window.scrollTo({top: target, behavior: 'instant'});
+      }
     })();
   ]],
     shadow_line,
-    shadow_line
+    ratio
   )
   -- shadow bufnr の URL を含むタブに JS を送る。
   -- mkdp の preview URL は http://localhost:PORT/{bufnr} 形式（/page/{bufnr}
@@ -176,8 +190,18 @@ local function sync_cursor(octo_bufnr)
     end
     -- Neovim 側の shadow cursor も一応合わせておく（デバッグ・保険用）
     pcall(vim.api.nvim_win_set_cursor, st.win, { target, 0 })
-    -- Chrome を直接 scroll
-    scroll_chrome_to_line(st.shadow, target)
+
+    -- Neovim 側の cursor の viewport 内相対位置 (0..1) を計算して Chrome に渡す
+    -- octo_win の中で winline() / winheight() を評価する必要があるため win_call
+    local ratio = 0.5
+    pcall(vim.api.nvim_win_call, octo_win, function()
+      local winline = vim.fn.winline()
+      local winheight = vim.fn.winheight(0)
+      if winheight > 0 then
+        ratio = (winline - 1) / winheight
+      end
+    end)
+    scroll_chrome_to_line(st.shadow, target, ratio)
   end
 end
 
