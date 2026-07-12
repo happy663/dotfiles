@@ -66,6 +66,10 @@ return {
       end
       require("plugins.git.octo.buffer_rename").setup()
       require("octo").setup(octo_config)
+
+      vim.api.nvim_create_user_command("OctoPreview", function()
+        require("plugins.git.octo.preview").toggle()
+      end, { desc = "Toggle Octo buffer browser preview" })
       -- Octo's undo-history clearing uses `undolevels=-1` + insert/delete.
       -- On Neovim 0.12.3 this can corrupt undo state in freshly rendered Octo
       -- buffers and crash when UI plugins handle the resulting error message.

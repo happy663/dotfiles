@@ -53,6 +53,16 @@ function M.octo_buffer_keymaps()
     desc = "Octo: Jump to the parent issue",
   })
 
+  -- Toggle browser preview via markdown-preview.nvim (shadow buffer)
+  vim.keymap.set("n", "<leader>oP", function()
+    require("plugins.git.octo.preview").toggle()
+  end, {
+    buffer = true,
+    noremap = true,
+    silent = true,
+    desc = "Octo: Toggle browser preview",
+  })
+
   -- Custom reload: Works correctly even after buffer name changes
   -- Uses _G.octo_buffers metadata for reload
   vim.keymap.set("n", "<leader>or", function()
