@@ -13,7 +13,12 @@ return {
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { "<Leader>l", "<cmd>LazyGit<CR>" },
+      {
+        "<Leader>l",
+        function()
+          _G.open_lazygit()
+        end,
+      },
     },
     config = function()
       vim.g.lazygit_floating_window_scaling_factor = 1
@@ -34,6 +39,21 @@ return {
         end
 
         vim.cmd("cd " .. vim.fn.fnameescape(new_dir))
+      end
+
+      -- tmux配下かつペイン幅が狭い場合は tmux のポップアップで、
+      -- そうでなければ従来の Neovim フローティングウィンドウで lazygit を開く。
+      -- ペイン分割等で Neovim の表示幅が狭くなるとフローティングの lazygit が
+      -- 潰れて見えなくなるため、一定以下の幅では tmux ポップアップに逃げる。
+      _G.open_lazygit = function()
+        if vim.env.TMUX and vim.env.TMUX ~= "" and vim.o.columns < 120 then
+          local cwd = vim.fn.getcwd()
+          local cmd = string.format("tmux display-popup -E -w 95%% -h 95%% -d %s lazygit", vim.fn.shellescape(cwd))
+          vim.fn.system(cmd)
+          sync_cwd_from_lazygit()
+        else
+          vim.cmd("LazyGit")
+        end
       end
 
       -- telescopeがロードされている場合のみ拡張をロード
