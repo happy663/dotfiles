@@ -240,6 +240,74 @@ local function ensure_buffer_keymaps(bufnr)
       end,
     })
   end, { buffer = bufnr, noremap = true, silent = true, desc = "Pick file(s) with live_grep (@path)" })
+  vim.keymap.set("n", "<leader>oll", function()
+    local raw = vim.fn.systemlist("gh issue list --state open --json number,title,url --limit 400")
+    if vim.v.shell_error ~= 0 then
+      notify("Failed to run 'gh issue list'", vim.log.levels.ERROR)
+      return
+    end
+    local ok, issues = pcall(vim.fn.json_decode, raw)
+    if not ok or type(issues) ~= "table" or #issues == 0 then
+      notify("No issues found", vim.log.levels.WARN)
+      return
+    end
+
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local conf = require("telescope.config").values
+    pickers
+      .new({}, {
+        prompt_title = "Issues (insert link)",
+        finder = finders.new_table({
+          results = issues,
+          entry_maker = function(issue)
+            return {
+              value = issue.url,
+              display = string.format("#%d %s", issue.number, issue.title),
+              ordinal = string.format("%d %s", issue.number, issue.title),
+            }
+          end,
+        }),
+        sorter = conf.generic_sorter({}),
+        attach_mappings = function(prompt_bufnr, _)
+          local actions = require("telescope.actions")
+          local action_state = require("telescope.actions.state")
+          actions.select_default:replace(function()
+            local picker = action_state.get_current_picker(prompt_bufnr)
+            local multi = picker:get_multi_selection()
+            actions.close(prompt_bufnr)
+
+            local links = {}
+            if #multi > 0 then
+              for _, entry in ipairs(multi) do
+                if entry.value then
+                  table.insert(links, entry.value)
+                end
+              end
+            else
+              local entry = action_state.get_selected_entry()
+              if entry and entry.value then
+                table.insert(links, entry.value)
+              end
+            end
+
+            if #links == 0 then
+              return
+            end
+
+            local insert_text = table.concat(links, " ")
+            local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+            local line = vim.api.nvim_get_current_line()
+            local new_line = line:sub(1, col) .. insert_text .. line:sub(col + 1)
+            vim.api.nvim_set_current_line(new_line)
+            vim.api.nvim_win_set_cursor(0, { row, col + #insert_text })
+            vim.cmd("startinsert")
+          end)
+          return true
+        end,
+      })
+      :find()
+  end, { buffer = bufnr, noremap = true, silent = true, desc = "Pick GitHub issue(s) and insert link" })
 end
 
 function M.focus_or_open(opts)
