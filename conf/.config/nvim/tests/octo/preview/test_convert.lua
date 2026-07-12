@@ -219,6 +219,53 @@ do
   if replaced then
     assert_eq("img: original URL removed", replaced:find("private%-user%-images"), nil)
     assert_eq("img: local path inserted", not not replaced:find("/tmp/cache/foo.png", 1, true), true)
+    -- 元の <img width="100" alt="X" src="..." /> は width が残っていた
+    -- 潰れ防止のため width/height 属性は除去される
+    assert_eq("img: width attribute removed", replaced:find('width="'), nil)
+  end
+end
+
+-- ====================================================
+-- Test 4b: width と height が両方ある HTML img は両方削除される
+-- ====================================================
+do
+  local input = {
+    node = { number = 1, title = "T" },
+    titleMetadata = { startLine = 0, endLine = 0 },
+    bodyMetadata = { startLine = 2, endLine = 2 },
+    commentsMetadata = {},
+  }
+  local html_line =
+    '<img width="2386" height="1416" alt="Image" src="https://private-user-images.githubusercontent.com/xyz.png?jwt=x" />'
+  local get_lines = function(s, e)
+    local lines = {}
+    for row_0 = s, e - 1 do
+      local row_1 = row_0 + 1
+      if row_1 == 3 then
+        lines[#lines + 1] = html_line
+      else
+        lines[#lines + 1] = ""
+      end
+    end
+    return lines
+  end
+  local resolve_image = function(_)
+    return "/tmp/cache/big.png"
+  end
+  local md, _ = convert.build(input, get_lines, { resolve_image = resolve_image })
+  local replaced = nil
+  for _, line in ipairs(md) do
+    if line:find("<img", 1, true) then
+      replaced = line
+      break
+    end
+  end
+  assert_eq("img-wh: line replaced", type(replaced), "string")
+  if replaced then
+    assert_eq("img-wh: width removed", replaced:find("width="), nil)
+    assert_eq("img-wh: height removed", replaced:find("height="), nil)
+    assert_eq("img-wh: alt preserved", not not replaced:find('alt="Image"'), true)
+    assert_eq("img-wh: local path inserted", not not replaced:find("/tmp/cache/big.png", 1, true), true)
   end
 end
 

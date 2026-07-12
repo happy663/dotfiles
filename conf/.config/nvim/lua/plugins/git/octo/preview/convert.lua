@@ -10,17 +10,34 @@ local M = {}
 -- また mkdp/markdown-it は ![alt](URL) の URL に file:// や絶対 path を
 -- 通しづらいので、markdown img は HTML <img> に変換して渡す
 -- resolver が nil を返した URL は素通し。
+-- HTML img タグから width/height 属性を除去する。
+-- 元の GitHub 添付画像は固定 width/height (`2386x1416` 等) を持っており、
+-- max-width で幅が縮んでも height が固定のままだと aspect ratio が崩壊して
+-- 縦潰れになるため。
+local function strip_size_attrs(tag)
+  tag = tag:gsub("%s+width=([\"'])[^\"']*%1", "")
+  tag = tag:gsub("%s+height=([\"'])[^\"']*%1", "")
+  return tag
+end
+
 local function replace_images(line, resolver)
   if not resolver then
     return line
   end
   -- HTML img: src="..." または src='...'
-  line = line:gsub([[(<img[^>]-src=)(["'])([^"']+)(["'])]], function(prefix, q1, url, q2)
-    local path = resolver(url)
-    if path then
-      return prefix .. q1 .. path .. q2
+  line = line:gsub("<img[^>]*>", function(tag)
+    local url = tag:match("src=[\"']([^\"']+)[\"']")
+    if not url then
+      return tag
     end
-    return prefix .. q1 .. url .. q2
+    local path = resolver(url)
+    if not path then
+      return tag
+    end
+    local new_tag = tag:gsub("(src=[\"'])[^\"']+([\"'])", function(pre, post)
+      return pre .. path .. post
+    end, 1)
+    return strip_size_attrs(new_tag)
   end)
   -- markdown ![alt](URL) - URL 部分は括弧を含まないと仮定
   -- HTML <img> に変換して置換する。alt は "!%b[]" が `![alt]` を含む
