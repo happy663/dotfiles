@@ -110,9 +110,7 @@
       "Bash(which:*)",
       "WebSearch"
     ],
-    "deny": [
-      "Bash(rm:*)"
-    ]
+    "deny": ["Bash(rm:*)"]
   },
   "hooks": {
     "PreToolUse": [
@@ -180,6 +178,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/claude-session-register.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/claude-pane-task.sh submit"
           }
         ]
       }
@@ -231,6 +233,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh done"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/claude-pane-task.sh stop"
           }
         ]
       }

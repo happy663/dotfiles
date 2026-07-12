@@ -2,7 +2,7 @@
 
 "use strict";
 
-const { spawnSync } = require("child_process");
+const { spawn, spawnSync } = require("child_process");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -41,11 +41,20 @@ function main() {
     typeof payload?.["last-assistant-message"] === "string"
       ? payload["last-assistant-message"]
       : "";
-  const summary = typeof payload?.summary === "string" ? payload.summary : "";
+  const inputMessages = Array.isArray(payload?.["input-messages"]) ? payload["input-messages"] : [];
+  const summary =
+    inputMessages.find(
+      (m) => typeof m === "string" && m && !m.startsWith("<environment_context>")
+    ) || "";
 
   const title = buildTitle({ cwd, type });
   const message = buildMessage({ lastAssistantMessage, summary, fallback: payloadRaw });
   const group = typeof payload?.["thread-id"] === "string" ? payload["thread-id"] : "";
+
+  // tmux pane task title generation (best-effort, runs detached so it never blocks Codex).
+  if (group) {
+    spawnTitleGeneration(group);
+  }
 
   // `terminal-notifier` には癖があり、特定の先頭文字（例: `(`, `[`, `-`）があると
   // `-title`/`-message` が無視されたり、空になったり、stdin 待ちでハングすることさえあります。
@@ -248,6 +257,70 @@ function parsePositiveInt(value) {
   const parsed = Number.parseInt(value, 10);
   if (!Number.isFinite(parsed) || parsed <= 0) return undefined;
   return parsed;
+}
+
+/**
+ * thread-id に対応する session jsonl を特定し、ユーザーが実際に入力した最初のメッセージ
+ * （environment_context を含まない event_msg の user_message）を返します。
+ *
+ * @param {string} threadId
+ * @returns {string}
+ */
+function readFirstUserMessage(threadId) {
+  try {
+    const sessionsDir = path.join(os.homedir(), ".codex", "sessions");
+    const findResult = spawnSync(
+      "find",
+      [sessionsDir, "-name", `rollout-*-${threadId}.jsonl`, "-print", "-quit"],
+      { encoding: "utf8" }
+    );
+    const jsonlPath = (findResult.stdout || "").trim().split("\n")[0];
+    if (!jsonlPath) return "";
+    const content = fs.readFileSync(jsonlPath, "utf8");
+    for (const line of content.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const obj = JSON.parse(line);
+        if (
+          obj.type === "event_msg" &&
+          obj.payload &&
+          obj.payload.type === "user_message" &&
+          typeof obj.payload.message === "string"
+        ) {
+          return obj.payload.message;
+        }
+      } catch {
+        // パース失敗行は無視
+      }
+    }
+  } catch {
+    // ベストエフォート: 例外を投げない
+  }
+  return "";
+}
+
+/**
+ * tmux ペインの作業タイトル生成を非同期（detached）で起動します。
+ * CODEX_TASK_RENAMER 環境変数で再帰を回避しつつ、agent-pane-task.sh に処理を委譲します。
+ *
+ * @param {string} threadId
+ * @returns {void}
+ */
+function spawnTitleGeneration(threadId) {
+  try {
+    if (process.env.CODEX_TASK_RENAMER === "1") return;
+    const message = readFirstUserMessage(threadId);
+    if (!message) return;
+    const script = path.join(os.homedir(), ".config", "tmux", "scripts", "agent-pane-task.sh");
+    const child = spawn(script, [threadId, message, "codex"], {
+      env: { ...process.env, CODEX_TASK_RENAMER: "1" },
+      stdio: "ignore",
+      detached: true,
+    });
+    child.unref();
+  } catch {
+    // ベストエフォート: 決して例外を投げない
+  }
 }
 
 main();
