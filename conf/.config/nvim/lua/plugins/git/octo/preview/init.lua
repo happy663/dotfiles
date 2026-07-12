@@ -9,6 +9,15 @@
 --   5. octo の CursorMoved で anchor lookup → shadow の cursor 位置を更新（debounce 50ms）
 
 local convert = require("plugins.git.octo.preview.convert")
+local image_resolver = require("utils.github-image-resolver")
+
+-- 認証画像を local cache path に解決するラッパー。
+-- github-image-resolver.resolve は cache miss 時に placeholder path を返し、
+-- 裏で非同期ダウンロード → 完了後に octo バッファを rerender させるので、
+-- 我々の TextChanged autocmd が再変換して file:// を差し替える循環になる
+local function resolve_image_for_preview(url)
+  return image_resolver.resolve(nil, url)
+end
 
 local M = {}
 
@@ -59,7 +68,9 @@ local function refresh_shadow(octo_bufnr)
     return
   end
 
-  local md, anchors = convert.build(meta, get_get_lines(octo_bufnr))
+  local md, anchors = convert.build(meta, get_get_lines(octo_bufnr), {
+    resolve_image = resolve_image_for_preview,
+  })
   st.anchors = anchors
 
   if vim.api.nvim_buf_is_valid(st.shadow) then

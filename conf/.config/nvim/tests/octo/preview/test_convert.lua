@@ -177,6 +177,132 @@ do
 end
 
 -- ====================================================
+-- Test 4: image resolver で HTML <img src="URL"> を file:// に置換
+-- ====================================================
+do
+  local input = {
+    node = { number = 1, title = "T" },
+    titleMetadata = { startLine = 0, endLine = 0 },
+    bodyMetadata = { startLine = 2, endLine = 2 },
+    commentsMetadata = {},
+  }
+  local html_line =
+    '<img width="100" alt="X" src="https://private-user-images.githubusercontent.com/123/abc.png?jwt=xxx" />'
+  local get_lines = function(s, e)
+    local lines = {}
+    for row_0 = s, e - 1 do
+      local row_1 = row_0 + 1
+      if row_1 == 3 then
+        lines[#lines + 1] = html_line
+      else
+        lines[#lines + 1] = ""
+      end
+    end
+    return lines
+  end
+  local resolve_image = function(url)
+    if url:match("private%-user%-images") then
+      return "/tmp/cache/foo.png"
+    end
+    return nil
+  end
+  local md, _ = convert.build(input, get_lines, { resolve_image = resolve_image })
+  -- 置換された画像行を確認
+  local replaced = nil
+  for _, line in ipairs(md) do
+    if line:find("<img", 1, true) then
+      replaced = line
+      break
+    end
+  end
+  assert_eq("img: html img line preserved", type(replaced), "string")
+  if replaced then
+    assert_eq("img: original URL removed", replaced:find("private%-user%-images"), nil)
+    assert_eq("img: local path inserted", not not replaced:find("/tmp/cache/foo.png", 1, true), true)
+  end
+end
+
+-- ====================================================
+-- Test 5: image resolver で markdown ![alt](URL) を file:// に置換
+-- ====================================================
+do
+  local input = {
+    node = { number = 1, title = "T" },
+    titleMetadata = { startLine = 0, endLine = 0 },
+    bodyMetadata = { startLine = 2, endLine = 2 },
+    commentsMetadata = {},
+  }
+  local md_img_line = "![screenshot](https://github.com/user-attachments/assets/68c802ac-72aa-4868-8a3a-673d208b860d)"
+  local get_lines = function(s, e)
+    local lines = {}
+    for row_0 = s, e - 1 do
+      local row_1 = row_0 + 1
+      if row_1 == 3 then
+        lines[#lines + 1] = md_img_line
+      else
+        lines[#lines + 1] = ""
+      end
+    end
+    return lines
+  end
+  local resolve_image = function(_)
+    return "/tmp/cache/bar.jpg"
+  end
+  local md, _ = convert.build(input, get_lines, { resolve_image = resolve_image })
+  -- markdown img は HTML <img> に変換される
+  local replaced = nil
+  for _, line in ipairs(md) do
+    if line:find("<img", 1, true) then
+      replaced = line
+      break
+    end
+  end
+  assert_eq("md-img: converted to html img", type(replaced), "string")
+  if replaced then
+    assert_eq("md-img: original URL removed", replaced:find("user%-attachments"), nil)
+    assert_eq("md-img: local path inserted", not not replaced:find("/tmp/cache/bar.jpg", 1, true), true)
+    assert_eq("md-img: alt preserved", not not replaced:find('alt="screenshot"', 1, true), true)
+  end
+end
+
+-- ====================================================
+-- Test 6: resolver が nil を返す URL は素通し
+-- ====================================================
+do
+  local input = {
+    node = { number = 1, title = "T" },
+    titleMetadata = { startLine = 0, endLine = 0 },
+    bodyMetadata = { startLine = 2, endLine = 2 },
+    commentsMetadata = {},
+  }
+  local original = "![x](https://example.com/foo.png)"
+  local get_lines = function(s, e)
+    local lines = {}
+    for row_0 = s, e - 1 do
+      local row_1 = row_0 + 1
+      if row_1 == 3 then
+        lines[#lines + 1] = original
+      else
+        lines[#lines + 1] = ""
+      end
+    end
+    return lines
+  end
+  local resolve_image = function(_)
+    return nil
+  end
+  local md, _ = convert.build(input, get_lines, { resolve_image = resolve_image })
+  local passthrough = nil
+  for _, line in ipairs(md) do
+    if line:find("!%[") then
+      passthrough = line
+      break
+    end
+  end
+  assert_eq("passthrough: line preserved", passthrough, original)
+end
+
+-- ====================================================
 -- サマリ
 -- ====================================================
 io.write(string.format("\n=== %d / %d passed ===\n", total - failed, total))
