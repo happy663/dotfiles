@@ -55,7 +55,7 @@ function M.octo_buffer_keymaps()
 
   -- Custom reload: Works correctly even after buffer name changes
   -- Uses _G.octo_buffers metadata for reload
-  vim.keymap.set("n", "<leader>or", function()
+  vim.keymap.set("n", "R", function()
     local current_bufnr = vim.api.nvim_get_current_buf()
     local buffer = _G.octo_buffers and _G.octo_buffers[current_bufnr]
     if buffer and buffer.repo and buffer.kind and buffer.number then
