@@ -97,7 +97,7 @@ set_tmux_status() {
   local target="$1"
   local status="$2"
   tmux set-option -w -t "$target" automatic-rename off 2>/dev/null || true
-  tmux set-option -w -t "$target" @agent-status "$status" 2>/dev/null || true
+  tmux set-option -p -t "$target" @agent-status "$status" 2>/dev/null || true
 }
 
 cmd_start() {
