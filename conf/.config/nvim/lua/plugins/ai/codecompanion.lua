@@ -34,17 +34,24 @@ return {
           local codecompanion = require("codecompanion")
           local chat = codecompanion.last_chat()
 
+          -- floatで表示するためのwindow_opts（保存済みの幅があれば復元）
+          local float_opts = vim.g.codecompanion_saved_width
+              and { layout = "float", width = vim.g.codecompanion_saved_width }
+            or { default = true }
+
           if chat and chat.ui:is_visible() then
-            -- 既存チャットを非表示
-            vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(chat.ui.winnr)
-            vim.cmd("CodeCompanionChat Toggle")
-          elseif chat then
-            -- 非表示のチャットを再表示
-            if vim.g.codecompanion_saved_width then
-              codecompanion.toggle({ window_opts = { width = vim.g.codecompanion_saved_width } })
-            else
+            if vim.api.nvim_win_get_config(chat.ui.winnr).relative ~= "" then
+              -- float表示中は幅を保存して非表示
+              vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(chat.ui.winnr)
               vim.cmd("CodeCompanionChat Toggle")
+            else
+              -- split表示中はfloatに切り替え
+              chat.ui:hide()
+              chat.ui:open({ window_opts = float_opts, toggled = true })
             end
+          elseif chat then
+            -- 非表示のチャットをfloatで再表示
+            codecompanion.toggle({ window_opts = float_opts })
           else
             -- 新規チャット作成時に#{buffer}を含める
             local config = require("codecompanion.config")
@@ -66,6 +73,44 @@ return {
         end,
         mode = { "n", "v" },
         desc = "CodeCompanion Toggle with Buffer",
+      },
+      {
+        "T",
+        function()
+          local codecompanion = require("codecompanion")
+          local chat = codecompanion.last_chat()
+          local split_opts = { layout = "vertical", width = 0.4 }
+
+          if chat and chat.ui:is_visible() then
+            if vim.api.nvim_win_get_config(chat.ui.winnr).relative ~= "" then
+              -- float表示中はvertical splitに切り替え
+              chat.ui:hide()
+              chat.ui:open({ window_opts = split_opts, toggled = true })
+            else
+              -- split表示中は非表示
+              vim.cmd("CodeCompanionChat Toggle")
+            end
+          elseif chat then
+            -- 非表示のチャットをvertical splitで再表示
+            codecompanion.toggle({ window_opts = split_opts })
+          else
+            -- 新規チャットをvertical splitで作成（<C-t>と同様に#{buffer}を含める）
+            local config = require("codecompanion.config")
+            codecompanion.chat({
+              messages = {
+                {
+                  role = config.constants.USER_ROLE,
+                  content = "#{buffer}",
+                  opts = { contains_code = true },
+                },
+              },
+              auto_submit = false,
+              window_opts = split_opts,
+            })
+          end
+        end,
+        mode = { "n", "v" },
+        desc = "CodeCompanion Toggle Vertical Split",
       },
       {
         "<leader>ccl",
@@ -335,7 +380,8 @@ return {
             if vim.api.nvim_win_is_valid(win) then
               local buf = vim.api.nvim_win_get_buf(win)
               local ft = vim.bo[buf].filetype
-              if ft == "codecompanion" then
+              -- float表示時のみ幅を保存する（splitの幅でfloat用の保存値を汚さない）
+              if ft == "codecompanion" and vim.api.nvim_win_get_config(win).relative ~= "" then
                 vim.g.codecompanion_saved_width = vim.api.nvim_win_get_width(win)
               end
             end
@@ -361,4 +407,3 @@ return {
     end,
   },
 }
-
