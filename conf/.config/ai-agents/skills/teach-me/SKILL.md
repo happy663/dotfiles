@@ -3,6 +3,7 @@ name: teach-me
 description: AI Agentの説明で理解できない部分を、前提知識なしで噛み砕いて説明する。会話中にその場で呼び出して使う。用語の定義と、なぜそれが重要かを中心に解説する。
 argument-hint: "[わからない概念やキーワード（省略時は直前の会話から推測）]"
 allowed-tools: Read, WebSearch, WebFetch
+disable-model-invocation: false
 ---
 
 # teach-me

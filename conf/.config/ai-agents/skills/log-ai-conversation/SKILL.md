@@ -3,7 +3,7 @@ name: log-ai-conversation
 description: AIとの会話をまとめてGitHub IssueまたはPull Requestにコメントとして追加する。手動で呼び出して使用。
 allowed-tools: Bash, Read, Write, mcp__acp__Read, WebFetch
 argument-hint: "[--confirm]"
-disable-model-invocation: false
+disable-model-invocation: true
 ---
 
 # AIとの会話をGitHubにログする
@@ -68,10 +68,10 @@ disable-model-invocation: false
 1. 直近のコメント2件（ユーザー/AI問わず）を取得する
 2. 今回の会話で新しく出てきたトピックを特定する
 3. 直近のコメントと今回書く内容を見比べ、重複している箇所を特定する
-   - 同じトピックについて書かれているか
-   - 新しい情報が増えているか
+   * 同じトピックについて書かれているか
+   * 新しい情報が増えているか
 4. 重複しているトピックは除外、新規トピックだけを書く
-   - 新規情報があれば、そのトピック内に追記するか、新規見出しで扱う
+   * 新規情報があれば、そのトピック内に追記するか、新規見出しで扱う
 
 直前コメントの確認コマンド:
 

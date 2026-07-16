@@ -3,7 +3,7 @@ name: create-issue
 description: 会話文脈から GitHub issue を作成する。「issueを作って」「issue立てて」等のリクエストで使用。本文は「背景 / やりたいこと / 配慮してほしいこと」の3セクション構成。「背景・やりたいこと」は背景と What(何をやりたいか)に集中し How(実装方法)は書かない。「配慮してほしいこと」は任意(省略可)で制約・要望を書く。
 argument-hint: "[title] [--repo owner/repo]"
 allowed-tools: Bash, Write, Read
-disable-model-invocation: false
+disable-model-invocation: true
 ---
 
 # Issue作成スキル
