@@ -77,6 +77,7 @@ M.adapters = {
       return require("codecompanion.adapters").extend("codex", {
         defaults = {
           auth_method = vim.env.CODEX_ACP_AUTH_METHOD or "openai-api-key",
+          model = "gpt-5.5",
         },
         env = {
           OPENAI_API_KEY = function()
