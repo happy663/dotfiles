@@ -165,17 +165,27 @@ end
 
 -- Format a single issue node as a picker line (icon + state + #number + title),
 -- indented by its depth in the tree.
-local function format_issue_item(node, issue_icons)
+local function format_issue_item(node, issue_icons, supports_chunks)
   local icon
   if node.state == "OPEN" then
-    icon = issue_icons.open[1]
+    icon = issue_icons.open
   elseif node.stateReason == "NOT_PLANNED" then
-    icon = issue_icons.not_planned[1]
+    icon = issue_icons.not_planned
   else
-    icon = issue_icons.closed[1]
+    icon = issue_icons.closed
   end
   local indent = string.rep("  ", node.depth or 0)
-  return string.format("%s%s #%d  %s", indent, icon .. node.state, node.number, node.title)
+  local text = string.format("%s #%d  %s", node.state, node.number, node.title)
+
+  if not supports_chunks then
+    return indent .. icon[1] .. text
+  end
+
+  return {
+    { indent },
+    { icon[1], icon[2] },
+    { text },
+  }
 end
 
 -- Sub-issue tree query: the issue itself plus three nested levels of subIssues.
@@ -281,10 +291,28 @@ local function open_subissue_picker(ctx)
           local issue_icons = octo_utils.icons.issue
           vim.ui.select(items, {
             prompt = prompt,
-            format_item = function(node)
-              return format_issue_item(node, issue_icons)
+            format_item = function(node, supports_chunks)
+              return format_issue_item(node, issue_icons, supports_chunks)
             end,
             snacks = {
+              layout = {
+                preset = "select",
+                -- Snacks fits the list height to the item count; clear it so layout.height takes effect.
+                config = function(layout)
+                  for _, box in ipairs(layout.layout) do
+                    if box.win == "list" then
+                      box.height = nil
+                    end
+                  end
+                  return layout
+                end,
+                layout = {
+                  width = 0.8,
+                  height = 0.8,
+                  min_width = 80,
+                  max_width = 202,
+                },
+              },
               actions = {
                 octo_widen_root = function(picker)
                   if ctx.index > 1 then
