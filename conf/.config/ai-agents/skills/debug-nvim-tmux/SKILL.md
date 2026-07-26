@@ -161,6 +161,72 @@ cat "$out"
 6. `:checkhealth <対象>` — 特定プラグインの詳細診断
 7. `:Lazy` — プラグインの状態確認（更新は指示がない限り行わない）
 
+## ハイライト調査（文字の色が想定と違う場合）
+
+文字の色が想定と違う（灰色になる、色がつかない、特定ファイルだけ変わる等）場合の調査手順。ハイライトは Neovim で最もレイヤーが多く、最初に罠を知らないと堂々巡りになる。
+
+### 最初に知る: `:Inspect` の限界
+
+`:Inspect`（実体は `vim.inspect_pos`）は syntax / Treesitter / semantic_token / extmark を統合調査する。md 等の Treesitter バッファなら capture 名（`@spell.markdown` 等）まで取れるので、まずはこれを試す。
+
+ただし3つの限界がある:
+
+1. ターミナルバッファでは `No items found at position ...` になる。ターミナルの文字色は `winhighlight + Normal + terminal_color_*` で決まり、`:Inspect` が調べるレイヤー外。ターミナルの色問題は `:Inspect` では絶対に見えない
+2. `:Inspect` は capture 名まで。最終的な fg 色（`@spell.markdown` が白か灰か）の解決は自前でやる必要がある（`@グループ` を `nvim_get_hl(0, {name=..., link=true})` で辿る）
+3. プログラム的に取るには `vim.inspect_pos(buf, row, col)` が構造体を返すが、色解決は含まれない
+
+### 罠: `screenattr()` / `synID()` は古いレイヤー前提
+
+「画面の実際の描画色を取る」ためにこれらを試すと、新しいレイヤーで無効値が返る:
+
+* `vim.fn.screenattr(line, col)`: ターミナルバッファで `-1`（PTY の ANSI 色は拾えない）
+* `vim.fn.synID(line, col, 1)`: Treesitter バッファで `0`（古い `:syntax` 用で、Treesitter を認識しない）
+
+どちらも古い syntax ハイライト（`:syntax`）前提のAPI。ターミナルの ANSI 色や Treesitter の capture は拾えない。実描画色の取得には使えないと心得る。
+
+### 手順A: Treesitter の色を調べる（md 等の通常バッファ）
+
+`vim.treesitter.get_captures_at_pos(buf, row, col)` で capture を取り、対応する `@capture` グループを `nvim_get_hl` で解決する。capture はドット区切り（`spell.markdown`）で、未定義なら親（`@spell`）に fallback することを意識して辿る。`link=true` を付けないとリンク先が取れないので注意。
+
+### 手順B: ターミナルの色を調べる（`:Inspect` が効かない領域）
+
+ターミナルウィンドウの `winhighlight` を直取りし、`Normal:X` の X を `nvim_get_hl` で解決する。
+
+```bash
+probe="/tmp/nvim-debug-hl-term.lua"
+out="/tmp/nvim-debug-hl-term-out.txt"
+: > "$out" 2>/dev/null || true
+
+cat > "$probe" <<'EOF'
+local out = {}
+local function hl_hex(name)
+  local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name })
+  if ok and hl and hl.fg then return string.format("#%06x", hl.fg) end
+  return nil
+end
+for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+  local b = vim.api.nvim_win_get_buf(w)
+  if vim.bo[b].buftype == "terminal" then
+    local whl = vim.wo[w].winhighlight or ""
+    local norm = whl:match("Normal:([^,]+)")  -- Normal:X の X を抽出
+    table.insert(out, string.format("win=%d buf=%d name=%s", w, b, vim.api.nvim_buf_get_name(b)))
+    table.insert(out, "  winhl=" .. whl)
+    table.insert(out, "  effective Normal fg=" .. tostring(norm and hl_hex(norm) or hl_hex("Normal")) .. " (via " .. tostring(norm or "global Normal") .. ")")
+  end
+end
+table.insert(out, "__DONE__")
+vim.fn.writefile(out, "/tmp/nvim-debug-hl-term-out.txt")
+EOF
+tmux send-keys -t "$session" ':luafile '"$probe" Enter
+for i in $(seq 1 10); do
+  grep -q '__DONE__' "$out" 2>/dev/null && break
+  sleep 1
+done
+cat "$out"
+```
+
+`effective Normal fg` が想定と違う色なら、そのウィンドウの `winhighlight` に `Normal:X`（X がその悪い色のグループ）が設定されているのが原因。X を設定しているプラグイン（ツリー・ファインダー・ターミナル系等が、ターミナルウィンドウに独自の winhighlight を漏れ出させることは珍しくない）を特定して対処する。
+
 ## Recovering user actions（直前の操作の復元）
 
 ユーザーから「Xしたらエラー」と報告を受けたが、具体的な手順が分からない時。
