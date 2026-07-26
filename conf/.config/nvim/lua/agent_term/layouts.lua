@@ -8,6 +8,26 @@ local CODEX_COMMAND = "codex"
 local M = {}
 M.claude_pair_config = config.claude_pair
 
+-- NvimTree等がターミナルウィンドウに漏れ出させたウィンドウローカルwinhighlight
+-- (Normal:NvimTreeNormal 等) をクリアし、ターミナル文字色がグレーになるのを防ぐ。
+-- 原因: tabnewで作ったターミナルウィンドウにNvimTreeのwinhlが波及する。
+-- クリアすればグローバルNormal(明色)が復活して文字が白くなる。
+-- 遅延autocmdで再汚染される可能性があるため、同期+vim.scheduleの2段で確実に消す。
+-- @param winid? number 対象ウィンドウ(省略時は現在ウィンドウ)
+-- https://github.com/happy663/dotfiles/issues/308
+local function clear_term_winhighlight(winid)
+  winid = winid or vim.api.nvim_get_current_win()
+  if not vim.api.nvim_win_is_valid(winid) then
+    return
+  end
+  vim.wo[winid].winhighlight = ""
+  vim.schedule(function()
+    if vim.api.nvim_win_is_valid(winid) then
+      vim.wo[winid].winhighlight = ""
+    end
+  end)
+end
+
 local function open_fallback_input_buffer(label)
   vim.notify(label .. " agent draft module not found", vim.log.levels.WARN)
   vim.cmd("enew")
@@ -48,6 +68,7 @@ function M.open_agent_codex(opts)
   vim.cmd("startinsert")
   vim.cmd("terminal " .. codex_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
+  clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
 
   state.set_target_terminal_bufnr(target_bufnr)
@@ -76,6 +97,7 @@ function M.open_agent_claude(opts)
   vim.cmd("startinsert")
   vim.cmd("terminal " .. claude_cmd)
   local target_bufnr = vim.api.nvim_get_current_buf()
+  clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
   state.set_target_terminal_bufnr(target_bufnr)
 
@@ -106,12 +128,14 @@ function M.open_agent_claude_codex(opts)
 
   vim.cmd("terminal " .. claude_cmd)
   local claude_target_bufnr = vim.api.nvim_get_current_buf()
+  clear_term_winhighlight()
   state.set_target_terminal_bufnr(claude_target_bufnr)
 
   vim.cmd("vsplit")
   local codex_cmd = opts.codex_command or CODEX_COMMAND
   vim.cmd("terminal " .. codex_cmd)
   local codex_bufnr = vim.api.nvim_get_current_buf()
+  clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
 
   vim.cmd("wincmd h")
@@ -218,11 +242,13 @@ function M.open_agent_claude_pair(opts)
   vim.cmd("terminal " .. claude_cmd)
   local left_bufnr = vim.api.nvim_get_current_buf()
   local left_winid = vim.api.nvim_get_current_win()
+  clear_term_winhighlight(left_winid)
 
   vim.cmd("rightbelow vsplit")
   vim.cmd("terminal " .. claude_cmd)
   local right_bufnr = vim.api.nvim_get_current_buf()
   local right_winid = vim.api.nvim_get_current_win()
+  clear_term_winhighlight(right_winid)
 
   vim.cmd("botright split")
   vim.cmd("resize " .. tostring(M.claude_pair_config.input_height))
