@@ -165,10 +165,12 @@ return {
           i(2, ""),
           t('", '),
           i(3, ""),
-          t(', { desc = "'),
+          t(' { desc = "'),
           i(4, "description"),
           t('", noremap = true, silent = true })'),
         }),
+
+
 
         s("keymapl", {
           t('vim.keymap.set("'),
@@ -178,11 +180,13 @@ return {
           i(2),
           t('", '),
           i(3, ""),
-          t(', { desc = "'),
+          t(' { desc = "'),
           i(4, "description"),
           t('", { noremap = true, silent = true })'),
         }),
       })
+
+
 
       -- -- org-mode用のスニペットを追加
       ls.add_snippets("org", {
