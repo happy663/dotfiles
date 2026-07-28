@@ -84,6 +84,7 @@ in
       LIMA_HOME = "$HOME/.colima_lima";
       AWS_SESSION_TOKEN_TTL = "24h";
       AWS_ASSUME_ROLE_TTL = "12h";
+      AWS_VAULT_BIOMETRICS = "true";
       COLIMA_HOME = "$HOME/.local/share/colima";
       DOCKER_HOST = "unix://$HOME/.local/share/colima/default/docker.sock";
     };
