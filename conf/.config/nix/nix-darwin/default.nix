@@ -221,8 +221,7 @@
   homebrew = {
     enable = true;
     onActivation = {
-      autoUpdate = true;
-      cleanup = "none";
+      cleanup = "uninstall";
     };
     taps = [
       # "homebrew/bundle"

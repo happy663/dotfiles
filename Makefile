@@ -22,7 +22,14 @@ apply-nix-just-home:
 
 apply-nix-just-darwin:
 	sudo nix run nix-darwin -- switch --flake .#happy-darwin
-		
+
+# Homebrew の formula/cask をまとめて更新する
+# apply-nix からは分離してあるため、更新したいときに明示的に叩く
+upgrade-brew:
+	brew update
+	brew upgrade
+	brew upgrade --cask --greedy
+
 update-apply-npm:
 	cd conf/.config/nix/node-pkgs && rm package-lock.json
 	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
@@ -64,5 +71,4 @@ setup-ovim:
 	cp scripts/nvim-ovim-wrapper.sh ~/.local/bin/nvim-ovim
 	chmod +x ~/.local/bin/nvim-ovim
 	@echo "Done. Set nvim_path to $$HOME/.local/bin/nvim-ovim in Ovim settings."
-
 
