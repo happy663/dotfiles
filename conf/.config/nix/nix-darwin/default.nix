@@ -258,7 +258,6 @@
       "alacritty"
       "alt-tab"
       "figma"
-      "visual-studio-code"
       "wezterm@nightly"
       "discord"
       "raycast"
