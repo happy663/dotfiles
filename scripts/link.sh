@@ -87,6 +87,16 @@ for target in AGENT.md config.toml; do
     fi
 done
 
+echo ""
+echo "=== ~/.pi/agent ==="
+mkdir -p "$HOME/.pi/agent"
+
+for target in AGENTS.md skills; do
+    if [[ -e "${DOTFILES_DIR}/.pi/agent/${target}" ]]; then
+        ln -snfv "${DOTFILES_DIR}/.pi/agent/${target}" "$HOME/.pi/agent/${target}"
+    fi
+done
+
 # echo ""
 # echo "=== nippo (skill symlink) ==="
 # NIPPO_REPO="${NIPPO_REPO:-$(ghq root 2>/dev/null)/github.com/nwiizo/nippo}"

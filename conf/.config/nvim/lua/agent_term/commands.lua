@@ -144,6 +144,13 @@ function M.setup()
     })
   end, { nargs = "*", desc = "Open Codex agent terminal" })
 
+  vim.api.nvim_create_user_command("AgentPi", function(command)
+    layouts.open_agent_pi({
+      args = command.args,
+      open_draft = true,
+    })
+  end, { nargs = "*", desc = "Open pi agent terminal" })
+
   vim.api.nvim_create_user_command("AgentDraftSend", function(cmd_opts)
     local success, message = draft.send_draft({
       hide_after = true,

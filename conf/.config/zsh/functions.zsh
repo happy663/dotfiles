@@ -87,6 +87,14 @@ function nvim-claude() {
   command nvim -c "$ex_cmd"
 }
 
+function nvim-pi() {
+  local ex_cmd="AgentPi"
+  if (( $# > 0 )); then
+    ex_cmd+=" ${(q)@}"
+  fi
+  command nvim -c "$ex_cmd"
+}
+
 function nvim-claude-session() {
   command nvim -c "AgentClaudeSession"
 }

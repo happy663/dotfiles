@@ -52,6 +52,7 @@ in
       }))
       # Node.js tools managed by Nix
       nodeTools
+      pi-coding-agent
       # Development tools
       (lazygit.overrideAttrs (oldAttrs: {
         version = "0.40.2";

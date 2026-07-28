@@ -4,6 +4,7 @@ local state = require("agent_term.state")
 
 local CLAUDE_COMMAND = "claude"
 local CODEX_COMMAND = "codex"
+local PI_COMMAND = "pi"
 
 local M = {}
 M.claude_pair_config = config.claude_pair
@@ -82,6 +83,37 @@ function M.open_agent_codex(opts)
     target_bufnr = target_bufnr,
     fallback_target_patterns = CODEX_COMMAND,
     draft_height = config.codex.draft_height,
+  })
+end
+
+function M.open_agent_pi(opts)
+  opts = opts or {}
+  local pi_cmd = opts.command or PI_COMMAND
+  if opts.args and opts.args ~= "" then
+    pi_cmd = pi_cmd .. " " .. opts.args
+  end
+
+  if opts.open_in_new_tab ~= false then
+    vim.cmd("tabnew")
+    state.mark_current_tab_as_agent()
+  end
+  vim.cmd("startinsert")
+  vim.cmd("terminal " .. pi_cmd)
+  local target_bufnr = vim.api.nvim_get_current_buf()
+  clear_term_winhighlight()
+  vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
+
+  state.set_target_terminal_bufnr(target_bufnr)
+
+  if opts.open_draft == false then
+    return target_bufnr
+  end
+
+  vim.cmd("belowright split")
+  return draft.open_input_buffer({
+    target_bufnr = target_bufnr,
+    fallback_target_patterns = PI_COMMAND,
+    draft_height = config.pi.draft_height,
   })
 end
 

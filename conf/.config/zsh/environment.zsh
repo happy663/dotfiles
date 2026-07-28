@@ -73,4 +73,8 @@ if [[ -f $DOTFILES_DIR/.env ]]; then
   alias ssm="make -C $SSM_SCRIPT_PATH clean session"
 fi
 
+# pi (pi-coding-agent) は zai プロバイダを ZAI_API_KEY で読む。
+# Claude Code 側で使っている CLAUDE_GLM_AUTH_TOKEN を再利用する。
+[[ -n "$CLAUDE_GLM_AUTH_TOKEN" ]] && export ZAI_API_KEY="$CLAUDE_GLM_AUTH_TOKEN"
+
 

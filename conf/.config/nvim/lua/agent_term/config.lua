@@ -1,7 +1,7 @@
 local M = {}
 
 M.draft = {
-  fallback_target_patterns = { "claude", "codex" },
+  fallback_target_patterns = { "claude", "codex", "pi" },
   attached_height = 8,
   -- 送信前にターゲットターミナルへ送る入力クリアシーケンス。
   -- デフォルトは backspace (\x7f) を多めに送ることで、改行込みの複数行入力も
@@ -15,6 +15,10 @@ M.claude = {
 }
 
 M.codex = {
+  draft_height = 12,
+}
+
+M.pi = {
   draft_height = 12,
 }
 
