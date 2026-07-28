@@ -95,6 +95,10 @@ function nvim-codex-session() {
   command nvim -c "AgentCodexSession"
 }
 
+function nvim-all-session() {
+  command nvim -c "AgentSession"
+}
+
 function nvim-claude-codex() {
   local ex_cmd="AgentClaudeCodex"
   if (( $# > 0 )); then
