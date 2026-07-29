@@ -42,6 +42,15 @@ return {
         desc = "My created PRs (all repos)",
       },
       {
+        "<leader>opc",
+        function()
+          -- 過去半年間に作成したクローズ/マージ済みPR（全リポジトリ、更新順）
+          local cutoff = os.date("%Y-%m-%d", os.time() - 182 * 24 * 60 * 60)
+          vim.cmd(("Octo search author:@me is:pr is:closed created:>=%s sort:updated-desc"):format(cutoff))
+        end,
+        desc = "My closed/merged PRs (all repos, past 6 months)",
+      },
+      {
         "<leader>opr",
         "<cmd>Octo search review-requested:@me is:open is:pr<CR>",
         desc = "PRs requesting my review (all repos)",
