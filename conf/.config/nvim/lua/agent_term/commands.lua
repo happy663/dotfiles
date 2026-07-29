@@ -181,9 +181,10 @@ function M.setup()
   })
 
   vim.api.nvim_create_user_command("AgentDraftQuote", function()
-    local l1 = vim.fn.line("'<")
-    local l2 = vim.fn.line("'>")
-    local lines = vim.api.nvim_buf_get_lines(0, l1 - 1, l2, false)
+    local pos1 = vim.fn.getpos("'<")
+    local pos2 = vim.fn.getpos("'>")
+    local region_type = vim.fn.visualmode()
+    local lines = vim.fn.getregion(pos1, pos2, { type = region_type })
 
     draft.quote_to_draft(lines, {
       draft_height = config.draft.attached_height,
