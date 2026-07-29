@@ -243,6 +243,7 @@
       "newrelic-cli"
       "snowflake-cli"
       "moshi-hook" 
+      "aws-vault"
     ];
     casks = [
       "arc"
