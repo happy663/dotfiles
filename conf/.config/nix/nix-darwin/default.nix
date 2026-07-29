@@ -54,7 +54,7 @@
   # システムの設定（nix-darwinが効いているかのテスト）
   system = {
     stateVersion = 6;
-    
+
     defaults = {
       NSGlobalDomain = {
         AppleShowAllExtensions = true;
@@ -208,13 +208,6 @@
     # この部分ちゃんとわからないが~/.hammerspoonを削除する必要があるまたは手動でコマンドを打つ必要があるかもしれない
     defaults write org.hammerspoon.Hammerspoon MJConfigFile "/Users/happy/.config/hammerspoon/init.lua"
     echo "Hammerspoon configuration has been set to use /Users/happy/.config/hammerspoon/init.lua"
-
-    ALACRITTY_PLIST="/Applications/Alacritty.app/Contents/Info.plist"
-    if [ -f "$ALACRITTY_PLIST" ]; then
-      /usr/libexec/PlistBuddy -c "Delete :LSUIPresentationMode" "$ALACRITTY_PLIST" 2>/dev/null || true
-      /usr/libexec/PlistBuddy -c "Add :LSUIPresentationMode integer 4" "$ALACRITTY_PLIST"
-      echo "Alacritty LSUIPresentationMode configured"
-    fi
 
   '';
 
