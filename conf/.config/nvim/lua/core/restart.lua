@@ -219,7 +219,10 @@ local function restart_with_session()
   end
 
   -- 未保存バッファがあれば内部の :qall が失敗して再起動は中断される(標準挙動に任せる)
-  vim.cmd([[restart lua require("core.restart").resume()]])
+  -- bang付き: nvim 0.13で :restart(bangなし)がauto-mksession/sourceするようになり、
+  -- 自前のmksession/sourceと二重復元になる。auto-sourceはVeryLazyより前に走るため
+  -- 初期バッファ(id=1)wipeとlazy.nvimの遅延イベント再発火が競合し Invalid buffer id: 1 になる
+  vim.cmd([[restart! lua require("core.restart").resume()]])
 end
 
 local function load_session()
