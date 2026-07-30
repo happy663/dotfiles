@@ -11,6 +11,9 @@ return {
     if current_config.sources then
       table.insert(current_config.sources, { name = "git" })
     end
+    -- GitHub mentions 補完を collaborators + contributors 両方取得に拡張
+    require("utils.cmp_git_mentions").patch()
+
     local format = require("cmp_git.format")
     local sort = require("cmp_git.sort")
 
