@@ -169,6 +169,7 @@ return {
         { name = "calc", group_index = 1 },
         { name = "git", group_index = 1 },
         { name = "luasnip", group_index = 1 },
+        { name = "cmp-git", group_index = 1 },
         -- {
         --   name = "spell",
         --   option = {
@@ -369,7 +370,8 @@ return {
           },
           { name = "coding_agent_slash" },
           { name = "coding_agent_dollar" },
-          { name = "coding_agent_at" },
+          -- { name = "coding_agent_at" },
+          { name = "cmp-git", group_index = 1 },
         },
         sorting = default_sorting,
         formatting = {
@@ -500,7 +502,7 @@ return {
                 { name = "path" },
                 { name = "coding_agent_slash" },
                 { name = "coding_agent_dollar" },
-                { name = "coding_agent_at" },
+                -- { name = "coding_agent_at" },
                 {
                   name = "rg",
                   option = {
