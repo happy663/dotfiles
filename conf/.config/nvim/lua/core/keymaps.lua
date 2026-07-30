@@ -543,6 +543,10 @@ vim.keymap.set("n", "<S-Tab>", "zc", { noremap = true, silent = true, desc = "Fo
 vim.keymap.set("n", "<leader><Tab>", "zR", { noremap = true, silent = true, desc = "Fold open all" })
 vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, desc = "Fold close all" })
 
+-- ZR: 本体の ZR は :restart（bang なし = セッション復元あり）を呼び、
+-- lazy.nvim で "Invalid buffer id" エラーを引き起こすため :restart! に上書き
+vim.keymap.set("n", "ZR", "<Cmd>restart!<CR>", { noremap = true, silent = true, desc = "Restart Nvim without restoring session" })
+
 vim.keymap.set("n", "<Leader>tih", function()
   local time = os.date("%Y-%m-%d (%a) %H:%M")
   vim.api.nvim_put({ time }, "c", true, true)
