@@ -423,8 +423,10 @@ return {
           local path = vim.fn.expand("%:p:h")
           if vim.fn.isdirectory(path) ~= 1 then
             path = vim.fn.getcwd()
+            require("oil").open_float(path, preview_opts)
+          else
+            require("oil").open_float(nil, preview_opts)
           end
-          require("oil").open_float(path, preview_opts)
         end
       end
 
