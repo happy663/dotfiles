@@ -386,8 +386,7 @@ return {
         callback = track_terminal_cwd_from_osc7,
       })
 
-      -- nvim-tree上でOilを開く
-      local function open_oil_from_tree()
+      local function open_oil()
         local terminal_cwd = get_current_terminal_cwd()
         if terminal_cwd then
           require("oil").open_float(terminal_cwd, {
@@ -429,14 +428,14 @@ return {
         end
       end
 
-      -- vim.keymap.set("n", "<leader>-", function()
-      --   require("oil").open_float(nil, { preview = { vertical = true } })
-      -- end, { desc = "Open oil float with preview" })
+      vim.keymap.set("n", "<leader>-", function()
+        require("oil").open_float(nil, { preview = { vertical = true } })
+      end, { desc = "Open oil float with preview" })
 
-      vim.keymap.set("n", "-", open_oil_from_tree, {
+      vim.keymap.set("n", "-", open_oil, {
         noremap = true,
         silent = true,
-        desc = "Open Oil in nvim-tree",
+        desc = "Open Oil",
       })
 
       vim.api.nvim_create_autocmd("FileType", {
