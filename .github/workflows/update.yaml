@@ -28,6 +28,11 @@ jobs:
           TZ=Asia/Tokyo date > ./ci-logs/started_at.txt
           echo '' > ./ci-logs/update.md
 
+      - name: Snapshot Neovim rev (pre-update)
+        id: nvim-before
+        run: |
+          echo "rev=$(jq -r '.nodes["neovim-src"].locked.rev' flake.lock)" >> "$GITHUB_OUTPUT"
+
       - name: Update Nix Flake
         run: |
           {
@@ -39,6 +44,50 @@ jobs:
           } >> ./ci-logs/update.md
           nix flake update |& tee -a ./ci-logs/update.md
           echo '```' >> ./ci-logs/update.md
+
+      - name: Collect Neovim nightly changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OLD='${{ steps.nvim-before.outputs.rev }}'
+          NEW=$(jq -r '.nodes["neovim-src"].locked.rev' flake.lock)
+          {
+            echo ''
+            echo '### neovim nightly changes'
+            echo ''
+          } >> ./ci-logs/update.md
+          if [ -z "$OLD" ] || [ -z "$NEW" ] || [ "$OLD" = "$NEW" ]; then
+            echo '(no neovim changes)' >> ./ci-logs/update.md
+            exit 0
+          fi
+          echo "compare: [\`${OLD:0:7}...${NEW:0:7}\`](https://github.com/neovim/neovim/compare/${OLD}...${NEW})" >> ./ci-logs/update.md
+          echo '' >> ./ci-logs/update.md
+          HEADLINES=$(gh api "repos/neovim/neovim/compare/${OLD}...${NEW}" --paginate --jq '.commits[].commit.message | split("\n")[0]' 2>/dev/null || true)
+          if [ -z "$HEADLINES" ]; then
+            echo '(failed to fetch commit range)' >> ./ci-logs/update.md
+            exit 0
+          fi
+          TOTAL=$(printf '%s\n' "$HEADLINES" | grep -c . || true)
+          echo "total commits: ${TOTAL}" >> ./ci-logs/update.md
+          echo '' >> ./ci-logs/update.md
+          BREAKING=$(printf '%s\n' "$HEADLINES" | grep -E '^(feat|fix|refactor|perf)(\([^)]+\))?!:' || true)
+          if [ -n "$BREAKING" ]; then
+            {
+              echo '#### breaking'
+              echo ''
+              printf '%s\n' "$BREAKING" | sed 's/^/- /'
+              echo ''
+            } >> ./ci-logs/update.md
+          fi
+          FEATS=$(printf '%s\n' "$HEADLINES" | grep -E '^feat(\([^)]+\))?:' || true)
+          if [ -n "$FEATS" ]; then
+            {
+              echo '#### feat'
+              echo ''
+              printf '%s\n' "$FEATS" | sed 's/^/- /'
+              echo ''
+            } >> ./ci-logs/update.md
+          fi
 
       - name: Set PR body output
         id: pr-body-output
