@@ -27,10 +27,10 @@ jobs:
           skipPush: ${{ github.event_name == 'pull_request' }}
 
       - name: Build homeConfigurations (darwin)
-        run: nix build --show-trace --no-link .#homeConfigurations.myHomeConfig-darwin.activationPackage
+        run: nix build --show-trace --no-link .#homeConfigurations.darwin.activationPackage
 
       - name: Build darwinConfigurations
-        run: nix build --show-trace --no-link .#darwinConfigurations.happy-darwin.system
+        run: nix build --show-trace --no-link .#darwinConfigurations.personal.system
 
       - name: Print disk usage
         run: df -h
@@ -48,7 +48,7 @@ jobs:
   #         skipPush: ${{ github.event_name == 'pull_request' }}
   #
   #     - name: Build homeConfigurations (linux)
-  #       run: nix build --show-trace --no-link .#homeConfigurations.myHomeConfig-linux.activationPackage
+  #       run: nix build --show-trace --no-link .#homeConfigurations.linux.activationPackage
   #
   #     - name: Print disk usage
   #       run: df -h

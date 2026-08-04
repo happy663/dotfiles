@@ -31,7 +31,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, ccsession} @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, ccsession } @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";
@@ -55,7 +55,7 @@
             echo "Updating home-manager..."
             nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
             echo "Update complete"
-            sudo nix run nix-darwin -- switch --flake .#happy-darwin
+            sudo nix run nix-darwin -- switch --flake .#personal-darwin
           '');
       };
 
@@ -104,11 +104,22 @@
 
       };
 
-      darwinConfigurations.happy-darwin = nix-darwin.lib.darwinSystem {
-        system = system.darwin;
-        modules = [ ./conf/.config/nix/nix-darwin/default.nix ];
+      darwinConfigurations = {
+        personal-darwin = nix-darwin.lib.darwinSystem {
+          system = system.darwin;
+          modules = [
+            ./conf/.config/nix/nix-darwin/common.nix
+            ./conf/.config/nix/nix-darwin/profiles/personal.nix
+          ];
+        };
+
+        work-darwin = nix-darwin.lib.darwinSystem {
+          system = system.darwin;
+          modules = [
+            ./conf/.config/nix/nix-darwin/common.nix
+            ./conf/.config/nix/nix-darwin/profiles/work.nix
+          ];
+        };
       };
-
-
     };
 }

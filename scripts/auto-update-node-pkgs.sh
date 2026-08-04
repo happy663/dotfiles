@@ -14,7 +14,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
-# home-manager の myHomeConfig-darwin が評価するファイル群のうち、
+# home-manager の darwin が評価するファイル群のうち、
 # 「ユーザーが手動編集する可能性があるもの」だけを監視対象にする。
 # nix-darwin (default.nix) や conf/.claude/* 等は home-manager の評価対象外なので除外。
 # package-lock.json はこのスクリプト自身が再生成するため除外（含めると2日目以降dirty判定でスキップし続ける）。

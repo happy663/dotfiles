@@ -1,3 +1,6 @@
+DARWIN_CONFIG ?= personal
+HOME_CONFIG ?= darwin
+
 # Do everything.
 all: init link brew update-apply-npm
 
@@ -13,18 +16,18 @@ link:
 brew:
 	scripts/brew.sh
 
-apply-nix:
-	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
-	sudo nix run nix-darwin -- switch --flake .#happy-darwin
+nix-apply:
+	nix run nixpkgs#home-manager -- switch --flake .#$(HOME_CONFIG)
+	sudo nix run nix-darwin -- switch --flake .#$(DARWIN_CONFIG)
 
-apply-nix-just-home:
-	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+nix-apply-home:
+	nix run nixpkgs#home-manager -- switch --flake .#$(HOME_CONFIG)
 
-apply-nix-just-darwin:
-	sudo nix run nix-darwin -- switch --flake .#happy-darwin
+nix-apply-darwin:
+	sudo nix run nix-darwin -- switch --flake .#$(DARWIN_CONFIG)
 
 # Homebrew の formula/cask をまとめて更新する
-# apply-nix からは分離してあるため、更新したいときに明示的に叩く
+# nix-apply からは分離してあるため、更新したいときに明示的に叩く
 upgrade-brew:
 	brew update
 	brew upgrade
@@ -33,7 +36,7 @@ upgrade-brew:
 update-apply-npm:
 	cd conf/.config/nix/node-pkgs && rm package-lock.json
 	cd conf/.config/nix/node-pkgs && npm install --package-lock-only
-	nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+	nix run nixpkgs#home-manager -- switch --flake .#$(HOME_CONFIG)
 
 # nippo (Claude Code / Codex 日報スキル) を導入
 # Rust バイナリのインストールと skill symlink の作成
