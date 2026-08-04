@@ -11,15 +11,15 @@ M.draft = {
 }
 
 M.claude = {
-  draft_height = 12,
+  draft_height = 8,
 }
 
 M.codex = {
-  draft_height = 12,
+  draft_height = 8,
 }
 
 M.pi = {
-  draft_height = 12,
+  draft_height = 8,
 }
 
 M.claude_codex = {
