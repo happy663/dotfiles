@@ -1,55 +1,5 @@
 return {
   {
-    "voldikss/vim-translator",
-    cmd = { "TranslateW", "TranslateW --target_lang=en" },
-    keys = {
-      -- Popup
-      -- { "<leader>ss", "", desc = "Translate" },
-      { "<leader>sj", "<cmd>TranslateW<CR>", mode = "n", desc = "Translate words into Japanese" },
-      { "<leader>sj", ":'<,'>TranslateW<CR>", mode = "v", desc = "Translate lines into Japanese" },
-      { "<leader>se", "<cmd>TranslateW --target_lang=en<CR>", mode = "n", desc = "Translate words into English" },
-      { "<leader>se", ":'<,'>TranslateW --target_lang=en<CR>", mode = "v", desc = "Translate lines into English" },
-      -- Replace
-      { "<leader>sr", "", desc = "Translate Replace" },
-      -- Replace to Japanese
-      { "<leader>srj", ":'<,'>TranslateR<CR>", mode = "v", desc = "Replace to Japanese" },
-      {
-        "<leader>srj",
-        function()
-          vim.api.nvim_feedkeys("^vg_", "n", false)
-          -- Execute the conversion command after a short delay.
-          vim.defer_fn(function()
-            vim.api.nvim_feedkeys(":TranslateR\n", "n", false)
-          end, 100) -- 100ms delay
-        end,
-        mode = "n",
-        desc = "Replace to Japanese",
-      },
-      -- Replace to English
-      { "<leader>sre", ":'<,'>TranslateR --target_lang=en<CR>", mode = "v", desc = "Replace to English" },
-      {
-        "<leader>sre",
-        function()
-          vim.api.nvim_feedkeys("^vg_", "n", false)
-          -- Run translator command after a short delay
-          vim.defer_fn(function()
-            vim.api.nvim_feedkeys(":TranslateR --target_lang=en\n", "n", false)
-          end, 100) -- 100ms delay
-        end,
-        mode = "n",
-        desc = "Replace to English",
-      },
-    },
-    config = function()
-      vim.g.translator_target_lang = "ja"
-      vim.g.translator_default_engines = { "google" }
-      vim.g.translator_history_enable = true
-      vim.g.translator_window_type = "popup"
-      vim.g.translator_window_max_width = 0.5
-      vim.g.translator_window_max_height = 0.9 -- 1 is not working
-    end,
-  },
-  {
     "potamides/pantran.nvim",
     config = function()
       require("utils").load_env(vim.env.DOTFILES_DIR .. "/.env")
@@ -118,7 +68,74 @@ return {
         },
       })
 
-      vim.keymap.set({ "n", "v" }, "<leader>sw", ":'<,'>Pantran<CR>", { noremap = true, silent = true })
+      -- DeepL API は 2025年11月に form body 認証を廃止し、Authorization ヘッダー認証を
+      -- 要求するようになった。pantran.nvim の deepl エンジンは未対応のため、
+      -- pantran.setup 後（config.user 反映済み）に setup をヘッダー認証版へ差し替える。
+      -- upstream PR: https://github.com/potamides/pantran.nvim/pull/34
+      local deepl = require("pantran.engines.deepl")
+      local curl = require("pantran.curl")
+      deepl.setup = function()
+        if not deepl.config.auth_key then
+          error("This engine requires an API key to work!")
+        end
+        deepl._api = curl.new({
+          url = deepl.url_template:format(deepl.config.free_api and "-free" or ""),
+          fmt_error = function(response)
+            return response.message
+          end,
+          headers = {
+            Authorization = "DeepL-Auth-Key " .. deepl.config.auth_key,
+          },
+          static_paths = { "languages" },
+        })
+      end
+
+      -- 翻訳結果をシステムクリップボード(+レジスタ)へコピーするよう上書き
+      -- (vim.o.clipboard 未設定のため、既定では無名レジスタにしか入らない)
+      local handlers = require("pantran.handlers")
+      handlers.yank = function(text)
+        vim.fn.setreg("+", text, "u")
+      end
+
+      -- Pantran: 翻訳UIを開く
+      vim.keymap.set(
+        { "n", "v" },
+        "<leader>sj",
+        ":'<,'>Pantran<CR>",
+        { noremap = true, silent = true, desc = "Translate to Japanese (en->ja)" }
+      )
+      vim.keymap.set(
+        { "n", "v" },
+        "<leader>se",
+        ":'<,'>Pantran source=JA target=EN-US<CR>",
+        { noremap = true, silent = true, desc = "Translate to English (ja->en)" }
+      )
+
+      -- Pantran: 翻訳結果で置換 (mode=replace)
+      vim.keymap.set(
+        "n",
+        "<leader>srj",
+        ":Pantran mode=replace<CR>",
+        { noremap = true, silent = true, desc = "Replace to Japanese (en->ja)" }
+      )
+      vim.keymap.set(
+        "v",
+        "<leader>srj",
+        ":'<,'>Pantran mode=replace<CR>",
+        { noremap = true, silent = true, desc = "Replace to Japanese (en->ja)" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sre",
+        ":Pantran mode=replace source=JA target=EN-US<CR>",
+        { noremap = true, silent = true, desc = "Replace to English (ja->en)" }
+      )
+      vim.keymap.set(
+        "v",
+        "<leader>sre",
+        ":'<,'>Pantran mode=replace source=JA target=EN-US<CR>",
+        { noremap = true, silent = true, desc = "Replace to English (ja->en)" }
+      )
     end,
   },
 }
