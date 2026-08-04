@@ -381,10 +381,19 @@ return {
             "menu",
           },
           expandable_indicator = true,
-          format = lspkind.cmp_format({
-            mode = "symbol_text",
-            maxwidth = 50,
-          }),
+          format = function(entry, vim_item)
+            vim_item = lspkind.cmp_format({
+              mode = "symbol_text",
+              maxwidth = 50,
+            })(entry, vim_item)
+            local src = entry.source.name
+            if src == "nvim_lsp" or src == "luasnip" or src == "emoji" then
+              vim_item.dup = 1
+            else
+              vim_item.dup = 0
+            end
+            return vim_item
+          end,
         },
         -- 自動選択はしない
         preselect = cmp.PreselectMode.None,
