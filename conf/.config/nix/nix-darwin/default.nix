@@ -266,7 +266,6 @@
       "bitwarden"
       "claude"
       "codex-app"
-      "aws-vault"
       "spotify"
       "jordanbaird-ice"
       "cursor"
