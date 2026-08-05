@@ -1,0 +1,6 @@
+{
+  "lastChangelogVersion": "0.80.6",
+  "theme": "dark",
+  "defaultProvider": "zai",
+  "defaultModel": "glm-5.2"
+}

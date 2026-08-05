@@ -97,6 +97,9 @@ for target in AGENTS.md skills; do
     fi
 done
 
+# settings.json は base.json + ~/.pi/agent/settings.local.json をマージして実ファイル生成
+"${SCRIPT_DIR}/pi-settings.sh" push
+
 # echo ""
 # echo "=== nippo (skill symlink) ==="
 # NIPPO_REPO="${NIPPO_REPO:-$(ghq root 2>/dev/null)/github.com/nwiizo/nippo}"

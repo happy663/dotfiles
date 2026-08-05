@@ -52,6 +52,14 @@ claude-pull:
 claude-push:
 	scripts/claude-settings.sh push
 
+# ~/.pi/agent/settings.json から base.json と ~/.pi/agent/settings.local.json を再構築
+pi-pull:
+	scripts/pi-settings.sh pull
+
+# base.json と ~/.pi/agent/settings.local.json をマージして ~/.pi/agent/settings.json を生成
+pi-push:
+	scripts/pi-settings.sh push
+
 # GLM5.2 (z.ai) 接続モードに切替
 claude-glm:
 	scripts/claude-mode.sh glm

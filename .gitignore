@@ -22,4 +22,5 @@ conf/.config/nvim/.env
 .claude/logs
 .claude/settings.local.json
 conf/.claude/settings.json
+conf/.pi/agent/settings.json
 conf/.config/tmux/plugins
