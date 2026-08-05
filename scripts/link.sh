@@ -91,7 +91,7 @@ echo ""
 echo "=== ~/.pi/agent ==="
 mkdir -p "$HOME/.pi/agent"
 
-for target in AGENTS.md skills; do
+for target in AGENTS.md skills models.json; do
     if [[ -e "${DOTFILES_DIR}/.pi/agent/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.pi/agent/${target}" "$HOME/.pi/agent/${target}"
     fi
