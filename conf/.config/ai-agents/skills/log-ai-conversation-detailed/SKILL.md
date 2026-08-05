@@ -1,6 +1,6 @@
 ---
 name: log-ai-conversation-detailed
-description: AIとの会話を、ユーザーの思考メモ(Self)も含めてGitHub IssueまたはPull Requestにコメントとして追加する実験版。手動で呼び出して使用。
+description: AIとの会話を、ユーザーの思考メモ(AI's Inference)も含めてGitHub IssueまたはPull Requestにコメントとして追加する実験版。手動で呼び出して使用。
 allowed-tools: Bash, Read, Write, mcp__acp__Read, WebFetch
 argument-hint: "[--confirm]"
 disable-model-invocation: true
@@ -9,7 +9,7 @@ disable-model-invocation: true
 # AIとの会話をGitHubに詳しくログする
 
 現在の会話をまとめて、GitHub IssueまたはPull Requestにコメントとして追加します。
-通常版よりも「ユーザーが何をどう考えたか」を残すことを重視し、必要に応じて `Self` セクションを含めます。
+通常版よりも「ユーザーが何をどう考えたか」を残すことを重視し、必要に応じて `AI's Inference` セクションを含めます。
 
 ## 呼び出され方
 
@@ -58,15 +58,15 @@ disable-model-invocation: true
 * 「問題→調査→試行→結果」の流れを意識する
 * 直前のコメントを確認し、前のコメントと内容が重複しないよう・話の流れが自然につながるよう意識する
 
-### Selfセクション
+### AI's Inferenceセクション
 
-ユーザーの思考メモ・違和感・理解の途中経過・補足が意思決定の理解に重要な場合、該当セクションの末尾に `### Self` を追加する。
+ユーザーの思考メモ・違和感・理解の途中経過・補足が意思決定の理解に重要な場合、該当セクションの末尾に `### AI's Inference` を追加する。
 
-* 1セッション = 複数コメント構成なので、Self は各セクション（コメント）ごとに用意する。まとめとしての `## Self` は作らない
+* 1セッション = 複数コメント構成なので、AI's Inference は各セクション（コメント）ごとに用意する。まとめとしての `## AI's Inference` は作らない
 * 必ず追加するのではなく、記録する価値がある場合だけ追加する
-* 空欄や薄いSelfを作らない
+* 空欄や薄いAI's Inferenceを作らない
 
-`Self` には、ユーザーの発言を原文のまま長く引用せず、ユーザーの言葉遣い・迷い・違和感をできるだけ保って短く再構成する。
+`AI's Inference` には、ユーザーの発言を原文のまま長く引用せず、ユーザーの言葉遣い・迷い・違和感をできるだけ保って短く再構成する。
 
 書くべき内容:
 
@@ -84,7 +84,7 @@ disable-model-invocation: true
 * ユーザーが「これは残さないで」と言った内容
 * プロンプト全文の逐語記録
 
-`Self` は「ユーザーの内面を全部記録する場所」ではなく、「意思決定の理解に必要な思考メモ」を残す場所として扱う。
+`AI's Inference` は「ユーザーの内面を全部記録する場所」ではなく、「意思決定の理解に必要な思考メモ」を残す場所として扱う。
 
 ### 詳細度の基準
 
@@ -260,7 +260,7 @@ https://github.com/happy663/dotfiles/blob/xxx/conf/.config/lazygit/config.yml#L6
 参考:
 - https://raw.githubusercontent.com/jesseduffield/lazygit/master/docs/keybindings/Keybindings_ja.md
 
-### Self
+### AI's Inference
 
 最初は「lazygitでworktree viewが表示されない」と考えていたが、調査を進める中でタブ移動の見落としと設定typoを分けて確認する必要があると整理した。
 Neovim経由で起動しているため、lazygit単体の挙動だけでなく、終了後に親プロセスへcwdをどう反映するかも別の論点として扱う必要がある。
@@ -315,7 +315,7 @@ qで終了すると反映され、Shift+Qだと反映しない。
 - OK: ~/dotfiles = main, ~/dotfiles-wt = detached(mainのコミット)
 - NG: ~/dotfiles = main, ~/dotfiles-wt = main
 
-### Self
+### AI's Inference
 
 「同じmainを複数worktreeで同時checkoutできない」の意味が最初わからず、worktreeとbranchを混同していた。何度か質問して「作業ディレクトリ」と「履歴の線」を分けて整理できたことが理解の転機。
 ````
