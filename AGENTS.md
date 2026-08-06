@@ -124,6 +124,13 @@ conf/.config/nvim/
 * 主要コマンド: AgentClaude, AgentCodex, AgentClaudeRestart, AgentClaudeFork など。
 * エージェント CLI に関する提案は、tmux 直接ではなく Neovim コマンド経由を優先すること。
 
+## Pi Settings Management
+* `~/.pi/agent/settings.json` は生成物。dotfiles の `conf/.pi/agent/settings.base.json`（宣言的・コミット対象）と `~/.pi/agent/settings.local.json`（マシン固有）を `scripts/pi-settings.sh` がマージして生成する。
+* プラグイン追加・削除など宣言的な変更は `conf/.pi/agent/settings.base.json` を直接編集し、`make pi-push` で反映する。
+* `pi install` / `pi remove` で settings.json を直接書き換えないこと（生成物のため、次回 push で上書きされる）。
+* 書き換えてしまった場合は `make pi-pull` で base.json / local.json へ再構築できる。
+* local に振り分けるキーは `conf/.pi/agent/managed-paths.json` で管理（theme, defaultModel など runtime で変わる設定）。
+
 ## Development Workflow
 
 ### Commit Message Convention
