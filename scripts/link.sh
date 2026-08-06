@@ -30,6 +30,7 @@ for dotfile in "${DOTFILES_DIR}"/.??* ; do
     [[ "$filename" == ".config" ]] && continue
     [[ "$filename" == ".claude" ]] && continue
     [[ "$filename" == ".codex" ]] && continue
+    [[ "$filename" == ".pi" ]] && continue
 
     ln -snfv "$dotfile" "$HOME/$filename"
 done
@@ -91,7 +92,7 @@ echo ""
 echo "=== ~/.pi/agent ==="
 mkdir -p "$HOME/.pi/agent"
 
-for target in AGENTS.md skills models.json keybindings.json ; do
+for target in AGENTS.md skills models.json keybindings.json extensions ; do
     if [[ -e "${DOTFILES_DIR}/.pi/agent/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.pi/agent/${target}" "$HOME/.pi/agent/${target}"
     fi
