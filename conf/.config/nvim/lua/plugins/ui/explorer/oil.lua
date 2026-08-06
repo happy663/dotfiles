@@ -163,7 +163,22 @@ return {
           ["<C-p>"] = "actions.preview",
           ["q"] = { "actions.close", mode = "n" },
           ["<C-l>"] = "actions.refresh",
-          ["-"] = { "actions.parent", mode = "n" },
+          ["-"] = {
+            callback = function()
+              local oil = require("oil")
+              local util = require("oil.util")
+
+              oil.open(nil, {}, function()
+                local preview_win = util.get_preview_win()
+                local entry = oil.get_cursor_entry()
+                if preview_win and entry then
+                  vim.w[preview_win].oil_entry_id = entry.id
+                end
+              end)
+            end,
+            desc = "Open parent directory",
+            mode = "n",
+          },
           ["="] = { "actions.open_cwd", mode = "n" },
           ["gh"] = {
             callback = function()
@@ -193,7 +208,20 @@ return {
             callback = function()
               local oil = require("oil")
               local entry = oil.get_cursor_entry()
-              if entry and entry.type == "file" then
+              if entry and entry.type == "directory" then
+                local util = require("oil.util")
+                local dir = oil.get_current_dir()
+                if dir then
+                  oil.open(dir .. entry.name, {}, function()
+                    local preview_win = util.get_preview_win()
+                    local current_entry = oil.get_cursor_entry()
+                    if preview_win and current_entry then
+                      vim.w[preview_win].oil_entry_id = current_entry.id
+                    end
+                  end)
+                  return
+                end
+              elseif entry and entry.type == "file" then
                 local ext = entry.name:match("%.([^.]+)$")
                 local external_exts =
                   { dmg = true, pdf = true, png = true, jpg = true, mp4 = true, zip = true, mov = true }
