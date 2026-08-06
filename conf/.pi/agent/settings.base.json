@@ -10,7 +10,10 @@
     "npm:pi-simplify",
     "npm:pi-add-dir",
     "npm:pi-prompt-template-model",
-    "npm:pi-claude-cli",
+    {
+      "source": "npm:pi-claude-cli",
+      "extensions": []
+    },
     "npm:@plannotator/pi-extension",
     "npm:pi-slopchop",
     "npm:@juanibiapina/pi-powerbar",
