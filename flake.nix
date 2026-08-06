@@ -53,9 +53,9 @@
             echo "Updating flake..."
             nix flake update
             echo "Updating home-manager..."
-            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-darwin
+            nix run nixpkgs#home-manager -- switch --flake .#darwin
             echo "Update complete"
-            sudo nix run nix-darwin -- switch --flake .#personal-darwin
+            sudo nix run nix-darwin -- switch --flake .#personal
           '');
       };
 
@@ -67,7 +67,7 @@
             echo "Updating flake..."
             nix flake update
             echo "Updating home-manager..."
-            nix run nixpkgs#home-manager -- switch --flake .#myHomeConfig-linux
+            nix run nixpkgs#home-manager -- switch --flake .#linux
             echo "Update complete"
           '');
       };
@@ -75,7 +75,7 @@
 
       homeConfigurations = {
 
-        myHomeConfig-darwin = home-manager.lib.homeManagerConfiguration {
+        darwin = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             system = system.darwin;
             config.allowUnfree = true;
@@ -89,7 +89,7 @@
           ];
         };
 
-        myHomeConfig-linux = home-manager.lib.homeManagerConfiguration {
+        linux = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             system = system.linux;
             config.allowUnfree = true;
@@ -105,7 +105,7 @@
       };
 
       darwinConfigurations = {
-        personal-darwin = nix-darwin.lib.darwinSystem {
+        personal = nix-darwin.lib.darwinSystem {
           system = system.darwin;
           modules = [
             ./conf/.config/nix/nix-darwin/common.nix
@@ -113,7 +113,7 @@
           ];
         };
 
-        work-darwin = nix-darwin.lib.darwinSystem {
+        work = nix-darwin.lib.darwinSystem {
           system = system.darwin;
           modules = [
             ./conf/.config/nix/nix-darwin/common.nix
