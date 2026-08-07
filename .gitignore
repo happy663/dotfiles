@@ -24,3 +24,4 @@ conf/.config/nvim/.env
 conf/.claude/settings.json
 conf/.pi/agent/settings.json
 conf/.config/tmux/plugins
+.pi-subagents

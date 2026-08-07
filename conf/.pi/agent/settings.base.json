@@ -36,22 +36,36 @@
   "subagents": {
     "agentOverrides": {
       "context-builder": {
-        "model": ""
+        "model": "opencode-go/deepseek-v4-flash",
+        "thinking": "medium"
+      },
+      "delegate": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "thinking": "low"
+      },
+      "oracle": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high"
       },
       "planner": {
-        "model": ""
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high"
       },
       "researcher": {
-        "model": ""
+        "model": "opencode-go/deepseek-v4-flash",
+        "thinking": "medium"
       },
       "reviewer": {
-        "model": ""
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high"
       },
       "scout": {
-        "model": ""
+        "model": "opencode-go/deepseek-v4-flash",
+        "thinking": "low"
       },
       "worker": {
-        "model": ""
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high"
       }
     }
   }
