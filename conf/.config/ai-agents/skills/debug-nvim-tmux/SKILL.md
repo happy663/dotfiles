@@ -160,6 +160,66 @@ cat "$out"
 5. 実ファイルを開く（`:e <file>`）— treesitterハイライト、LSPアタッチ（ステータスラインの診断カウント）を確認する
 6. `:checkhealth <対象>` — 特定プラグインの詳細診断
 7. `:Lazy` — プラグインの状態確認（更新は指示がない限り行わない）
+8. キーマップ確認 — visual マッピングの発火問題は `maparg()` で定義形式（コマンド文字列 or Lua callback）を確認する。「visual 操作・キーマップのデバッグ」参照
+
+## visual 操作・キーマップのデバッグ
+
+visual マッピングや選択範囲まわりの問題を調べる手順。
+
+### visual モードの判別
+
+`:lua` で呼ばれる関数内では `vim.fn.mode()` が "n" を返す（visual は既に解除済み）。visual モードの判別は `vim.fn.visualmode()` を使う。
+
+* `"v"` = 文字単位選択
+* `"V"` = 行単位選択
+* `"\22"` = 矩形選択（Ctrl-V）
+
+### 選択範囲の取得と検証
+
+`'<` / `'>` マークは `vim.fn.line(">'")` / `vim.fn.col(">'")` で取得する（1-indexed、バイト単位）。選択範囲が想定どおりかは、ファイルへ書き出して検証する:
+
+```lua
+_G.debug_visual = function()
+  local out = {}
+  out[#out + 1] = "vmode=" .. (vim.fn.visualmode() or "nil")
+  out[#out + 1] = "lt=" .. vim.fn.line("'<")
+  out[#out + 1] = "gt=" .. vim.fn.line(">'")
+  out[#out + 1] = "cur=" .. vim.api.nvim_win_get_cursor(0)[1]
+  vim.fn.writefile(out, "/tmp/nvim-debug-vmode.txt")
+end
+vim.api.nvim_set_keymap("v", "<Space>rc", ":lua _G.debug_visual()<CR>", { noremap = true, silent = true })
+```
+
+### マッピング定義の確認
+
+`:vmap <Space>rc` の代わりに、`maparg()` で RHS と callback の有無を確認できる:
+
+```lua
+local m = vim.fn.maparg("<Space>rc", "v", false, true)
+print(m.rhs)             -- コマンド文字列ベースなら ":lua ..."
+print(m.callback ~= nil) -- Lua callback ベースかどうか
+```
+
+### この環境の visual マッピングの罠
+
+この環境（dotfiles）では、Lua コールバックベースの visual マッピング（`vim.keymap.set("v", ..., callback)`）が発火しない。`<Space>` が右移動として処理され、後続キーが通常コマンドとして実行される（`r` が置換、`c` が置換文字となり選択文字列が破壊される）。
+
+回避策: `vim.api.nvim_set_keymap("v", "<Space>rc", ":lua _G.func()<CR>")` のコマンド文字列ベースで定義し、関数を `_G` に公開する。
+
+### 受信キーの追跡（vim.on_key）
+
+send-keys の後に想定外の文字（`c>` など）がバッファに入る場合、受信キーを記録して追跡する:
+
+```lua
+local f = io.open("/tmp/nvim-debug-keys.txt", "w")
+if f then f:write("START\n"); f:close() end
+vim.on_key(function(key)
+  local f = io.open("/tmp/nvim-debug-keys.txt", "a")
+  if f then f:write(vim.fn.keytrans(key) .. "\n"); f:close() end
+end)
+```
+
+`vim.fn.keytrans()` でキーを可読形式（`<Space>`, `<Esc>`, `<CR>` など）に変換する。コマンドライン入力も記録されるため、マッピングの発火順や予期しないキー送信を特定できる。
 
 ## ハイライト調査（文字の色が想定と違う場合）
 
@@ -257,6 +317,9 @@ Neovim 自体が記録している情報から直前の操作を復元する。�
 * capture結果は `grep -v '^$'` で空行を落とすと読みやすい。全体が必要なら `-S -50` で履歴も含める
 * `capture-pane` が空を返したら、直前のsend-keysが反映される前に読んでいる。sleepを増やして再取得する
 * 同名セッションが残っているときは再利用しない。既存のNeovim画面へsend-keysしてバッファを汚す可能性があるため、必ず別名セッションを作る
+* 非TTY のシェル（Agent の Bash tool 等）から非デタッチの `tmux new-session` を実行すると `open terminal failed: not a terminal` になる。この環境では `tmux new-session -d`（デタッチ）を使い、必要なら `tmux attach -t <session>` を案内する
+* `:lua` 内で `vim.cmd("normal! <Esc>")` を実行すると不要なキー送信が起き、バッファに `c>` が混入することがある。`:lua` 実行時は visual が既に解除されているため、この行自体が不要（削除して解決する）
+* `:lua` 内で `vim.cmd("normal! o")` を実行すると autoindent が効かず、`vim.fn.setline(".", ...)` で行を書き換えるとインデントが消える。事前に `vim.fn.getline("."):match("^%s*")` で現在行のインデントを取得して付与する
 
 ## Safety rules
 
