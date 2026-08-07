@@ -15,7 +15,10 @@
       "extensions": []
     },
     "npm:@plannotator/pi-extension",
-    "npm:pi-slopchop",
+    {
+      "source": "npm:pi-slopchop",
+      "extensions": []
+    },
     "npm:@juanibiapina/pi-powerbar",
     "npm:@tmustier/pi-usage-extension",
     "npm:@tmustier/pi-raw-paste",
