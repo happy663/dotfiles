@@ -522,6 +522,20 @@ end, {
   desc = "Paste clipboard content inside HTML <details> tag",
 })
 
+local review_comment = require("features.review_comment")
+
+vim.keymap.set("n", "<leader>rc", review_comment.insert_review_comment_normal, {
+  noremap = true,
+  silent = true,
+  desc = "Insert review comment (blockquote)",
+})
+
+_G.insert_review_comment_visual = review_comment.insert_review_comment_visual
+vim.api.nvim_set_keymap("v", "<Space>rc", ":lua _G.insert_review_comment_visual()<CR>", {
+  noremap = true,
+  silent = true,
+})
+
 -- <C-d> の再マッピング
 vim.api.nvim_set_keymap("n", "<C-d>", "<Cmd>keepjumps normal! <C-d><CR>", { noremap = true, silent = true })
 
@@ -545,7 +559,12 @@ vim.keymap.set("n", "<leader><S-Tab>", "zM", { noremap = true, silent = true, de
 
 -- ZR: 本体の ZR は :restart（bang なし = セッション復元あり）を呼び、
 -- lazy.nvim で "Invalid buffer id" エラーを引き起こすため :restart! に上書き
-vim.keymap.set("n", "ZR", "<Cmd>restart!<CR>", { noremap = true, silent = true, desc = "Restart Nvim without restoring session" })
+vim.keymap.set(
+  "n",
+  "ZR",
+  "<Cmd>restart!<CR>",
+  { noremap = true, silent = true, desc = "Restart Nvim without restoring session" }
+)
 
 vim.keymap.set("n", "<Leader>tih", function()
   local time = os.date("%Y-%m-%d (%a) %H:%M")
