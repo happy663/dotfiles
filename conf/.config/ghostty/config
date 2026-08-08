@@ -18,7 +18,7 @@ background-opacity = 1
 
 # 背景画像 (PNG/JPEG)
 background-image = ~/src/github.com/happy663/dotfiles/conf/.config/wezterm/images/wallpaperflare.com_wallpaper_0.jpg
-background-image-opacity = 0.1
+background-image-opacity = 0.05
 background-image-position = center
 background-image-fit = cover
 background-image-repeat = false
