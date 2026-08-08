@@ -1,36 +1,180 @@
 {
   "packages": [
-    "npm:@juanibiapina/pi-extension-settings",
-    "npm:@zigai/pi-tree",
-    "npm:pi-subagents",
-    "npm:pi-ask-user",
-    "npm:pi-mcp-adapter",
-    "npm:pi-web-access",
-    "npm:@devkade/pi-plan",
-    "npm:pi-simplify",
-    "npm:pi-add-dir",
-    "npm:pi-prompt-template-model",
+    {
+      "source": "npm:@juanibiapina/pi-extension-settings",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@zigai/pi-tree",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-subagents",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-ask-user",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-mcp-adapter",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-web-access",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@devkade/pi-plan",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-simplify",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-add-dir",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-prompt-template-model",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
     {
       "source": "npm:pi-claude-cli",
-      "extensions": []
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
-    "npm:@plannotator/pi-extension",
+    {
+      "source": "npm:@plannotator/pi-extension",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
     {
       "source": "npm:pi-slopchop",
-      "extensions": []
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
-    "npm:@juanibiapina/pi-powerbar",
-    "npm:@tmustier/pi-usage-extension",
-    "npm:@tmustier/pi-raw-paste",
-    "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
-    "npm:pi-btw",
-    "npm:pi-interactive-shell",
-    "git:github.com/davebcn87/pi-autoresearch",
-    "npm:@tmustier/pi-ralph-wiggum",
-    "git:github.com/javierportillo/pi-hackerman@63b0a3ef2c7b14985ffeb6cac44614ba59cd5693",
-    "npm:@victor-software-house/pi-curated-themes",
-    "npm:pi-terminal-theme",
-    "npm:pi-hermes-memory"
+    {
+      "source": "npm:@juanibiapina/pi-powerbar",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@tmustier/pi-usage-extension",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@tmustier/pi-raw-paste",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-btw",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-interactive-shell",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "git:github.com/davebcn87/pi-autoresearch",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@tmustier/pi-ralph-wiggum",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "git:github.com/javierportillo/pi-hackerman@63b0a3ef2c7b14985ffeb6cac44614ba59cd5693",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:@victor-software-house/pi-curated-themes",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-terminal-theme",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "npm:pi-hermes-memory",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    }
   ],
   "enabledModels": [
     "opencode-go/deepseek-v4-flash",
@@ -71,5 +215,7 @@
         "thinking": "high"
       }
     }
-  }
+  },
+  "theme": "light",
+  "treeFilterMode": "user-only"
 }
