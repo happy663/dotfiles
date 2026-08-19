@@ -1,0 +1,5 @@
+{
+	"powerbar": {
+		"right": "provider,model,sub-hourly,sub-weekly,opencode-go"
+	}
+}

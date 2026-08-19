@@ -1,11 +1,7 @@
 {
   "packages": [
     {
-      "source": "npm:@juanibiapina/pi-extension-settings",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:@juanibiapina/pi-extension-settings"
     },
     {
       "source": "npm:@zigai/pi-tree"

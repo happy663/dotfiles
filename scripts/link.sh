@@ -92,7 +92,7 @@ echo ""
 echo "=== ~/.pi/agent ==="
 mkdir -p "$HOME/.pi/agent"
 
-for target in AGENTS.md skills models.json keybindings.json extensions ; do
+for target in AGENTS.md skills models.json keybindings.json settings-extensions.json extensions ; do
     if [[ -e "${DOTFILES_DIR}/.pi/agent/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.pi/agent/${target}" "$HOME/.pi/agent/${target}"
     fi
