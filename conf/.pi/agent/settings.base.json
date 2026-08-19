@@ -8,25 +8,13 @@
       "themes": []
     },
     {
-      "source": "npm:@zigai/pi-tree",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:@zigai/pi-tree"
     },
     {
-      "source": "npm:pi-subagents",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-subagents"
     },
     {
-      "source": "npm:pi-ask-user",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-ask-user"
     },
     {
       "source": "npm:pi-mcp-adapter",
@@ -36,11 +24,7 @@
       "themes": []
     },
     {
-      "source": "npm:pi-web-access",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-web-access"
     },
     {
       "source": "npm:@devkade/pi-plan",
@@ -78,11 +62,7 @@
       "themes": []
     },
     {
-      "source": "npm:@plannotator/pi-extension",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:@plannotator/pi-extension"
     },
     {
       "source": "npm:pi-slopchop",
@@ -92,18 +72,10 @@
       "themes": []
     },
     {
-      "source": "npm:@juanibiapina/pi-powerbar",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:@juanibiapina/pi-powerbar"
     },
     {
-      "source": "npm:@tmustier/pi-usage-extension",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:@tmustier/pi-usage-extension"
     },
     {
       "source": "npm:@tmustier/pi-raw-paste",
@@ -113,11 +85,7 @@
       "themes": []
     },
     {
-      "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359"
     },
     {
       "source": "npm:pi-btw",
@@ -174,6 +142,9 @@
       "skills": [],
       "prompts": [],
       "themes": []
+    },
+    {
+      "source": "npm:@ff-labs/pi-fff"
     }
   ],
   "enabledModels": [
