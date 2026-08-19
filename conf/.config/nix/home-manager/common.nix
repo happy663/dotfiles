@@ -77,6 +77,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
+      PI_FFF_MODE = "override";
       XDG_CONFIG_HOME = "$HOME/.config";
       GOPATH = "$HOME/go";
       # Additional environment variables
