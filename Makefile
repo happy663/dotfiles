@@ -52,6 +52,15 @@ claude-pull:
 claude-push:
 	scripts/claude-settings.sh push
 
+# OpenCode Go の公式ドキュメント (go.mdx) と conf/.pi/agent/models.json の差分をチェック
+# 価格・新モデル・API タイプの変化を確認してから --apply で反映する
+sync-opencode-go-models-check:
+	scripts/sync-opencode-go-models.sh --check
+
+# 差分を conf/.pi/agent/models.json に書き込む 
+sync-opencode-go-models-apply:
+	scripts/sync-opencode-go-models.sh --apply
+
 # ~/.pi/agent/settings.json から base.json と ~/.pi/agent/settings.local.json を再構築
 pi-pull:
 	scripts/pi-settings.sh pull
