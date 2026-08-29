@@ -17,6 +17,7 @@ return {
     config = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
+      local skkeleton_completion = require("utils.skkeleton_completion")
       -- LuaSnipを遅延ロード
       local luasnip
       -- -- パフォーマンス最適化設定
@@ -473,7 +474,7 @@ return {
       }
 
       local cmdline_config = {
-        enable = {
+        abbrev = {
           mapping = cmp.mapping.preset.cmdline(),
           sources = {
             { name = "skkeleton" },
@@ -485,15 +486,20 @@ return {
             },
           },
         },
-        disable = {
+        default = {
           mapping = cmp.mapping.preset.cmdline(),
           sources = {
             { name = "buffer" },
           },
         },
+        disabled = {
+          enabled = false,
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {},
+        },
       }
 
-      local function create_buffer_config(is_enabled)
+      local function create_buffer_config(profile)
         local config = {
           -- agent_inputバッファの縦幅は小さめのためcmpの補完候補数を制限する
           performance = {
@@ -501,9 +507,12 @@ return {
           },
         }
 
-        if is_enabled then
+        if profile == "abbrev" then
           config.sources = skkeleton_config.sources
           config.sorting = skkeleton_config.sorting
+        elseif profile == "disabled" then
+          config.enabled = false
+          config.sources = {}
         else
           config.debug = true
           config.sources = vim.b.agent_input
@@ -549,21 +558,27 @@ return {
         return config
       end
 
-      local function setup_autocmd(pattern, is_enabled)
-        vim.api.nvim_create_autocmd("User", {
-          pattern = pattern,
-          callback = function()
-            cmp.setup.buffer(create_buffer_config(is_enabled))
+      local function apply_skkeleton_completion_profile()
+        local profile = skkeleton_completion.profile_for_mode(vim.g["skkeleton#mode"])
+        cmp.setup.buffer(create_buffer_config(profile))
+        cmp.setup.cmdline("/", cmdline_config[profile])
 
-            local cmdline_key = is_enabled and "enable" or "disable"
-            cmp.setup.cmdline("/", cmdline_config[cmdline_key])
-          end,
-        })
+        if profile ~= "abbrev" then
+          cmp.close()
+        end
+
+        return profile
       end
 
-      -- Setup autocmds
-      setup_autocmd("skkeleton-enable-pre", true)
-      setup_autocmd("skkeleton-disable-pre", false)
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "skkeleton-mode-changed",
+        callback = function()
+          local profile = apply_skkeleton_completion_profile()
+          if profile == "abbrev" then
+            vim.schedule(refresh_skkeleton_abbrev_completion)
+          end
+        end,
+      })
 
       vim.api.nvim_create_autocmd("User", {
         pattern = "skkeleton-handled",
