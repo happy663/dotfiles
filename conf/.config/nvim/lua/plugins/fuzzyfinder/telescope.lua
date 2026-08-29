@@ -403,16 +403,6 @@ return {
     branch = "0.2.x",
     cond = vim.g.not_in_vscode,
     lazy = true,
-    keys = {
-      {
-        "<C-p>",
-        function()
-          require("telescope").load_extension("smart_open")
-          require("telescope").extensions.smart_open.smart_open()
-        end,
-        desc = "Smart Open",
-      },
-    },
     config = function()
       require("telescope").load_extension("smart_open")
     end,

@@ -9,6 +9,13 @@ return {
     },
     keys = {
       {
+        "<C-p>",
+        function()
+          require("fff").find_files()
+        end,
+        desc = "Open file picker",
+      },
+      {
         "<leader>ff", -- try it if you didn't it is a banger keybinding for a picker
         function()
           require("fff").find_files() -- or find_in_git_root() if you only want git files
@@ -71,14 +78,22 @@ return {
 
       require("fff").setup({
         -- UI dimensions and appearance
+        -- telescope(smart-open)の見た目に寄せる:
+        -- width 0.9 / preview_width 0.4 / prompt_position "top" /
+        -- sorting_strategy "ascending"（最良マッチが最上段）相当
         layout = {
-          width = 0.8, -- Window width as fraction of screen
+          width = 0.9, -- Window width as fraction of screen
           height = 0.8, -- Window height as fraction of screen
-          preview_size = 0.5, -- Preview width as fraction of picker
+          preview_size = 0.4, -- Preview width as fraction of picker
+          prompt_position = "top",
+          preview_position = "right",
+          border = "single", -- telescopeの単線ボーダーに合わせる
+          path_shorten_strategy = "start", -- 末尾（親ディレクトリ+ファイル名）を残す
         },
-        prompt = "🪿 ", -- Input prompt symbol
+        prompt = "> ", -- telescopeのデフォルトprompt prefixに合わせる
         preview = {
           enabled = true,
+          line_numbers = true, -- telescopeのpreviewは行番号ありなので合わせる
           max_lines = 100,
           max_size = 1024 * 1024, -- 1MB
         },
