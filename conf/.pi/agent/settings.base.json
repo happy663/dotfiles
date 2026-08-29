@@ -84,11 +84,7 @@
       "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359"
     },
     {
-      "source": "npm:pi-btw",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-btw"
     },
     {
       "source": "npm:pi-interactive-shell",
@@ -133,11 +129,7 @@
       "themes": []
     },
     {
-      "source": "npm:pi-hermes-memory",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-hermes-memory"
     },
     {
       "source": "npm:@ff-labs/pi-fff"

@@ -39,7 +39,7 @@
   "app.model.cycleBackward": "shift+ctrl+p",
   "app.model.select": "ctrl+l",
   "app.tools.expand": "ctrl+o",
-  "app.thinking.toggle": "ctrl+t",
+  "app.thinking.toggle": "alt+t",
   "app.session.toggleNamedFilter": "ctrl+n",
   "app.editor.external": "ctrl+g",
   "app.message.copy": "ctrl+x",
