@@ -186,6 +186,10 @@
     defaults write org.hammerspoon.Hammerspoon MJConfigFile "/Users/happy/.config/hammerspoon/init.lua"
     echo "Hammerspoon configuration has been set to use /Users/happy/.config/hammerspoon/init.lua"
 
+    # Arto（未公証アプリ）の quarantine 属性を削除
+    xattr -dr com.apple.quarantine /Applications/Arto.app 2>/dev/null || true
+    echo "Arto quarantine attribute removed"
+
   '';
 
   homebrew = {
@@ -202,6 +206,10 @@
       "manaflow-ai/cmux"
       {
         name = "tonisives/tap";
+        trusted = true;
+      }
+      {
+        name = "arto-app/tap";
         trusted = true;
       }
     ];
@@ -248,6 +256,7 @@
       "cmux"
       "hammerspoon"
       "obsidian"
+      "arto"
     ];
     masApps = {
       Kindle = 302584613;
