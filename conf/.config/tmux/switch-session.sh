@@ -9,10 +9,11 @@ direction="${1:-next}"
 
 current=$(tmux display-message -p '#S')
 
-# session_created (Unix timestamp) でソートしたセッション名一覧
-sessions=$(tmux list-sessions -F '#{session_created} #{session_name}' \
+# session_created (Unix timestamp) でソートしたセッション名一覧。
+# @hidden=on のセッションは切り替え対象から除外（session-tabs.sh と同じ規則）。
+sessions=$(tmux list-sessions -F '#{session_created} #{session_name} #{?#{==:#{@hidden},on},1,0}' \
     | sort -n \
-    | awk '{print $2}')
+    | awk '$3 != 1 {print $2}')
 
 case "$direction" in
     next)

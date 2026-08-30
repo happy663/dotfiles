@@ -15,10 +15,11 @@ set -euo pipefail
 MAX=5
 
 # Sessions in creation order (matches switch-session.sh ordering).
+# @hidden=on のセッションは縦リストから除外する（一時的に隠す用途。セッション自体は生存）。
 sessions=()
 while IFS= read -r name; do
     sessions+=("$name")
-done < <(tmux list-sessions -F '#{session_created} #{session_name}' | sort -n | awk '{print $2}')
+done < <(tmux list-sessions -F '#{session_created} #{session_name} #{?#{==:#{@hidden},on},1,0}' | sort -n | awk '$3 != 1 {print $2}')
 
 n=${#sessions[@]}
 [ "$n" -eq 0 ] && exit 0
