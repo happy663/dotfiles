@@ -17,8 +17,9 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const PANE = process.env.TMUX_PANE;
 
-// 入力待ちで止まる質問系ツール。pi-ask-user が登録する名前。
-const ASK_TOOLS = new Set(["ask_user_question", "AskUserQuestion"]);
+// 入力待ちで止まる質問系ツール。pi-ask-user が registerTool する名前は "ask_user"
+// （node_modules/pi-ask-user/index.ts:1993）。他の質問系拡張を入れたらここに足す。
+const ASK_TOOLS = new Set(["ask_user"]);
 
 function tmux(...args: string[]): void {
   execFile("tmux", args, () => {});

@@ -22,6 +22,14 @@ if [ -z "$PANE_ID" ]; then
   exit 0
 fi
 
+# タイトル生成のために入れ子で起動された Agent は無視する。
+# agent-pane-task.sh は CLAUDE_TASK_RENAMER=1 claude -p / CODEX_TASK_RENAMER=1
+# codex exec を呼ぶが、その子プロセスは親と同じ TMUX_PANE を持つため、
+# ガードしないと入れ子側のフックが親ペインの状態を上書きしてしまう。
+if [ -n "${CLAUDE_TASK_RENAMER:-}" ] || [ -n "${CODEX_TASK_RENAMER:-}" ]; then
+  exit 0
+fi
+
 set_state() {
   tmux set-option -w -t "$PANE_ID" automatic-rename off 2>/dev/null
   tmux set-option -p -t "$PANE_ID" @agent-status "$1" 2>/dev/null
