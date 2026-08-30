@@ -138,3 +138,21 @@ if vim.v.servername == "" or vim.v.servername == nil then
     vim.notify("[init.lua] Failed to start server: " .. tostring(err), vim.log.levels.WARN)
   end
 end
+
+-- 自分の servername を、自分がいる tmux ペインのオプションへ書く（issue #316）。
+-- 別ペインの Agent へ送る際、送信側がこの値を見て「RPC 経由」か
+-- 「tmux send-keys 経由」かを判定する。起動をブロックしないよう非同期で実行する。
+if vim.env.TMUX_PANE and vim.env.TMUX_PANE ~= "" and vim.v.servername and vim.v.servername ~= "" then
+  local pane = vim.env.TMUX_PANE
+  local server = vim.v.servername
+
+  vim.fn.jobstart({ "tmux", "set-option", "-p", "-t", pane, "@nvim-server", server })
+
+  -- 終了時に消す。残骸があると死んだソケットへ送ろうとするため。
+  vim.api.nvim_create_autocmd("VimLeave", {
+    group = vim.api.nvim_create_augroup("AgentNvimServerRegistry", { clear = true }),
+    callback = function()
+      vim.fn.system({ "tmux", "set-option", "-p", "-t", pane, "-u", "@nvim-server" })
+    end,
+  })
+end
