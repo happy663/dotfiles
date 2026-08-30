@@ -13,9 +13,51 @@ local ICONS = {
   error = "✕",
 }
 local ICON_UNKNOWN = "·"
+
 -- running のまま一定時間更新されていないペイン。中断されて入力待ちの可能性がある。
 -- 走っているのか止まっているのか判別できないので、running とは別の印にする。
 local ICON_STALE = "◌"
+
+-- 状態の色は tmux.conf の pane-border-format と揃える。同じ概念を tmux の枠と
+-- この一覧の両方に出すので、色が違うと別物に見えてしまう。
+-- default = true なので、好みで上書きしたい場合はユーザー側の定義が優先される。
+local HL = {
+  blocked = "AgentSendToBlocked",
+  idle = "AgentSendToIdle",
+  running = "AgentSendToRunning",
+  error = "AgentSendToError",
+  stale = "AgentSendToStale",
+  unknown = "AgentSendToUnknown",
+  dim = "AgentSendToDim",
+}
+
+local function define_highlights()
+  local hl = vim.api.nvim_set_hl
+  hl(0, HL.blocked, { fg = "#e0af68", default = true })
+  hl(0, HL.idle, { fg = "#7aa2f7", default = true })
+  hl(0, HL.running, { fg = "#9ece6a", default = true })
+  hl(0, HL.error, { fg = "#f7768e", default = true })
+  hl(0, HL.stale, { fg = "#565f89", default = true })
+  hl(0, HL.unknown, { link = "Comment", default = true })
+  hl(0, HL.dim, { link = "Comment", default = true })
+end
+
+define_highlights()
+
+-- カラースキームを変えるとハイライトが消えるので張り直す。
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("AgentSendToHighlights", { clear = true }),
+  callback = define_highlights,
+})
+
+local NS = vim.api.nvim_create_namespace("agent_send_to")
+
+local function status_hl(p)
+  if p.stale then
+    return HL.stale
+  end
+  return HL[p.status] or HL.unknown
+end
 
 local DRAFT_HEIGHT = 8
 local LIST_MAX_HEIGHT = 10
@@ -41,6 +83,8 @@ local function pad(s, width)
 end
 
 -- 一覧の各行を組み立てる。@pane-task が未生成のペインは空欄のままにする。
+-- 行の文字列と、アイコン/プロジェクト以降のハイライト範囲を組み立てる。
+-- 範囲はバイト位置で持つ（アイコンがマルチバイトなので文字数では合わない）。
 local function build_lines(list)
   local task_w, project_w = 0, 0
   for _, p in ipairs(list) do
@@ -48,13 +92,22 @@ local function build_lines(list)
     project_w = math.max(project_w, display_width(p.project))
   end
 
-  local lines = {}
-  for _, p in ipairs(list) do
+  local lines, marks = {}, {}
+  for row, p in ipairs(list) do
     local icon = p.stale and ICON_STALE or (ICONS[p.status] or ICON_UNKNOWN)
+    local task = pad(p.task, task_w)
+    local project = pad(p.project, project_w)
     local location = ("%s:%d"):format(p.session, p.window_index)
-    lines[#lines + 1] = ("%s %s  %s  %s"):format(icon, pad(p.task, task_w), pad(p.project, project_w), location)
+
+    lines[#lines + 1] = ("%s %s  %s  %s"):format(icon, task, project, location)
+
+    -- アイコンは状態の色、リポジトリ名と位置は淡く。タイトルは既定色のまま目立たせる。
+    local icon_end = #icon
+    local dim_start = icon_end + 1 + #task + 2
+    marks[#marks + 1] = { row = row - 1, from = 0, to = icon_end, hl = status_hl(p) }
+    marks[#marks + 1] = { row = row - 1, from = dim_start, to = -1, hl = HL.dim }
   end
-  return lines
+  return lines, marks
 end
 
 local function close_win(win)
@@ -124,9 +177,23 @@ function M.selected()
 end
 
 local function render_list(list)
+  local lines, marks = build_lines(list)
   vim.bo[ui.list_buf].modifiable = true
-  vim.api.nvim_buf_set_lines(ui.list_buf, 0, -1, false, build_lines(list))
+  vim.api.nvim_buf_set_lines(ui.list_buf, 0, -1, false, lines)
   vim.bo[ui.list_buf].modifiable = false
+
+  vim.api.nvim_buf_clear_namespace(ui.list_buf, NS, 0, -1)
+  for _, m in ipairs(marks) do
+    local opts = { hl_group = m.hl }
+    if m.to >= 0 then
+      opts.end_col = m.to
+    else
+      opts.end_row = m.row + 1
+      opts.end_col = 0
+    end
+    pcall(vim.api.nvim_buf_set_extmark, ui.list_buf, NS, m.row, m.from, opts)
+  end
+
   ui.panes = list
 end
 
