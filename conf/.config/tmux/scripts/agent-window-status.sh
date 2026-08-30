@@ -26,7 +26,7 @@ fi
 # agent-pane-task.sh は CLAUDE_TASK_RENAMER=1 claude -p / CODEX_TASK_RENAMER=1
 # codex exec を呼ぶが、その子プロセスは親と同じ TMUX_PANE を持つため、
 # ガードしないと入れ子側のフックが親ペインの状態を上書きしてしまう。
-if [ -n "${CLAUDE_TASK_RENAMER:-}" ] || [ -n "${CODEX_TASK_RENAMER:-}" ]; then
+if [ -n "${CLAUDE_TASK_RENAMER:-}" ] || [ -n "${CODEX_TASK_RENAMER:-}" ] || [ -n "${PI_TASK_RENAMER:-}" ]; then
   exit 0
 fi
 

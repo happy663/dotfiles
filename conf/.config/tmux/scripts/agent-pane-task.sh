@@ -1,7 +1,7 @@
 #!/bin/bash
 # Generate an Agent task title from the first user prompt and set it as a tmux pane option.
 # Usage: agent-pane-task.sh <session_id> <prompt> <agent_kind>
-#   agent_kind: claude | codex   (decides which CLI is used to summarize; codex falls back to claude)
+#   agent_kind: claude | codex | pi   (decides which CLI is used to summarize; unknown falls back to claude)
 #
 # Behavior:
 # - Per session-id, the title is generated only once (first prompt). 2nd+ prompts are skipped.
@@ -57,6 +57,13 @@ generate_title() {
     codex)
       if command -v codex >/dev/null 2>&1; then
         CODEX_TASK_RENAMER=1 codex exec "$SUMMARY_PROMPT" 2>/dev/null || true
+        return
+      fi
+      ;;
+    pi)
+      if command -v pi >/dev/null 2>&1; then
+        # --no-session: 要約用の呼び出しでセッション履歴を増やさない。
+        PI_TASK_RENAMER=1 pi -p --no-session "$SUMMARY_PROMPT" 2>/dev/null || true
         return
       fi
       ;;
