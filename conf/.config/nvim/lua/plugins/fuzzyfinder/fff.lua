@@ -83,7 +83,7 @@ return {
         -- sorting_strategy "ascending"（最良マッチが最上段）相当
         layout = {
           width = 0.9, -- Window width as fraction of screen
-          height = 0.8, -- Window height as fraction of screen
+          height = 0.9, -- Window height as fraction of screen
           preview_size = 0.4, -- Preview width as fraction of picker
           prompt_position = "top",
           preview_position = "right",
