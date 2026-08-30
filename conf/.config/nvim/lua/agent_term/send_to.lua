@@ -67,14 +67,48 @@ function M.is_open()
   return ui ~= nil and vim.api.nvim_win_is_valid(ui.draft_win)
 end
 
+local function wipe_buf(bufnr)
+  if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+    pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
+  end
+end
+
+-- 閉じたらバッファも捨てる。残すと次に開くとき同名バッファで nvim_buf_set_name が
+-- 失敗し、開けないまま浮きウィンドウが漏れる。書きかけを残さないのは意図でもある
+-- （閉じて開き直したとき、古い本文が新しい宛先に向いている状態を作らない）。
 function M.close()
   if not ui then
     return false, "picker is not open"
   end
   close_win(ui.list_win)
   close_win(ui.draft_win)
+  wipe_buf(ui.draft_buf)
+  wipe_buf(ui.list_buf)
   ui = nil
   return true, "closed"
+end
+
+-- 下書きから離れずに宛先を1つ動かす。端まで来たら反対側へ回り込む。
+local function move_selection(delta)
+  if not M.is_open() or not vim.api.nvim_win_is_valid(ui.list_win) then
+    return false
+  end
+  local count = #ui.panes
+  if count == 0 then
+    return false
+  end
+  local row = vim.api.nvim_win_get_cursor(ui.list_win)[1]
+  row = ((row - 1 + delta) % count) + 1
+  pcall(vim.api.nvim_win_set_cursor, ui.list_win, { row, 0 })
+  return true
+end
+
+function M.select_next()
+  return move_selection(1)
+end
+
+function M.select_prev()
+  return move_selection(-1)
 end
 
 -- 一覧側のカーソル行から宛先を取り出す。
@@ -143,6 +177,36 @@ function M.open()
   local row = math.max(0, math.floor((vim.o.lines - total) / 2))
   local col = math.max(0, math.floor((vim.o.columns - width) / 2))
 
+  -- 前回の残骸が居ると nvim_buf_set_name が失敗するので、先に片付ける。
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(b) and vim.api.nvim_buf_get_name(b):match("%[Agent Send To%]$") then
+      pcall(vim.api.nvim_buf_delete, b, { force = true })
+    end
+  end
+
+  -- ウィンドウより先にバッファを用意する。作成に失敗しても浮きウィンドウが残らない。
+  local buf = draft_buf.create_input_buffer("[Agent Send To]")
+  draft_buf.apply_send_keymaps(buf, {
+    send = "AgentSendToSend",
+    clear = "AgentSendToClear",
+  })
+
+  -- 宛先の移動。挿入モードは <C-n> / <C-p> が補完（cmp.lua）、<C-j> が skkeleton、
+  -- <Tab> が copilot に取られているため、ノーマルモードだけに張る。
+  -- このバッファ限定なので、ローカル下書き（draft.lua）側の割り当てとは衝突しない。
+  vim.keymap.set("n", "<C-n>", "<Cmd>AgentSendToNext<CR>", {
+    buffer = buf,
+    noremap = true,
+    silent = true,
+    desc = "Select next agent",
+  })
+  vim.keymap.set("n", "<C-p>", "<Cmd>AgentSendToPrev<CR>", {
+    buffer = buf,
+    noremap = true,
+    silent = true,
+    desc = "Select previous agent",
+  })
+
   local list_buf = vim.api.nvim_create_buf(false, true)
   vim.bo[list_buf].buftype = "nofile"
   vim.bo[list_buf].bufhidden = "wipe"
@@ -160,12 +224,6 @@ function M.open()
     title_pos = "center",
   })
   vim.wo[list_win].cursorline = true
-
-  local buf = draft_buf.create_input_buffer("[Agent Send To]")
-  draft_buf.apply_send_keymaps(buf, {
-    send = "AgentSendToSend",
-    clear = "AgentSendToClear",
-  })
 
   local draft_win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
@@ -232,6 +290,14 @@ function M.send()
   local label = target.task ~= "" and target.task or ("%s:%d"):format(target.session, target.window_index)
   notify("送信: " .. label .. " (" .. message .. ")")
   return true, message
+end
+
+-- 同じキーで開閉する（<M-a> のローカル下書きと揃える）。
+function M.toggle()
+  if M.is_open() then
+    return M.close()
+  end
+  return M.open()
 end
 
 function M.clear()

@@ -371,6 +371,13 @@ function M.setup()
     end
   end, { desc = "Open agent picker and draft for another pane" })
 
+  vim.api.nvim_create_user_command("AgentSendToToggle", function()
+    local success, message = send_to.toggle()
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Toggle the agent send-to picker" })
+
   vim.api.nvim_create_user_command("AgentSendToSend", function()
     send_to.send()
   end, { desc = "Send draft to the selected agent pane" })
@@ -383,6 +390,14 @@ function M.setup()
     send_to.close()
   end, { desc = "Close the send-to picker" })
 
+  vim.api.nvim_create_user_command("AgentSendToNext", function()
+    send_to.select_next()
+  end, { desc = "Select the next agent in the send-to picker" })
+
+  vim.api.nvim_create_user_command("AgentSendToPrev", function()
+    send_to.select_prev()
+  end, { desc = "Select the previous agent in the send-to picker" })
+
   vim.api.nvim_create_user_command("AgentSendToRefresh", function()
     local success, message = send_to.refresh()
     if not success then
@@ -390,7 +405,7 @@ function M.setup()
     end
   end, { desc = "Refresh the send-to agent list" })
 
-  vim.keymap.set({ "n", "i", "t", "v" }, "<M-v>", "<Cmd>AgentSendTo<CR>", {
+  vim.keymap.set({ "n", "i", "t", "v" }, "<M-v>", "<Cmd>AgentSendToToggle<CR>", {
     noremap = true,
     silent = true,
     desc = "Send prompt to an agent in another pane",
