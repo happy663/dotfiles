@@ -227,7 +227,6 @@ end
 function M.open()
   if M.is_open() then
     vim.api.nvim_set_current_win(ui.draft_win)
-    vim.cmd("startinsert")
     return true, "focused existing picker"
   end
 
@@ -348,7 +347,8 @@ function M.open()
     })
   end
 
-  vim.cmd("startinsert")
+  -- 挿入モードでは始めない。開いた直後は宛先を選ぶ場面が多く、<C-n> / <C-p> が
+  -- ノーマルモードの割り当てなのでそのまま押せる。本文を書くときに i を押す。
   return true, "opened"
 end
 
