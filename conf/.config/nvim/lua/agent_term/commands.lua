@@ -390,6 +390,10 @@ function M.setup()
     send_to.close()
   end, { desc = "Close the send-to picker" })
 
+  vim.api.nvim_create_user_command("AgentSendToJump", function()
+    send_to.jump()
+  end, { desc = "Jump to the selected agent pane" })
+
   vim.api.nvim_create_user_command("AgentSendToNext", function()
     send_to.select_next()
   end, { desc = "Select the next agent in the send-to picker" })

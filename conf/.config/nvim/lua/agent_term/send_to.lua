@@ -274,6 +274,17 @@ function M.open()
     desc = "Select previous agent",
   })
 
+  -- 送るのではなく自分が行きたいとき。<C-CR> が送信なので <S-CR> を移動に当てる。
+  -- tmux.conf の extended-keys on / csi-u により両者は区別して届く。
+  for _, mode in ipairs({ "n", "i" }) do
+    vim.keymap.set(mode, "<S-CR>", "<Cmd>AgentSendToJump<CR>", {
+      buffer = buf,
+      noremap = true,
+      silent = true,
+      desc = "Jump to the selected agent pane",
+    })
+  end
+
   local list_buf = vim.api.nvim_create_buf(false, true)
   vim.bo[list_buf].buftype = "nofile"
   vim.bo[list_buf].bufhidden = "wipe"
@@ -326,6 +337,17 @@ function M.open()
     })
   end
 
+  -- 一覧側からも移動できるようにする。行を選んで Enter は素直な操作なので
+  -- <CR> も同じ動きにする。
+  for _, key in ipairs({ "<CR>", "<S-CR>" }) do
+    vim.keymap.set("n", key, "<Cmd>AgentSendToJump<CR>", {
+      buffer = list_buf,
+      noremap = true,
+      silent = true,
+      desc = "Jump to the selected agent pane",
+    })
+  end
+
   vim.cmd("startinsert")
   return true, "opened"
 end
@@ -357,6 +379,52 @@ function M.send()
   local label = target.task ~= "" and target.task or ("%s:%d"):format(target.session, target.window_index)
   notify("送信: " .. label .. " (" .. message .. ")")
   return true, message
+end
+
+-- 選択中のペインへ移動する。送るのではなく自分が行きたいとき用。
+-- ペイン、ウィンドウ、セッションの順に指定する。pane_id だけでは別ウィンドウや
+-- 別セッションにいる場合に切り替わらないため。
+function M.jump()
+  if not M.is_open() then
+    local message = "picker is not open"
+    notify(message, vim.log.levels.WARN)
+    return false, message
+  end
+
+  local target = M.selected()
+  if not target then
+    local message = "宛先が選択されていない"
+    notify(message, vim.log.levels.WARN)
+    return false, message
+  end
+
+  if not panes.exists(target.pane_id) then
+    local message = "ペインが存在しない: " .. target.pane_id
+    notify(message, vim.log.levels.ERROR)
+    return false, message
+  end
+
+  -- 移動すると下書きは破棄される（close でバッファごと捨てるため）。
+  -- 黙って消すと書いた内容を失ったことに気づけないので、その場合だけ知らせる。
+  local had_draft = draft_buf.read_content(ui.draft_buf) ~= ""
+  local label = target.task ~= "" and target.task or ("%s:%d"):format(target.session, target.window_index)
+
+  M.close()
+
+  for _, args in ipairs({
+    { "select-pane", "-t", target.pane_id },
+    { "select-window", "-t", target.pane_id },
+    { "switch-client", "-t", target.pane_id },
+  }) do
+    local cmd = { "tmux" }
+    vim.list_extend(cmd, args)
+    vim.system(cmd):wait()
+  end
+
+  if had_draft then
+    notify("移動: " .. label .. "（書きかけの下書きは破棄した）", vim.log.levels.WARN)
+  end
+  return true, "jumped"
 end
 
 -- 同じキーで開閉する（<M-a> のローカル下書きと揃える）。
