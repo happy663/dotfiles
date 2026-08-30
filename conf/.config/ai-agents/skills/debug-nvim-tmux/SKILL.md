@@ -320,6 +320,8 @@ Neovim 自体が記録している情報から直前の操作を復元する。�
 * 非TTY のシェル（Agent の Bash tool 等）から非デタッチの `tmux new-session` を実行すると `open terminal failed: not a terminal` になる。この環境では `tmux new-session -d`（デタッチ）を使い、必要なら `tmux attach -t <session>` を案内する
 * `:lua` 内で `vim.cmd("normal! <Esc>")` を実行すると不要なキー送信が起き、バッファに `c>` が混入することがある。`:lua` 実行時は visual が既に解除されているため、この行自体が不要（削除して解決する）
 * `:lua` 内で `vim.cmd("normal! o")` を実行すると autoindent が効かず、`vim.fn.setline(".", ...)` で行を書き換えるとインデントが消える。事前に `vim.fn.getline("."):match("^%s*")` で現在行のインデントを取得して付与する
+* Bash tool の呼び出しは毎回独立プロセスで、前回設定したシェル変数（`session=nvim-debug` 等）は次回は空になる。変数が空のまま `tmux kill-session -t "$session"` を実行すると `-t ""` になり、tmux は「現在のセッション」＝Agent自身が動いているユーザーの作業セッションを kill してしまう（実害あり: dotfiles セッション削除事故）。`send-keys -t ""` も同様に現在セッションのアクティブペイン（ユーザーのNeovim）へ誤送信しうる。セッション名を tmux コマンドへ渡す際は変数に頼らず、ハードコードした名前を直接指定するか、同一の Bash 呼び出し内で設定と使用を完結させる。破壊的コマンドの直前には `echo "$VAR"` で値を確認する
+* デバッグ用コマンドの失敗を `2>/dev/null || true` で握りつぶさない。kill-session 等の後始末が失敗していても気づけず、ゴミセッションや誤操作が残る。エラーを握りつぶす `|| true` を使う場合は、続けて対象セッションの存在確認（`tmux has-session -t <name>`）を行う
 
 ## Safety rules
 
