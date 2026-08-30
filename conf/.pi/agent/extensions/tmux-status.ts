@@ -25,8 +25,16 @@ function tmux(...args: string[]): void {
   execFile("tmux", args, () => {});
 }
 
+// @agent-status-at には最終更新時刻（epoch 秒）を入れる。ピッカー側が
+// 「running なのに一定時間更新されていない」を検出するための生存signal。
+// シェル版の touch_at と同じ役割。
+function touchAt(): void {
+  tmux("set-option", "-p", "-t", PANE!, "@agent-status-at", String(Math.floor(Date.now() / 1000)));
+}
+
 function setState(state: string): void {
   tmux("set-option", "-p", "-t", PANE!, "@agent-status", state);
+  touchAt();
 }
 
 export default function (pi: ExtensionAPI) {
@@ -38,10 +46,12 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("tool_execution_start", async (event) => {
     if (ASK_TOOLS.has(event.toolName)) setState("blocked");
+    else touchAt();
   });
 
   pi.on("tool_execution_end", async (event) => {
     if (ASK_TOOLS.has(event.toolName)) setState("running");
+    else touchAt();
   });
 
   // agent_end ではなく agent_settled を使う。agent_end の後も pi は自動リトライや
@@ -50,5 +60,6 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("session_shutdown", async () => {
     tmux("set-option", "-pu", "-t", PANE!, "@agent-status");
+    tmux("set-option", "-pu", "-t", PANE!, "@agent-status-at");
   });
 }

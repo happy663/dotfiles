@@ -30,9 +30,17 @@ if [ -n "${CLAUDE_TASK_RENAMER:-}" ] || [ -n "${CODEX_TASK_RENAMER:-}" ]; then
   exit 0
 fi
 
+# @agent-status-at には最終更新時刻（epoch 秒）を入れる。Claude Code には中断用の
+# フックが無く、Esc で応答を止めると状態が running のまま固まるため、ピッカー側が
+# 「running なのに一定時間更新されていない」を検出できるようにするための生存signal。
+touch_at() {
+  tmux set-option -p -t "$PANE_ID" @agent-status-at "$(date +%s)" 2>/dev/null
+}
+
 set_state() {
   tmux set-option -w -t "$PANE_ID" automatic-rename off 2>/dev/null
   tmux set-option -p -t "$PANE_ID" @agent-status "$1" 2>/dev/null
+  touch_at
 }
 
 case "${1:-}" in
@@ -44,12 +52,18 @@ case "${1:-}" in
     # PostToolUse から呼ばれる。ツールが動いた＝実際には走っているので、
     # blocked のまま居座るのを防ぐ。状態が空のペイン（Agent がいない）は触らない。
     current=$(tmux display-message -p -t "$PANE_ID" "#{@agent-status}" 2>/dev/null)
-    if [ -n "$current" ] && [ "$current" != "running" ]; then
-      set_state running
+    if [ -n "$current" ]; then
+      if [ "$current" != "running" ]; then
+        set_state running
+      else
+        # 既に running のときも生存signalだけは更新する。
+        touch_at
+      fi
     fi
     ;;
   clear)
     tmux set-option -pu -t "$PANE_ID" @agent-status 2>/dev/null
+    tmux set-option -pu -t "$PANE_ID" @agent-status-at 2>/dev/null
     tmux set-option -w -t "$PANE_ID" automatic-rename on 2>/dev/null
     ;;
 esac
