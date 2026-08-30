@@ -261,6 +261,10 @@ snippets:
     keyword: nxs
     snippet: nvim-codex-session
 
+  - name: nvim pi session
+    keyword: nps
+    snippet: nvim-pi-session
+
   - name: nvim all session
     keyword: nas
     snippet: nvim-all-session

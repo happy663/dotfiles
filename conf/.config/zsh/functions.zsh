@@ -103,6 +103,10 @@ function nvim-codex-session() {
   command nvim -c "AgentCodexSession"
 }
 
+function nvim-pi-session() {
+  command nvim -c "AgentPiSession"
+}
+
 function nvim-all-session() {
   command nvim -c "AgentSession"
 }

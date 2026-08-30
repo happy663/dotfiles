@@ -292,12 +292,19 @@ function M.setup()
     })
   end, { desc = "Open Codex session picker terminal" })
 
+  vim.api.nvim_create_user_command("AgentPiSession", function()
+    layouts.open_agent_pi({
+      command = "ccsession --pi",
+      open_draft = false,
+    })
+  end, { desc = "Open pi session picker terminal" })
+
   vim.api.nvim_create_user_command("AgentSession", function()
     layouts.open_agent_claude({
       command = "ccsession --all",
       open_draft = false,
     })
-  end, { desc = "Open cross-source (Claude/Codex) session picker terminal" })
+  end, { desc = "Open cross-source (Claude/Codex/Pi) session picker terminal" })
 
   vim.api.nvim_create_user_command("AgentClaudeCodex", function(command)
     layouts.open_agent_claude_codex({ args = command.args })
