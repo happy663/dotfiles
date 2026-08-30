@@ -1,0 +1,24 @@
+# Remove the unconditional overlay redraw when a background pane updates.
+#
+# tmux 3.7b では overlay（display-menu / display-popup）が開いている間、
+# 背後の alternate-screen アプリ（Neovim 等の TUI）が再描画するたびに
+# overlay 全体が再描画され、ちらつく（GitHub #5336 / PR #5398）。
+#
+# screen-redraw.c の screen_redraw_update() が、overlay の存在だけで
+# CLIENT_REDRAWOVERLAY を強制追加するのが原因。メニュー/ポップ自身が
+# 内容を変更した場合は menu.c / popup.c が直接 CLIENT_REDRAWOVERLAY を
+# 設定するため、この強制追加は不要。公式 PR #5398 の方針（overlay 自身が
+# 要求したときだけ再描画する）と同じ修正で、tmux 3.8 で採用された変更に相当する。
+diff --git a/screen-redraw.c b/screen-redraw.c
+--- a/screen-redraw.c
++++ b/screen-redraw.c
+@@ -750,9 +750,6 @@ screen_redraw_update(struct screen_redraw_ctx *ctx, uint64_t flags)
+ 	if (!redraw && (~flags & CLIENT_REDRAWSTATUSALWAYS))
+ 		flags &= ~CLIENT_REDRAWSTATUS;
+ 
+-	if (c->overlay_draw != NULL)
+-		flags |= CLIENT_REDRAWOVERLAY;
+-
+ 	if (ctx->pane_status != PANE_STATUS_OFF) {
+ 		lines = ctx->pane_lines;
+ 		redraw = 0;
