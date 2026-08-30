@@ -6,9 +6,17 @@ local M = {}
 local STATUS_RANK = {
   blocked = 1,
   idle = 2,
-  running = 3,
+  running = 4,
 }
-local UNKNOWN_RANK = 4
+-- running のまま一定時間更新されていないペイン。idle と running の間に置く。
+local STALE_RANK = 3
+local UNKNOWN_RANK = 5
+
+-- Claude Code には中断用のフックが無く、Esc で応答を止めると状態が running のまま
+-- 固まる（#315 の @agent-status-at 導入の経緯を参照）。実際には入力待ちなのに一覧の
+-- 下に沈むと「待機中の Agent を探す」用途で取りこぼすため、最終更新時刻からの経過で
+-- 判定して繰り上げる。長い思考で誤って繰り上げても実害は無い（順番と印が変わるだけ）。
+M.STALE_SECONDS = 300
 
 -- @agent-status が空でも、ペインで直接起動している Agent は拾いたいので
 -- pane_current_command でも判定する。
@@ -22,6 +30,7 @@ local AGENT_COMMANDS = M.AGENT_COMMANDS
 local FIELDS = table.concat({
   "#{pane_id}",
   "#{@agent-status}",
+  "#{@agent-status-at}",
   "#{@pane-task}",
   "#{pane_current_path}",
   "#{session_name}",
@@ -65,22 +74,31 @@ function M.project_name(path)
   return vim.fs.basename(path) or ""
 end
 
-local function parse_line(line)
+local function parse_line(line, now)
   local f = vim.split(line, "\t", { plain = true })
-  if #f < 9 then
+  if #f < 10 then
     return nil
   end
+
+  local status = f[2]
+  local status_at = tonumber(f[3]) or 0
+  -- 時刻が無いペイン（この機能より前に状態を書かれた場合）は判定できないので
+  -- stale にしない。誤って繰り上げるより、そのままにしておくほうが素直。
+  local stale = status == "running" and status_at > 0 and (now - status_at) > M.STALE_SECONDS
+
   return {
     pane_id = f[1],
-    status = f[2],
-    task = f[3],
-    path = f[4],
-    session = f[5],
-    window_index = tonumber(f[6]) or 0,
-    pane_index = tonumber(f[7]) or 0,
-    nvim_server = f[8],
-    command = f[9],
-    project = M.project_name(f[4]),
+    status = status,
+    status_at = status_at,
+    stale = stale,
+    task = f[4],
+    path = f[5],
+    session = f[6],
+    window_index = tonumber(f[7]) or 0,
+    pane_index = tonumber(f[8]) or 0,
+    nvim_server = f[9],
+    command = f[10],
+    project = M.project_name(f[5]),
   }
 end
 
@@ -89,6 +107,9 @@ local function is_agent_pane(p)
 end
 
 local function rank(p)
+  if p.stale then
+    return STALE_RANK
+  end
   return STATUS_RANK[p.status] or UNKNOWN_RANK
 end
 
@@ -105,9 +126,10 @@ function M.list()
   end
 
   local self_pane = vim.env.TMUX_PANE
+  local now = os.time()
   local panes = {}
   for _, line in ipairs(out) do
-    local p = parse_line(line)
+    local p = parse_line(line, now)
     if p and p.pane_id ~= self_pane and is_agent_pane(p) then
       table.insert(panes, p)
     end

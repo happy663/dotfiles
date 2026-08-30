@@ -13,6 +13,9 @@ local ICONS = {
   error = "✕",
 }
 local ICON_UNKNOWN = "·"
+-- running のまま一定時間更新されていないペイン。中断されて入力待ちの可能性がある。
+-- 走っているのか止まっているのか判別できないので、running とは別の印にする。
+local ICON_STALE = "◌"
 
 local DRAFT_HEIGHT = 8
 local LIST_MAX_HEIGHT = 10
@@ -47,7 +50,7 @@ local function build_lines(list)
 
   local lines = {}
   for _, p in ipairs(list) do
-    local icon = ICONS[p.status] or ICON_UNKNOWN
+    local icon = p.stale and ICON_STALE or (ICONS[p.status] or ICON_UNKNOWN)
     local location = ("%s:%d"):format(p.session, p.window_index)
     lines[#lines + 1] = ("%s %s  %s  %s"):format(icon, pad(p.task, task_w), pad(p.project, project_w), location)
   end
