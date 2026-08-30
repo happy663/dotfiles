@@ -93,13 +93,6 @@ read_meta_value() {
   fi
 }
 
-set_tmux_status() {
-  local target="$1"
-  local status="$2"
-  tmux set-option -w -t "$target" automatic-rename off 2>/dev/null || true
-  tmux set-option -p -t "$target" @agent-status "$status" 2>/dev/null || true
-}
-
 cmd_start() {
   local name="${1:-}"
   validate_name "$name"
@@ -126,7 +119,6 @@ cmd_start() {
   write_meta "$name" "running"
 
   tmux new-session -d -s "$session" -c "$cwd"
-  set_tmux_status "$session:1" "running"
   tmux rename-window -t "$session:1" "$name" 2>/dev/null || true
 
   local command_line
@@ -152,7 +144,6 @@ cmd_run() {
 
   write_meta "$name" "running"
   if [[ -n "${TMUX_PANE:-}" ]]; then
-    set_tmux_status "$TMUX_PANE" "running"
     tmux rename-window -t "$TMUX_PANE" "$name" 2>/dev/null || true
   fi
 
@@ -175,10 +166,8 @@ cmd_run() {
 
   if [[ "$cmd_status" -eq 0 ]]; then
     write_meta "$name" "done" "$cmd_status"
-    [[ -n "${TMUX_PANE:-}" ]] && set_tmux_status "$TMUX_PANE" "done"
   else
     write_meta "$name" "error" "$cmd_status"
-    [[ -n "${TMUX_PANE:-}" ]] && set_tmux_status "$TMUX_PANE" "error"
   fi
 
   return "$cmd_status"
@@ -248,7 +237,6 @@ cmd_stop() {
   tmux has-session -t "$session" 2>/dev/null || die "session not found: $session"
   tmux send-keys -t "$session:1" C-c
   write_meta "$name" "waiting"
-  set_tmux_status "$session:1" "waiting"
   printf 'sent C-c to %s\n' "$session"
 }
 

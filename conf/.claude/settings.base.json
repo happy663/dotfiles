@@ -110,7 +110,9 @@
       "Bash(which:*)",
       "WebSearch"
     ],
-    "deny": ["Bash(rm:*)"]
+    "deny": [
+      "Bash(rm:*)"
+    ]
   },
   "hooks": {
     "PreToolUse": [
@@ -140,6 +142,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/claude-session-register.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
           }
         ]
       }
@@ -154,7 +160,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh clear"
           },
           {
             "type": "command",
@@ -210,6 +216,10 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/plugins/tmux-agent-sidebar/hook.sh claude activity-log"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh resume"
           }
         ]
       }
@@ -232,7 +242,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh done"
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
           },
           {
             "type": "command",
@@ -274,7 +284,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh waiting"
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh blocked"
           }
         ]
       }

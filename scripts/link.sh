@@ -82,7 +82,7 @@ for target in codex-notify rules skills; do
     fi
 done
 
-for target in AGENT.md config.toml; do
+for target in AGENT.md config.toml hooks.json; do
     if [[ -e "${DOTFILES_DIR}/.codex/${target}" ]]; then
         ln -snfv "${DOTFILES_DIR}/.codex/${target}" "$HOME/.codex/${target}"
     fi
