@@ -32,6 +32,11 @@ function touchAt(): void {
   tmux("set-option", "-p", "-t", PANE!, "@agent-status-at", String(Math.floor(Date.now() / 1000)));
 }
 
+function clearState(): void {
+  tmux("set-option", "-pu", "-t", PANE!, "@agent-status");
+  tmux("set-option", "-pu", "-t", PANE!, "@agent-status-at");
+}
+
 function setState(state: string): void {
   tmux("set-option", "-p", "-t", PANE!, "@agent-status", state);
   touchAt();
@@ -41,7 +46,10 @@ export default function (pi: ExtensionAPI) {
   // tmux の外や、ペインを特定できない場合は何もしない。
   if (!process.env.TMUX || !PANE) return;
 
-  pi.on("session_start", async () => setState("idle"));
+  // 起動時は idle にしない。idle は「応答が終わって次の指示を待っている」であり、
+  // 起動直後はまだ何も応答していない。代わりに、前のセッションが異常終了して
+  // 残った古い状態を掃除する。
+  pi.on("session_start", async () => clearState());
   pi.on("agent_start", async () => setState("running"));
 
   pi.on("tool_execution_start", async (event) => {
@@ -58,8 +66,5 @@ export default function (pi: ExtensionAPI) {
   // compaction、キュー済みメッセージの続行をしうるので、そこで idle にすると早すぎる。
   pi.on("agent_settled", async () => setState("idle"));
 
-  pi.on("session_shutdown", async () => {
-    tmux("set-option", "-pu", "-t", PANE!, "@agent-status");
-    tmux("set-option", "-pu", "-t", PANE!, "@agent-status-at");
-  });
+  pi.on("session_shutdown", async () => clearState());
 }

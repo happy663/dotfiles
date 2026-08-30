@@ -145,7 +145,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh idle"
+            "command": "bash ~/.config/tmux/scripts/agent-window-status.sh clear"
           }
         ]
       }
