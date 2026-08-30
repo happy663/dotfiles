@@ -69,7 +69,7 @@ in
         # tmux 3.7b の overlay 強制再描画（screen-redraw.c）を除去し、
         # Neovim 等の alternate-screen 再描画で display-menu / display-popup が
         # ちらつく問題を回避する（GitHub PR #5398 と同方針。3.8 で採用される変更）
-        patches = (old.patches or []) ++ [ ../tmux/tmux-3.7b-overlay-redraw.patch ];
+        patches = (old.patches or []) ++ [ ../../tmux/tmux-3.7b-overlay-redraw.patch ];
       }))
       mosh # モバイルからAgent操作するための接続層（issue #229）
       deno
