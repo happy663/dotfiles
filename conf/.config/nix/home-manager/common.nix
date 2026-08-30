@@ -64,7 +64,6 @@ in
           hash = "sha256-xj5WKAduaJWA3NhWuMsF5EXF91+NTGAXkbdhpeFqLxE=";
         };
       }))
-      tmux
       (tmux.overrideAttrs (old: {
         # tmux 3.7b の overlay 強制再描画（screen-redraw.c）を除去し、
         # Neovim 等の alternate-screen 再描画で display-menu / display-popup が
