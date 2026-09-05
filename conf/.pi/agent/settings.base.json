@@ -51,11 +51,7 @@
       "themes": []
     },
     {
-      "source": "npm:pi-claude-cli",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
+      "source": "npm:pi-claude-cli"
     },
     {
       "source": "npm:@plannotator/pi-extension"
@@ -129,7 +125,11 @@
       "themes": []
     },
     {
-      "source": "npm:pi-hermes-memory"
+      "source": "npm:pi-hermes-memory",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
       "source": "npm:@ff-labs/pi-fff"
@@ -176,5 +176,5 @@
     }
   },
   "theme": "light",
-  "treeFilterMode": "user-only"
+  "treeFilterMode": "node-tools"
 }
