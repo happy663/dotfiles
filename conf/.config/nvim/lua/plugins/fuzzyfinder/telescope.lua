@@ -1,3 +1,18 @@
+local function cycle_buffers(direction)
+  local actions = require("telescope.actions")
+  local state = require("telescope.actions.state")
+  local builtin = require("telescope.builtin")
+  local picker = state.get_current_picker()
+
+  if picker == nil then
+    builtin.buffers()
+  elseif direction == "next" then
+    actions.move_selection_next(picker)
+  else
+    actions.move_selection_previous(picker)
+  end
+end
+
 return {
   {
     "nvim-telescope/telescope.nvim",
@@ -230,28 +245,11 @@ return {
         },
       })
 
-      -- Helper functions
-      _G.cycle_buffers = function(direction)
-        local picker = state.get_current_picker()
-        if picker == nil then
-          builtin.buffers()
-        else
-          if direction == "next" then
-            actions.move_selection_next(picker)
-          else
-            actions.move_selection_previous(picker)
-          end
-        end
-      end
-
       -- Key mappings
       local keymaps = {
-        -- Buffer cycling
-        { "n", "<C-Tab>", [[<cmd>lua _G.cycle_buffers('next')<CR>]] },
-        { "n", "<C-S-Tab>", [[<cmd>lua _G.cycle_buffers('previous')<CR>]] },
         -- Wezterm specific key sequences
-        { "n", "<esc>[27;5;9~", [[<cmd>lua _G.cycle_buffers('next')<CR>]] },
-        { "n", "<esc>[27;6;9~", [[<cmd>lua _G.cycle_buffers('previous')<CR>]] },
+        -- { "n", "<esc>[27;5;9~", [[<cmd>lua _G.cycle_buffers('next')<CR>]] },
+        -- { "n", "<esc>[27;6;9~", [[<cmd>lua _G.cycle_buffers('previous')<CR>]] },
         -- Telescope commands
         { "n", "<Leader>td", "<cmd>Telescope diagnostics<CR>" },
         { "n", "<Leader>th", "<cmd>Telescope help_tags<CR>" },
@@ -290,6 +288,22 @@ return {
     -- },
 
     keys = {
+      {
+        "<C-Tab>",
+        function()
+          cycle_buffers("next")
+        end,
+        mode = "n",
+        desc = "Telescope buffers next",
+      },
+      {
+        "<C-S-Tab>",
+        function()
+          cycle_buffers("previous")
+        end,
+        mode = "n",
+        desc = "Telescope buffers previous",
+      },
       {
         "<Leader>tr",
         function()
