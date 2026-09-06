@@ -8,7 +8,7 @@
 -- ノーマルモードのコマンドとして実行されバッファが壊れ、auto-command.lua の自動保存
 -- （CursorHold / updatetime=300）で 0.3 秒後にディスクへ書かれる。
 local config = require("agent_term.config")
-local panes = require("agent_term.panes")
+local panes = require("agent_term.picker.panes")
 
 local M = {}
 
@@ -35,7 +35,7 @@ local function rpc_send(sock, payload)
   end
 
   local expr = (
-    'luaeval(\'require("agent_term.terminals").external_send('
+    'luaeval(\'require("agent_term.local.terminals").external_send('
     .. 'table.concat(vim.fn.readfile(_A), "\\n")'
     .. ")', '%s')"
   ):format(path)

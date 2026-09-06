@@ -1,7 +1,7 @@
 local config = require("agent_term.config")
 local draft_buf = require("agent_term.draft_buf")
-local state = require("agent_term.state")
-local terminals = require("agent_term.terminals")
+local state = require("agent_term.local.state")
+local terminals = require("agent_term.local.terminals")
 
 local M = {}
 M.fallback_target_patterns = config.draft.fallback_target_patterns

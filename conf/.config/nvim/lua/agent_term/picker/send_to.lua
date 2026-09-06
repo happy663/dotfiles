@@ -2,8 +2,8 @@
 -- ローカル宛（自分のペインの Agent）は従来どおり <M-a> の draft.lua が担当する。
 local config = require("agent_term.config")
 local draft_buf = require("agent_term.draft_buf")
-local panes = require("agent_term.panes")
-local remote_send = require("agent_term.remote_send")
+local panes = require("agent_term.picker.panes")
+local remote_send = require("agent_term.picker.remote_send")
 
 local M = {}
 

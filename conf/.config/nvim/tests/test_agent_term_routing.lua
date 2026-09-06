@@ -4,9 +4,9 @@ package.path = vim.fn.getcwd()
   .. "/conf/.config/nvim/lua/?/init.lua;"
   .. package.path
 
-local state = require("agent_term.state")
-local routing = require("agent_term.routing")
-local draft = require("agent_term.draft")
+local state = require("agent_term.local.state")
+local routing = require("agent_term.local.routing")
+local draft = require("agent_term.local.draft")
 
 local function assert_eq(actual, expected, message)
   if actual ~= expected then

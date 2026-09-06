@@ -1,5 +1,5 @@
-local state = require("agent_term.state")
-local draft = require("agent_term.draft")
+local state = require("agent_term.local.state")
+local draft = require("agent_term.local.draft")
 
 local M = {}
 local setup_done = false

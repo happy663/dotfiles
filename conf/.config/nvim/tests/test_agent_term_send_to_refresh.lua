@@ -26,7 +26,7 @@ local pane_lists = {
 }
 local list_call = 0
 
-package.loaded["agent_term.panes"] = {
+package.loaded["agent_term.picker.panes"] = {
   list = function()
     list_call = list_call + 1
     return pane_lists[math.min(list_call, #pane_lists)]
@@ -46,13 +46,13 @@ package.loaded["agent_term.draft_buf"] = {
   clear = function() end,
 }
 
-package.loaded["agent_term.remote_send"] = {
+package.loaded["agent_term.picker.remote_send"] = {
   send = function()
     return true, "sent"
   end,
 }
 
-local send_to = require("agent_term.send_to")
+local send_to = require("agent_term.picker.send_to")
 
 local function assert_eq(actual, expected, message)
   if actual ~= expected then

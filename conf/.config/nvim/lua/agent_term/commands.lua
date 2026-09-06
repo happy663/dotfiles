@@ -1,11 +1,11 @@
 local agent_fork = require("agent_term.fork")
 local config = require("agent_term.config")
-local draft = require("agent_term.draft")
+local draft = require("agent_term.local.draft")
 local layouts = require("agent_term.layouts")
-local routing = require("agent_term.routing")
-local send_to = require("agent_term.send_to")
-local state = require("agent_term.state")
-local terminals = require("agent_term.terminals")
+local routing = require("agent_term.local.routing")
+local send_to = require("agent_term.picker.send_to")
+local state = require("agent_term.local.state")
+local terminals = require("agent_term.local.terminals")
 
 local M = {}
 local setup_done = false

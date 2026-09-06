@@ -1,6 +1,6 @@
 local config = require("agent_term.config")
-local draft = require("agent_term.draft")
-local state = require("agent_term.state")
+local draft = require("agent_term.local.draft")
+local state = require("agent_term.local.state")
 
 local CLAUDE_COMMAND = "claude"
 local CODEX_COMMAND = "codex"
