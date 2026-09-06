@@ -1,4 +1,5 @@
 local config = require("agent_term.config")
+local draft_buf = require("agent_term.draft_buf")
 local state = require("agent_term.state")
 local terminals = require("agent_term.terminals")
 
@@ -10,13 +11,6 @@ local setup_done = false
 
 local function notify(msg, level)
   vim.notify("[agent_input] " .. msg, level or vim.log.levels.INFO)
-end
-
-local function trim_trailing_empty_lines(lines)
-  while #lines > 0 and lines[#lines] == "" do
-    table.remove(lines, #lines)
-  end
-  return lines
 end
 
 local function resize_current_draft_window(default_height)
@@ -125,35 +119,10 @@ local function open_split_below_target(target_bufnr, fallback_target_patterns, d
 end
 
 local function ensure_buffer_keymaps(bufnr)
-  vim.keymap.set("n", "<C-CR>", "<Cmd>AgentDraftSend<CR>", {
-    buffer = bufnr,
-    noremap = true,
-    silent = true,
-    desc = "Send agent draft",
-  })
-  vim.keymap.set("i", "<C-CR>", "<Esc><Cmd>AgentDraftSend<CR>", {
-    buffer = bufnr,
-    noremap = true,
-    silent = true,
-    desc = "Send agent draft",
-  })
-  vim.keymap.set("n", "<leader>ic", "<Cmd>AgentDraftClear<CR>", {
-    buffer = bufnr,
-    noremap = true,
-    silent = true,
-    desc = "Clear agent draft buffer",
-  })
-  vim.keymap.set("n", "<leader>is", "<Cmd>AgentDraftSend<CR>", {
-    buffer = bufnr,
-    noremap = true,
-    silent = true,
-    desc = "Send agent draft buffer",
-  })
-  vim.keymap.set("n", "<leader>iS", "<Cmd>AgentDraftSend!<CR>", {
-    buffer = bufnr,
-    noremap = true,
-    silent = true,
-    desc = "Send agent draft buffer (keep terminal input)",
+  draft_buf.apply_send_keymaps(bufnr, {
+    send = "AgentDraftSend",
+    send_keep = "AgentDraftSend!",
+    clear = "AgentDraftClear",
   })
   vim.keymap.set("n", "<C-p>", function()
     require("telescope").load_extension("smart_open")
@@ -363,13 +332,7 @@ function M.open_input_buffer(opts)
 
   local bufnr = state.get_draft_bufnr()
   if not bufnr then
-    bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_name(bufnr, "[Agent Input]")
-    vim.bo[bufnr].buftype = "nofile"
-    vim.bo[bufnr].bufhidden = "hide"
-    vim.bo[bufnr].swapfile = false
-    vim.bo[bufnr].filetype = "markdown"
-    vim.bo[bufnr].modifiable = true
+    bufnr = draft_buf.create_input_buffer("[Agent Input]")
     ensure_buffer_keymaps(bufnr)
     vim.b[bufnr].agent_input = true
   end
@@ -395,7 +358,7 @@ function M.clear_draft()
     return false, "Agent draft buffer not found"
   end
 
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
+  draft_buf.clear(bufnr)
   return true, "Agent draft buffer cleared"
 end
 
@@ -468,10 +431,7 @@ function M.send_draft(opts)
     return false, message
   end
 
-  local lines = vim.api.nvim_buf_get_lines(draft_bufnr, 0, -1, false)
-  trim_trailing_empty_lines(lines)
-
-  local content = table.concat(lines, "\n")
+  local content = draft_buf.read_content(draft_bufnr)
   if content == "" then
     local message = "Draft is empty"
     notify(message, vim.log.levels.WARN)

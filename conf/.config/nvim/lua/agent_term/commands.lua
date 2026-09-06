@@ -2,6 +2,7 @@ local config = require("agent_term.config")
 local draft = require("agent_term.draft")
 local layouts = require("agent_term.layouts")
 local routing = require("agent_term.routing")
+local send_to = require("agent_term.send_to")
 local state = require("agent_term.state")
 local terminals = require("agent_term.terminals")
 
@@ -359,6 +360,59 @@ function M.setup()
     noremap = true,
     silent = true,
     desc = "Open Claude agent pair",
+  })
+
+  -- 別ペインの Agent へ、ペインを移動せずにプロンプトを送る（issue #316）。
+  -- ローカル宛は従来どおり <M-a>。
+  vim.api.nvim_create_user_command("AgentSendTo", function()
+    local success, message = send_to.open()
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Open agent picker and draft for another pane" })
+
+  vim.api.nvim_create_user_command("AgentSendToToggle", function()
+    local success, message = send_to.toggle()
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Toggle the agent send-to picker" })
+
+  vim.api.nvim_create_user_command("AgentSendToSend", function()
+    send_to.send()
+  end, { desc = "Send draft to the selected agent pane" })
+
+  vim.api.nvim_create_user_command("AgentSendToClear", function()
+    send_to.clear()
+  end, { desc = "Clear the send-to draft buffer" })
+
+  vim.api.nvim_create_user_command("AgentSendToClose", function()
+    send_to.close()
+  end, { desc = "Close the send-to picker" })
+
+  vim.api.nvim_create_user_command("AgentSendToJump", function()
+    send_to.jump()
+  end, { desc = "Jump to the selected agent pane" })
+
+  vim.api.nvim_create_user_command("AgentSendToNext", function()
+    send_to.select_next()
+  end, { desc = "Select the next agent in the send-to picker" })
+
+  vim.api.nvim_create_user_command("AgentSendToPrev", function()
+    send_to.select_prev()
+  end, { desc = "Select the previous agent in the send-to picker" })
+
+  vim.api.nvim_create_user_command("AgentSendToRefresh", function()
+    local success, message = send_to.refresh()
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Refresh the send-to agent list" })
+
+  vim.keymap.set({ "n", "i", "t", "v" }, "<M-v>", "<Cmd>AgentSendToToggle<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "Send prompt to an agent in another pane",
   })
 end
 
