@@ -1,5 +1,6 @@
 -- 別ペインの Agent 一覧と下書きを同時に開き、ペインを移動せずにプロンプトを送る。
 -- ローカル宛（自分のペインの Agent）は従来どおり <M-a> の draft.lua が担当する。
+local config = require("agent_term.config")
 local draft_buf = require("agent_term.draft_buf")
 local panes = require("agent_term.panes")
 local remote_send = require("agent_term.remote_send")
@@ -63,8 +64,48 @@ local DRAFT_HEIGHT = 8
 local LIST_MAX_HEIGHT = 10
 local MAX_WIDTH = 100
 
+local function calculate_layout(list_count)
+  local width = math.min(MAX_WIDTH, math.max(40, vim.o.columns - 8))
+  local list_height = math.max(1, math.min(list_count, LIST_MAX_HEIGHT))
+  local total = (list_height + 2) + (DRAFT_HEIGHT + 2)
+  return {
+    width = width,
+    list_height = list_height,
+    row = math.max(0, math.floor((vim.o.lines - total) / 2)),
+    col = math.max(0, math.floor((vim.o.columns - width) / 2)),
+  }
+end
+
 -- 開いている UI の実体。閉じたら nil に戻す。
 local ui = nil
+
+-- ピッカーを開いている間、一覧を一定間隔で自動で取り直すタイマー。
+-- 下書きを書いている間に相手の状態や並びが変わっても追いかけられるようにするためのもので、
+-- 開いたら開始・閉じたら停止する。手動の AgentSendToRefresh と併用する。
+local REFRESH_INTERVAL_MS = config.send_to.refresh_interval_ms
+local auto_refresh_timer = nil
+
+local function stop_auto_refresh()
+  if auto_refresh_timer then
+    vim.fn.timer_stop(auto_refresh_timer)
+    auto_refresh_timer = nil
+  end
+end
+
+local function start_auto_refresh()
+  stop_auto_refresh()
+  if not REFRESH_INTERVAL_MS or REFRESH_INTERVAL_MS <= 0 then
+    return
+  end
+  auto_refresh_timer = vim.fn.timer_start(REFRESH_INTERVAL_MS, function()
+    -- close 以外の経路で UI が消えていたら、タイマーも止める。
+    if not M.is_open() then
+      stop_auto_refresh()
+      return
+    end
+    M.refresh()
+  end, { ["repeat"] = -1 })
+end
 
 local function notify(msg, level)
   vim.notify("[agent_send_to] " .. msg, level or vim.log.levels.INFO)
@@ -131,8 +172,10 @@ end
 -- （閉じて開き直したとき、古い本文が新しい宛先に向いている状態を作らない）。
 function M.close()
   if not ui then
+    stop_auto_refresh()
     return false, "picker is not open"
   end
+  stop_auto_refresh()
   close_win(ui.list_win)
   close_win(ui.draft_win)
   wipe_buf(ui.draft_buf)
@@ -197,6 +240,34 @@ local function render_list(list)
   ui.panes = list
 end
 
+-- Agent 数が変わったら一覧の高さを変え、Prompt もその直下へ移動する。
+-- バッファだけ更新すると、増えた行が開いた時点のウィンドウ高さの外に隠れてしまう。
+local function update_layout(list_count)
+  local layout = calculate_layout(list_count)
+  vim.api.nvim_win_set_config(ui.list_win, {
+    relative = "editor",
+    width = layout.width,
+    height = layout.list_height,
+    row = layout.row,
+    col = layout.col,
+    style = "minimal",
+    border = "rounded",
+    title = " Agents ",
+    title_pos = "center",
+  })
+  vim.api.nvim_win_set_config(ui.draft_win, {
+    relative = "editor",
+    width = layout.width,
+    height = DRAFT_HEIGHT,
+    row = layout.row + layout.list_height + 2,
+    col = layout.col,
+    style = "minimal",
+    border = "rounded",
+    title = " Prompt ",
+    title_pos = "center",
+  })
+end
+
 -- 一覧を取り直す。可能なら選択中のペインへカーソルを戻す。
 function M.refresh()
   if not M.is_open() then
@@ -210,6 +281,7 @@ function M.refresh()
   end
 
   render_list(list)
+  update_layout(#list)
 
   local row = 1
   if prev then
@@ -237,11 +309,7 @@ function M.open()
     return false, message
   end
 
-  local width = math.min(MAX_WIDTH, math.max(40, vim.o.columns - 8))
-  local list_height = math.min(#list, LIST_MAX_HEIGHT)
-  local total = (list_height + 2) + (DRAFT_HEIGHT + 2)
-  local row = math.max(0, math.floor((vim.o.lines - total) / 2))
-  local col = math.max(0, math.floor((vim.o.columns - width) / 2))
+  local layout = calculate_layout(#list)
 
   -- 前回の残骸が居ると nvim_buf_set_name が失敗するので、先に片付ける。
   for _, b in ipairs(vim.api.nvim_list_bufs()) do
@@ -291,10 +359,10 @@ function M.open()
 
   local list_win = vim.api.nvim_open_win(list_buf, false, {
     relative = "editor",
-    width = width,
-    height = list_height,
-    row = row,
-    col = col,
+    width = layout.width,
+    height = layout.list_height,
+    row = layout.row,
+    col = layout.col,
     style = "minimal",
     border = "rounded",
     title = " Agents ",
@@ -304,10 +372,10 @@ function M.open()
 
   local draft_win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
-    width = width,
+    width = layout.width,
     height = DRAFT_HEIGHT,
-    row = row + list_height + 2,
-    col = col,
+    row = layout.row + layout.list_height + 2,
+    col = layout.col,
     style = "minimal",
     border = "rounded",
     title = " Prompt ",
@@ -349,6 +417,7 @@ function M.open()
 
   -- 挿入モードでは始めない。開いた直後は宛先を選ぶ場面が多く、<C-n> / <C-p> が
   -- ノーマルモードの割り当てなのでそのまま押せる。本文を書くときに i を押す。
+  start_auto_refresh()
   return true, "opened"
 end
 

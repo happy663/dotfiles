@@ -33,4 +33,10 @@ M.claude_pair = {
   fallback_target_patterns = { "claude" },
 }
 
+M.send_to = {
+  -- ピッカーを開いている間、一覧を自動で取り直す間隔（ms）。
+  -- 0 以下にすると自動更新しない（手動の AgentSendToRefresh のみ）。
+  refresh_interval_ms = 5000,
+}
+
 return M

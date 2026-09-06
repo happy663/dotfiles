@@ -56,21 +56,21 @@ generate_title() {
   case "$kind" in
     codex)
       if command -v codex >/dev/null 2>&1; then
-        CODEX_TASK_RENAMER=1 codex exec "$SUMMARY_PROMPT" 2>/dev/null || true
+        CODEX_TASK_RENAMER=1 codex exec "$SUMMARY_PROMPT" < /dev/null 2>/dev/null || true
         return
       fi
       ;;
     pi)
       if command -v pi >/dev/null 2>&1; then
         # --no-session: 要約用の呼び出しでセッション履歴を増やさない。
-        PI_TASK_RENAMER=1 pi -p --no-session "$SUMMARY_PROMPT" 2>/dev/null || true
+        PI_TASK_RENAMER=1 pi -p --no-session "$SUMMARY_PROMPT" < /dev/null 2>/dev/null || true
         return
       fi
       ;;
   esac
   # default / fallback: claude
   if command -v claude >/dev/null 2>&1; then
-    CLAUDE_TASK_RENAMER=1 claude -p "$SUMMARY_PROMPT" 2>/dev/null || true
+    CLAUDE_TASK_RENAMER=1 claude -p "$SUMMARY_PROMPT" < /dev/null 2>/dev/null || true
   fi
 }
 
