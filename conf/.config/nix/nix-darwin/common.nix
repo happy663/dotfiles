@@ -286,8 +286,14 @@
   launchd.agents.my-startup-script = {
     script = ''
       #!/bin/bash
-      yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2  /Users/happy/src/github.com/happy663/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L
-      yaskkserv2 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2 
+      # 辞書は存在しないときだけ生成する。
+      # 毎回生成すると、稼働中の yaskkserv2 が読んでいる同一 inode を上書きしてしまう。
+      if [ ! -f /tmp/dictionary.yaskkserv2 ]; then
+        yaskkserv2_make_dictionary --dictionary-filename=/tmp/dictionary.yaskkserv2 /Users/happy/src/github.com/happy663/dotfiles/conf/.config/skk/dictionary/SKK-JISYO.L
+      fi
+      # --no-daemonize: daemonize するとスクリプトが即終了し、KeepAlive で再実行され続ける
+      # --max-connections: 既定の16だと長寿命の nvim/denops が枠を使い切り、新規接続が即切断される
+      exec yaskkserv2 --no-daemonize --max-connections=256 --google-cache-filename=/tmp/yaskkserv2.cache /tmp/dictionary.yaskkserv2
     '';
     environment = {
       PATH = "/Users/happy/src/github.com/wachikun/yaskkserv2/target/release";
