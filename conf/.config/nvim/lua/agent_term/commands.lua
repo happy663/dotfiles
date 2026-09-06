@@ -1,3 +1,4 @@
+local agent_fork = require("agent_term.fork")
 local config = require("agent_term.config")
 local draft = require("agent_term.draft")
 local layouts = require("agent_term.layouts")
@@ -22,70 +23,6 @@ local function find_draft_winid()
   end
 
   return nil
-end
-
-local function find_claude_session_id(pid)
-  local f = io.open("/tmp/claude-sessions/" .. pid, "r")
-  if f then
-    local id = f:read("*l")
-    f:close()
-    if id and id ~= "" then
-      return id
-    end
-  end
-  local handle = io.popen("ps -eo pid=,ppid=,comm= 2>/dev/null")
-  if not handle then
-    return nil
-  end
-  local children = {}
-  for line in handle:lines() do
-    local cpid, cppid = line:match("^%s*(%d+)%s+(%d+)")
-    if cpid and cppid then
-      children[cppid] = children[cppid] or {}
-      table.insert(children[cppid], cpid)
-    end
-  end
-  handle:close()
-  local queue = children[tostring(pid)] or {}
-  while #queue > 0 do
-    local cpid = table.remove(queue, 1)
-    f = io.open("/tmp/claude-sessions/" .. cpid, "r")
-    if f then
-      local id = f:read("*l")
-      f:close()
-      if id and id ~= "" then
-        return id
-      end
-    end
-    for _, grandchild in ipairs(children[cpid] or {}) do
-      table.insert(queue, grandchild)
-    end
-  end
-  return nil
-end
-
--- 現在のターミナルバッファからClaudeセッションIDを特定する。
--- 失敗時は notify して nil を返す。name は通知プレフィックス（コマンド名）。
-local function resolve_claude_session(name)
-  local bufnr = vim.api.nvim_get_current_buf()
-  if vim.bo[bufnr].buftype ~= "terminal" then
-    vim.notify("[" .. name .. "] Run from a Claude terminal buffer", vim.log.levels.WARN)
-    return nil
-  end
-
-  local job_pid = vim.b[bufnr].terminal_job_pid
-  if not job_pid then
-    vim.notify("[" .. name .. "] No terminal job PID found", vim.log.levels.ERROR)
-    return nil
-  end
-
-  local session_id = find_claude_session_id(job_pid)
-  if not session_id then
-    vim.notify("[" .. name .. "] No session file found for PID " .. job_pid, vim.log.levels.ERROR)
-    return nil
-  end
-
-  return session_id
 end
 
 local function toggle_draft_buffer()
@@ -220,24 +157,22 @@ function M.setup()
     })
   end, { desc = "Open Claude session picker terminal" })
 
-  vim.api.nvim_create_user_command("AgentClaudeFork", function()
-    local session_id = resolve_claude_session("AgentClaudeFork")
-    if not session_id then
-      return
-    end
+  vim.api.nvim_create_user_command("AgentFork", function()
+    agent_fork.open("AgentFork")
+  end, { desc = "Fork current Claude or Pi session into a new tmux pane with nvim" })
 
-    local cwd = vim.fn.getcwd()
-    local cmd = string.format(
-      "tmux split-window -h -c %s \"nvim +'AgentClaude --resume %s --fork-session'\"",
-      vim.fn.shellescape(cwd),
-      session_id
-    )
-    vim.fn.system(cmd)
+  vim.api.nvim_create_user_command("AgentClaudeFork", function()
+    agent_fork.open("AgentClaudeFork", "claude")
   end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
-  vim.keymap.set("n", "<leader>ak", ":AgentClaudeFork<CR>", { desc = "AgentClaudeFork", noremap = true, silent = true })
+
+  vim.api.nvim_create_user_command("AgentPiFork", function()
+    agent_fork.open("AgentPiFork", "pi")
+  end, { desc = "Fork current Pi session into a new tmux pane with nvim" })
+
+  vim.keymap.set("n", "<leader>ak", ":AgentFork<CR>", { desc = "AgentFork", noremap = true, silent = true })
 
   vim.api.nvim_create_user_command("AgentClaudeLogConversation", function()
-    local session_id = resolve_claude_session("AgentClaudeLogConversation")
+    local _, session_id = agent_fork.resolve_current("AgentClaudeLogConversation", "claude")
     if not session_id then
       return
     end
@@ -258,7 +193,7 @@ function M.setup()
   end, { desc = "Fork Claude session into a split pane and run log-ai-conversation" })
 
   vim.api.nvim_create_user_command("AgentClaudeRestart", function()
-    local session_id = resolve_claude_session("AgentClaudeRestart")
+    local _, session_id = agent_fork.resolve_current("AgentClaudeRestart", "claude")
     if not session_id then
       return
     end
