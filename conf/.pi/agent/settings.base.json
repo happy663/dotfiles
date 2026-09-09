@@ -176,5 +176,5 @@
     }
   },
   "theme": "light",
-  "treeFilterMode": "node-tools"
+  "treeFilterMode": "no-tools"
 }
