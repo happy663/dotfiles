@@ -7,10 +7,7 @@ function M.octo_buffer_keymaps()
     vim.cmd("normal! o")
     vim.cmd("normal! o")
     vim.cmd("normal! o")
-    vim.cmd("normal! o")
-    vim.cmd("normal! o")
-    vim.cmd("normal! o")
-    vim.cmd("normal! 5k")
+    vim.cmd("normal! 2k")
   end
   -- Buffer-specific keymaps
   vim.keymap.set("n", "<leader>gn", ":Octo comment url<CR>", {
@@ -31,6 +28,17 @@ function M.octo_buffer_keymaps()
     noremap = true,
     silent = true,
     desc = "Octo: Reply to comment",
+  })
+
+  -- Pin / unpin the IssueComment under the cursor
+  -- (uses plugins.git.octo.comment_pin -> pinIssueComment / unpinIssueComment)
+  vim.keymap.set("n", "<leader>oP", function()
+    require("plugins.git.octo.comment_pin").toggle_pin_comment()
+  end, {
+    buffer = true,
+    noremap = true,
+    silent = true,
+    desc = "Octo: Pin/unpin comment",
   })
 
   -- Jump to a sub-issue from the current parent issue
