@@ -38,6 +38,7 @@ in
       zoxide
       delta
       cargo
+      tuicr
       uv
       docker
       docker-compose
