@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
-# OpenCode Go の公式ドキュメント (go.mdx) から価格・モデル一覧を取得し、
+# OpenCode Go の公式ドキュメント (go.mdx) と models.dev から価格・モデル一覧を取得し、
 # conf/.pi/agent/models.json を同期するスクリプト。
 #
-# 情報源: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/web/src/content/docs/go.mdx
+# 情報源:
+#   - 価格 / API タイプ: https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/web/src/content/docs/go.mdx
+#   - メタデータ (contextWindow / maxTokens / reasoning / input): https://models.dev/api.json の opencode-go セクション
 #
 # 同期内容:
 #   - cost (input/output/cacheRead/cacheWrite) を価格テーブルから更新
 #   - api タイプを Endpoints テーブルから更新 (responses/chat.completions/messages)
+#   - contextWindow / maxTokens / reasoning / input を models.dev のメタデータで更新
+#     (models.dev に存在しないモデルのみ既存値 / 推測値を維持)
 #   - 段階価格 (GPT 5.6 Luna >272K, Qwen3.7/3.6 Plus >256K) は cost.tiers で表現
 #   - 新モデルは推測値 (固定マップ or デフォルト) で追加し、レポートで要確認と表示
-#   - contextWindow / maxTokens / name / reasoning / input は既存値を維持
 #
 # Usage:
 #   sync-opencode-go-models.sh [--check|--apply]
@@ -35,6 +38,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MODELS_PATH="conf/.pi/agent/models.json"
 GO_MDX_URL="https://raw.githubusercontent.com/anomalyco/opencode/dev/packages/web/src/content/docs/go.mdx"
+MD_API_URL="https://models.dev/api.json"
 
 # ---------------------------------------------------------------------------
 # ユーティリティ
@@ -175,7 +179,7 @@ parse_price_row() {
 }
 
 # 価格テーブル全体 → モデルIDごとの価格マップ JSON
-#   出力: {"grok-4.5": {"name":..., "input":..., "output":..., "cacheRead":..., "cacheWrite":..., "tier": {...}?}, ...}
+#   出力: {"grok-4.5": {"name":..., "input":..., "output":..., "cacheRead":..., "cacheWrite":..., "tiers": [{...}]?}, ...}
 build_price_map() {
   local gomdx="$1"
   local tmp
@@ -198,13 +202,16 @@ build_price_map() {
             cacheWrite: $base.cacheWrite
           }
           + (if $tier then {
-              tier: {
-                inputTokensAbove: $tier.above,
-                input: $tier.input,
-                output: $tier.output,
-                cacheRead: $tier.cacheRead,
-                cacheWrite: $tier.cacheWrite
-              }
+              # Pi のスキーマは cost.tiers (配列) を期待する (model-registry.js)
+              tiers: [
+                {
+                  inputTokensAbove: $tier.above,
+                  input: $tier.input,
+                  output: $tier.output,
+                  cacheRead: $tier.cacheRead,
+                  cacheWrite: $tier.cacheWrite
+                }
+              ]
             } else {} end)
         )
       }
@@ -257,6 +264,48 @@ build_api_map() {
 }
 
 # ---------------------------------------------------------------------------
+# パース: models.dev のモデルメタデータ
+# ---------------------------------------------------------------------------
+
+# models.dev api.json (opencode-go セクション) → モデルメタデータマップ
+#   出力: {"grok-4.5": {"contextWindow":500000,"maxTokens":500000,"reasoning":true,"input":["text","image"]}, ...}
+build_metadata_map() {
+  local api_json="$1"
+  # 注意: Pi の models.json スキーマは input が "text" / "image" のみ許可
+  # (model-registry.js: input: Type.Optional(Type.Array(Type.Union(["text", "image"]))))
+  # models.dev の modalities.input には video / pdf / audio も含まれるため、text/image に絞る
+  jq '
+    .["opencode-go"].models
+    | to_entries
+    | map(
+        .value as $m |
+        {
+          key: $m.id,
+          value: (
+            {
+              contextWindow: ($m.limit.context // 0),
+              maxTokens: ($m.limit.output // 0),
+              reasoning: ($m.reasoning // false),
+              input: (
+                ($m.modalities.input // [])
+                | map(select(. == "text" or . == "image"))
+                | if length == 0 then ["text"] else . end
+              )
+            }
+          )
+        }
+      )
+    | from_entries
+  ' "$api_json"
+}
+
+# メタデータマップから id の JSON を返す (存在しなければ "null")
+metadata_for() {
+  local metadata="$1" id="$2"
+  printf '%s' "$metadata" | jq -c --arg id "$id" '.[$id]'
+}
+
+# ---------------------------------------------------------------------------
 # 新モデルの推測値
 # ---------------------------------------------------------------------------
 
@@ -276,17 +325,21 @@ guess_max_tokens() {
 }
 
 # 新モデルの JSON エントリを組み立てる
-#   入力: id, name, api, cost JSON
+#   入力: id, name, api, cost JSON, metadata JSON ("null" なら推測値フォールバック)
 build_new_model_json() {
-  local id="$1" name="$2" api="$3" cost="$4"
+  local id="$1" name="$2" api="$3" cost="$4" meta="${5:-null}"
+  if [[ "$meta" == "null" ]]; then
+    meta="$(jq -nc \
+      --argjson cw "$(guess_context_window "$id")" --argjson mt "$(guess_max_tokens "$id")" \
+      '{contextWindow: $cw, maxTokens: $mt, reasoning: false, input: ["text"]}')"
+  fi
   jq -nc \
     --arg id "$id" --arg name "$name" --arg api "$api" \
-    --argjson cw "$(guess_context_window "$id")" --argjson mt "$(guess_max_tokens "$id")" \
-    --argjson cost "$cost" '
+    --argjson cost "$cost" --argjson meta "$meta" '
     {
       id: $id, name: $name, api: $api,
-      reasoning: false, input: ["text"],
-      contextWindow: $cw, maxTokens: $mt,
+      reasoning: $meta.reasoning, input: $meta.input,
+      contextWindow: $meta.contextWindow, maxTokens: $meta.maxTokens,
       cost: $cost
     }
   '
@@ -296,12 +349,14 @@ build_new_model_json() {
 # マージ
 # ---------------------------------------------------------------------------
 
-# 既存 models.json に価格マップ / APIマップをマージして更新後 JSON を stdout に出力
-#   - 既存モデル: cost と api のみ更新 (他フィールドは維持)
-#   - 新モデル: 推測値で追加 (models 配列の末尾)
-#   - ドキュメントから消えた既存モデル: そのまま残す (削除は手動判断)
+# 既存 models.json に価格マップ / APIマップ / メタデータマップをマージして更新後 JSON を stdout に出力
+#   - 既存モデル: cost / api / contextWindow / maxTokens / reasoning / input を更新 (他のフィールドは維持)
+#   - 新モデル: メタデータ (無ければ推測値) で追加 (models 配列の末尾)
+#   - ドキュメント / models.dev から消えた既存モデル: そのまま残す (削除は手動判断)
 merge_models() {
-  local models_path="$1" prices="$2" apis="$3"
+  # 注意: "${4:-{}}" は bash の仕様上、末尾に余分な } が付くため if 文でデフォルトを設定する
+  local models_path="$1" prices="$2" apis="$3" metadata="${4-}"
+  if [[ -z "$metadata" ]]; then metadata="{}"; fi
   local existing_ids new_models id
   existing_ids="$(jq -r '.providers["opencode-go"].models[].id' "$models_path")"
 
@@ -310,32 +365,37 @@ merge_models() {
   while IFS= read -r id; do
     [[ -z "$id" ]] && continue
     if ! grep -qx "$id" <<<"$existing_ids"; then
-      local name api cost json
+      local name api cost json meta
       name="$(printf '%s' "$prices" | jq -r --arg id "$id" '.[$id].name')"
       api="$(printf '%s' "$apis" | jq -r --arg id "$id" '.[$id] // ""')"
-      cost="$(printf '%s' "$prices" | jq -c --arg id "$id" '.[$id] | {input, output, cacheRead, cacheWrite} + (if .tier then {tier} else {} end)')"
-      json="$(build_new_model_json "$id" "$name" "$api" "$cost")"
+      cost="$(printf '%s' "$prices" | jq -c --arg id "$id" '.[$id] | {input, output, cacheRead, cacheWrite} + (if .tiers then {tiers} else {} end)')"
+      meta="$(metadata_for "$metadata" "$id")"
+      json="$(build_new_model_json "$id" "$name" "$api" "$cost" "$meta")"
       new_models="$(printf '%s' "$new_models" | jq --argjson m "$json" '. + [$m]')"
     fi
   done <<<"$(printf '%s' "$prices" | jq -r 'keys[]')"
 
-  jq --argjson prices "$prices" --argjson apis "$apis" --argjson new "$new_models" '
+  jq --argjson prices "$prices" --argjson apis "$apis" --argjson new "$new_models" --argjson meta "$metadata" '
     .providers["opencode-go"].models |= (
       (map(
         . as $m |
         ($prices[$m.id] // null) as $p |
         ($apis[$m.id] // null) as $a |
+        ($meta[$m.id] // null) as $mt |
         ({
           id: $m.id,
           name: $m.name,
           api: (if $a then $a else $m.api end),
-          reasoning: $m.reasoning,
-          input: $m.input,
-          contextWindow: $m.contextWindow,
-          maxTokens: $m.maxTokens,
+          reasoning: (if $mt then $mt.reasoning else $m.reasoning end),
+          input: (if $mt then $mt.input else $m.input end),
+          contextWindow: (if $mt then $mt.contextWindow else $m.contextWindow end),
+          maxTokens: (if $mt then $mt.maxTokens else $m.maxTokens end),
           cost: (
             if $p
-            then ($p | {input, output, cacheRead, cacheWrite} + (if .tier then {tier} else {} end))
+            then ($p | {input, output, cacheRead, cacheWrite} + (if .tiers then {tiers} else {} end))
+            elif ($m.cost | has("tier"))
+            # 旧形式 cost.tier (単数) を Pi のスキーマ準拠の cost.tiers (配列) に移行
+            then ($m.cost | {input, output, cacheRead, cacheWrite} + { tiers: [.tier] })
             else $m.cost
             end
           )
@@ -352,16 +412,22 @@ merge_models() {
 # 差分レポート
 # ---------------------------------------------------------------------------
 
-# 新モデル / 消えたモデル / 価格・API の変化を報告
+# 新モデル / 消えたモデル / 価格・API / メタデータの変化を報告
 report_changes() {
-  local current="$1" merged="$2"
+  # 注意: "${3:-{}}" は bash の仕様上、末尾に余分な } が付くため if 文でデフォルトを設定する
+  local current="$1" merged="$2" metadata="${3-}"
+  if [[ -z "$metadata" ]]; then metadata="{}"; fi
   local cur_ids new_ids id
   cur_ids="$(jq -r '.providers["opencode-go"].models[].id' "$current")"
   new_ids="$(jq -r '.providers["opencode-go"].models[].id' <<<"$merged")"
 
   for id in $new_ids; do
     if ! grep -qx "$id" <<<"$cur_ids"; then
-      echo "   [NEW] ${id} (contextWindow/maxTokens は推測値。要確認)"
+      if [[ "$(metadata_for "$metadata" "$id")" != "null" ]]; then
+        echo "   [NEW] ${id} (メタデータは models.dev から取得)"
+      else
+        echo "   [NEW] ${id} (contextWindow/maxTokens は推測値。要確認)"
+      fi
     fi
   done
   for id in $cur_ids; do
@@ -385,6 +451,23 @@ report_changes() {
     new_api="$(jq -r --arg id "$id" '.providers["opencode-go"].models[] | select(.id == $id) | .api // ""' <<<"$merged")"
     if [[ -n "$cur_api" && -n "$new_api" && "$cur_api" != "$new_api" ]]; then
       echo "   [API] ${id}: ${cur_api} -> ${new_api}"
+    fi
+  done
+
+  # メタデータ (contextWindow / maxTokens / reasoning / input) の変化
+  for id in $cur_ids; do
+    if ! grep -qx "$id" <<<"$new_ids"; then
+      continue
+    fi
+    local cur_meta new_meta diff
+    cur_meta="$(jq -c --arg id "$id" '.providers["opencode-go"].models[] | select(.id == $id) | {contextWindow, maxTokens, reasoning, input}' "$current")"
+    new_meta="$(jq -c --arg id "$id" '.providers["opencode-go"].models[] | select(.id == $id) | {contextWindow, maxTokens, reasoning, input}' <<<"$merged")"
+    if [[ -n "$cur_meta" && -n "$new_meta" && "$cur_meta" != "$new_meta" ]]; then
+      diff="$(jq -nc --argjson a "$cur_meta" --argjson b "$new_meta" '
+        [$a | to_entries[] | .key as $k | select($b[$k] != .value) | "\($k): \(.value) -> \($b[$k])"]
+        | join(", ")
+      ')"
+      echo "   [META] ${id}: ${diff}"
     fi
   done
 }
@@ -443,8 +526,8 @@ main() {
   fi
 
   # 2. ネットワーク疎通チェック
-  if ! curl -sfI --max-time 5 "${GO_MDX_URL}" -o /dev/null; then
-    echo "Skipping: cannot reach opencode repository" >&2
+  if ! curl -sfI --max-time 5 "${GO_MDX_URL}" -o /dev/null || ! curl -sfI --max-time 5 "${MD_API_URL}" -o /dev/null; then
+    echo "Skipping: cannot reach opencode repository or models.dev" >&2
     return 11
   fi
 
@@ -457,7 +540,22 @@ main() {
     return 3
   fi
 
-  # 4. パース
+  # 4. models.dev のメタデータを取得 (失敗時は空マップで続行し既存値 / 推測値を維持)
+  local mdjson metadata
+  metadata="{}"
+  mdjson="$(mktemp)"
+  if curl -fsSL --max-time 30 "${MD_API_URL}" -o "$mdjson"; then
+    metadata="$(build_metadata_map "$mdjson")"
+    if [[ -z "$metadata" || "$metadata" == "{}" ]]; then
+      echo "Warning: failed to parse models.dev metadata; keeping existing values" >&2
+      metadata="{}"
+    fi
+  else
+    echo "Warning: failed to fetch models.dev; keeping existing values" >&2
+  fi
+  rm -f "$mdjson"
+
+  # 5. パース
   local prices apis
   prices="$(build_price_map "$gomdx")"
   apis="$(build_api_map "$gomdx")"
@@ -467,19 +565,19 @@ main() {
     return 4
   fi
 
-  # 5. マージ
+  # 6. マージ
   local merged
-  merged="$(merge_models "${MODELS_PATH}" "$prices" "$apis")"
+  merged="$(merge_models "${MODELS_PATH}" "$prices" "$apis" "$metadata")"
   rm -f "$gomdx"
 
-  # 6. 差分チェック (数値はセマンティクス比較: 2.0 と 2.00 は同一扱い)
+  # 7. 差分チェック (数値はセマンティクス比較: 2.0 と 2.00 は同一扱い)
   if jq -e -n --slurpfile a <(jq -S . "${MODELS_PATH}") --slurpfile b <(jq -S . <<<"$merged") '$a[0] == $b[0]' >/dev/null 2>&1; then
     echo "No changes to ${MODELS_PATH}"
     return 0
   fi
 
   echo "Changes detected in conf/.pi/agent/models.json (Peak 価格):"
-  report_changes "${MODELS_PATH}" "$merged"
+  report_changes "${MODELS_PATH}" "$merged" "$metadata"
 
   if [[ "$mode" == "apply" ]]; then
     write_atomic "${MODELS_PATH}" "$(jq . <<<"$merged")"
