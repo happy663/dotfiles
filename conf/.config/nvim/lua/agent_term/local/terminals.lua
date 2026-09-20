@@ -172,6 +172,28 @@ function M.external_send(args)
   return result
 end
 
+-- プレビュー用。external_send と同じく外部の nvim から RPC で呼ばれる。
+-- 送信先の解決（find_terminal_by_pattern）を send と共有することで、
+-- 「プレビューに見えている内容」と「プロンプトが送られる先」を必ず一致させる。
+-- 1ペインに複数 agent がいる場合も、send が選ぶのと同じ terminal が返る。
+function M.external_preview(args)
+  local ok, params = pcall(vim.fn.json_decode, args)
+  if not ok then
+    return vim.fn.json_encode({ error = "Invalid JSON: " .. args })
+  end
+
+  local target = params.target or { "claude", "codex", "pi" }
+  local count = tonumber(params.lines) or 500
+
+  local terminal = M.find_terminal_by_pattern(target, false)
+  if not terminal then
+    return vim.fn.json_encode({ error = "Terminal not found: " .. pattern_label(target) })
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(terminal.bufnr, -count, -1, false)
+  return vim.fn.json_encode({ lines = lines })
+end
+
 function M.list_terminals()
   M.log("DEBUG", "list_terminals() called")
 
