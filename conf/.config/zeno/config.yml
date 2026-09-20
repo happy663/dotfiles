@@ -374,6 +374,8 @@ completions:
     callback: "awk '{printf $1}'"
     options:
       --prompt: "'make> '"
+      --reverse: true
+      --height: "'60%'"
 
   - name: docker Makefile
     patterns:
@@ -382,6 +384,8 @@ completions:
     callback: "awk '{printf $1}'"
     options:
       --prompt: "'make> '"
+      --reverse: true
+      --height: "'60%'"
 
 history:
   defaultScope: global
