@@ -344,6 +344,29 @@ function M.setup()
     end
   end, { desc = "Refresh the send-to agent list" })
 
+  -- プレビューの操作（issue #318）。スクロールはプレビューにフォーカスを移さず、
+  -- 下書き/一覧のキーマップから遠隔で行う。
+  -- プレビューを出せない幅では何もせずに戻る。キーごとに通知すると煩いため黙って無視する。
+  for _, spec in ipairs({
+    { "AgentSendToPreviewUp", "preview_scroll_up", "Scroll the agent preview up" },
+    { "AgentSendToPreviewDown", "preview_scroll_down", "Scroll the agent preview down" },
+    { "AgentSendToPreviewFollow", "preview_follow", "Follow the agent preview" },
+    { "AgentSendToPreviewLeft", "preview_scroll_left", "Scroll the agent preview left" },
+    { "AgentSendToPreviewRight", "preview_scroll_right", "Scroll the agent preview right" },
+  }) do
+    vim.api.nvim_create_user_command(spec[1], function()
+      send_to[spec[2]]()
+    end, { desc = spec[3] })
+  end
+
+  -- 凍結中でも強制的に取り直す。
+  vim.api.nvim_create_user_command("AgentSendToPreviewRefresh", function()
+    local success, message = send_to.refresh_preview()
+    if not success then
+      vim.notify(message, vim.log.levels.WARN)
+    end
+  end, { desc = "Refresh the agent preview" })
+
   vim.keymap.set({ "n", "i", "t", "v" }, "<M-v>", "<Cmd>AgentSendToToggle<CR>", {
     noremap = true,
     silent = true,

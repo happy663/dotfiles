@@ -3,6 +3,11 @@
 --
 --   cd <repo root>
 --   nvim --headless -l conf/.config/nvim/tests/test_agent_term_preview_layout.lua
+-- このリポジトリの設定は $HOME 配下へ symlink されるため、Neovim の runtimepath には
+-- ~/.config/nvim（= main のコピー）が入っている。worktree でテストを走らせると
+-- そちらが先に解決されて main のコードをテストしてしまうので、worktree を先頭に置く。
+vim.opt.runtimepath:prepend(vim.fn.getcwd() .. "/conf/.config/nvim")
+
 package.path = vim.fn.getcwd()
   .. "/conf/.config/nvim/lua/?.lua;"
   .. vim.fn.getcwd()
