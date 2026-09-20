@@ -394,6 +394,10 @@ local function preview_scroll(command)
   return true
 end
 
+-- 横スクロールの刻み。'sidescroll' はグローバルオプションでウィンドウ単位にできないため、
+-- キーにカウントを付けて桁を進める。
+local PREVIEW_HSCROLL = 10
+
 -- 横スクロール。凍結の対象外（縦位置は動かないため）。
 local function preview_scroll_horizontal(command)
   local win = preview_window()
@@ -418,7 +422,34 @@ local function cmp_scroll(delta)
   end
 end
 
--- 下書きと一覧の両方に張る。挿入モードは補完メニューが出ているときだけ cmp に譲る。
+-- 挿入モードの <C-u> / <C-d>。編集のキー（行頭まで削除・インデント）だが、
+-- このバッファではプレビューのスクロールに割り当てる（Telescope と同じ）。
+-- 補完メニューが出ているときだけ cmp のドキュメントスクロールを優先する。
+--
+-- cmp は InsertEnter でバッファローカルの挿入モードマップを張り直すため、
+-- 開いたときに一度張るだけでは <C-d> が cmp に上書きされる。
+-- set_preview_keymaps と InsertEnter の両方から呼んで、常にこちらを勝たせる。
+local function set_preview_insert_keymaps(target_buf)
+  local opts = { buffer = target_buf, noremap = true, silent = true }
+
+  vim.keymap.set("i", "<C-u>", function()
+    if cmp_visible() then
+      cmp_scroll(4)
+    else
+      M.preview_scroll_up()
+    end
+  end, vim.tbl_extend("force", opts, { desc = "Scroll the agent preview up" }))
+
+  vim.keymap.set("i", "<C-d>", function()
+    if cmp_visible() then
+      cmp_scroll(-4)
+    else
+      M.preview_scroll_down()
+    end
+  end, vim.tbl_extend("force", opts, { desc = "Scroll the agent preview down" }))
+end
+
+-- 下書きと一覧の両方に張る。
 local function set_preview_keymaps(target_buf)
   local opts = { buffer = target_buf, noremap = true, silent = true }
 
@@ -453,23 +484,7 @@ local function set_preview_keymaps(target_buf)
     vim.tbl_extend("force", opts, { desc = "Scroll the agent preview right" })
   )
 
-  -- 挿入モードでは <C-u> / <C-d> が編集のキー（行頭まで削除・インデント）だが、
-  -- このバッファではプレビューのスクロールに割り当てる（Telescope と同じ）。
-  -- 補完メニューが出ているときだけ cmp のドキュメントスクロールを優先する。
-  vim.keymap.set("i", "<C-u>", function()
-    if cmp_visible() then
-      cmp_scroll(4)
-    else
-      M.preview_scroll_up()
-    end
-  end, vim.tbl_extend("force", opts, { desc = "Scroll the agent preview up" }))
-  vim.keymap.set("i", "<C-d>", function()
-    if cmp_visible() then
-      cmp_scroll(-4)
-    else
-      M.preview_scroll_down()
-    end
-  end, vim.tbl_extend("force", opts, { desc = "Scroll the agent preview down" }))
+  set_preview_insert_keymaps(target_buf)
 end
 
 -- 閉じたらバッファも捨てる。残すと次に開くとき同名バッファで nvim_buf_set_name が
@@ -761,6 +776,15 @@ function M.open()
   set_preview_keymaps(buf)
   set_preview_keymaps(list_buf)
 
+  -- cmp が InsertEnter で挿入モードのマップを張り直すため、こちらを後から再設定する
+  -- （autocmd は登録順に走るので、起動時に登録される cmp より後に実行される）。
+  vim.api.nvim_create_autocmd("InsertEnter", {
+    buffer = buf,
+    callback = function()
+      set_preview_insert_keymaps(buf)
+    end,
+  })
+
   -- 挿入モードでは始めない。開いた直後は宛先を選ぶ場面が多く、<C-n> / <C-p> が
   -- ノーマルモードの割り当てなのでそのまま押せる。本文を書くときに i を押す。
   start_auto_refresh()
@@ -894,11 +918,11 @@ function M.preview_follow()
 end
 
 function M.preview_scroll_left()
-  return preview_scroll_horizontal("zh")
+  return preview_scroll_horizontal(PREVIEW_HSCROLL .. "zh")
 end
 
 function M.preview_scroll_right()
-  return preview_scroll_horizontal("zl")
+  return preview_scroll_horizontal(PREVIEW_HSCROLL .. "zl")
 end
 
 -- 取得や凍結の状態。テストから確認するために公開する。
