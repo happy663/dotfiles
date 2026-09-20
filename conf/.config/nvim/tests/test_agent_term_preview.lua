@@ -244,6 +244,48 @@ test("2 回連続の失敗でタイトルに印を出す", function()
   assert_eq(preview_title(), " Preview (!) ", "タイトル")
 end)
 
+test("複数行のエラーでも描画が死なない", function()
+  reopen({ "good" })
+  reset_fetch(nil, "1行目\n2行目")
+  -- force なので 1 回目でも理由を出す
+  send_to.refresh_preview()
+  local lines = vim.api.nvim_buf_get_lines(state().buffer, 0, -1, false)
+  assert_eq(
+    table.concat(lines, "|"),
+    "プレビューを取得できない:|1行目|2行目",
+    "複数行に分解して表示"
+  )
+  assert_eq(state().failures, 1, "失敗回数")
+end)
+
+test("取得した行に改行が混ざっていても行に分解する", function()
+  reopen({ "a\nb", "c" })
+  local lines = vim.api.nvim_buf_get_lines(state().buffer, 0, -1, false)
+  assert_eq(table.concat(lines, "|"), "a|b|c", "行に分解")
+end)
+
+test("capture-pane の複数行エラーは1行に畳む", function()
+  local real_preview = load_real_preview()
+  local saved = vim.system
+  vim.system = function()
+    return {
+      wait = function()
+        return { code = 1, stdout = "", stderr = "line one\nline two\n" }
+      end,
+    }
+  end
+
+  local ok, fetched, ferr = pcall(function()
+    return real_preview.fetch({ pane_id = "%1" }, { history_lines = 5 })
+  end)
+  vim.system = saved
+
+  assert_true(ok, "例外なし")
+  assert_eq(fetched, nil, "行は返らない")
+  assert_eq(ferr:find("\n", 1, true) == nil, true, "改行なし: " .. tostring(ferr))
+  assert_true(ferr:find("line one line two", 1, true) ~= nil, "内容: " .. tostring(ferr))
+end)
+
 test("取得できたが 0 行なら「出力なし」と出す", function()
   reopen({})
   assert_eq(table.concat(state().lines, "|"), "出力なし", "内容")

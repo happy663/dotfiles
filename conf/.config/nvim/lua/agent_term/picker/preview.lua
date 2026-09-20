@@ -23,6 +23,23 @@ local function trim_eol(line)
   return (line:gsub("%s+$", ""))
 end
 
+-- エラーの詳細は複数行になり得る（Lua の traceback、複数行の stderr など）。
+-- 表示側で1行として扱えるよう、空白を畳んで1行にする。
+local function one_line(message)
+  return (tostring(message):gsub("%s+", " "))
+end
+
+-- 相手の nvim が external_preview を持つ前の設定で起動していると「関数が無い」エラーになる。
+-- 原因が分かるようにヒントを足す（make link 後に起動済みの nvim は再起動が必要）。
+-- traceback には関数名として external_preview が現れるので、「nil value」も見て区別する。
+local function describe_rpc_error(message)
+  local text = one_line(message)
+  if text:find("external_preview", 1, true) and text:find("nil value", 1, true) then
+    text = text .. " (相手の nvim が古い設定で起動している。nvim を再起動すると直る)"
+  end
+  return text
+end
+
 -- 相手 nvim から terminal buffer の末尾を取り出す。
 local function rpc_lines(sock, history_lines)
   local payload = vim.fn.json_encode({
@@ -47,7 +64,7 @@ local function rpc_lines(sock, history_lines)
   pcall(vim.fn.delete, path)
 
   if not out then
-    return nil, err
+    return nil, describe_rpc_error(err)
   end
 
   local text = vim.trim(out)
@@ -60,7 +77,7 @@ local function rpc_lines(sock, history_lines)
     return nil, "RPC の応答を解釈できない"
   end
   if decoded.error then
-    return nil, decoded.error
+    return nil, one_line(decoded.error)
   end
 
   return decoded.lines or {}, nil
@@ -83,7 +100,7 @@ local function capture_lines(pane, history_lines)
     if detail == "" then
       detail = "exit code " .. tostring(res.code)
     end
-    return nil, "capture-pane failed: " .. detail
+    return nil, "capture-pane failed: " .. one_line(detail)
   end
 
   local lines = vim.split(res.stdout or "", "\n", { plain = true })

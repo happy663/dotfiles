@@ -271,14 +271,42 @@ local function sync_preview_window()
   apply_preview_layout()
 end
 
+-- nvim_buf_set_lines は改行を含む要素を受け付けない（"item contains newlines" で例外になる）。
+-- 取得元の出力やエラー本文に改行が混ざっていても描画が死なないよう、行に分解してから渡す。
+-- エラー本文が複数行（Lua の traceback など）の場合は、そのまま複数行として見せる。
+local function normalize_lines(lines)
+  local out = {}
+  for _, line in ipairs(lines) do
+    local text = tostring(line):gsub("\r", "")
+    if text:find("\n", 1, true) then
+      for _, part in ipairs(vim.split(text, "\n", { plain = true })) do
+        out[#out + 1] = part
+      end
+    else
+      out[#out + 1] = text
+    end
+  end
+  return out
+end
+
 local function render_preview(lines)
   if not ui.preview_buf or not vim.api.nvim_buf_is_valid(ui.preview_buf) then
-    return
+    return false
   end
+
+  local normalized = normalize_lines(lines)
   vim.bo[ui.preview_buf].modifiable = true
-  vim.api.nvim_buf_set_lines(ui.preview_buf, 0, -1, false, lines)
+  local ok, err = pcall(vim.api.nvim_buf_set_lines, ui.preview_buf, 0, -1, false, normalized)
   vim.bo[ui.preview_buf].modifiable = false
-  preview_last_lines = lines
+  if not ok then
+    -- ここで例外を投げると、選択変更や tick のコールバックが中断されて
+    -- 以降プレビューが固まる。描画できないことは知らせて処理は続ける。
+    notify("プレビューを描画できない: " .. tostring(err), vim.log.levels.WARN)
+    return false
+  end
+
+  preview_last_lines = normalized
+  return true
 end
 
 -- 追従中は末尾を見せる。プレビューはフォーカスされないので nvim_win_call で行う。
@@ -322,7 +350,8 @@ local function update_preview(force)
     preview_failures = preview_failures + 1
     -- 1回だけの失敗は一時的なことが多いので、前回の内容を保って黙ってやり過ごす。
     if preview_failures >= config.send_to.preview.failure_threshold or force then
-      render_preview({ "プレビューを取得できない: " .. tostring(err) })
+      -- 理由は複数行になり得る（Lua の traceback など）。render_preview 側で行に分解する。
+      render_preview({ "プレビューを取得できない:", tostring(err) })
     end
     preview_pane_id = target.pane_id
     sync_preview_window()
