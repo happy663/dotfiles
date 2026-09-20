@@ -47,10 +47,17 @@ test("左カラム + ギャップ + プレビューが全幅に一致する", fu
   assert_true(l.preview_visible, "広い画面ではプレビューを出す")
 end)
 
-test("プレビュー比率が 0.7 前後になる", function()
+test("左カラムが 2 割、プレビューが 8 割になる", function()
   local l = calc(1)
   local ratio = l.preview_width / l.total_width
-  assert_true(ratio > 0.65 and ratio < 0.75, "比率: " .. tostring(ratio))
+  assert_true(ratio > 0.75 and ratio < 0.85, "比率: " .. tostring(ratio))
+  assert_eq(l.left_width, 38, "194 桁での左カラム (190 の 2 割)")
+end)
+
+test("左カラムは最低幅を下回らない", function()
+  local l = calc(1, 100, 45)
+  assert_eq(l.left_width, 30, "最低幅")
+  assert_true(l.preview_visible, "プレビューは残る")
 end)
 
 test("一覧の高さが件数に追従する", function()

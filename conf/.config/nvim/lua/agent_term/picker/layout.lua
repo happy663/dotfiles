@@ -10,16 +10,17 @@ local M = {}
 
 -- 既定値。config.send_to.preview から上書きされる。
 M.DEFAULTS = {
-  -- 左カラム : プレビュー = 3 : 7
-  ratio = 0.3,
+  -- 左カラム : プレビュー = 2 : 8
+  ratio = 0.2,
   -- 左カラムとプレビューの間隔（列）
   gap = 2,
   -- 画面端からの余白（左右に半分ずつ使う）。浮きウィンドウの枠を描くのに要る。
   margin = 4,
   -- これ未満ならプレビューを出さない
   min_preview_width = 36,
-  -- 左カラムがこれ未満になるならプレビューを出さない（下書きが書けなくなるため）
-  min_left_width = 50,
+  -- 左カラムの最低幅。比率で計算した値がこれを下回るなら、こちらを優先する
+  -- （狭い画面でプレビューを失わないため）。
+  min_left_width = 30,
   -- 1カラム時の幅。既存実装の値をそのまま踏襲する。
   max_width = 100,
   min_width = 40,
@@ -58,9 +59,10 @@ function M.calculate(opts)
 
   local gap = opt(opts, "gap")
   local total_width = columns - opt(opts, "margin")
-  local left_width = math.floor(total_width * opt(opts, "ratio"))
+  -- 比率で決めた幅が最低幅を下回るなら最低幅を優先する（プレビューを残すため）。
+  local left_width = math.max(opt(opts, "min_left_width"), math.floor(total_width * opt(opts, "ratio")))
   local preview_width = total_width - left_width - gap
-  local preview_visible = preview_width >= opt(opts, "min_preview_width") and left_width >= opt(opts, "min_left_width")
+  local preview_visible = preview_width >= opt(opts, "min_preview_width")
 
   if not preview_visible then
     -- 既存の1カラム。狭い画面でプレビューを出すと、一覧も下書きも読めなくなるため。

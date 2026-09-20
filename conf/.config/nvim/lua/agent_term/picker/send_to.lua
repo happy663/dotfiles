@@ -132,10 +132,34 @@ local function pad(s, width)
   return s .. string.rep(" ", diff)
 end
 
+-- 表示幅で切り詰める。切った印に … を付ける。
+-- 一覧は「カーソル行 = エージェント」で対応しているので、行が窓幅を超えて
+-- 折り返すと選択がずれる。ここで窓幅に収めておく。
+local function truncate_to_width(s, width)
+  if width <= 0 then
+    return ""
+  end
+  if display_width(s) <= width then
+    return s
+  end
+
+  local out = ""
+  local used = 0
+  for _, char in ipairs(vim.fn.split(s, "\\zs")) do
+    local char_width = display_width(char)
+    if used + char_width > width - 1 then
+      break
+    end
+    out = out .. char
+    used = used + char_width
+  end
+  return out .. "…"
+end
+
 -- 一覧の各行を組み立てる。@pane-task が未生成のペインは空欄のままにする。
 -- 行の文字列と、アイコン/プロジェクト以降のハイライト範囲を組み立てる。
 -- 範囲はバイト位置で持つ（アイコンがマルチバイトなので文字数では合わない）。
-local function build_lines(list)
+local function build_lines(list, width)
   local task_w, project_w = 0, 0
   for _, p in ipairs(list) do
     task_w = math.max(task_w, display_width(p.task))
@@ -149,13 +173,18 @@ local function build_lines(list)
     local project = pad(p.project, project_w)
     local location = ("%s:%d"):format(p.session, p.window_index)
 
-    lines[#lines + 1] = ("%s %s  %s  %s"):format(icon, task, project, location)
+    -- 幅が足りないときは行末から落ちる（位置、プロジェクト名の順）。
+    -- タイトルは先頭にあるので最後まで残る。
+    local line = truncate_to_width(("%s %s  %s  %s"):format(icon, task, project, location), width)
+    lines[#lines + 1] = line
 
     -- アイコンは状態の色、リポジトリ名と位置は淡く。タイトルは既定色のまま目立たせる。
     local icon_end = #icon
     local dim_start = icon_end + 1 + #task + 2
     marks[#marks + 1] = { row = row - 1, from = 0, to = icon_end, hl = status_hl(p) }
-    marks[#marks + 1] = { row = row - 1, from = dim_start, to = -1, hl = HL.dim }
+    if dim_start < #line then
+      marks[#marks + 1] = { row = row - 1, from = dim_start, to = -1, hl = HL.dim }
+    end
   end
   return lines, marks
 end
@@ -185,6 +214,7 @@ local function calc_layout(list_count)
     list_count = list_count,
     ratio = pc.ratio,
     min_preview_width = pc.min_preview_width,
+    min_left_width = pc.min_left_width,
     height_ratio = pc.height_ratio,
     draft_height = pc.draft_height,
   })
@@ -596,7 +626,7 @@ function M.selected()
 end
 
 local function render_list(list)
-  local lines, marks = build_lines(list)
+  local lines, marks = build_lines(list, (ui.layout and ui.layout.left_width) or vim.o.columns)
   vim.bo[ui.list_buf].modifiable = true
   vim.api.nvim_buf_set_lines(ui.list_buf, 0, -1, false, lines)
   vim.bo[ui.list_buf].modifiable = false
@@ -766,6 +796,11 @@ function M.open()
     title_pos = "center",
   })
   vim.wo[list_win].cursorline = true
+  -- 行が窓幅を超えて折り返すと、カーソル行とエージェントの対応が崩れる。
+  -- build_lines 側で幅に収めているが、念のため折り返しも切っておく。
+  vim.wo[list_win].wrap = false
+  vim.wo[list_win].list = true
+  vim.wo[list_win].listchars = "extends:›,precedes:‹"
 
   local draft_win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",

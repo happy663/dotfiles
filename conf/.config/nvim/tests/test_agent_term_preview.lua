@@ -381,6 +381,30 @@ test("paused 中でも宛先変更なら取得する", function()
   assert_eq(state().pane_id, "2", "宛先")
 end)
 
+test("一覧の行が左カラムの幅に収まる", function()
+  local long = pane("1")
+  long.task = string.rep("x", 120)
+  reopen({ "a" }, nil, { long, pane("2", "idle") })
+
+  local buf, width
+  for _, w in ipairs(vim.api.nvim_list_wins()) do
+    local c = vim.api.nvim_win_get_config(w)
+    local t = c.title and (type(c.title) == "table" and c.title[1][1] or c.title)
+    if t == " Agents " then
+      buf = vim.api.nvim_win_get_buf(w)
+      width = c.width
+    end
+  end
+  assert_true(buf ~= nil, "一覧ウィンドウがある")
+
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  assert_eq(#lines, 2, "行数はエージェント数と同じ")
+  for _, line in ipairs(lines) do
+    assert_true(vim.fn.strdisplaywidth(line) <= width, "表示幅 " .. vim.fn.strdisplaywidth(line) .. " <= " .. width)
+  end
+  assert_eq(lines[1]:sub(-3), "…", "切った印")
+end)
+
 send_to.close()
 
 for _, t in ipairs(tests) do
