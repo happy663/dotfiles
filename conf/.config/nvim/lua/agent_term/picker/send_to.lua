@@ -265,7 +265,9 @@ local function apply_preview_layout()
   apply_preview_options(ui.preview_win)
 end
 
-local function refresh_preview_title()
+-- 凍結/失敗の状態をタイトルへ反映する。nvim_win_set_config は部分更新できないので、
+-- タイトルを変えるときも ui.layout からウィンドウ設定ごと張り直す。
+local function sync_preview_window()
   apply_preview_layout()
 end
 
@@ -323,7 +325,7 @@ local function update_preview(force)
       render_preview({ "プレビューを取得できない: " .. tostring(err) })
     end
     preview_pane_id = target.pane_id
-    refresh_preview_title()
+    sync_preview_window()
     return false, err
   end
 
@@ -331,7 +333,7 @@ local function update_preview(force)
   preview_pane_id = target.pane_id
   render_preview(#lines == 0 and { "出力なし" } or lines)
   scroll_preview_to_bottom()
-  refresh_preview_title()
+  sync_preview_window()
   return true
 end
 
@@ -390,7 +392,7 @@ local function preview_scroll(command)
   else
     preview_paused = true
   end
-  refresh_preview_title()
+  sync_preview_window()
   return true
 end
 
