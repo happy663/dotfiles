@@ -3,6 +3,9 @@
 --
 -- 2カラム（左: 一覧 + 下書き / 右: プレビュー）を基本とし、
 -- プレビューを出すと左カラムが読めなくなる幅では既存の1カラムへフォールバックする。
+--
+-- プレビューの高さは左カラムではなく画面高さ（height_ratio）から決める。
+-- 左カラムに合わせると、一覧が短いときにプレビューまで短くなって読めないため。
 local M = {}
 
 -- 既定値。config.send_to.preview から上書きされる。
@@ -23,6 +26,11 @@ M.DEFAULTS = {
   -- 一覧の高さ上限。件数が増えてもプレビューを食い潰さない。
   list_max_height = 10,
   draft_height = 8,
+  -- ピッカー（プレビュー）の高さを画面の何割使うか。
+  -- プレビューは左カラムと切り離してこの高さになるので、agent の出力を広く読める。
+  height_ratio = 0.9,
+  -- 画面が低いときの最低高さ（行）。
+  min_height = 12,
 }
 
 local function opt(opts, key)
@@ -43,8 +51,10 @@ function M.calculate(opts)
 
   local draft_height = opt(opts, "draft_height")
   local list_height = math.max(1, math.min(math.max(list_count, 1), opt(opts, "list_max_height")))
-  local total_height = list_height + draft_height + 4
-  local row = math.max(0, math.floor((lines - total_height) / 2))
+  local left_height = list_height + draft_height + 4
+  -- プレビューを含むときの高さ。画面の height_ratio を使い、最低 min_height は確保する。
+  local picker_height =
+    math.max(1, math.min(lines - 2, math.max(opt(opts, "min_height"), math.floor(lines * opt(opts, "height_ratio")))))
 
   local gap = opt(opts, "gap")
   local total_width = columns - opt(opts, "margin")
@@ -54,6 +64,7 @@ function M.calculate(opts)
 
   if not preview_visible then
     -- 既存の1カラム。狭い画面でプレビューを出すと、一覧も下書きも読めなくなるため。
+    -- プレビューが無いので高さは内容なり（左カラム全体）で中央寄せする。
     local width = math.min(opt(opts, "max_width"), math.max(opt(opts, "min_width"), columns - 8))
     return {
       columns = columns,
@@ -64,15 +75,18 @@ function M.calculate(opts)
       preview_width = 0,
       list_height = list_height,
       draft_height = draft_height,
+      left_height = left_height,
+      picker_height = left_height,
       preview_height = 0,
       preview_row = nil,
       preview_col = nil,
-      row = row,
-      draft_row = row + list_height + 2,
+      row = math.max(0, math.floor((lines - left_height) / 2)),
+      draft_row = math.max(0, math.floor((lines - left_height) / 2)) + list_height + 2,
       col = math.max(0, math.floor((columns - width) / 2)),
     }
   end
 
+  local row = math.max(0, math.floor((lines - picker_height) / 2))
   local col = math.max(0, math.floor((columns - total_width) / 2))
   return {
     columns = columns,
@@ -83,9 +97,10 @@ function M.calculate(opts)
     preview_width = preview_width,
     list_height = list_height,
     draft_height = draft_height,
-    -- 枠の外側を左カラムに揃える高さ。一覧の上枠（row - 1）から下書きの下枠
-    -- （row + list_height + draft_height + 2）まで。プレビューは左カラム全体を覆う。
-    preview_height = list_height + draft_height + 2,
+    left_height = left_height,
+    picker_height = picker_height,
+    -- 枠の外側が picker_height 行に収まる高さ。プレビューは左カラムより縦に長い。
+    preview_height = picker_height - 2,
     preview_row = row,
     preview_col = col + left_width + gap,
     row = row,

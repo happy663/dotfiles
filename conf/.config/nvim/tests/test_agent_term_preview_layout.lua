@@ -76,22 +76,23 @@ test("狭い画面では 1 カラムへフォールバックする", function()
   assert_eq(l.gap, 0, "ギャップなし")
 end)
 
-test("プレビューが左カラム全体の高さを覆う", function()
+test("プレビューは左カラムより縦に長い", function()
   local l = calc(3)
-  assert_eq(l.preview_height, l.list_height + l.draft_height + 2, "枠の外側が揃う高さ")
+  assert_true(l.preview_height > l.list_height + l.draft_height + 2, "左カラムより長い")
   assert_eq(l.preview_col, l.col + l.left_width + l.gap, "プレビューは左カラムの右隣")
-  assert_eq(l.preview_row, l.row, "プレビューは一覧と同じ行から始まる")
+  assert_eq(l.preview_row, l.row, "上端は一覧と揃う")
 end)
 
-test("件数が増えたらプレビューも伸びる", function()
-  local before = calc(1)
-  local after = calc(3)
-  assert_true(after.preview_height > before.preview_height, "プレビュー高さが伸びる")
-  assert_eq(
-    after.preview_height - before.preview_height,
-    after.list_height - before.list_height,
-    "伸び幅は一覧と同じ"
-  )
+test("プレビューの高さは画面高さで決まる", function()
+  assert_eq(calc(1, 194, 45).preview_height, 38, "45 行のとき")
+  assert_eq(calc(1, 194, 20).preview_height, 16, "20 行のとき")
+  assert_eq(calc(1, 194, 45).preview_height, calc(3, 194, 45).preview_height, "一覧の件数に依存しない")
+end)
+
+test("低い画面でも高さが正になる", function()
+  local l = calc(1, 194, 10)
+  assert_true(l.preview_height >= 1, "高さが正: " .. tostring(l.preview_height))
+  assert_true(l.preview_height <= 8, "画面からはみ出さない: " .. tostring(l.preview_height))
 end)
 
 test("下書きは一覧の 2 行下に置かれる", function()

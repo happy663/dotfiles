@@ -185,6 +185,8 @@ local function calc_layout(list_count)
     list_count = list_count,
     ratio = pc.ratio,
     min_preview_width = pc.min_preview_width,
+    height_ratio = pc.height_ratio,
+    draft_height = pc.draft_height,
   })
 end
 
