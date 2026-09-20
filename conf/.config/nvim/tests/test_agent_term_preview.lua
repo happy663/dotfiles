@@ -258,6 +258,26 @@ test("複数行のエラーでも描画が死なない", function()
   assert_eq(state().failures, 1, "失敗回数")
 end)
 
+test("取得が例外を投げても固まらない", function()
+  reopen({ "good" })
+  local preview_module = package.loaded["agent_term.picker.preview"]
+  local saved = preview_module.fetch
+  preview_module.fetch = function()
+    error("boom")
+  end
+
+  local ok, err = send_to.refresh_preview()
+  preview_module.fetch = saved
+
+  assert_eq(ok, false, "失敗として返る")
+  assert_true(tostring(err):find("boom", 1, true) ~= nil, "理由: " .. tostring(err))
+
+  -- 例外のあとも通常どおり動く（コールバックが壊れていない）
+  reset_fetch({ "after" })
+  send_to.refresh_preview()
+  assert_eq(table.concat(state().lines, "|"), "after", "復帰する")
+end)
+
 test("取得した行に改行が混ざっていても行に分解する", function()
   reopen({ "a\nb", "c" })
   local lines = vim.api.nvim_buf_get_lines(state().buffer, 0, -1, false)

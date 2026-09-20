@@ -332,14 +332,7 @@ local function preview_at_bottom()
 end
 
 -- 選択中の宛先の内容を取り直して描き直す。凍結中は何もしない（force で無視できる）。
-local function update_preview(force)
-  if not M.is_open() or not ui.layout or not ui.layout.preview_visible then
-    return false, "preview is not available"
-  end
-  if preview_paused and not force then
-    return false, "preview is paused"
-  end
-
+local function update_preview_impl(force)
   local target = M.selected()
   if not target then
     return false, "宛先が選択されていない"
@@ -364,6 +357,25 @@ local function update_preview(force)
   scroll_preview_to_bottom()
   sync_preview_window()
   return true
+end
+
+-- 取得や描画で予期しない例外が出ても、呼び出し元（選択変更・tick のコールバック）を
+-- 巻き込んでプレビューが固まらないようにする。固まると原因も見えなくなるため。
+local function update_preview(force)
+  if not M.is_open() or not ui.layout or not ui.layout.preview_visible then
+    return false, "preview is not available"
+  end
+  if preview_paused and not force then
+    return false, "preview is paused"
+  end
+
+  local ok, succeeded, message = pcall(update_preview_impl, force)
+  if not ok then
+    local reason = tostring(succeeded)
+    notify("プレビューを更新できない: " .. reason, vim.log.levels.WARN)
+    return false, reason
+  end
+  return succeeded, message
 end
 
 -- 選択変更は即座に反映したいが、C-n/C-p の連打で毎回 RPC すると重いので少し待つ。
