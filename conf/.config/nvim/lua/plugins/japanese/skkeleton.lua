@@ -82,10 +82,12 @@ return {
           vim.api.nvim_exec(
             [[
       call add(g:skkeleton#mapped_keys, '<C-a>')
+      call add(g:skkeleton#mapped_keys, '<C-b>')
       ]],
             false
           )
           vim.fn["skkeleton#register_keymap"]("henkan", "<C-a>", "henkanForward")
+          vim.fn["skkeleton#register_keymap"]("input", "<C-b>", "kakuteiUndo")
 
           vim.keymap.set("t", "<C-y>", function()
             vim.fn.feedkeys(vim.fn.input("Input: "), "n")
