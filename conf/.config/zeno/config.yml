@@ -215,7 +215,7 @@ snippets:
     snippet: gh browse
   - name: nvim
     keyword: n
-    snippet: nvim .
+    snippet: nvim
   - name: nvim diffview
     keyword: nd
     snippet: nvim -c DiffviewOpen
@@ -399,4 +399,4 @@ history:
     deleteSoft: ctrl-d
     deleteHard: alt-d
     toggleScope: ctrl-r
-    togglePreview: "?"    
+    togglePreview: "?"
