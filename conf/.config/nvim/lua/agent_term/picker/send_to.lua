@@ -212,9 +212,12 @@ local function calc_layout(list_count)
     columns = vim.o.columns,
     lines = vim.o.lines,
     list_count = list_count,
+    width_ratio = pc.width_ratio,
     ratio = pc.ratio,
     min_preview_width = pc.min_preview_width,
-    min_left_width = pc.min_left_width,
+    min_preview_height = pc.min_preview_height,
+    min_prompt_width = pc.min_prompt_width,
+    min_list_width = pc.min_list_width,
     height_ratio = pc.height_ratio,
     draft_height = pc.draft_height,
   })
@@ -626,7 +629,7 @@ function M.selected()
 end
 
 local function render_list(list)
-  local lines, marks = build_lines(list, (ui.layout and ui.layout.left_width) or vim.o.columns)
+  local lines, marks = build_lines(list, (ui.layout and ui.layout.list_width) or vim.o.columns)
   vim.bo[ui.list_buf].modifiable = true
   vim.api.nvim_buf_set_lines(ui.list_buf, 0, -1, false, lines)
   vim.bo[ui.list_buf].modifiable = false
@@ -654,10 +657,10 @@ local function update_layout(list_count)
 
   vim.api.nvim_win_set_config(ui.list_win, {
     relative = "editor",
-    width = l.left_width,
+    width = l.list_width,
     height = l.list_height,
-    row = l.row,
-    col = l.col,
+    row = l.list_row,
+    col = l.list_col,
     style = "minimal",
     border = "rounded",
     title = " Agents ",
@@ -665,10 +668,10 @@ local function update_layout(list_count)
   })
   vim.api.nvim_win_set_config(ui.draft_win, {
     relative = "editor",
-    width = l.left_width,
+    width = l.draft_width,
     height = l.draft_height,
     row = l.draft_row,
-    col = l.col,
+    col = l.draft_col,
     style = "minimal",
     border = "rounded",
     title = " Prompt ",
@@ -786,10 +789,10 @@ function M.open()
 
   local list_win = vim.api.nvim_open_win(list_buf, false, {
     relative = "editor",
-    width = l.left_width,
+    width = l.list_width,
     height = l.list_height,
-    row = l.row,
-    col = l.col,
+    row = l.list_row,
+    col = l.list_col,
     style = "minimal",
     border = "rounded",
     title = " Agents ",
@@ -804,10 +807,10 @@ function M.open()
 
   local draft_win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
-    width = l.left_width,
+    width = l.draft_width,
     height = l.draft_height,
     row = l.draft_row,
-    col = l.col,
+    col = l.draft_col,
     style = "minimal",
     border = "rounded",
     title = " Prompt ",
