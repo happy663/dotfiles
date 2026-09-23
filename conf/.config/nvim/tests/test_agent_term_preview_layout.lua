@@ -1,0 +1,117 @@
+-- ピッカーのレイアウト計算（picker/layout.lua）のテスト。
+-- ウィンドウを開かないので、純粋に寸法だけを検証する。
+--
+--   cd <repo root>
+--   nvim --headless -l conf/.config/nvim/tests/test_agent_term_preview_layout.lua
+-- このリポジトリの設定は $HOME 配下へ symlink されるため、Neovim の runtimepath には
+-- ~/.config/nvim（= main のコピー）が入っている。worktree でテストを走らせると
+-- そちらが先に解決されて main のコードをテストしてしまうので、worktree を先頭に置く。
+vim.opt.runtimepath:prepend(vim.fn.getcwd() .. "/conf/.config/nvim")
+
+package.path = vim.fn.getcwd()
+  .. "/conf/.config/nvim/lua/?.lua;"
+  .. vim.fn.getcwd()
+  .. "/conf/.config/nvim/lua/?/init.lua;"
+  .. package.path
+
+local layout = require("agent_term.picker.layout")
+
+local tests = {}
+local function test(display, fn)
+  tests[#tests + 1] = { display = display, fn = fn }
+end
+
+local function assert_eq(actual, expected, message)
+  if actual ~= expected then
+    error(string.format("%s: expected %s, got %s", message, tostring(expected), tostring(actual)))
+  end
+end
+
+local function assert_true(value, message)
+  if not value then
+    error(message .. ": expected truthy, got " .. tostring(value))
+  end
+end
+
+local function calc(list_count, columns, lines)
+  return layout.calculate({
+    columns = columns or 194,
+    lines = lines or 45,
+    list_count = list_count,
+  })
+end
+
+test("左カラム + ギャップ + プレビューが全幅に一致する", function()
+  local l = calc(1)
+  assert_eq(l.left_width + l.gap + l.preview_width, l.total_width, "合計")
+  assert_true(l.preview_visible, "広い画面ではプレビューを出す")
+end)
+
+test("左カラムが 2 割、プレビューが 8 割になる", function()
+  local l = calc(1)
+  local ratio = l.preview_width / l.total_width
+  assert_true(ratio > 0.75 and ratio < 0.85, "比率: " .. tostring(ratio))
+  assert_eq(l.left_width, 38, "194 桁での左カラム (190 の 2 割)")
+end)
+
+test("左カラムは最低幅を下回らない", function()
+  local l = calc(1, 100, 45)
+  assert_eq(l.left_width, 30, "最低幅")
+  assert_true(l.preview_visible, "プレビューは残る")
+end)
+
+test("一覧の高さが件数に追従する", function()
+  assert_eq(calc(3).list_height, 3, "件数3")
+  assert_eq(calc(1).list_height, 1, "件数1")
+  assert_eq(calc(0).list_height, 1, "件数0でも1行は出す")
+end)
+
+test("一覧の高さが上限 10 で頭打ちになる", function()
+  assert_eq(calc(20).list_height, 10, "件数20")
+end)
+
+test("狭い画面ではプレビューを出さない", function()
+  local l = calc(1, 60, 45)
+  assert_eq(l.preview_visible, false, "プレビュー非表示")
+  assert_eq(l.preview_width, 0, "プレビュー幅")
+end)
+
+test("狭い画面では 1 カラムへフォールバックする", function()
+  local l = calc(1, 60, 45)
+  assert_eq(l.total_width, 52, "既存の columns - 8")
+  assert_eq(l.left_width, l.total_width, "左カラムが全幅")
+  assert_eq(l.gap, 0, "ギャップなし")
+end)
+
+test("プレビューは左カラムより縦に長い", function()
+  local l = calc(3)
+  assert_true(l.preview_height > l.list_height + l.draft_height + 2, "左カラムより長い")
+  assert_eq(l.preview_col, l.col + l.left_width + l.gap, "プレビューは左カラムの右隣")
+  assert_eq(l.preview_row, l.row, "上端は一覧と揃う")
+end)
+
+test("プレビューの高さは画面高さで決まる", function()
+  assert_eq(calc(1, 194, 45).preview_height, 38, "45 行のとき")
+  assert_eq(calc(1, 194, 20).preview_height, 16, "20 行のとき")
+  assert_eq(calc(1, 194, 45).preview_height, calc(3, 194, 45).preview_height, "一覧の件数に依存しない")
+end)
+
+test("低い画面でも高さが正になる", function()
+  local l = calc(1, 194, 10)
+  assert_true(l.preview_height >= 1, "高さが正: " .. tostring(l.preview_height))
+  assert_true(l.preview_height <= 8, "画面からはみ出さない: " .. tostring(l.preview_height))
+end)
+
+test("下書きは一覧の 2 行下に置かれる", function()
+  local l = calc(3)
+  assert_eq(l.draft_row, l.row + l.list_height + 2, "下書きの行")
+end)
+
+for _, t in ipairs(tests) do
+  local ok, err = pcall(t.fn)
+  if not ok then
+    error(string.format("FAILED [%s]\n%s", t.display, err))
+  end
+  print("ok - " .. t.display)
+end
+print("agent_term preview layout tests passed")

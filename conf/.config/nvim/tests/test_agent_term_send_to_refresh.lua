@@ -67,7 +67,9 @@ local draft_win = vim.api.nvim_get_current_win()
 local list_win = nil
 for _, win in ipairs(vim.api.nvim_list_wins()) do
   local cfg = vim.api.nvim_win_get_config(win)
-  if win ~= draft_win and cfg.relative ~= "" then
+  -- プレビューも浮きウィンドウなので、タイトルで一覧を特定する。
+  local title = cfg.title and (type(cfg.title) == "table" and cfg.title[1][1] or cfg.title)
+  if win ~= draft_win and cfg.relative ~= "" and title == " Agents " then
     list_win = win
     break
   end
