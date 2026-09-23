@@ -36,6 +36,7 @@ return {
               { "~/.config/skk/dictionary/SKK-JISYO.L", "euc-jp" },
             },
             eggLikeNewline = true,
+            completionBackend = "nvim-cmp",
             userDictionary = "~/src/github.com/ppha3260-web/my-skk-dict/userDict",
             globalKanaTableFiles = { { "~/.config/skk/azik_us.rule", "euc-jp" } },
             completionRankFile = "~/src/github.com/ppha3260-web/my-skk-dict/userCompletionRankFile.json",

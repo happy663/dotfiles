@@ -10,8 +10,6 @@ return {
       local luasnip
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
-      local skkeleton_last_selected = nil
-      local skkeleton_last_registered = nil
 
       local function refresh_skkeleton_abbrev_completion()
         if vim.g["skkeleton#mode"] ~= "abbrev" then
@@ -110,32 +108,8 @@ return {
           end,
         },
         mapping = {
-          ["<C-p>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-              vim.schedule(function()
-                local entry = cmp.get_selected_entry()
-                if entry and entry.source.name == "skkeleton" then
-                  skkeleton_last_selected = entry.completion_item
-                end
-              end)
-            else
-              fallback()
-            end
-          end, { "i" }),
-          ["<C-n>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-              vim.schedule(function()
-                local entry = cmp.get_selected_entry()
-                if entry and entry.source.name == "skkeleton" then
-                  skkeleton_last_selected = entry.completion_item
-                end
-              end)
-            else
-              fallback()
-            end
-          end, { "i" }),
+          ["<C-p>"] = cmp.mapping.select_prev_item(),
+          ["<C-n>"] = cmp.mapping.select_next_item(),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-e>"] = cmp.mapping.close(),
@@ -194,48 +168,6 @@ return {
           fetching_timeout = 200,
           max_view_entries = 20,
         },
-      })
-
-      -- skkeleton候補選択登録ヘルパー関数
-      local function register_skkeleton_selection()
-        if skkeleton_last_selected then
-          local kana = skkeleton_last_selected.filterText
-          local word = skkeleton_last_selected.label
-          local key = kana .. "->" .. word
-
-          if skkeleton_last_registered ~= key then
-            vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
-            skkeleton_last_registered = key
-          end
-
-          -- 補完確定後に▽が残る問題を解決
-          local cursor = vim.api.nvim_win_get_cursor(0)
-          local line = vim.api.nvim_get_current_line()
-
-          local delta_pos = line:find("▽")
-          if delta_pos then
-            local delta_end = delta_pos + 2
-            vim.api.nvim_buf_set_text(0, cursor[1] - 1, delta_pos - 1, cursor[1] - 1, delta_end, {})
-          end
-
-          skkeleton_last_selected = nil
-        end
-      end
-
-      vim.api.nvim_create_autocmd("TextChangedI", {
-        callback = function()
-          if skkeleton_last_selected and not cmp.visible() then
-            register_skkeleton_selection()
-          end
-        end,
-      })
-
-      vim.api.nvim_create_autocmd("InsertLeave", {
-        callback = function()
-          if skkeleton_last_selected then
-            register_skkeleton_selection()
-          end
-        end,
       })
 
       local DEFAULT_MAX_ENTRIES = 20
