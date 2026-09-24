@@ -313,7 +313,7 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
             print("Markdown URL生成を待機中...", file=sys.stderr)
             
             # ポーリングでmarkdown URLの生成を待機（超高速化）
-            for attempt in range(50):  # 50回試行（5秒間）
+            for attempt in range(300):  # 300回試行（30秒間）: 大きい画像はGitHub側の処理に時間がかかる
                 try:
                     # テキストエリアからmarkdown URLを取得
                     markdown_content = await comment_textarea.input_value()
