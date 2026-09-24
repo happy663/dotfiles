@@ -1,4 +1,5 @@
 local agent_fork = require("agent_term.fork")
+local cloud = require("agent_term.cloud")
 local config = require("agent_term.config")
 local draft = require("agent_term.local.draft")
 local layouts = require("agent_term.layouts")
@@ -148,6 +149,20 @@ function M.setup()
       open_draft = true,
     })
   end, { nargs = "*", desc = "Open Claude agent terminal + draft buffer" })
+
+  -- クラウドの Claude Code セッションを入力バッファ経由で作る。シェルで日本語を
+  -- 打てないため、説明（= 初回プロンプト）を nvim 側で書けるようにしている。
+  vim.api.nvim_create_user_command("AgentClaudeCloud", function(command)
+    cloud.open(command.args)
+  end, { nargs = "?", desc = "Open input buffer to create a cloud Claude Code session (arg: worktree name)" })
+
+  vim.api.nvim_create_user_command("AgentClaudeCloudCreate", function()
+    cloud.create()
+  end, { desc = "Create a cloud Claude session from the input buffer and teleport into it" })
+
+  vim.api.nvim_create_user_command("AgentClaudeCloudClear", function()
+    cloud.clear()
+  end, { desc = "Clear the cloud session input buffer" })
 
   vim.api.nvim_create_user_command("AgentClaudeSession", function()
     layouts.open_agent_claude({
