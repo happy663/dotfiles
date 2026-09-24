@@ -60,6 +60,12 @@ return {
 
       function custom_actions.qf_and_highlight()
         return function(prompt_bufnr)
+          -- octoのピッカーはエントリ番号しかquickfixに載らないので、
+          -- タイトル付きのリストを自前で組み立てる
+          if require("plugins.git.octo.quickfix").send_from_picker(prompt_bufnr) then
+            return
+          end
+
           actions.send_to_qflist(prompt_bufnr)
           actions.open_qflist(prompt_bufnr)
 
