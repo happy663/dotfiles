@@ -20,4 +20,36 @@ assert_eq(
 )
 assert_eq(completion.profile_for_mode("zenkaku"), "disabled", "全角英数モードでは補完を無効化する")
 
+local function read_file(path)
+  local file = assert(io.open(path, "r"))
+  local content = file:read("*a")
+  file:close()
+  return content
+end
+
+local skkeleton_config = read_file("conf/.config/nvim/lua/plugins/japanese/skkeleton.lua")
+assert(
+  skkeleton_config:find('completionBackend = "nvim%-cmp"'),
+  "skkeletonはcmp-skkeletonが登録するnvim-cmp backendを選択する"
+)
+
+local cmp_config = read_file("conf/.config/nvim/lua/plugins/completion/cmp.lua")
+assert(not cmp_config:find("skkeleton_last_selected", 1, true), "cmp.luaで候補選択を独自追跡しない")
+assert(
+  not cmp_config:find("register_skkeleton_selection", 1, true),
+  "cmp.luaでskkeleton確定処理を再実装しない"
+)
+
+local ovim_skkeleton_config = read_file("conf/.config/ovim-nvim/lua/plugins/japanese/skkeleton.lua")
+assert(
+  ovim_skkeleton_config:find('completionBackend = "nvim%-cmp"'),
+  "ovimのskkeletonもnvim-cmp backendを選択する"
+)
+local ovim_cmp_config = read_file("conf/.config/ovim-nvim/lua/plugins/completion/cmp.lua")
+assert(not ovim_cmp_config:find("skkeleton_last_selected", 1, true), "ovimのcmp.luaも候補を独自追跡しない")
+assert(
+  not ovim_cmp_config:find("register_skkeleton_selection", 1, true),
+  "ovimのcmp.luaもskkeleton確定処理を再実装しない"
+)
+
 print("skkeleton completion tests passed")

@@ -23,10 +23,6 @@ return {
       -- -- パフォーマンス最適化設定
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
       vim.opt.shortmess:append("c")
-      -- skkeleton候補選択追跡用のグローバル変数
-      local skkeleton_last_selected = nil
-      local skkeleton_last_registered = nil
-
       local function refresh_skkeleton_abbrev_completion()
         if vim.g["skkeleton#mode"] ~= "abbrev" then
           return
@@ -250,36 +246,8 @@ return {
           end,
         },
         mapping = {
-          -- ["<C-p>"] = cmp.mapping.select_prev_item(),
-          -- ["<C-n>"] = cmp.mapping.select_next_item(),
-          ["<C-p>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-              -- skkeleton候補選択を追跡
-              vim.schedule(function()
-                local entry = cmp.get_selected_entry()
-                if entry and entry.source.name == "skkeleton" then
-                  skkeleton_last_selected = entry.completion_item
-                end
-              end)
-            else
-              fallback()
-            end
-          end, { "i" }),
-          ["<C-n>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-              -- skkeleton候補選択を追跡
-              vim.schedule(function()
-                local entry = cmp.get_selected_entry()
-                if entry and entry.source.name == "skkeleton" then
-                  skkeleton_last_selected = entry.completion_item
-                end
-              end)
-            else
-              fallback()
-            end
-          end, { "i" }),
+          ["<C-p>"] = cmp.mapping.select_prev_item(),
+          ["<C-n>"] = cmp.mapping.select_next_item(),
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-e>"] = cmp.mapping.close(),
@@ -405,56 +373,6 @@ return {
           fetching_timeout = 200,
           max_view_entries = 20,
         },
-      })
-
-      -- skkeleton候補選択登録ヘルパー関数
-      local function register_skkeleton_selection()
-        -- skkeleton#is_enabled のチェックを削除（InsertLeave時に無効化されるため）
-        if skkeleton_last_selected then
-          local kana = skkeleton_last_selected.filterText
-          local word = skkeleton_last_selected.label
-          local key = kana .. "->" .. word
-
-          -- 重複登録防止
-          if skkeleton_last_registered ~= key then
-            vim.fn["denops#request"]("skkeleton", "registerHenkanResult", { kana, word })
-            skkeleton_last_registered = key
-          else
-          end
-
-          -- 補完確定後に▽が残る問題を解決
-          local cursor = vim.api.nvim_win_get_cursor(0)
-          local line = vim.api.nvim_get_current_line()
-
-          -- 行内の▽を探して削除
-          local delta_pos = line:find("▽")
-          if delta_pos then
-            -- ▽を削除（▽は3バイトのUTF-8文字）
-            local delta_end = delta_pos + 2
-            vim.api.nvim_buf_set_text(0, cursor[1] - 1, delta_pos - 1, cursor[1] - 1, delta_end, {})
-          end
-
-          skkeleton_last_selected = nil
-        end
-      end
-
-      -- skkeleton候補選択確定の追跡（条件付き実行でラグ防止）
-      vim.api.nvim_create_autocmd("TextChangedI", {
-        callback = function()
-          -- 候補が選択されている場合のみ処理（ラグ防止）
-          if skkeleton_last_selected and not cmp.visible() then
-            register_skkeleton_selection()
-          end
-        end,
-      })
-
-      vim.api.nvim_create_autocmd("InsertLeave", {
-        callback = function()
-          -- フォールバック処理
-          if skkeleton_last_selected then
-            register_skkeleton_selection()
-          end
-        end,
       })
 
       -- Configuration constants

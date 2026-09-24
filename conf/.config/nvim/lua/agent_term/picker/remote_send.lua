@@ -56,6 +56,29 @@ local function rpc_send(sock, payload)
   return true, "sent via nvim RPC"
 end
 
+-- 相手 nvim で式を評価し、標準出力を返す。プレビューの取得に使う。
+-- send は式の結果を使わない（評価されれば送信が完了している）ため、出力を返す版を別に持つ。
+-- 既存の send 経路の挙動は変えない。
+function M.remote_expr(sock, expr, timeout)
+  if not sock or sock == "" then
+    return nil, "ソケットが指定されていない"
+  end
+
+  local res = vim
+    .system({ vim.v.progpath, "--server", sock, "--remote-expr", expr }, { timeout = timeout or RPC_TIMEOUT_MS })
+    :wait()
+
+  if res.code ~= 0 then
+    local detail = (res.stderr or ""):gsub("%s+$", "")
+    if detail == "" then
+      detail = "exit code " .. tostring(res.code) .. " (timeout の可能性)"
+    end
+    return nil, "RPC failed: " .. detail
+  end
+
+  return res.stdout or "", nil
+end
+
 local function tmux_send(pane_id, args)
   local cmd = { "tmux", "send-keys", "-t", pane_id }
   vim.list_extend(cmd, args)

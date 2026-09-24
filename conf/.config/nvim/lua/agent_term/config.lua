@@ -37,6 +37,38 @@ M.send_to = {
   -- ピッカーを開いている間、一覧を自動で取り直す間隔（ms）。
   -- 0 以下にすると自動更新しない（手動の AgentSendToRefresh のみ）。
   refresh_interval_ms = 5000,
+  preview = {
+    -- ピッカー全体の幅を画面の何割使うか。0.8 で 8 割。
+    width_ratio = 0.8,
+    -- 下段 prompt : agent の prompt の取り分。0.3 で 3:7。
+    -- prompt が狭くなりすぎる場合は min_prompt_width が優先される。
+    ratio = 0.3,
+    -- prompt（下書き）の最低幅（列）。狭い画面で入力欄を確保するための下限。
+    min_prompt_width = 30,
+    -- agent 一覧の最低幅（列）。これを割るなら横並びをやめて縦積みにする。
+    min_list_width = 20,
+    -- プレビューに出す履歴の行数（末尾から）。
+    history_lines = 500,
+    -- 折り返し。false は nowrap で、長い行は zh / zl で横にずらして見る。
+    -- true にすると折り返し、breakindent と showbreak で継続行を区別する。
+    wrap = false,
+    -- 取得のタイムアウト（ms）。相手 nvim が応答しない場合の上限。
+    fetch_timeout_ms = 800,
+    -- 選択が変わってから取得するまでの待ち時間（ms）。連打しても最後の1回だけ走らせる。
+    debounce_ms = 50,
+    -- 失敗表示を出すまでの連続失敗回数。1回だけの失敗は前回の内容を保って無視する。
+    failure_threshold = 2,
+    -- プレビュー幅がこれ未満なら出さない。
+    min_preview_width = 36,
+    -- プレビュー高さがこれ未満なら出さない（画面が低いとき）。
+    min_preview_height = 6,
+    -- プレビュー（ピッカー全体）の高さを画面の何割使うか。
+    -- 1.0 で画面いっぱい（罫線込みで収まる上限まで）。下段とは切り離しているので、
+    -- 一覧が短くてもプレビューはこの高さになる。
+    height_ratio = 1.0,
+    -- 下書き（Prompt）の高さ。プレビューの高さには影響しない。
+    draft_height = 5,
+  },
 }
 
 return M

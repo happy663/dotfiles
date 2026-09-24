@@ -22,6 +22,15 @@ local pane_lists = {
     pane("1", "running"),
     pane("2", "running"),
     pane("3", "running"),
+    pane("4", "running"),
+    pane("5", "running"),
+    pane("6", "running"),
+    pane("7", "running"),
+    pane("8", "running"),
+    pane("9", "running"),
+    pane("10", "running"),
+    pane("11", "running"),
+    pane("12", "running"),
   },
 }
 local list_call = 0
@@ -60,6 +69,12 @@ local function assert_eq(actual, expected, message)
   end
 end
 
+local function assert_true(value, message)
+  if not value then
+    error(message .. ": expected truthy, got " .. tostring(value))
+  end
+end
+
 local opened = send_to.open()
 assert_eq(opened, true, "picker opens")
 
@@ -67,21 +82,30 @@ local draft_win = vim.api.nvim_get_current_win()
 local list_win = nil
 for _, win in ipairs(vim.api.nvim_list_wins()) do
   local cfg = vim.api.nvim_win_get_config(win)
-  if win ~= draft_win and cfg.relative ~= "" then
+  -- プレビューも浮きウィンドウなので、タイトルで一覧を特定する。
+  local title = cfg.title and (type(cfg.title) == "table" and cfg.title[1][1] or cfg.title)
+  if win ~= draft_win and cfg.relative ~= "" and title == " Agents " then
     list_win = win
     break
   end
 end
 assert(list_win, "agent list window was not found")
-assert_eq(vim.api.nvim_win_get_height(list_win), 1, "initial list height")
+-- 新レイアウト: 下段 prompt | agent は同じ高さで、下書きの高さが 8 なので
+-- 件数が少なくても下段は 8 行になる。
+assert_eq(vim.api.nvim_win_get_height(list_win), 8, "initial list height (bottom row)")
 
 local refreshed = send_to.refresh()
 assert_eq(refreshed, true, "picker refreshes")
-assert_eq(vim.api.nvim_win_get_height(list_win), 3, "refreshed list height")
+-- 件数 12 で下段が max(8, 10) の 10 行に伸びる。
+assert_eq(vim.api.nvim_win_get_height(list_win), 10, "refreshed list height")
 
 local list_cfg = vim.api.nvim_win_get_config(list_win)
 local draft_cfg = vim.api.nvim_win_get_config(draft_win)
-assert_eq(draft_cfg.row, list_cfg.row + 3 + 2, "draft follows refreshed list")
+assert_eq(draft_cfg.row, list_cfg.row, "prompt and agent share the bottom row")
+assert_true(
+  list_cfg.col > draft_cfg.col,
+  "agent is right of prompt (col " .. draft_cfg.col .. " vs " .. list_cfg.col .. ")"
+)
 
 send_to.close()
 print("agent_term send-to refresh tests passed")
