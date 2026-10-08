@@ -193,6 +193,28 @@ vim.o.grepprg = "git grep -n --no-color"
 vim.opt.grepformat = "%f:%l:%m"
 -- vim.o.clipboard = "unnamedplus"
 
+-- :terminal 内のアプリが OSC 52 でクリップボードへ書き込むとき、Neovim は
+-- ペイロード全体を「1要素の List」として clipboard provider へ渡す
+-- (src/nvim/terminal.c: term_clipboard_set は改行で分割しない)。
+-- デフォルトの provider はコマンド指定なので systemlist() 経由でバイト列化され、
+-- そこで「要素内の改行は NUL に変換する」という Vimscript の List 規約が適用され
+-- (src/nvim/eval.c: save_tv_as_string)、複数行のテキストが壊れる。
+-- provider を関数にすると List → バイト列の変換を経由しないため回避できる。
+-- 例: Neovim のターミナルで動かしている Claude Code の /copy。
+if vim.fn.has("mac") == 1 then
+  local function pbcopy(lines)
+    vim.system({ "pbcopy" }, { stdin = table.concat(lines, "\n") }):wait()
+  end
+
+  -- paste 側は変換の影響を受けないので、デフォルトと同じコマンド指定のままにする
+  -- (関数にすると systemlist() の keepempty が効かず linewise 判定が失われる)
+  vim.g.clipboard = {
+    name = "pbcopy-osc52-safe",
+    copy = { ["+"] = pbcopy, ["*"] = pbcopy },
+    paste = { ["+"] = { "pbpaste" }, ["*"] = { "pbpaste" } },
+  }
+end
+
 -- Markdownのスペルチェックハイライトを白色に設定
 -- (デフォルトではCommentと同じ灰色になってしまうため)
 
@@ -247,3 +269,4 @@ vim.opt.foldlevelstart = 99 -- ファイルを開いたときは全て展開
 -- vim.o.foldtext = "" -- 任意; 既定の折り畳み表示が嫌いな人用
 vim.o.synmaxcol = 200
 vim.o.laststatus = 3
+vim.o.undofile = true
