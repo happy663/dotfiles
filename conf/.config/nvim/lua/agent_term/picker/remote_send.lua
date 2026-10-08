@@ -15,7 +15,7 @@ local M = {}
 local RPC_TIMEOUT_MS = 2000
 
 -- 相手 nvim 側で解決させる Agent ターミナルのパターン。1ペイン1エージェント前提。
-local TARGET_PATTERNS = { "claude", "codex", "pi" }
+local TARGET_PATTERNS = { "claude", "codex", "pi", "ccsession" }
 
 local function write_temp(content)
   local path = vim.fn.tempname()

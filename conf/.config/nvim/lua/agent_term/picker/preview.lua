@@ -16,7 +16,7 @@ local remote_send = require("agent_term.picker.remote_send")
 local M = {}
 
 -- send 側と同じパターン。1ペイン1エージェントが前提。
-local TARGET_PATTERNS = { "claude", "codex", "pi" }
+local TARGET_PATTERNS = { "claude", "codex", "pi", "ccsession" }
 
 -- TUI は行末を画面幅まで空白で埋めるので、落としておかないと空行だらけに見える。
 local function trim_eol(line)
