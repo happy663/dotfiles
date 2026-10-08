@@ -21,7 +21,7 @@ mock.module("@earendil-works/pi-coding-agent", () => ({
 }));
 
 const { default: keepDefaultModel } = await import(
-  "../../conf/.pi/agent/extensions/keep-default-model.ts"
+  "../extensions/keep-default-model.ts"
 );
 
 type Handler = (event: any, ctx: any) => Promise<void> | void;

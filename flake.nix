@@ -42,9 +42,26 @@
       overlays = [
         inputs.neovim-nightly-overlay.overlays.default
       ];
+      ciShell = pkgs: pkgs.mkShell {
+        packages = with pkgs; [
+          bash
+          bun
+          coreutils
+          curl
+          gawk
+          git
+          gnugrep
+          gnused
+          jq
+          tmux
+        ];
+      };
 
     in
     {
+      devShells.${system.darwin}.ci = ciShell darwinPkgs;
+      devShells.${system.linux}.ci = ciShell linuxPkgs;
+
       apps.${system.darwin}.update = {
         type = "app";
         program = toString

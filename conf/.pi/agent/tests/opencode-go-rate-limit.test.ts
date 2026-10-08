@@ -18,7 +18,7 @@ const {
   pickCritical,
   formatReset,
   colorForPercent,
-} = await import("../../conf/.pi/agent/extensions/opencode-go-rate-limit.ts");
+} = await import("../extensions/opencode-go-rate-limit.ts");
 
 type Handler = (event: any, ctx: any) => Promise<void> | void;
 
