@@ -7,7 +7,11 @@
       "source": "npm:@zigai/pi-tree"
     },
     {
-      "source": "npm:pi-subagents"
+      "source": "npm:pi-subagents",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
       "source": "npm:pi-ask-user"
@@ -51,7 +55,11 @@
       "themes": []
     },
     {
-      "source": "npm:pi-claude-cli"
+      "source": "npm:pi-claude-cli",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
       "source": "npm:@plannotator/pi-extension"
@@ -67,7 +75,11 @@
       "source": "npm:@juanibiapina/pi-powerbar"
     },
     {
-      "source": "npm:@tmustier/pi-usage-extension"
+      "source": "npm:@tmustier/pi-usage-extension",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
       "source": "npm:@tmustier/pi-raw-paste",
@@ -77,10 +89,18 @@
       "themes": []
     },
     {
-      "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359"
+      "source": "git:github.com/tintinweb/pi-manage-todo-list@b75c449aa85ce328e9a8b632f62bf642aed40359",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
-      "source": "npm:pi-btw"
+      "source": "npm:pi-btw",
+      "extensions": [],
+      "skills": [],
+      "prompts": [],
+      "themes": []
     },
     {
       "source": "npm:pi-interactive-shell",
@@ -137,7 +157,8 @@
   ],
   "enabledModels": [
     "opencode-go/deepseek-v4-flash",
-    "openai-codex/gpt-5.6-sol:high"
+    "openai-codex/gpt-5.6-sol:high",
+    "openai-codex/gpt-6.1-sol:high"
   ],
   "subagents": {
     "agentOverrides": {
