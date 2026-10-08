@@ -85,7 +85,7 @@ strip_note() {
 parse_price_cell() {
   local cell="$1"
   case "$cell" in
-    "" | "-") printf '0' ;;
+    "" | "-" | "Free" | "free") printf '0' ;;
     \$*) printf '%s' "${cell#\$}" ;;
     *) printf '%s' "$cell" ;;
   esac
@@ -126,9 +126,9 @@ classify_note() {
 # 価格テーブルのデータ行 ("| Model | Input | Output | ..." テーブル)
 extract_price_rows() {
   awk '
-    /^\| Model/ && /Cached Read/ { in_price = 1; next }
-    in_price && /^\| -/ { next }
-    in_price && /^\| / { print; next }
+    /^[[:space:]]*\| Model/ && /Cached Read/ { in_price = 1; next }
+    in_price && /^[[:space:]]*\| -/ { next }
+    in_price && /^[[:space:]]*\| / { print; next }
     in_price { in_price = 0 }
   ' "$1"
 }
@@ -138,7 +138,7 @@ extract_price_rows() {
 #   出力: {"id":"grok-4.5","name":"Grok 4.5","note":"normal","input":2.0,...}
 #   時間帯 (time) でモード不一致なら何も出力しない
 parse_price_row() {
-  local row="$1"
+  local row="$1" canonical_id="${2:-}"
   local cells
   IFS='|' read -r -a cells <<<"$row"
   [[ ${#cells[@]} -lt 6 ]] && return 1
@@ -147,7 +147,7 @@ parse_price_row() {
   model="$(trim "${cells[1]}")"
   note="$(extract_note "$model")"
   base="$(strip_note "$model")"
-  id="$(normalize_model_name "$base")"
+  id="${canonical_id:-$(normalize_model_name "$base")}"
   kind="$(classify_note "$note")"
   [[ -z "$id" ]] && return 1
 
@@ -178,14 +178,38 @@ parse_price_row() {
   '
 }
 
+# Endpoints テーブルの表示名 → 正式なモデルID のマップ JSON
+build_model_id_map() {
+  local gomdx="$1"
+  local tmp
+  tmp="$(mktemp)"
+  extract_endpoint_rows "$gomdx" | while IFS= read -r row; do
+    local cells name id
+    IFS='|' read -r -a cells <<<"$row"
+    [[ ${#cells[@]} -lt 4 ]] && continue
+    name="$(trim "${cells[1]}")"
+    id="$(trim "${cells[2]}")"
+    [[ -z "$name" || -z "$id" ]] && continue
+    jq -nc --arg name "$name" --arg id "$id" '{($name): $id}' >>"$tmp"
+  done
+  jq -s 'add // {}' "$tmp"
+  rm -f "$tmp"
+}
+
 # 価格テーブル全体 → モデルIDごとの価格マップ JSON
 #   出力: {"grok-4.5": {"name":..., "input":..., "output":..., "cacheRead":..., "cacheWrite":..., "tiers": [{...}]?}, ...}
 build_price_map() {
   local gomdx="$1"
-  local tmp
+  local tmp model_ids
   tmp="$(mktemp)"
+  model_ids="$(build_model_id_map "$gomdx")"
   extract_price_rows "$gomdx" | while IFS= read -r row; do
-    parse_price_row "$row" >>"$tmp" || true
+    local cells model base canonical_id
+    IFS='|' read -r -a cells <<<"$row"
+    model="$(trim "${cells[1]}")"
+    base="$(strip_note "$model")"
+    canonical_id="$(jq -r --arg name "$base" '.[$name] // ""' <<<"$model_ids")"
+    parse_price_row "$row" "$canonical_id" >>"$tmp" || true
   done
   jq -s '
     group_by(.id) | map(
@@ -223,9 +247,9 @@ build_price_map() {
 # Endpoints テーブルのデータ行 ("| Model | Model ID | Endpoint | ..." テーブル)
 extract_endpoint_rows() {
   awk '
-    /^\| Model/ && /Model ID/ { in_ep = 1; next }
-    in_ep && /^\| -/ { next }
-    in_ep && /^\| / { print; next }
+    /^[[:space:]]*\| Model/ && /Model ID/ { in_ep = 1; next }
+    in_ep && /^[[:space:]]*\| -/ { next }
+    in_ep && /^[[:space:]]*\| / { print; next }
     in_ep { in_ep = 0 }
   ' "$1"
 }
