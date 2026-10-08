@@ -80,15 +80,22 @@ return {
             ["sho"] = false,
           })
 
+          -- https://github.com/happy663/dotfiles/issues/323
           vim.api.nvim_exec(
             [[
+      " skkeletonのnotationテーブルはCtrl系を<c-a>〜<c-z>しか持たず、
+      " 未登録の<C-.>をmapped_keysに入れるとskkeleton#map()がE716で落ちて有効化に失敗するため追加する
+      " initialize-preの時点ではnotation.vimが未ロードで、変数への代入ではautoloadされないため関数呼び出しで読み込む
+      call skkeleton#notation#normalize('')
+      let g:skkeleton#notation#notation_to_key['<c-.>'] = "\<c-.>"
+      let g:skkeleton#notation#key_to_notation["\<c-.>"] = '<c-.>'
       call add(g:skkeleton#mapped_keys, '<C-a>')
-      call add(g:skkeleton#mapped_keys, '<C-b>')
+      call add(g:skkeleton#mapped_keys, '<C-.>')
       ]],
             false
           )
           vim.fn["skkeleton#register_keymap"]("henkan", "<C-a>", "henkanForward")
-          vim.fn["skkeleton#register_keymap"]("input", "<C-b>", "kakuteiUndo")
+          vim.fn["skkeleton#register_keymap"]("input", "<C-.>", "kakuteiUndo")
 
           vim.keymap.set("t", "<C-y>", function()
             vim.fn.feedkeys(vim.fn.input("Input: "), "n")
