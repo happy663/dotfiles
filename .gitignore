@@ -25,3 +25,5 @@ conf/.claude/settings.json
 conf/.pi/agent/settings.json
 conf/.config/tmux/plugins
 .pi-subagents
+conf/.config/ai-agents/skills/synced
+conf/.config/ai-agents/skills/.trash
