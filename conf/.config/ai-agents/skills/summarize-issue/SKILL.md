@@ -3,7 +3,7 @@ name: summarize-issue
 description: issueファイルを分析し「まとめ」セクションを作成する。issueのまとめ、要約を依頼された時に使用。
 argument-hint: "[issue-file-path]"
 allowed-tools: Read, Edit, mcp__acp__Read, mcp__acp__Edit
-disable-model-invocation: false
+disable-model-invocation: true
 ---
 
 # Issue要約スキル
