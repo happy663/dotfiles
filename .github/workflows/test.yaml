@@ -44,4 +44,4 @@ jobs:
         uses: cachix/install-nix-action@v31
 
       - name: Check OpenCode Go models
-        run: nix develop .#ci --command bash scripts/sync-opencode-go-models.sh --check
+        run: nix develop .#ci --command bash scripts/check-opencode-go-models-ci.sh

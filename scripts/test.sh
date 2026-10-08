@@ -14,8 +14,9 @@ run() {
   "$@"
 }
 
-run "OpenCode Go model sync parser" \
-  bash scripts/tests/sync-opencode-go-models.test.sh
+for test_file in scripts/tests/*.test.sh; do
+  run "Script: $(basename "$test_file")" bash "$test_file"
+done
 run "Pi extensions" \
   bun test ./conf/.pi/agent/tests/*.test.ts
 run "tmux configuration" \
