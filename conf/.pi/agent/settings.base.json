@@ -55,13 +55,6 @@
       "themes": []
     },
     {
-      "source": "npm:pi-claude-cli",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
-    },
-    {
       "source": "npm:@plannotator/pi-extension"
     },
     {
