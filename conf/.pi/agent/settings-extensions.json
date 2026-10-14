@@ -1,5 +1,5 @@
 {
 	"powerbar": {
-		"right": "provider,model,sub-hourly,sub-weekly,opencode-go"
+		"right": "provider,model,routed,sub-hourly,sub-weekly,opencode-go"
 	}
 }
