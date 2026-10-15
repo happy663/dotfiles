@@ -55,13 +55,6 @@
       "themes": []
     },
     {
-      "source": "npm:pi-claude-cli",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
-    },
-    {
       "source": "npm:@plannotator/pi-extension"
     },
     {
@@ -156,7 +149,7 @@
     }
   ],
   "enabledModels": [
-    "opencode-go/deepseek-v4-flash",
+    "opencode-go/deepseek-v4.1-flash",
     "openai-codex/gpt-5.6-sol:high",
     "openai-codex/gpt-6.1-sol:high"
   ],

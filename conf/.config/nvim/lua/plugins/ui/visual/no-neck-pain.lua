@@ -1,5 +1,8 @@
 return {
   "shortcuts/no-neck-pain.nvim",
+  -- v3は水平split内で余白が入れ子になるため、修正されるまでv2に固定する。
+  -- https://github.com/happy663/dotfiles/issues/330
+  branch = "2.x",
   config = function()
     require("no-neck-pain").setup({
       width = 170,
