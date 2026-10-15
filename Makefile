@@ -28,10 +28,15 @@ nix-apply-darwin:
 
 # Homebrew の formula/cask をまとめて更新する
 # nix-apply からは分離してあるため、更新したいときに明示的に叩く
-upgrade-brew:
+upgrade-brew-all:
 	brew update
 	brew upgrade
-	brew upgrade --cask --greedy
+	brew upgrade --cask --greedy 
+
+# Homebrew の formula のみを更新する
+upgrade-brew-formula:
+	brew update
+	brew upgrade --formula -y
 
 update-apply-npm:
 	cd conf/.config/nix/node-pkgs && rm package-lock.json
