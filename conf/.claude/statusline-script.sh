@@ -42,6 +42,7 @@ get_usage_color() {
 input=$(cat)
 model_name=$(echo "$input" | jq -r '.model.display_name' | sed -E 's/\(1M context\)/(1m)/')
 model_id=$(echo "$input" | jq -r '.model.id // empty')
+context_window_size=$(echo "$input" | jq -r '.context_window.context_window_size // empty')
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
 session_id=$(echo "$input" | jq -r '.session_id // empty')
 five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
@@ -61,7 +62,12 @@ format_epoch() {
 }
 
 # モデルに応じてコンパクション閾値を設定（コンテキストウィンドウの80%）
-context_window=$(get_context_window "$model_id")
+# Claude Code から渡されるサイズを優先し、無い場合はモデルIDから推測する
+if [[ "$context_window_size" =~ ^[0-9]+$ ]] && [ "$context_window_size" -gt 0 ]; then
+    context_window="$context_window_size"
+else
+    context_window=$(get_context_window "$model_id")
+fi
 COMPACTION_THRESHOLD=$((context_window * 80 / 100))
 
 # 現在のディレクトリ名のみ取得
