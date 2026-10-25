@@ -6,15 +6,8 @@ M.adapters = {
       return require("codecompanion.adapters").extend("copilot", {
         schema = {
           model = {
-            default = "claude-opus-4.6",
-          },
-          choices = {
-            "claude-opus-4.6",
-            "claude-sonnet-4.6",
-            "claude-sonnet-4",
-            "claude-sonnet-4",
-            "claude-3.7-sonnet",
-            "gpt-4o-2024-08-06",
+            -- 利用可能なモデルはアダプタが動的に取得する。ここは既定値のみ指定する
+            default = "claude-opus-5.5",
           },
         },
       })
