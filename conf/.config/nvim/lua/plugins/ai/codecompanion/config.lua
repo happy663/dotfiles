@@ -111,16 +111,6 @@ M.interactions = {
           "Japanese"
         )
       end,
-      enabled = true,
-    },
-    callbacks = {
-      ["on_ready"] = {
-        actions = {
-          "interactions.background.builtin.chat_make_title",
-        },
-        -- Enable "on_ready" callback which contains the title generation action
-        enabled = true,
-      },
     },
     keymaps = {
       clear = {
@@ -155,7 +145,7 @@ M.interactions = {
 
                 -- SlashCommand.file の output メソッドを呼び出す
                 local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.file")
-                local cmd = SlashCommand.new({ Chat = chat })
+                local cmd = SlashCommand.new({ Chat = chat, config = require("codecompanion.config") })
 
                 for _, selection in ipairs(selections) do
                   if selection then
@@ -200,14 +190,11 @@ M.interactions = {
     },
     opts = {
       auto_insert = true,
-      reload = true,
     },
   },
   background = {
-    adapter = {
-      name = "copilot",
-      model = "gpt-4o", -- 高速で安価なモデル
-    },
+    -- v20 のデフォルト（アダプタ名の文字列指定）に合わせる。モデルはアダプタ側の既定を使う
+    adapter = "copilot",
     chat = {
       opts = {
         enabled = true, -- バックグラウンドチャット機能を有効化(タイトル生成に必要)

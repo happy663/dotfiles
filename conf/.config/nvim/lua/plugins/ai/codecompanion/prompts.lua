@@ -6,7 +6,6 @@ function M.get(roles, short_names)
       interaction = "chat",
       description = "Open chat with current buffer automatically attached",
       opts = {
-        is_default = true,
         is_slash_cmd = false, -- キーマッピングからのみ使用
         modes = { "n" },
         alias = short_names.CHAT_WITH_BUFFER,
@@ -28,7 +27,6 @@ function M.get(roles, short_names)
       interaction = "chat",
       description = "Refactor the selected code to improve its structure and quality",
       opts = {
-        is_default = true,
         is_slash_cmd = false,
         modes = { "v" },
         alias = short_names.REFACTOR_CHAT,
@@ -55,7 +53,7 @@ function M.get(roles, short_names)
         {
           role = roles.USER_ROLE,
           content = function(context)
-            local code = require("codecompanion.helpers.actions").get_code(
+            local code = require("codecompanion.helpers.code").get_code(
               context.start_line,
               context.end_line,
               { show_line_numbers = true }
@@ -81,13 +79,11 @@ function M.get(roles, short_names)
       interaction = "inline",
       description = "Refactor the selected code to improve its structure and quality",
       opts = {
-        is_default = true,
         is_slash_cmd = false,
         modes = { "v" },
         alias = short_names.REFACTOR_INLINE,
         auto_submit = true,
         user_prompt = false,
-        stop_context_insertion = true,
       },
       prompts = {
         {
@@ -100,32 +96,18 @@ function M.get(roles, short_names)
                 5. コードの重複を排除する
                 6. 言語固有のベストプラクティスに従う
                 7. 元の機能を保持する
-                説明なしにリファクタリングされたコードのみを返してください。]],
+                バッファを直接編集して変更を適用してください。]],
           opts = {
             visible = false,
           },
         },
         {
           role = roles.USER_ROLE,
-          content = function(context)
-            local code = require("codecompanion.helpers.actions").get_code(
-              context.start_line,
-              context.end_line,
-              { show_line_numbers = true }
-            )
-            return string.format(
-              [[Please refactor this %s code:
-                    ```%s
-                    %s
-                    ```]],
-              context.filetype,
-              context.filetype,
-              code
-            )
-          end,
-          opts = {
-            contains_code = true,
-          },
+          content = [[選択したコードを、上記の原則に従ってリファクタリングしてください。
+
+- 選択範囲の外は変更しない
+- 動作は変えない
+- 説明は不要なので、変更の適用のみ行う]],
         },
       },
     },
@@ -134,7 +116,6 @@ function M.get(roles, short_names)
       description = "Explain the LSP diagnostics for the selected code",
       opts = {
         index = 9,
-        is_default = true,
         is_slash_cmd = false,
         modes = { "v" },
         alias = short_names.LSP_CHAT,
@@ -155,11 +136,8 @@ function M.get(roles, short_names)
         {
           role = roles.USER_ROLE,
           content = function(context)
-            local diagnostics = require("codecompanion.helpers.actions").get_diagnostics(
-              context.start_line,
-              context.end_line,
-              context.bufnr
-            )
+            local diagnostics =
+              require("codecompanion.helpers.code").get_diagnostics(context.start_line, context.end_line, context.bufnr)
 
             local concatenated_diagnostics = ""
             for i, diagnostic in ipairs(diagnostics) do
@@ -191,7 +169,7 @@ function M.get(roles, short_names)
         {
           role = roles.USER_ROLE,
           content = function(context)
-            local code = require("codecompanion.helpers.actions").get_code(
+            local code = require("codecompanion.helpers.code").get_code(
               context.start_line,
               context.end_line,
               { show_line_numbers = true }
@@ -218,23 +196,20 @@ function M.get(roles, short_names)
       interaction = "inline",
       description = "Fix LSP issues with inline changes",
       opts = {
-        is_default = true,
         is_slash_cmd = false,
         modes = { "v" },
         alias = short_names.LSP_INLINE,
         auto_submit = true,
         user_prompt = false,
-        stop_context_insertion = true,
       },
       prompts = {
         {
           role = roles.SYSTEM_ROLE,
           content = [[LSPの診断の問題を修正することに特化したエキスパートコーダーです。コードを修正する際は:
-                1. 修正されたコードのみを提供する
-                2. すべてのLSP診断が解決されることを確認する
-                3. 元のコードスタイルを維持する
-                4. 必要な変更のみを含める
-                5. 説明やマークダウンなしで生のコードのみを返す]],
+                1. すべてのLSP診断が解決されることを確認する
+                2. 元のコードスタイルを維持する
+                3. 必要な変更のみを含める
+                4. バッファを直接編集して変更を適用する]],
           opts = {
             visible = false,
           },
@@ -242,27 +217,14 @@ function M.get(roles, short_names)
         {
           role = roles.USER_ROLE,
           content = function(context)
-            local diagnostics = require("codecompanion.helpers.actions").get_diagnostics(
-              context.start_line,
-              context.end_line,
-              context.bufnr
-            )
-
-            local code = require("codecompanion.helpers.actions").get_code(
-              context.start_line,
-              context.end_line,
-              { show_line_numbers = true }
-            )
+            local diagnostics =
+              require("codecompanion.helpers.code").get_diagnostics(context.start_line, context.end_line, context.bufnr)
 
             return string.format(
-              [[Fix this %s code according to the LSP diagnostics:
-                    LSP Diagnostics:
-                    %s
-                    Code:
+              [[選択したコードのLSP診断を修正してください。診断内容は以下のとおりです。
+
                     %s]],
-              context.filetype,
-              vim.inspect(diagnostics),
-              code
+              vim.inspect(diagnostics)
             )
           end,
           opts = {
@@ -275,7 +237,6 @@ function M.get(roles, short_names)
       interaction = "chat",
       description = "Explain how code in a buffer works",
       opts = {
-        is_default = true,
         is_slash_cmd = false,
         modes = { "v" },
         alias = short_names.EXPLAIN_CHAT,
@@ -299,7 +260,7 @@ function M.get(roles, short_names)
         {
           role = roles.USER_ROLE,
           content = function(context)
-            local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
+            local code = require("codecompanion.helpers.code").get_code(context.start_line, context.end_line)
 
             return string.format(
               [[Please explain this code from buffer %d:
