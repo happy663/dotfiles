@@ -49,9 +49,7 @@ in
       neovim-remote
       fastfetch
       nodejs_24
-      (inputs.ccsession.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
-        vendorHash = "sha256-87X5go1iG4gqUTHXbZoxWuAhk+jWv6OBIQVb5UfFfzs=";
-      }))
+      inputs.ccsession.packages.${pkgs.system}.default
       # Node.js tools managed by Nix
       nodeTools
       pi-coding-agent
