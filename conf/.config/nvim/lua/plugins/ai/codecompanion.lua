@@ -318,9 +318,6 @@ return {
         display = {
           chat = {
             show_settings = false,
-            show_key = true,
-            show_reference_info = true,
-            show_system_messages = true,
             show_reasoning = true,
             -- acp = {
             --   max_title_length = 15, -- Maximum title length (nil = unlimited)
@@ -352,6 +349,11 @@ return {
           -- log_level = "DEBUG",
         },
         rules = {
+          -- v20 では inline にも default rules が自動で送られる。HTTP アダプタの inline で
+          -- AGENTS.md 等を送らないよう無効化する（v19 系では無視されるキー）
+          opts = {
+            inline = { autoload = {} },
+          },
           default = {
             description = "Collection of common files for all projects",
             files = {
@@ -361,7 +363,8 @@ return {
               ".rules",
               ".windsurfrules",
               ".github/copilot-instructions.md",
-              -- AGENT.md, AGENTS.md, CLAUDE.md系はClaude Codeが内部で読み込むため除外
+              -- 注意: 設定は deep merge されるため、デフォルト配列の末尾
+              -- （AGENT.md / AGENTS.md / CLAUDE.md 系）はここでは消せない
             },
             is_preset = true,
           },
@@ -369,8 +372,6 @@ return {
         interactions = config.interactions,
         prompt_library = prompts.get(roles, short_names),
       })
-
-      vim.g.codecompanion_auto_tool_mode = "true"
 
       -- WinResizedイベントでCodeCompanionバッファの幅を保存
       vim.api.nvim_create_autocmd("WinResized", {

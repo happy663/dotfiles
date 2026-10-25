@@ -6,15 +6,8 @@ M.adapters = {
       return require("codecompanion.adapters").extend("copilot", {
         schema = {
           model = {
-            default = "claude-opus-4.6",
-          },
-          choices = {
-            "claude-opus-4.6",
-            "claude-sonnet-4.6",
-            "claude-sonnet-4",
-            "claude-sonnet-4",
-            "claude-3.7-sonnet",
-            "gpt-4o-2024-08-06",
+            -- 利用可能なモデルはアダプタが動的に取得する。ここは既定値のみ指定する
+            default = "claude-opus-5.5",
           },
         },
       })
@@ -23,12 +16,8 @@ M.adapters = {
       return require("codecompanion.adapters").extend("openai", {
         schema = {
           model = {
-            default = "gpt-4o-mini",
-          },
-          choices = {
-            "o1-mini-2024-09-12",
-            "gpt-4o-mini",
-            "o3-mini-2025-01-31",
+            -- :CodeCompanionCmd 用。選択可能なモデルはアダプタ側の一覧を使う
+            default = "gpt-5.4-mini",
           },
         },
         env = {
@@ -43,11 +32,6 @@ M.adapters = {
         schema = {
           model = {
             default = "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
-          },
-          choices = {
-            "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
-            "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K",
-            "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
           },
         },
         env = {
@@ -111,16 +95,6 @@ M.interactions = {
           "Japanese"
         )
       end,
-      enabled = true,
-    },
-    callbacks = {
-      ["on_ready"] = {
-        actions = {
-          "interactions.background.builtin.chat_make_title",
-        },
-        -- Enable "on_ready" callback which contains the title generation action
-        enabled = true,
-      },
     },
     keymaps = {
       clear = {
@@ -155,7 +129,7 @@ M.interactions = {
 
                 -- SlashCommand.file の output メソッドを呼び出す
                 local SlashCommand = require("codecompanion.interactions.chat.slash_commands.builtin.file")
-                local cmd = SlashCommand.new({ Chat = chat })
+                local cmd = SlashCommand.new({ Chat = chat, config = require("codecompanion.config") })
 
                 for _, selection in ipairs(selections) do
                   if selection then
@@ -180,7 +154,8 @@ M.interactions = {
   },
   inline = { adapter = "copilot" },
   cmd = {
-    adapter = "openai",
+    -- OpenAI はクレジット切れで使えないため Copilot を使う（cmd は HTTP アダプタのみ対応）
+    adapter = { name = "copilot", model = "claude-opus-5.5" },
   },
   cli = {
     agent = "claude_code",
@@ -200,14 +175,11 @@ M.interactions = {
     },
     opts = {
       auto_insert = true,
-      reload = true,
     },
   },
   background = {
-    adapter = {
-      name = "copilot",
-      model = "gpt-4o", -- 高速で安価なモデル
-    },
+    -- v20 のデフォルト（アダプタ名の文字列指定）に合わせる。モデルはアダプタ側の既定を使う
+    adapter = "copilot",
     chat = {
       opts = {
         enabled = true, -- バックグラウンドチャット機能を有効化(タイトル生成に必要)
