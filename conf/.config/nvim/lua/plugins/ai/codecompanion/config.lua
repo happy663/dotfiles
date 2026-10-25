@@ -33,7 +33,7 @@ M.adapters = {
         },
         env = {
           api_key = function()
-            return vim.fn.getenv("OPENAI_API_KEY")
+            return vim.env.OPENAI_API_KEY
           end,
         },
       })
@@ -68,7 +68,7 @@ M.adapters = {
         },
         env = {
           CLAUDE_CODE_OAUTH_TOKEN = function()
-            return vim.fn.getenv("CLAUDE_CODE_OAUTH_TOKEN")
+            return vim.env.CLAUDE_CODE_OAUTH_TOKEN
           end,
         },
       })
@@ -76,16 +76,10 @@ M.adapters = {
     codex = function()
       return require("codecompanion.adapters").extend("codex", {
         defaults = {
-          auth_method = vim.env.CODEX_ACP_AUTH_METHOD or "openai-api-key",
-          model = "gpt-5.5",
-        },
-        env = {
-          OPENAI_API_KEY = function()
-            return vim.fn.getenv("OPENAI_API_KEY")
-          end,
-          CODEX_API_KEY = function()
-            return vim.fn.getenv("CODEX_API_KEY")
-          end,
+          -- @agentclientprotocol/codex-acp の認証方式ID（"api-key" | "chat-gpt"）
+          -- 一致しないと先頭の "api-key" が選ばれ、auth.json が API キーで上書きされる
+          auth_method = "chat-gpt",
+          model = "gpt-5.6-sol",
         },
       })
     end,

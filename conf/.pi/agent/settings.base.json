@@ -190,5 +190,8 @@
     }
   },
   "theme": "light",
-  "treeFilterMode": "no-tools"
+  "treeFilterMode": "no-tools",
+  "defaultTools": [
+    "+codemode"
+  ]
 }

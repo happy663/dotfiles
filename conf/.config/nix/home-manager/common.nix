@@ -49,9 +49,7 @@ in
       neovim-remote
       fastfetch
       nodejs_24
-      (inputs.ccsession.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
-        vendorHash = "sha256-87X5go1iG4gqUTHXbZoxWuAhk+jWv6OBIQVb5UfFfzs=";
-      }))
+      inputs.ccsession.packages.${pkgs.system}.default
       # Node.js tools managed by Nix
       nodeTools
       pi-coding-agent
@@ -65,12 +63,6 @@ in
           rev = "v0.40.2";
           hash = "sha256-xj5WKAduaJWA3NhWuMsF5EXF91+NTGAXkbdhpeFqLxE=";
         };
-      }))
-      (tmux.overrideAttrs (old: {
-        # tmux 3.7b の overlay 強制再描画（screen-redraw.c）を除去し、
-        # Neovim 等の alternate-screen 再描画で display-menu / display-popup が
-        # ちらつく問題を回避する（GitHub PR #5398 と同方針。3.8 で採用される変更）
-        patches = (old.patches or [ ]) ++ [ ../../tmux/tmux-3.7b-overlay-redraw.patch ];
       }))
       mosh # モバイルからAgent操作するための接続層（issue #229）
       deno

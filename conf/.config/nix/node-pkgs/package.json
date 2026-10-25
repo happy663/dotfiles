@@ -7,7 +7,7 @@
     "editprompt": "latest",
     "@anthropic-ai/claude-code": "latest",
     "@openai/codex": "latest",
-    "@zed-industries/codex-acp": "latest",
+    "@agentclientprotocol/codex-acp": "latest",
     "difit": "latest"
   }
 }
