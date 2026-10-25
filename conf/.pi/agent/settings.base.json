@@ -193,5 +193,6 @@
   "treeFilterMode": "no-tools",
   "defaultTools": [
     "+codemode"
-  ]
+  ],
+  "tuiMode": "regular"
 }
