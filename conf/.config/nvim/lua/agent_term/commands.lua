@@ -3,6 +3,7 @@ local cloud = require("agent_term.cloud")
 local config = require("agent_term.config")
 local draft = require("agent_term.local.draft")
 local layouts = require("agent_term.layouts")
+local message_nav = require("agent_term.message_nav")
 local routing = require("agent_term.local.routing")
 local send_to = require("agent_term.picker.send_to")
 local state = require("agent_term.local.state")
@@ -75,6 +76,7 @@ function M.setup()
 
   draft.setup()
   routing.setup()
+  message_nav.setup()
 
   vim.api.nvim_create_user_command("AgentCodex", function(command)
     layouts.open_agent_codex({
@@ -225,6 +227,7 @@ function M.setup()
     local resume_cmd = "claude --resume " .. session_id
     vim.cmd("terminal " .. resume_cmd)
     local new_bufnr = vim.api.nvim_get_current_buf()
+    message_nav.attach(new_bufnr, "claude")
     state.set_target_terminal_bufnr(new_bufnr)
     vim.cmd("startinsert")
   end, { desc = "Restart Claude Code with --resume in the same window" })

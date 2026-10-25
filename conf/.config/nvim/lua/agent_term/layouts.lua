@@ -1,6 +1,7 @@
 local config = require("agent_term.config")
 local draft = require("agent_term.local.draft")
 local state = require("agent_term.local.state")
+local message_nav = require("agent_term.message_nav")
 
 local CLAUDE_COMMAND = "claude"
 local CODEX_COMMAND = "codex"
@@ -102,6 +103,7 @@ function M.open_agent_pi(opts)
   local target_bufnr = vim.api.nvim_get_current_buf()
   clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
+  message_nav.attach(target_bufnr, "pi")
 
   state.set_target_terminal_bufnr(target_bufnr)
 
@@ -131,6 +133,7 @@ function M.open_agent_claude(opts)
   local target_bufnr = vim.api.nvim_get_current_buf()
   clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
+  message_nav.attach(target_bufnr, "claude")
   state.set_target_terminal_bufnr(target_bufnr)
 
   if opts.open_draft == false then
@@ -161,6 +164,7 @@ function M.open_agent_claude_codex(opts)
   vim.cmd("terminal " .. claude_cmd)
   local claude_target_bufnr = vim.api.nvim_get_current_buf()
   clear_term_winhighlight()
+  message_nav.attach(claude_target_bufnr, "claude")
   state.set_target_terminal_bufnr(claude_target_bufnr)
 
   vim.cmd("vsplit")
@@ -275,12 +279,14 @@ function M.open_agent_claude_pair(opts)
   local left_bufnr = vim.api.nvim_get_current_buf()
   local left_winid = vim.api.nvim_get_current_win()
   clear_term_winhighlight(left_winid)
+  message_nav.attach(left_bufnr, "claude")
 
   vim.cmd("rightbelow vsplit")
   vim.cmd("terminal " .. claude_cmd)
   local right_bufnr = vim.api.nvim_get_current_buf()
   local right_winid = vim.api.nvim_get_current_win()
   clear_term_winhighlight(right_winid)
+  message_nav.attach(right_bufnr, "claude")
 
   vim.cmd("botright split")
   vim.cmd("resize " .. tostring(M.claude_pair_config.input_height))
