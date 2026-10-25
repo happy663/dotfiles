@@ -154,7 +154,8 @@ M.interactions = {
   },
   inline = { adapter = "copilot" },
   cmd = {
-    adapter = "openai",
+    -- OpenAI はクレジット切れで使えないため Copilot を使う（cmd は HTTP アダプタのみ対応）
+    adapter = { name = "copilot", model = "claude-opus-5.5" },
   },
   cli = {
     agent = "claude_code",
