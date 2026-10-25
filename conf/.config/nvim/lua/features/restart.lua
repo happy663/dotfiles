@@ -222,7 +222,7 @@ local function restart_with_session()
   -- bang付き: nvim 0.13で :restart(bangなし)がauto-mksession/sourceするようになり、
   -- 自前のmksession/sourceと二重復元になる。auto-sourceはVeryLazyより前に走るため
   -- 初期バッファ(id=1)wipeとlazy.nvimの遅延イベント再発火が競合し Invalid buffer id: 1 になる
-  vim.cmd([[restart! lua require("core.restart").resume()]])
+  vim.cmd([[restart! lua require("features.restart").resume()]])
 end
 
 local function load_session()

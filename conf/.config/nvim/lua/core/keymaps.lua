@@ -180,7 +180,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 -- 通常terminal専用。Agent terminalはagent_term.message_navが明示的に上書きする。
-require("core.terminal_textobjects").setup()
+require("features.terminal_textobjects").setup()
 
 -- vim.keymap.set("n", "<leader>olh", ":Octo issue list assignee=happy663<CR>", {
 --   noremap = true,

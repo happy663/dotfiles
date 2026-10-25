@@ -4,7 +4,7 @@ package.path = vim.fn.getcwd()
   .. "/conf/.config/nvim/lua/?/init.lua;"
   .. package.path
 
-local terminal = require("core.terminal_textobjects")
+local terminal = require("features.terminal_textobjects")
 
 local function assert_eq(actual, expected, message)
   if actual ~= expected then
