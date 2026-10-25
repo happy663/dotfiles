@@ -50,7 +50,9 @@ return {
 
       -- editor insert → terminal → editor に戻った時に insert mode を復元する
       local prev_was_insert = false
-      vim.keymap.set("n", [[<C-\>]], "<Cmd>ToggleTerm<CR>", { desc = "Toggle terminal from normal mode" })
+      vim.keymap.set("n", [[<C-\>]], function()
+        vim.cmd(("%dToggleTerm"):format(vim.v.count1))
+      end, { desc = "Toggle terminal from normal mode" })
       vim.keymap.set("i", [[<C-\>]], function()
         print("Toggling terminal from insert mode")
         prev_was_insert = true
