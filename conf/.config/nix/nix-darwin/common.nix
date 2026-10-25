@@ -221,9 +221,6 @@
       "coursier"
       "pngpaste"
       "luarocks"
-      "newrelic-cli"
-      "snowflake-cli"
-      "aws-vault"
     ];
     casks = [
       "arc"
