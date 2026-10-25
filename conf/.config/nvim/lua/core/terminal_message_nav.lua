@@ -1,11 +1,17 @@
 -- 端末バッファ内のメッセージ/ターン移動とテキストオブジェクト
 --
--- Claude Code と pi で同じキーを使えるよう、バッファ内容からバックエンドを判定して振り分ける。
+-- Claude Code と pi、素のシェルで同じキーを使えるよう、バッファ内容から
+-- バックエンドを判定して処理を振り分ける。
 --
---   cli-claude : Claude Code の行頭マーカー（⏺ = 応答ブロック, ❯ = プロンプト）
+--   cli-claude : 行頭マーカー方式（⏺ = 応答ブロック, ❯ = プロンプト）
+--                Claude Code と powerlevel10k などの ❯ プロンプトで動く
 --   osc133     : OSC 133 セマンティックプロンプトを出すもの（pi など）
 --                pi はユーザーメッセージ先頭行を背景色で塗るため、
 --                「空白のみ・非空」の行をユーザー入力とみなす
+--
+-- 判定はメッセージ操作とターン操作で別々に行う。素のシェルのように
+-- OSC 133 を出さず ❯ だけのバッファでも動かすため、ターン操作は
+-- 「OSC133 のユーザーマーカー → ❯ 行 → OSC133 マーカー」の順に優先する。
 --
 -- マーカー行の種別判定は TermRequest の到着時ではなく利用時に行う。
 -- 到着時点では行の中身がまだ書き込まれておらず、判別を誤るため。
@@ -54,6 +60,24 @@ function M.neighbor(list, lnum, dir)
   return nil
 end
 
+--- ジャンプ先を決める
+--- 前方に次のマーカーが無ければ最新の出力（最終行）へ送る
+--- @param list number[] 昇順のマーカー行
+--- @param lnum number 現在行
+--- @param dir 1|-1
+--- @param line_count number
+--- @return number|nil
+function M.jump_target(list, lnum, dir, line_count)
+  local target = M.neighbor(list, lnum, dir)
+  if target ~= nil then
+    return target
+  end
+  if dir > 0 then
+    return line_count
+  end
+  return nil
+end
+
 --- lnum が属するブロックの開始行と終了行を返す
 --- @param list number[] 昇順のマーカー行
 --- @param lnum number
@@ -82,24 +106,6 @@ function M.block_range(list, lnum, line_count)
   return start, stop
 end
 
---- ジャンプ先を決める
---- 前方に次のマーカーが無ければ最新の出力（最終行）へ送る
---- @param list number[] 昇順のマーカー行
---- @param lnum number 現在行
---- @param dir 1|-1
---- @param line_count number
---- @return number|nil
-function M.jump_target(list, lnum, dir, line_count)
-  local target = M.neighbor(list, lnum, dir)
-  if target ~= nil then
-    return target
-  end
-  if dir > 0 then
-    return line_count
-  end
-  return nil
-end
-
 --- ブロック末尾の空行・空白行を落とす
 --- @param lines string[]
 --- @param start number
@@ -116,16 +122,33 @@ function M.trim_block_end(lines, start, stop)
   return stop
 end
 
---- バックエンド判定
---- Claude の行頭マーカーがあれば Claude を優先する（既存挙動を変えないため）
---- @param has_claude_marker boolean
---- @param has_osc133_mark boolean
+--- ターン操作のバックエンド判定
+--- @param has_osc133_user boolean OSC133 マーカーのうちユーザー入力と判別できたものがある
+--- @param has_osc133_any boolean OSC133 マーカーがある
+--- @param has_prompt_line boolean ❯ 行がある
 --- @return "cli-claude"|"osc133"|nil
-function M.detect_backend(has_claude_marker, has_osc133_mark)
-  if has_claude_marker then
+function M.detect_turn_backend(has_osc133_user, has_osc133_any, has_prompt_line)
+  if has_osc133_user then
+    return "osc133"
+  end
+  if has_prompt_line then
     return "cli-claude"
   end
-  if has_osc133_mark then
+  if has_osc133_any then
+    return "osc133"
+  end
+  return nil
+end
+
+--- メッセージ操作のバックエンド判定
+--- @param has_claude_block boolean ⏺ 行がある
+--- @param has_osc133_response boolean OSC133 の応答マーカーがある
+--- @return "cli-claude"|"osc133"|nil
+function M.detect_message_backend(has_claude_block, has_osc133_response)
+  if has_claude_block then
+    return "cli-claude"
+  end
+  if has_osc133_response then
     return "osc133"
   end
   return nil
@@ -141,38 +164,38 @@ local function line_matches(line, pattern)
   return line ~= nil and line:match(pattern) ~= nil
 end
 
-local function has_claude_marker(buf)
+local function has_line(buf, pattern)
   for _, line in ipairs(buffer_lines(buf)) do
-    if line_matches(line, CLAUDE_BLOCK_MARK) then
+    if line_matches(line, pattern) then
       return true
     end
   end
   return false
 end
 
-local function osc133_rows(buf)
-  local rows = {}
-  for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buf, ns_marks, 0, -1, {})) do
-    table.insert(rows, mark[2] + 1)
-  end
-  return rows
-end
-
---- 全マーカー行と、そのうちユーザー入力の行を返す
-local function osc133_lists(buf)
+--- OSC133 マーカーを種別ごとにまとめる
+local function osc133_data(buf)
   local lines = buffer_lines(buf)
-  local all, users = {}, {}
-  for _, row in ipairs(osc133_rows(buf)) do
-    table.insert(all, row)
+  local data = { all = {}, users = {}, responses = {}, lines = lines }
+  for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buf, ns_marks, 0, -1, {})) do
+    local row = mark[2] + 1
+    table.insert(data.all, row)
     if M.classify_marker_line(lines[row]) == "user" then
-      table.insert(users, row)
+      table.insert(data.users, row)
+    else
+      table.insert(data.responses, row)
     end
   end
-  return all, users, lines
+  return data
 end
 
-local function current_backend(buf)
-  return M.detect_backend(has_claude_marker(buf), #osc133_rows(buf) > 0)
+local function contains(list, value)
+  for _, item in ipairs(list) do
+    if item == value then
+      return true
+    end
+  end
+  return false
 end
 
 local function current_line()
@@ -189,7 +212,7 @@ local function select_lines(start, stop)
   return true
 end
 
--- Claude Code バックエンド --------------------------------------------------
+-- 行頭マーカー（Claude Code / シェルプロンプト）バックエンド -----------------
 
 local function claude_block_bounds(lnum, line_count)
   local lines = buffer_lines(0)
@@ -291,75 +314,46 @@ end
 
 -- OSC 133 バックエンド ------------------------------------------------------
 
---- 応答ブロックのマーカー行のみを抽出する
-local function osc133_response_rows(all, users)
-  local user_set = {}
-  for _, row in ipairs(users) do
-    user_set[row] = true
-  end
-
-  local rows = {}
-  for _, row in ipairs(all) do
-    if not user_set[row] then
-      table.insert(rows, row)
-    end
-  end
-  return rows
-end
-
-local function osc133_select(kind, inner)
-  local buf = vim.api.nvim_get_current_buf()
-  local all, users, lines = osc133_lists(buf)
-  local lnum = current_line()
-  local line_count = vim.api.nvim_buf_line_count(buf)
-
-  local list
-  if kind == "message" then
-    list = osc133_response_rows(all, users)
-    -- 応答ブロック専用（Claude の ⏺ と同じ意味に揃える）
-    local start, stop = M.block_range(all, lnum, line_count)
-    if start == nil then
-      return
-    end
-    local is_response = false
-    for _, row in ipairs(list) do
-      if row == start then
-        is_response = true
-        break
-      end
-    end
-    if not is_response then
-      return
-    end
-  else
-    list = #users > 0 and users or all
-  end
-
-  local start, stop = M.block_range(list, lnum, line_count)
-  if start == nil then
+local function osc133_select_message(data, inner)
+  local line_count = #data.lines
+  local start, stop = M.block_range(data.all, current_line(), line_count)
+  if start == nil or not contains(data.responses, start) then
+    -- 応答ブロック以外では何もしない（⏺ ブロックと同じ意味に揃える）
     return
   end
 
-  stop = M.trim_block_end(lines, start, stop)
+  stop = M.trim_block_end(data.lines, start, stop)
   if inner then
     start = start + 1
   end
   select_lines(start, stop)
 end
 
-local function osc133_jump(kind, forward)
-  local buf = vim.api.nvim_get_current_buf()
-  local all, users = osc133_lists(buf)
-
-  local list
-  if kind == "message" then
-    list = osc133_response_rows(all, users)
-  else
-    -- プロンプト行が判別できないテーマでも移動できるようにフォールバックする
-    list = #users > 0 and users or all
+local function osc133_select_turn(data, inner)
+  local line_count = #data.lines
+  local list = #data.users > 0 and data.users or data.all
+  local start, stop = M.block_range(list, current_line(), line_count)
+  if start == nil then
+    return
   end
 
-  local target = M.jump_target(list, current_line(), forward and 1 or -1, vim.api.nvim_buf_line_count(buf))
+  stop = M.trim_block_end(data.lines, start, stop)
+  if inner then
+    start = start + 1
+  end
+  select_lines(start, stop)
+end
+
+local function osc133_jump_message(data, forward)
+  local target = M.jump_target(data.responses, current_line(), forward and 1 or -1, #data.lines)
+  if target ~= nil then
+    vim.api.nvim_win_set_cursor(0, { target, 0 })
+  end
+end
+
+local function osc133_jump_turn(data, forward)
+  local list = #data.users > 0 and data.users or data.all
+  local target = M.jump_target(list, current_line(), forward and 1 or -1, #data.lines)
   if target ~= nil then
     vim.api.nvim_win_set_cursor(0, { target, 0 })
   end
@@ -369,37 +363,45 @@ end
 
 local function select_message(inner)
   local buf = vim.api.nvim_get_current_buf()
-  if current_backend(buf) == "cli-claude" then
+  local data = osc133_data(buf)
+  local backend = M.detect_message_backend(has_line(buf, CLAUDE_BLOCK_MARK), #data.responses > 0)
+  if backend == "cli-claude" then
     claude_select("message", inner)
-  else
-    osc133_select("message", inner)
+  elseif backend == "osc133" then
+    osc133_select_message(data, inner)
   end
 end
 
 local function select_turn(inner)
   local buf = vim.api.nvim_get_current_buf()
-  if current_backend(buf) == "cli-claude" then
+  local data = osc133_data(buf)
+  local backend = M.detect_turn_backend(#data.users > 0, #data.all > 0, has_line(buf, CLAUDE_PROMPT_MARK))
+  if backend == "cli-claude" then
     claude_select("turn", inner)
-  else
-    osc133_select("turn", inner)
+  elseif backend == "osc133" then
+    osc133_select_turn(data, inner)
   end
 end
 
 local function jump_message(forward)
   local buf = vim.api.nvim_get_current_buf()
-  if current_backend(buf) == "cli-claude" then
+  local data = osc133_data(buf)
+  local backend = M.detect_message_backend(has_line(buf, CLAUDE_BLOCK_MARK), #data.responses > 0)
+  if backend == "cli-claude" then
     claude_jump("message", forward)
-  else
-    osc133_jump("message", forward)
+  elseif backend == "osc133" then
+    osc133_jump_message(data, forward)
   end
 end
 
 local function jump_turn(forward)
   local buf = vim.api.nvim_get_current_buf()
-  if current_backend(buf) == "cli-claude" then
+  local data = osc133_data(buf)
+  local backend = M.detect_turn_backend(#data.users > 0, #data.all > 0, has_line(buf, CLAUDE_PROMPT_MARK))
+  if backend == "cli-claude" then
     claude_jump("turn", forward)
-  else
-    osc133_jump("turn", forward)
+  elseif backend == "osc133" then
+    osc133_jump_turn(data, forward)
   end
 end
 

@@ -58,9 +58,21 @@ assert_eq(nav.trim_block_end({ "a", "b", "", "   " }, 1, 4), 2, "末尾の空行
 assert_eq(nav.trim_block_end({ "a", "b  " }, 1, 2), 2, "末尾に本文があればそのまま")
 assert_eq(nav.trim_block_end({ "a", "", "" }, 1, 3), 1, "全て空行なら開始行で止まる")
 
--- バックエンド判定
-assert_eq(nav.detect_backend(true, true), "cli-claude", "Claude マーカーがあれば Claude を優先")
-assert_eq(nav.detect_backend(false, true), "osc133", "OSC 133 のみなら osc133")
-assert_eq(nav.detect_backend(false, false), nil, "どちらも無ければ判定なし")
+-- バックエンド判定（種類別）
+-- ターン: OSC133 のユーザーマーカー > ❯ プロンプト行 > OSC133 マーカー
+assert_eq(nav.detect_turn_backend(true, true, true), "osc133", "ユーザーマーカーがあれば osc133")
+assert_eq(
+  nav.detect_turn_backend(false, true, true),
+  "cli-claude",
+  "通常ターミナルの ❯ プロンプトは Claude 経路"
+)
+assert_eq(nav.detect_turn_backend(false, true, false), "osc133", "❯ が無ければ osc133 にフォールバック")
+assert_eq(nav.detect_turn_backend(false, false, true), "cli-claude", "OSC133 が無くても ❯ で動く")
+assert_eq(nav.detect_turn_backend(false, false, false), nil, "どちらも無ければ判定なし")
+
+-- メッセージ: ⏺ ブロック > OSC133 の応答マーカー
+assert_eq(nav.detect_message_backend(true, true), "cli-claude", "⏺ があれば Claude 経路")
+assert_eq(nav.detect_message_backend(false, true), "osc133", "⏺ が無ければ osc133")
+assert_eq(nav.detect_message_backend(false, false), nil, "どちらも無ければ判定なし")
 
 print("terminal_message_nav tests passed")
