@@ -16,12 +16,8 @@ M.adapters = {
       return require("codecompanion.adapters").extend("openai", {
         schema = {
           model = {
-            default = "gpt-4o-mini",
-          },
-          choices = {
-            "o1-mini-2024-09-12",
-            "gpt-4o-mini",
-            "o3-mini-2025-01-31",
+            -- :CodeCompanionCmd 用。選択可能なモデルはアダプタ側の一覧を使う
+            default = "gpt-5.4-mini",
           },
         },
         env = {
@@ -36,11 +32,6 @@ M.adapters = {
         schema = {
           model = {
             default = "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
-          },
-          choices = {
-            "hf.co/bluepen5805/DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q5_K_M",
-            "hf.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-Japanese-GGUF:Q6_K",
-            "hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:Q4_K_M",
           },
         },
         env = {
