@@ -49,6 +49,7 @@ in
       neovim-remote
       fastfetch
       nodejs_24
+      tmux
       inputs.ccsession.packages.${pkgs.system}.default
       # Node.js tools managed by Nix
       nodeTools
