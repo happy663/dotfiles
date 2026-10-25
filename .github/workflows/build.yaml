@@ -29,8 +29,11 @@ jobs:
       - name: Build homeConfigurations (darwin)
         run: nix build --show-trace --no-link .#homeConfigurations.darwin.activationPackage
 
-      - name: Build darwinConfigurations
+      - name: Build darwinConfigurations (personal)
         run: nix build --show-trace --no-link .#darwinConfigurations.personal.system
+
+      - name: Build darwinConfigurations (work)
+        run: nix build --show-trace --no-link .#darwinConfigurations.work.system
 
       - name: Print disk usage
         run: df -h
