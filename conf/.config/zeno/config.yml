@@ -286,19 +286,19 @@ snippets:
     snippet: nvim-guh
 
   - name: nvim octo issues
-    keyword: ol
+    keyword: oll
     snippet: nvim-octo-issues
 
   - name: nvim octo my issues
-    keyword: om
+    keyword: olm
     snippet: nvim-octo-my-issues
 
   - name: nvim octo prs
-    keyword: op
+    keyword: opa
     snippet: nvim-octo-prs
 
   - name: nvim octo reviews
-    keyword: "or"
+    keyword: opr
     snippet: nvim-octo-reviews
 
   # - name:
