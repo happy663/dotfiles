@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "slack": {
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "clientId": "1601185624273.8899143856786",
+        "callbackUrl": "http://localhost:3118/callback",
+        "callbackPort": 3118
+      },
+      "description": "Search and read Slack messages, channels, threads, users, and canvases",
+      "toolExposure": {
+        "slack_send_message": "hidden",
+        "slack_schedule_message": "hidden",
+        "slack_send_message_draft": "hidden",
+        "slack_add_reaction": "hidden",
+        "slack_create_conversation": "hidden",
+        "slack_create_list": "hidden",
+        "slack_update_list": "hidden",
+        "slack_add_list_record": "hidden",
+        "slack_update_list_record": "hidden",
+        "slack_create_canvas": "hidden",
+        "slack_update_canvas": "hidden",
+        "slack_get_file_upload_url": "hidden",
+        "slack_complete_file_upload": "hidden"
+      }
+    }
+  }
+}

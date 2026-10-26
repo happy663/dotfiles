@@ -17,13 +17,6 @@
       "source": "npm:pi-ask-user"
     },
     {
-      "source": "npm:pi-mcp-adapter",
-      "extensions": [],
-      "skills": [],
-      "prompts": [],
-      "themes": []
-    },
-    {
       "source": "npm:pi-web-access"
     },
     {
