@@ -1,5 +1,13 @@
 local M = {}
 
+function M.atlas_review_url(octo_buffer)
+  if not octo_buffer or octo_buffer.kind ~= "pull" or not octo_buffer.repo or not octo_buffer.number then
+    return nil
+  end
+
+  return ("https://github.com/%s/pull/%s"):format(octo_buffer.repo, octo_buffer.number)
+end
+
 function M.octo_buffer_keymaps()
   -- Global function for adding comment with multiple spaces
   function _G.add_comment_multi_space()
@@ -29,6 +37,19 @@ function M.octo_buffer_keymaps()
     silent = true,
     desc = "Octo: Reply to comment",
   })
+
+  local current_bufnr = vim.api.nvim_get_current_buf()
+  local atlas_url = M.atlas_review_url(_G.octo_buffers and _G.octo_buffers[current_bufnr])
+  if atlas_url then
+    vim.keymap.set("n", "gd", function()
+      vim.cmd("Atlas review " .. atlas_url)
+    end, {
+      buffer = true,
+      noremap = true,
+      silent = true,
+      desc = "Octo: Open PR diff in Atlas",
+    })
+  end
 
   -- Pin / unpin the IssueComment under the cursor
   -- (uses plugins.git.octo.comment_pin -> pinIssueComment / unpinIssueComment)
