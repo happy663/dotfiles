@@ -421,7 +421,9 @@
   "autoUpdatesChannel": "stable",
   "minimumVersion": "2.1.129",
   "plansDirectory": "./plans",
+  "tui": "default",
   "preferredNotifChannel": "terminal_bell",
-  "skipAutoPermissionPrompt": true,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }

@@ -1,6 +1,7 @@
 [
   ["model"],
   ["effortLevel"],
+  ["modelSettings"],
   ["permissions", "defaultMode"],
   ["env", "ANTHROPIC_AUTH_TOKEN"],
   ["env", "ANTHROPIC_BASE_URL"],
