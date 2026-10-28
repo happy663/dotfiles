@@ -115,7 +115,6 @@ return {
           "package.json",
         },
         workspace_required = true,
-        root_dir = lspconfig.util.root_pattern("tsconfig.json", "package.json"),
       })
       -- Deno設定
       vim.lsp.config("denols", {
