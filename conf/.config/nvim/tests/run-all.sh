@@ -14,6 +14,9 @@ if ! command -v nvim >/dev/null 2>&1; then
   exit 1
 fi
 
+# どの neovim で検証したかをログに残す（CI とローカルで版がずれたときの手がかり）。
+printf 'nvim: %s (%s)\n' "$(nvim --version | head -1)" "$(command -v nvim)"
+
 # ローカルの ~/.config/nvim は runtimepath 経由で読み込まれ、リポジトリ側の
 # ファイルを隠してしまう。CI には存在しないため、XDG_CONFIG_HOME を空にして揃える。
 SANDBOX_HOME="$(mktemp -d)"
