@@ -223,12 +223,8 @@
       "luarocks"
     ];
     casks = [
-      "arc"
-      "emacs"
-      "meetingbar"
       "alacritty"
       "alt-tab"
-      "figma"
       "wezterm@nightly"
       "discord"
       "raycast"
@@ -236,24 +232,19 @@
       "google-chrome"
       "gyazo"
       "macskk"
-      "postman"
       "scroll-reverser"
       "karabiner-elements"
       "vivaldi"
-      "bitwarden"
-      "claude"
       "codex-app"
       "spotify"
       "jordanbaird-ice"
-      "cursor"
       "ghostty"
-      "superwhisper"
       "homerow"
       "ovim"
-      "cmux"
       "hammerspoon"
       "obsidian"
       "arto"
+      "1password"
     ];
     masApps = {
       Kindle = 302584613;
