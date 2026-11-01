@@ -14,6 +14,11 @@ init:
 link:
 	scripts/link.sh
 
+# リポジトリ全体のテスト（CI と同じコマンドを実行する）
+test:
+	nix develop .#ci --command python3 .github/scripts/test-neovim-changelog.py
+	nix develop .#ci --command bash scripts/test.sh
+
 nix-apply:
 	nix run nixpkgs#home-manager -- switch --flake .#$(HOME_CONFIG)
 	sudo nix run nix-darwin -- switch --flake .#$(DARWIN_CONFIG)

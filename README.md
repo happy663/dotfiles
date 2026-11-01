@@ -80,6 +80,7 @@ dotfiles/
 | ----------- | --------------------------------------------------------- |
 | `make init` | Install Xcode Command Line Tools and essentials (macOS)   |
 | `make link` | Create symlinks for configuration files in home directory |
+| `make test` | Run the full test suite (same as CI)                      |
 
 ## License
 

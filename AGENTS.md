@@ -58,6 +58,8 @@ dotfiles/
 * Homebrew（nix-darwin 管理下の formula/cask の更新）:
     * `make upgrade-brew-all`（formula + cask をまとめて更新）
     * `make upgrade-brew-formula`（formula のみ更新）
+* テスト（CI と同じコマンド）:
+    * `make test`（`nix develop .#ci` 経由で全テストを実行）
 * ビルド確認（CI 相当・必要時のみ）:
     * `nix build .#darwinConfigurations.happy-mbp.system`
     * `nix build .#homeConfigurations.happy.activationPackage`

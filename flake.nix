@@ -53,6 +53,7 @@
           gnugrep
           gnused
           jq
+          python3
           tmux
         ];
       };
