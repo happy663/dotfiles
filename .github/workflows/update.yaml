@@ -71,7 +71,7 @@ jobs:
         timeout-minutes: 5
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-        run: bash .github/scripts/explain-neovim.sh
+        run: bash .github/scripts/explain-neovim-changelog.sh
 
       - name: Write PR body
         env:

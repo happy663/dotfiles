@@ -37,7 +37,7 @@ class ChangelogTest(unittest.TestCase):
             self.assertIn('Secret 未設定', module.render(out, False))
 
     def test_pi_failure_reasons_without_api_calls(self):
-        script = Path(__file__).with_name('explain-neovim.sh').resolve()
+        script = Path(__file__).with_name('explain-neovim-changelog.sh').resolve()
         for scenario, expected in [('secret', 'Secret 未設定'), ('install', 'インストール失敗'),
                                    ('model', 'モデル解決失敗'), ('timeout', 'タイムアウト'),
                                    ('empty', '出力が空'), ('success', None)]:
