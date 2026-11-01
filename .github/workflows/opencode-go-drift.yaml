@@ -21,8 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
+      # ciShell には nightly neovim が入っているため、substituter が無いと
+      # ソースビルドが走る。Cachix を設定してキャッシュから引けるようにする。
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
+        with:
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
 
       - name: Check OpenCode Go models
         run: nix develop .#ci --command bash .github/scripts/check-opencode-go-models-ci.sh
