@@ -13,9 +13,19 @@ on:
       - "flake.lock"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-darwin:
     runs-on: macos-15
+    # 実測は中央値 4.5 分・最大 23 分（キャッシュが冷えているとき）。
+    # ハングしたジョブを既定の 360 分まで引きずらないための上限。
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v5

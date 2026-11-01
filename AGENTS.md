@@ -40,7 +40,7 @@ dotfiles/
 │   ├── build.yaml             # Nix ビルド検証
 │   ├── test.yaml              # テスト（push / PR / 手動）
 │   ├── opencode-go-drift.yaml # 週次 OpenCode Go モデル差分チェック
-│   └── update.yaml            # 自動 flake.lock 更新（7日ごと）
+│   └── update.yaml            # 自動 flake.lock 更新（毎週水曜）
 ├── flake.nix                  # Nix flake 設定
 ├── flake.lock                 # Nix 依存関係ロック
 ├── Makefile                   # 主要操作コマンド
