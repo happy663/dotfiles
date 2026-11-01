@@ -2,7 +2,7 @@ name: Update
 
 on:
   schedule:
-    - cron: "0 15 */7 * *" # 3日ごと UTC 15:00 (JST 00:00)
+    - cron: "0 15 */7 * *" # 毎月 1/8/15/22/29 日 UTC 15:00 (JST 翌日 00:00)
   workflow_dispatch:
 
 permissions:
@@ -46,54 +46,40 @@ jobs:
           echo '```' >> ./ci-logs/update.md
 
       - name: Collect Neovim nightly changelog
+        id: neovim-collect
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OLD_REV: ${{ steps.nvim-before.outputs.rev }}
         run: |
-          OLD='${{ steps.nvim-before.outputs.rev }}'
-          NEW=$(jq -r '.nodes["neovim-src"].locked.rev' flake.lock)
-          {
-            echo ''
-            echo '### neovim nightly changes'
-            echo ''
-          } >> ./ci-logs/update.md
-          if [ -z "$OLD" ] || [ -z "$NEW" ] || [ "$OLD" = "$NEW" ]; then
-            echo '(no neovim changes)' >> ./ci-logs/update.md
-            exit 0
-          fi
-          echo "compare: [\`${OLD:0:7}...${NEW:0:7}\`](https://github.com/neovim/neovim/compare/${OLD}...${NEW})" >> ./ci-logs/update.md
-          echo '' >> ./ci-logs/update.md
-          HEADLINES=$(gh api "repos/neovim/neovim/compare/${OLD}...${NEW}" --paginate --jq '.commits[].commit.message | split("\n")[0]' 2>/dev/null || true)
-          if [ -z "$HEADLINES" ]; then
-            echo '(failed to fetch commit range)' >> ./ci-logs/update.md
-            exit 0
-          fi
-          TOTAL=$(printf '%s\n' "$HEADLINES" | grep -c . || true)
-          echo "total commits: ${TOTAL}" >> ./ci-logs/update.md
-          echo '' >> ./ci-logs/update.md
-          BREAKING=$(printf '%s\n' "$HEADLINES" | grep -E '^(feat|fix|refactor|perf)(\([^)]+\))?!:' || true)
-          if [ -n "$BREAKING" ]; then
-            {
-              echo '#### breaking'
-              echo ''
-              printf '%s\n' "$BREAKING" | sed 's/^/- /'
-              echo ''
-            } >> ./ci-logs/update.md
-          fi
-          FEATS=$(printf '%s\n' "$HEADLINES" | grep -E '^feat(\([^)]+\))?:' || true)
-          if [ -n "$FEATS" ]; then
-            {
-              echo '#### feat'
-              echo ''
-              printf '%s\n' "$FEATS" | sed 's/^/- /'
-              echo ''
-            } >> ./ci-logs/update.md
-          fi
+          NEW_REV=$(jq -r '.nodes["neovim-src"].locked.rev' flake.lock)
+          python3 .github/scripts/neovim-changelog.py collect \
+            --old "$OLD_REV" --new "$NEW_REV" --directory ./ci-logs
 
-      - name: Set PR body output
-        id: pr-body-output
+      - name: Setup Node for Pi
+        id: pi-node
+        if: hashFiles('ci-logs/neovim-input.md') != ''
+        continue-on-error: true
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Explain Neovim changes with Pi
+        id: neovim-ai
+        if: hashFiles('ci-logs/neovim-input.md') != ''
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: bash .github/scripts/explain-neovim-changelog.sh
+
+      - name: Write PR body
+        env:
+          COLLECT_OUTCOME: ${{ steps.neovim-collect.outcome }}
+          NODE_OUTCOME: ${{ steps.pi-node.outcome }}
+          AI_OUTCOME: ${{ steps.neovim-ai.outcome }}
         run: |
           {
-            echo 'body<<EOF'
             echo '## Automated update'
             echo ''
             echo -n 'started at:  '
@@ -101,10 +87,23 @@ jobs:
             echo -n 'finished at: '
             TZ=Asia/Tokyo date
             echo ''
-            cat ./ci-logs/update.md
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-          rm -rf ./ci-logs/
+            # Reserve room for Neovim evidence and the AI explanation.
+            python3 - <<'PYLOG'
+          from pathlib import Path
+          log = Path('ci-logs/update.md').read_text(errors='replace')
+          print(log[:15000])
+          if len(log) > 15000:
+              print('\n```\n(nix update log truncated)')
+          PYLOG
+            AI_ARGS=()
+            if [ "$AI_OUTCOME" = success ]; then
+              AI_ARGS+=(--ai-ok)
+            fi
+            python3 .github/scripts/neovim-changelog.py render \
+              --directory ./ci-logs "${AI_ARGS[@]}"
+          } > "$RUNNER_TEMP/update-pr-body.md"
+          # Keep generated logs out of the update commit.
+          python3 -c 'import shutil; shutil.rmtree("ci-logs")'
 
       - name: Create GitHub App Token
         uses: actions/create-github-app-token@v2
@@ -121,6 +120,6 @@ jobs:
           branch: auto-updates
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           delete-branch: true
-          body: ${{ steps.pr-body-output.outputs.body }}
+          body-path: ${{ runner.temp }}/update-pr-body.md
           token: ${{ steps.app-token.outputs.token }}
           reviewers: happy663

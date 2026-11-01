@@ -18,6 +18,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  neovim-changelog:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 .github/scripts/test-neovim-changelog.py
+      - run: bash -n .github/scripts/explain-neovim-changelog.sh
+
   test:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
