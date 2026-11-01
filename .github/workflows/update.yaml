@@ -4,13 +4,71 @@ on:
   schedule:
     - cron: "0 15 */7 * *" # 毎月 1/8/15/22/29 日 UTC 15:00 (JST 翌日 00:00)
   workflow_dispatch:
+    inputs:
+      ai-smoke-test:
+        description: 'Test Pi/Go against the #339 Neovim range without updating flake.lock or creating a PR'
+        type: boolean
+        default: false
+
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
+  ai-smoke-test:
+    if: inputs.ai-smoke-test == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Collect known Neovim changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir ./ci-logs
+          python3 .github/scripts/neovim-changelog.py collect \
+            --old 1cfebe93d5f9463acda4aa6f69e4faa244734193 \
+            --new 63497867b60a738c0454a3b9e25b9726a2eb02e0 \
+            --directory ./ci-logs
+      - name: Generate explanation with Pi and Go
+        timeout-minutes: 5
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: bash .github/scripts/explain-neovim.sh
+      - name: Validate explanation and render preview
+        run: |
+          python3 - <<'PYTEST'
+          from pathlib import Path
+          text = Path('ci-logs/neovim-ai.md').read_text()
+          assert 0 < len(text) <= 12000, 'AI output is empty or oversized'
+          for section in ['設定に影響しそうな破壊的変更', '試す価値のある新機能', 'その他']:
+              assert section in text, f'Missing section: {section}'
+          source = Path('ci-logs/neovim-source.md').read_text()
+          assert 'operatorfunc' in source and 'pathopt' in source
+          print(f'Generated {len(text)} characters with all three sections')
+          PYTEST
+          python3 .github/scripts/neovim-changelog.py render \
+            --directory ./ci-logs --ai-ok > ./ci-logs/neovim-preview.md
+          cat ./ci-logs/neovim-preview.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neovim-ai-smoke-test
+          # Do not upload the full model input or temporary/partial output.
+          path: |
+            ci-logs/neovim-source.md
+            ci-logs/neovim-ai.md
+            ci-logs/neovim-preview.md
+          retention-days: 7
+
   create-pr:
+    if: inputs.ai-smoke-test != true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -11,7 +11,9 @@ Pi 1.4.0 / OpenCode Go / `deepseek-v4.1-flash` を使用します。
 2. リポジトリの Actions secret `OPENCODE_API_KEY` に登録する。
 3. Console の Settings → Privacy → Regions で **Global** を許可する（DeepSeek に必要）。
 4. Go の **Extra Usage** は無効にする。上限到達時はAI解説なしで更新 PR を作る。
-5. マージ後に Update workflow を手動実行し、接続・解説・利用量を確認する。
+5. Update workflow の **ai-smoke-test** を有効にして手動実行し、接続・解説・利用量を確認する。
+   #339 の既知の変更範囲で生成し、flake.lock の更新・更新 PR の作成は行わない。
+   結果は実行の Summary と7日間保存の `neovim-ai-smoke-test` artifact に出る。
 
 キーを再発行した場合は同じ secret を更新します。キーの値を Issue やログに貼らないでください。
 
