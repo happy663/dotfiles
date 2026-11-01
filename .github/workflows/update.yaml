@@ -118,14 +118,14 @@ jobs:
           python3 -c 'import shutil; shutil.rmtree("ci-logs")'
 
       - name: Create GitHub App Token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ vars.PR_ACTION_APP_ID }}
           private-key: ${{ secrets.PR_ACTION_APP_PRIVATE_KEY }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "Automated updates"
           commit-message: "[bot] update flake.lock"

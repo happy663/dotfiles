@@ -15,7 +15,7 @@ runs:
     - name: Install Nix
       uses: cachix/install-nix-action@v31
     - name: Setup Cachix
-      uses: cachix/cachix-action@v16
+      uses: cachix/cachix-action@v17
       continue-on-error: true
       with:
         name: happy663
