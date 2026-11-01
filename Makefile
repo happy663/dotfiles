@@ -2,7 +2,9 @@ DARWIN_CONFIG ?= personal
 HOME_CONFIG ?= darwin
 
 # Do everything.
-all: init link brew update-apply-npm
+# Homebrew の formula/cask は nix-darwin の homebrew 設定で宣言的に管理するため、
+# ここには含めない。
+all: init link update-apply-npm
 
 # Set initial preference.
 init:
@@ -11,10 +13,6 @@ init:
 # Link dotfiles.
 link:
 	scripts/link.sh
-
-# Install macOS applications.
-brew:
-	scripts/brew.sh
 
 nix-apply:
 	nix run nixpkgs#home-manager -- switch --flake .#$(HOME_CONFIG)

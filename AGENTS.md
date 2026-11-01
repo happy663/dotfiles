@@ -33,8 +33,7 @@ dotfiles/
 │   └── .codex/               # Codex 設定
 ├── scripts/                   # セットアップ / リンク作成スクリプト
 │   ├── init.sh               # 初期セットアップ
-│   ├── link.sh               # シンボリックリンク作成
-│   └── after.sh              # インストール後処理
+│   └── link.sh               # シンボリックリンク作成
 ├── .github/workflows/         # GitHub Actions CI/CD
 │   ├── build.yaml            # Nix ビルド検証
 │   └── update.yaml           # 自動 flake.lock 更新（3日ごと）
@@ -48,12 +47,14 @@ dotfiles/
 * セットアップ（macOS）:
     * `make init`（初期セットアップ）
     * `make link`（dotfiles のシンボリックリンク作成）
-    * `make brew`（Homebrew アプリインストール）
 * Nix / Home Manager:
-    * `make apply-nix`（home-manager + nix-darwin を適用）
-    * `make apply-nix-just-home`（Home Manager 設定のみ）
-    * `make apply-nix-just-darwin`（nix-darwin 設定のみ）
+    * `make nix-apply`（home-manager + nix-darwin を適用）
+    * `make nix-apply-home`（Home Manager 設定のみ）
+    * `make nix-apply-darwin`（nix-darwin 設定のみ）
     * `make update-apply-npm`（node-pkgs を更新して home-manager を適用）
+* Homebrew（nix-darwin 管理下の formula/cask の更新）:
+    * `make upgrade-brew-all`（formula + cask をまとめて更新）
+    * `make upgrade-brew-formula`（formula のみ更新）
 * ビルド確認（CI 相当・必要時のみ）:
     * `nix build .#darwinConfigurations.happy-mbp.system`
     * `nix build .#homeConfigurations.happy.activationPackage`
