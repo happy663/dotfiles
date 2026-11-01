@@ -15,8 +15,8 @@ if [[ -z "${OPENCODE_API_KEY:-}" ]]; then
 fi
 # CI is pinned independently from nixpkgs pi-coding-agent. When updating, compare
 # the nixpkgs version in flake.lock and recheck these CLI flags and the model catalog.
-PI_VERSION=$(jq -er '.piVersion' .github/neovim-ai.json)
-PI_MODEL=$(jq -er '.model' .github/neovim-ai.json)
+PI_VERSION='1.4.0'
+PI_MODEL='opencode-go/deepseek-v4.1-flash'
 
 # Isolate CI from personal Pi settings, credentials, packages and instructions.
 export PI_CODING_AGENT_DIR="$RUNNER_TEMP/neovim-pi-agent"
@@ -29,7 +29,9 @@ npm install --prefix "$RUNNER_TEMP/neovim-pi" --ignore-scripts --no-audit --no-f
 
 # Resolve the exact model against the pinned bundled catalog before inference.
 stage='モデル解決失敗（Pi の固定カタログにモデルがありません）'
-"$RUNNER_TEMP/neovim-pi/node_modules/.bin/pi"   --no-tools --no-session --no-extensions --no-mcp --no-skills   --no-prompt-templates --no-context-files --no-approve --offline --list-models > "$RUNNER_TEMP/neovim-pi-models.txt"
+"$RUNNER_TEMP/neovim-pi/node_modules/.bin/pi" \
+  --no-tools --no-session --no-extensions --no-mcp --no-skills \
+  --no-prompt-templates --no-context-files --no-approve --offline --list-models > "$RUNNER_TEMP/neovim-pi-models.txt"
 awk -v provider="${PI_MODEL%%/*}" -v model="${PI_MODEL#*/}" \
   '$1 == provider && $2 == model { found=1 } END { exit !found }' \
   "$RUNNER_TEMP/neovim-pi-models.txt"

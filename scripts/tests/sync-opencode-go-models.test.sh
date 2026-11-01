@@ -57,13 +57,3 @@ assert_eq "100000" "$(jq -r '.["claude-haiku-5-5"].tiers[0].inputTokensAbove' <<
   "tier threshold should be preserved"
 
 echo "PASS: sync-opencode-go-models parser"
-
-# The production CI model must resolve locally; missing references are hard errors.
-check_neovim_ai_model "${REPO_ROOT}/.github/neovim-ai.json" "${REPO_ROOT}/conf/.pi/agent/models.json"
-printf '{"model":"opencode-go/removed-model"}\n' >"$fixture"
-if check_neovim_ai_model "$fixture" "${REPO_ROOT}/conf/.pi/agent/models.json"; then
-  fail "a missing Neovim AI model should fail"
-else
-  assert_eq "4" "$?" "missing model should be a real error"
-fi
-echo 'PASS: Neovim AI model reference'

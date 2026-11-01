@@ -43,9 +43,6 @@ class ChangelogTest(unittest.TestCase):
                                    ('empty', '出力が空'), ('success', None)]:
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
                 root = Path(folder)
-                (root / '.github').mkdir()
-                (root / '.github/neovim-ai.json').write_text(json.dumps({
-                    'piVersion': '1.4.0', 'model': 'opencode-go/deepseek-v4.1-flash'}))
                 (root / 'ci-logs').mkdir()
                 (root / 'ci-logs/neovim-input.md').write_text('test input')
                 (root / 'bin').mkdir()

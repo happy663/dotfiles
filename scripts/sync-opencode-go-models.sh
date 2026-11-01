@@ -522,19 +522,6 @@ usage() {
   echo "  --apply    models.json を書き込む"
 }
 
-# Validate the CI model reference even when the bundled Pi catalog is offline.
-check_neovim_ai_model() {
-  local config="$1" catalog="$2" provider model selected
-  selected="$(jq -er '.model' "$config")" || return 4
-  provider="${selected%%/*}"
-  model="${selected#*/}"
-  if ! jq -e --arg p "$provider" --arg m "$model" \
-    'any(.providers[$p].models[]?; .id == $m)' "$catalog" >/dev/null; then
-    echo "Error: Neovim AI model ${selected} is missing from ${catalog}" >&2
-    return 4
-  fi
-}
-
 main() {
   local mode="check"
   while [[ $# -gt 0 ]]; do
@@ -552,8 +539,6 @@ main() {
   done
 
   cd "$REPO_ROOT"
-
-  check_neovim_ai_model .github/neovim-ai.json "$MODELS_PATH" || return $?
 
   # 1. dirty チェック: 手動編集が未コミットなら上書きしない
   local dirty
@@ -593,15 +578,6 @@ main() {
     echo "Warning: failed to fetch models.dev; keeping existing values" >&2
   fi
   rm -f "$mdjson"
-  if [[ "$metadata" != "{}" ]]; then
-    local ci_model
-    ci_model="$(jq -r '.model | split("/")[1]' .github/neovim-ai.json)"
-    if ! jq -e --arg model "$ci_model" 'has($model)' <<<"$metadata" >/dev/null; then
-      echo "Error: Neovim AI model ${ci_model} is missing from upstream models.dev metadata" >&2
-      rm -f "$gomdx"
-      return 4
-    fi
-  fi
 
   # 5. パース
   local prices apis
