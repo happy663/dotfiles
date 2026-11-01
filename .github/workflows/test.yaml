@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
+  # PR は base ブランチを限定しない（全ブランチ対象）
   pull_request:
   workflow_dispatch:
-  schedule:
-    # 毎週月曜 00:00 JST（日曜 15:00 UTC）
-    - cron: "0 15 * * 0"
 
 permissions:
   contents: read
@@ -19,7 +17,6 @@ concurrency:
 
 jobs:
   test:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -31,17 +28,3 @@ jobs:
 
       - name: Run tests
         run: make test
-
-  opencode-go-drift:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-
-      - name: Check OpenCode Go models
-        run: nix develop .#ci --command bash .github/scripts/check-opencode-go-models-ci.sh
