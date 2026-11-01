@@ -89,7 +89,7 @@ dotfiles/
 * `conf/.config/nvim/lua/plugins/` はカテゴリ構造を維持すること。
 * 新規プラグインは既存カテゴリへ配置し、`lazy.nvim` 前提で定義すること。
 * Lua 変更時は必要に応じて `stylua` で整形すること。
-* `conf/.config/nvim/tests/test_*.lua` が Lua テスト。`make test`（または `bash conf/.config/nvim/tests/run-all.sh`）で実行する。`nvim` は `nix develop .#ci` 経由で供給される。
+* `conf/.config/nvim/tests/test_*.lua` が Lua テスト。`make test`（または `bash conf/.config/nvim/tests/run-all.sh`）で実行する。`nvim` は `nix develop .#ci` 経由で供給され、日常利用と同じ nightly overlay 版（flake.lock で固定）が使われる。
 
 ### Directory Structure
 
