@@ -38,6 +38,12 @@ GLM の API トークンは `dotfiles/.env` の `CLAUDE_GLM_AUTH_TOKEN` に置�
 
 `.env` は gitignore 前提。トークンをコミットに巻き込まないよう注意。
 
+## 実装
+
+`claude-settings.sh` と `pi-settings.sh` は pull / push の実処理を
+`scripts/lib/settings-merge.sh` に共通化している。各スクリプトはパスとキー名の設定だけを持ち、
+`sm_main` を呼ぶ薄いラッパーになっている。
+
 ## 注意
 
 - `~/.claude/settings.local.json` は「管理パスは switcher が所有、その他パスは手編集も可」というハイブリッド運用。管理パス外のキー（`enabledPlugins` の個別値など）は各モード切替後も残る

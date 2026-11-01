@@ -4,12 +4,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 : "${GITHUB_STEP_SUMMARY:?GITHUB_STEP_SUMMARY must be set}"
 
 log="$(mktemp)"
 trap 'rm -f "$log"' EXIT
 
-if bash "${SCRIPT_DIR}/sync-opencode-go-models.sh" --check >"$log" 2>&1; then
+if bash "${REPO_ROOT}/scripts/sync-opencode-go-models.sh" --check >"$log" 2>&1; then
   status=0
 else
   status=$?

@@ -33,7 +33,9 @@ dotfiles/
 │   └── .codex/               # Codex 設定
 ├── scripts/                   # セットアップ / リンク作成スクリプト
 │   ├── init.sh               # 初期セットアップ
-│   └── link.sh               # シンボリックリンク作成
+│   ├── link.sh               # シンボリックリンク作成
+│   ├── lib/                  # スクリプト共通ロジック
+│   └── tests/                # シェルスクリプトのテスト
 ├── .github/workflows/         # GitHub Actions CI/CD
 │   ├── build.yaml            # Nix ビルド検証
 │   └── update.yaml           # 自動 flake.lock 更新（3日ごと）
