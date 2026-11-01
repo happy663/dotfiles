@@ -90,13 +90,14 @@ for _, win in ipairs(vim.api.nvim_list_wins()) do
   end
 end
 assert(list_win, "agent list window was not found")
--- 新レイアウト: 下段 prompt | agent は同じ高さで、下書きの高さが 8 なので
--- 件数が少なくても下段は 8 行になる。
-assert_eq(vim.api.nvim_win_get_height(list_win), 8, "initial list height (bottom row)")
+-- 新レイアウト: 下段 prompt | agent は同じ高さになる。
+-- 件数が 1 件なので、下段の高さは下書きの高さ（config の draft_height）に揃う。
+local draft_height = require("agent_term.config").send_to.preview.draft_height
+assert_eq(vim.api.nvim_win_get_height(list_win), draft_height, "initial list height (bottom row)")
 
 local refreshed = send_to.refresh()
 assert_eq(refreshed, true, "picker refreshes")
--- 件数 12 で下段が max(8, 10) の 10 行に伸びる。
+-- 件数 12 で下段が max(draft_height, list_max_height) の 10 行に伸びる。
 assert_eq(vim.api.nvim_win_get_height(list_win), 10, "refreshed list height")
 
 local list_cfg = vim.api.nvim_win_get_config(list_win)

@@ -12,9 +12,13 @@ function M.trim_trailing_empty_lines(lines)
 end
 
 -- 入力用バッファを作る。name はバッファ名（表示用）。
+-- 下書きバッファはタブごとに独立しているため、同名バッファが既に存在しうる。
+-- その場合は bufnr を付けて一意な名前にする（E95 を避ける）。
 function M.create_input_buffer(name)
   local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_name(bufnr, name)
+  if not pcall(vim.api.nvim_buf_set_name, bufnr, name) then
+    vim.api.nvim_buf_set_name(bufnr, string.format("%s#%d", name, bufnr))
+  end
   vim.bo[bufnr].buftype = "nofile"
   vim.bo[bufnr].bufhidden = "hide"
   vim.bo[bufnr].swapfile = false

@@ -53,6 +53,7 @@
           gnugrep
           gnused
           jq
+          neovim
           python3
           tmux
         ];

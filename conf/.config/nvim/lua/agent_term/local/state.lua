@@ -56,7 +56,8 @@ function M.record_tabpage(tabpage)
   end
 end
 
--- 最近使った非Agentタブ（作業タブ）。無効化されていれば nil。
+-- 最近使った非Agentタブ（作業タブ）。
+-- 記録が無効（タブが閉じられた等）なら、現在のタブが非Agentならそれを返す。
 function M.get_work_tabpage()
   if
     mru_work_tabpage
@@ -65,6 +66,12 @@ function M.get_work_tabpage()
   then
     return mru_work_tabpage
   end
+
+  local current = vim.api.nvim_get_current_tabpage()
+  if not M.is_agent_tabpage(current) then
+    return current
+  end
+
   return nil
 end
 
