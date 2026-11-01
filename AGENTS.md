@@ -38,7 +38,8 @@ dotfiles/
 │   └── tests/                # シェルスクリプトのテスト
 ├── .github/workflows/         # GitHub Actions CI/CD
 │   ├── build.yaml            # Nix ビルド検証
-│   └── update.yaml           # 自動 flake.lock 更新（3日ごと）
+│   ├── test.yaml             # テスト + 週次 OpenCode Go モデル差分チェック
+│   └── update.yaml           # 自動 flake.lock 更新（7日ごと）
 ├── flake.nix                  # Nix flake 設定
 ├── flake.lock                 # Nix 依存関係ロック
 ├── Makefile                   # 主要操作コマンド

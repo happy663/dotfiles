@@ -18,7 +18,7 @@ runs:
       uses: cachix/cachix-action@v16
       continue-on-error: true
       with:
-        name: happy663 # ここを自分のキャッシュ名に変更
+        name: happy663
         authToken: ${{ inputs.authToken }}
         extraPullNames: nix-community
         skipPush: ${{ inputs.skipPush }}
