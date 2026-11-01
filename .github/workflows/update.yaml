@@ -2,16 +2,28 @@ name: Update
 
 on:
   schedule:
-    - cron: "0 15 */7 * *" # 毎月 1/8/15/22/29 日 UTC 15:00 (JST 翌日 00:00)
+    # 毎週水曜 15:00 UTC（木曜 00:00 JST）。
+    # 旧設定の "0 15 */7 * *" は「7 日ごと」ではなく「毎月 1/8/15/22/29 日」で、
+    # 月末から翌月 1 日が 2 日間隔になるため曜日指定に変えている。
+    # OpenCode Go drift（日曜）と曜日をずらして同時実行を避ける。
+    - cron: "0 15 * * 3"
   workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
 
+# 手動実行と cron が重なると auto-updates ブランチへの push が競合するため直列化する。
+# 進行中の PR 作成を途中で殺さないよう、キャンセルではなく待たせる。
+concurrency:
+  group: update-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create-pr:
     runs-on: ubuntu-latest
+    # 実測は約 1 分。nix flake update のネットワーク待ちを見込んで余裕をとる。
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -106,14 +118,14 @@ jobs:
           python3 -c 'import shutil; shutil.rmtree("ci-logs")'
 
       - name: Create GitHub App Token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ vars.PR_ACTION_APP_ID }}
           private-key: ${{ secrets.PR_ACTION_APP_PRIVATE_KEY }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "Automated updates"
           commit-message: "[bot] update flake.lock"

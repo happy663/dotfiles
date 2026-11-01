@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # yaskkserv2が存在しない場合のみクローンを実行
 if [ ! -d "$HOME/src/github.com/wachikun/yaskkserv2" ]; then
@@ -7,7 +8,7 @@ else
   echo "yaskkserv2 directory already exists. Skipping clone."
 fi
 
-cd $HOME/src/github.com/wachikun/yaskkserv2
+cd "$HOME/src/github.com/wachikun/yaskkserv2"
 echo "cd to $(pwd)"
 
 # targetディレクトリが存在しない場合のみビルドを実行

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# CIとローカルで共通利用する、安定稼働中のテストスイート。
-# Neovimテストは既存のbuffer名衝突による失敗があるため、修復後に追加する。
+# CIとローカルで共通利用するテストスイート。
 
 set -euo pipefail
 
@@ -23,5 +22,7 @@ run "tmux configuration" \
   bash conf/.config/tmux/tests/run-all.sh
 run "review-loop skill" \
   bash conf/.config/ai-agents/skills/review-loop/tests/run-all.sh
+run "Neovim (Lua) tests" \
+  bash conf/.config/nvim/tests/run-all.sh
 
 printf '\nALL CI TESTS PASSED\n'

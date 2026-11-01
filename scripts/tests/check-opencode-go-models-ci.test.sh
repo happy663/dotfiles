@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-TARGET="${REPO_ROOT}/scripts/check-opencode-go-models-ci.sh"
+TARGET="${REPO_ROOT}/.github/scripts/check-opencode-go-models-ci.sh"
 
 fail() {
   echo "FAIL: $*" >&2
@@ -14,9 +14,10 @@ fail() {
 
 sandbox="$(mktemp -d)"
 trap 'rm -rf "$sandbox"' EXIT
-cp "$TARGET" "$sandbox/check-opencode-go-models-ci.sh"
+mkdir -p "$sandbox/.github/scripts" "$sandbox/scripts"
+cp "$TARGET" "$sandbox/.github/scripts/check-opencode-go-models-ci.sh"
 
-cat >"$sandbox/sync-opencode-go-models.sh" <<'EOF'
+cat >"$sandbox/scripts/sync-opencode-go-models.sh" <<'EOF'
 #!/usr/bin/env bash
 [[ "$#" == 1 && "$1" == "--check" ]] || exit 99
 printf 'sync stdout: status=%s\n' "$STUB_STATUS"
@@ -31,7 +32,7 @@ check_status() {
   local actual_status
   printf 'Existing summary\n' >"$summary"
   if STUB_STATUS="$source_status" GITHUB_STEP_SUMMARY="$summary" \
-    bash "$sandbox/check-opencode-go-models-ci.sh" >"$output" 2>&1; then
+    bash "$sandbox/.github/scripts/check-opencode-go-models-ci.sh" >"$output" 2>&1; then
     actual_status=0
   else
     actual_status=$?

@@ -1,5 +1,5 @@
 -- node-pkgs自動更新モジュール
--- スリープ復帰時に1日1回 `make auto-update-node-pkgs` を実行する。
+-- スリープ復帰時に1日1回 `scripts/auto-update-node-pkgs.sh` を実行する。
 -- スクリプト側で home-manager 関連ファイルの dirty チェックと
 -- ネットワーク疎通確認を行う。
 AutoUpdate = {}

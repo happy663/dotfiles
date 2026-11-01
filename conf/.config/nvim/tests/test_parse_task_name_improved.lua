@@ -2,7 +2,7 @@
 -- 改良版parse_task_name関数のテストスイート
 
 -- 改良版のparse_task_name関数を読み込む
-local parse_task_name = require("parse_task_name_improved")
+local parse_task_name = require("utils.parse_task_name_improved").parse_task_name
 
 -- テスト実行関数
 local function run_test(test_name, input, expected_task, expected_search)

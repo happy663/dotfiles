@@ -1,9 +1,9 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # nippo (Claude Code / Codex 日報スキル) のセットアップ
 # - ghq で nippo リポジトリを取得
 # - Rust バイナリをインストール
 # 別途 scripts/link.sh が skill の symlink を張る
-set -e
+set -euo pipefail
 
 REPO="github.com/nwiizo/nippo"
 

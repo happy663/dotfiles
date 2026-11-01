@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -euo pipefail
+
 # Ovim から起動される nvim に NVIM_APPNAME=ovim-nvim を注入するラッパー
 # Ovim の settings.yaml の nvim_path にこのスクリプトのパスを指定する
 

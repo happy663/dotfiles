@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
+  # PR は base ブランチを限定しない（全ブランチ対象）
   pull_request:
   workflow_dispatch:
-  schedule:
-    # 毎週月曜 00:00 JST（日曜 15:00 UTC）
-    - cron: "0 15 * * 0"
 
 permissions:
   contents: read
@@ -18,38 +16,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  neovim-changelog:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: python3 .github/scripts/test-neovim-changelog.py
-      - run: bash -n .github/scripts/explain-neovim-changelog.sh
-
   test:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
+      # nightly neovim を happy663.cachix.org から引くために Cachix を設定する。
+      # 直書きの install-nix-action だけだと substituter が無く、
+      # nightly neovim をソースからビルドしてしまう（実測 7〜9 分）。
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
+        with:
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
 
       - name: Run tests
-        run: nix develop .#ci --command bash scripts/test.sh
-
-  opencode-go-drift:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-
-      - name: Check OpenCode Go models
-        run: nix develop .#ci --command bash scripts/check-opencode-go-models-ci.sh
+        run: make test

@@ -75,7 +75,7 @@ tmuxに預けると、タスクを外部状態として保持し、Agentは必�
 実行時間を分析したい場合は、tmuxに預けるコマンド自体を `/usr/bin/time -p` で包みます。
 
 ```bash
-scripts/ai-tmux.sh start apply-nix -- /usr/bin/time -p make apply-nix
+scripts/ai-tmux.sh start nix-apply -- /usr/bin/time -p make nix-apply
 ```
 
 ## コマンド

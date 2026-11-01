@@ -1,0 +1,33 @@
+name: OpenCode Go drift
+
+on:
+  schedule:
+    # 毎週月曜 00:00 JST（日曜 15:00 UTC）
+    - cron: "0 15 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opencode-go-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # ciShell には nightly neovim が入っているため、substituter が無いと
+      # ソースビルドが走る。Cachix を設定してキャッシュから引けるようにする。
+      - name: Setup Nix
+        uses: ./.github/actions/setup-nix
+        with:
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+
+      - name: Check OpenCode Go models
+        run: nix develop .#ci --command bash .github/scripts/check-opencode-go-models-ci.sh

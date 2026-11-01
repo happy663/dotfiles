@@ -42,6 +42,12 @@
       overlays = [
         inputs.neovim-nightly-overlay.overlays.default
       ];
+      # ciShell は日常利用環境（nightly overlay 適用）に合わせる。
+      # flake.lock で nightly の rev が固定されるため再現性は保たれる。
+      ciPkgs = systemName: import nixpkgs {
+        system = systemName;
+        overlays = overlays;
+      };
       ciShell = pkgs: pkgs.mkShell {
         packages = with pkgs; [
           bash
@@ -53,14 +59,16 @@
           gnugrep
           gnused
           jq
+          neovim
+          python3
           tmux
         ];
       };
 
     in
     {
-      devShells.${system.darwin}.ci = ciShell darwinPkgs;
-      devShells.${system.linux}.ci = ciShell linuxPkgs;
+      devShells.${system.darwin}.ci = ciShell (ciPkgs system.darwin);
+      devShells.${system.linux}.ci = ciShell (ciPkgs system.linux);
 
       apps.${system.darwin}.update = {
         type = "app";
