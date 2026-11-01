@@ -49,6 +49,7 @@ return {
         },
         renderer = {
           group_empty = true,
+          symlink_destination = false,
           highlight_git = true,
           highlight_opened_files = "all",
           icons = {
