@@ -46,6 +46,7 @@ jobs:
           echo '```' >> ./ci-logs/update.md
 
       - name: Collect Neovim nightly changelog
+        id: neovim-collect
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,9 +57,10 @@ jobs:
             --old "$OLD_REV" --new "$NEW_REV" --directory ./ci-logs
 
       - name: Setup Node for Pi
+        id: pi-node
         if: hashFiles('ci-logs/neovim-input.md') != ''
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
 
@@ -73,6 +75,8 @@ jobs:
 
       - name: Write PR body
         env:
+          COLLECT_OUTCOME: ${{ steps.neovim-collect.outcome }}
+          NODE_OUTCOME: ${{ steps.pi-node.outcome }}
           AI_OUTCOME: ${{ steps.neovim-ai.outcome }}
         run: |
           {
