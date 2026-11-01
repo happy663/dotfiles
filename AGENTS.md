@@ -61,8 +61,9 @@ dotfiles/
 * テスト（CI と同じコマンド）:
     * `make test`（`nix develop .#ci` 経由で全テストを実行）
 * ビルド確認（CI 相当・必要時のみ）:
-    * `nix build .#darwinConfigurations.happy-mbp.system`
-    * `nix build .#homeConfigurations.happy.activationPackage`
+    * `nix build .#homeConfigurations.darwin.activationPackage`
+    * `nix build .#darwinConfigurations.personal.system`
+    * `nix build .#darwinConfigurations.work.system`
 
 ## Nix Guidance
 * パッケージ追加は基本的に `conf/.config/nix/home-manager/common.nix` を優先。
