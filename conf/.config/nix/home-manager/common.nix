@@ -38,7 +38,11 @@ in
       zoxide
       delta
       cargo
-      tuicr
+      # tuicr 0.28.0 は darwin の sandbox で
+      # forge::pr_open::tests::should_fetch_diff_commits_and_review_metadata_concurrently
+      # が落ちてビルドできず、cache.nixos.org にもバイナリがないためテストを止める。
+      # nixpkgs 側で直ったら元の `tuicr` に戻す。
+      (tuicr.overrideAttrs { doCheck = false; })
       uv
       docker
       docker-compose
