@@ -102,6 +102,9 @@ return {
       notifier = { enabled = false },
       quickfile = { enabled = false },
       scope = { enabled = false },
+      scratch = {
+        win = { width = 0.8, height = 0.8 },
+      },
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = false },
@@ -114,13 +117,7 @@ return {
       {
         "<leader>.",
         function()
-          Snacks.scratch({
-            ft = "markdown",
-            win = {
-              width = 120,
-              height = 40,
-            },
-          })
+          Snacks.scratch({ ft = "markdown" })
         end,
         desc = "Markdown Scratch",
       },
@@ -137,12 +134,7 @@ return {
 
         "<leader>sc",
         function()
-          Snacks.scratch({
-            win = {
-              width = 120,
-              height = 40,
-            },
-          })
+          Snacks.scratch()
         end,
         desc = "Toggle Scratch Buffer",
       },
