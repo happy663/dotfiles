@@ -16,7 +16,10 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 通常は test.yaml が main で push した linux 版 ciShell をキャッシュから引ける。
+    # キャッシュに無い場合は nightly neovim のソースビルドで nix develop が
+    # 約 9 分かかるため、超過しないよう余裕をとる。
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v5

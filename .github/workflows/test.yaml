@@ -11,9 +11,11 @@ on:
 permissions:
   contents: read
 
+# main への push は linux 版 ciShell を Cachix に載せる役割があるため、
+# 途中でキャンセルせず最後まで走らせる（キャンセルすると push されない）。
 concurrency:
   group: test-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -24,13 +26,16 @@ jobs:
         uses: actions/checkout@v5
 
       # nightly neovim を happy663.cachix.org から引くために Cachix を設定する。
-      # 直書きの install-nix-action だけだと substituter が無く、
-      # nightly neovim をソースからビルドしてしまう（実測 7〜9 分）。
+      # build.yaml は macOS のみで darwin 版しか push しないため、linux 版の
+      # nightly neovim はどこのキャッシュにも無い（実測 7〜9 分のソースビルド）。
+      # main への push / 手動実行では linux 版 ciShell の依存を push し、
+      # 以降の PR がキャッシュから引けるようにする。PR からは push しない。
+      # nightly の rev が更新された直後（update.yaml の PR）の初回だけは遅い。
       - name: Setup Nix
         uses: ./.github/actions/setup-nix
         with:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: true
+          skipPush: ${{ github.event_name == 'pull_request' }}
 
       - name: Run tests
         run: make test
