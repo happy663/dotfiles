@@ -83,6 +83,8 @@ return {
   ui = {
     use_signcolumn = false, -- show "modified" marks on the sign column
     use_signstatus = true, -- show "modified" marks on the status column
+    -- BufEnterのたびにoctoのfoldtextで上書きされないようにする（foldtextは自前のものを使う）
+    use_foldtext = false,
   },
   issues = {
     order_by = { -- criteria to sort results of `Octo issue list`
