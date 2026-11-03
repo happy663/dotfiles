@@ -70,6 +70,14 @@ return {
       { "<leader>nb", "<cmd>Obsidian backlinks<cr>", desc = "Obsidian: backlinks" },
       { "<leader>np", "<cmd>Obsidian paste_img<cr>", desc = "Obsidian: paste image" },
       { "<leader>nl", "<cmd>Obsidian link<cr>", desc = "Obsidian: insert link", mode = "v" },
+      -- obsidian.nvim はブロックIDを付与しないため、アプリの「ブロックへのリンクをコピー」相当を自前で行う
+      {
+        "<leader>ny",
+        function()
+          require("utils.obsidian-block-link").copy()
+        end,
+        desc = "Obsidian: copy block link of current line",
+      },
     },
     config = function(_, opts)
       require("obsidian").setup(opts)
