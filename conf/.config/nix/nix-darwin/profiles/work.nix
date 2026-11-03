@@ -7,6 +7,7 @@
     ];
     casks = [
       "meetingbar"
+      "claude"
     ];
   };
 }
