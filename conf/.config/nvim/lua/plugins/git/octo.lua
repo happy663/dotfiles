@@ -79,6 +79,8 @@ return {
       -- On Neovim 0.12.3 this can corrupt undo state in freshly rendered Octo
       -- buffers and crash when UI plugins handle the resulting error message.
       require("octo.utils").clear_history = function() end
+      -- 本文の長いPR/issueでカーソル移動・入力が重くなるstatuscolumnを高速化する
+      require("plugins.git.octo.statuscolumn_perf").setup()
 
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "octo",
