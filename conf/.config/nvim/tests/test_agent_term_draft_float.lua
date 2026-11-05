@@ -128,6 +128,41 @@ do
   config.draft.float = orig_float
 end
 
+-- 3c. OptionSet: cmdheight など画面の行の並びを変えるオプションが変わったら、
+--     WinResized が来なくてもフロートを合わせ直す
+--     （起動途中に noice が cmdheight を 0 にしたとき WinResized が発火せず、1 行ずれた）
+do
+  config.draft.style = "float"
+  local term_buf, term_win = make_term_tab()
+  assert_true(draft.focus_or_open({ target_bufnr = term_buf, draft_height = 8 }), "open float for OptionSet")
+  local float_win = vim.api.nvim_get_current_win()
+
+  local function bottom_aligned()
+    local cfg = vim.api.nvim_win_get_config(float_win)
+    local term_bottom = vim.api.nvim_win_get_position(term_win)[1] + vim.api.nvim_win_get_height(term_win)
+    -- 枠線の下端（row + height + 2）がターミナルの下端と一致する
+    return cfg.row + cfg.height + 2 == term_bottom
+  end
+  assert_true(bottom_aligned(), "float aligned before cmdheight change")
+
+  -- headless では cmdheight を変えてもウィンドウの高さが再計算されないため、
+  -- ターミナルの高さは split で変える。WinResized / VimResized は止めておき、
+  -- OptionSet（実機で cmdheight が変わったときに確実に発火していたイベント）だけで追従するかを見る。
+  local orig_ei = vim.go.eventignore
+  vim.go.eventignore = "WinResized,VimResized"
+  vim.api.nvim_set_current_win(term_win)
+  vim.cmd("belowright 3split")
+  local extra_win = vim.api.nvim_get_current_win()
+  assert_eq(bottom_aligned(), false, "terminal height changed under the float")
+  -- headless の -l 実行では OptionSet が自然に発火しない場合があるため、明示的にも発火させる
+  vim.api.nvim_exec_autocmds("OptionSet", { pattern = "cmdheight", group = "AgentInputFloatReposition" })
+  vim.go.eventignore = orig_ei
+  assert_true(bottom_aligned(), "float follows terminal on OptionSet without WinResized")
+
+  vim.api.nvim_win_close(extra_win, true)
+  draft.reposition_floats()
+end
+
 -- 4. style = "split": 従来どおり split で開く
 do
   config.draft.style = "split"
@@ -235,6 +270,50 @@ do
   assert_eq(#normal_wins(), 2, "claude layout (split) splits terminal and draft")
   assert_eq(is_float(vim.api.nvim_get_current_win()), false, "claude layout (split) draft is a split")
   config.draft.style = "float"
+end
+
+-- 7. no-neck-pain: 起動直後（enableOnVimEnter が未消化 = state == nil）なら、
+--    フロートを開く前に通常ウィンドウ上で有効化する（フロート上だと nnp が有効化をスキップするため）
+do
+  config.draft.style = "float"
+  local enable_calls = {}
+  package.loaded["no-neck-pain.main"] = {
+    enable = function(scope)
+      table.insert(enable_calls, { scope = scope, on_float = is_float(vim.api.nvim_get_current_win()) })
+      _G.NoNeckPain.state = { enabled = true }
+    end,
+  }
+
+  -- 未有効化（起動直後）: フロートを開く前に通常ウィンドウ上で enable が呼ばれる
+  _G.NoNeckPain = { config = { autocmds = { enableOnVimEnter = "safe" } }, state = nil }
+  local term_buf = make_term_tab()
+  draft.open_for_target({ target_bufnr = term_buf, draft_height = 8 })
+  assert_eq(#enable_calls, 1, "nnp enabled before opening float at startup")
+  assert_eq(enable_calls[1].on_float, false, "nnp enabled while a normal window is focused")
+  assert_true(is_float(vim.api.nvim_get_current_win()), "draft float still focused after nnp enable")
+
+  -- 一度有効化済み / ユーザーが無効化済み（state あり）: 何もしない
+  _G.NoNeckPain.state = { enabled = false }
+  term_buf = make_term_tab()
+  draft.open_for_target({ target_bufnr = term_buf, draft_height = 8 })
+  assert_eq(#enable_calls, 1, "nnp not enabled when state already exists")
+
+  -- enableOnVimEnter を使っていない: 何もしない
+  _G.NoNeckPain = { config = { autocmds = { enableOnVimEnter = false } }, state = nil }
+  term_buf = make_term_tab()
+  draft.open_for_target({ target_bufnr = term_buf, draft_height = 8 })
+  assert_eq(#enable_calls, 1, "nnp not enabled when enableOnVimEnter is off")
+
+  -- split: 通常ウィンドウにフォーカスが残るので nnp 自身に任せる
+  config.draft.style = "split"
+  _G.NoNeckPain = { config = { autocmds = { enableOnVimEnter = "safe" } }, state = nil }
+  term_buf = make_term_tab()
+  draft.open_for_target({ target_bufnr = term_buf, draft_height = 8 })
+  assert_eq(#enable_calls, 1, "nnp not touched in split style")
+
+  config.draft.style = "float"
+  _G.NoNeckPain = nil
+  package.loaded["no-neck-pain.main"] = nil
 end
 
 print("agent_term draft float tests passed")

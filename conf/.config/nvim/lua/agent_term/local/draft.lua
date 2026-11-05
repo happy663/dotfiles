@@ -470,6 +470,24 @@ function M.open_input_buffer(opts)
   return bufnr
 end
 
+-- no-neck-pain は現在ウィンドウがフロートだと有効化をスキップする。
+-- 起動直後 (nvim -c AgentClaude) にそのままフロートへ移ると中央寄せされないため、
+-- enableOnVimEnter が未消化（state == nil）のときだけ、フロートを開く前に有効化する。
+-- ユーザーが無効化した後（state あり）や、enableOnVimEnter を使っていない場合は触らない。
+local function enable_no_neck_pain_before_float()
+  local nnp = _G.NoNeckPain
+  if not (nnp and nnp.config and nnp.config.autocmds and nnp.config.autocmds.enableOnVimEnter) then
+    return
+  end
+  if nnp.state ~= nil then
+    return
+  end
+  local ok, nnp_main = pcall(require, "no-neck-pain.main")
+  if ok then
+    pcall(nnp_main.enable, "agent_term_draft_float")
+  end
+end
+
 -- ターゲットのターミナルに対して下書きを開く（Agent タブ作成直後や AgentDraft から呼ぶ）。
 -- 現在ウィンドウがターゲットのターミナルである前提。
 -- float ならターミナルに重ね、split なら従来どおりターミナルの下に分割する。
@@ -478,6 +496,7 @@ function M.open_for_target(opts)
   opts = opts or {}
 
   if use_float() then
+    enable_no_neck_pain_before_float()
     local bufnr = M.ensure_draft_buffer(opts)
     local via_target = open_float(bufnr, opts.target_bufnr, opts.fallback_target_patterns, opts.draft_height)
     vim.cmd("startinsert")
@@ -699,8 +718,19 @@ function M.setup()
 
   local group = vim.api.nvim_create_augroup("AgentInputTabCleanup", { clear = true })
 
+  local reposition_group = vim.api.nvim_create_augroup("AgentInputFloatReposition", { clear = true })
   vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
-    group = vim.api.nvim_create_augroup("AgentInputFloatReposition", { clear = true }),
+    group = reposition_group,
+    callback = function()
+      M.reposition_floats()
+    end,
+  })
+  -- 画面の行の並びを変えるオプションの変更でも合わせ直す。
+  -- 起動途中に noice が cmdheight を 0 にしたとき、ターミナルは 1 行伸びるのに
+  -- WinResized / VimResized が発火せず、フロートが 1 行上に取り残されたため。
+  vim.api.nvim_create_autocmd("OptionSet", {
+    group = reposition_group,
+    pattern = { "cmdheight", "laststatus", "showtabline" },
     callback = function()
       M.reposition_floats()
     end,
