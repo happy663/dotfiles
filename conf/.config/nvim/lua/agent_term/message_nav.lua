@@ -210,6 +210,9 @@ local function attach_keymaps(buf, kind)
   vim.keymap.set("n", "{", function()
     jump_impl("turn", -1)
   end, vim.tbl_extend("force", opts, { desc = "prev agent turn" }))
+  vim.keymap.set("n", "gm", function()
+    require("agent_term.open_md").open_last(buf)
+  end, vim.tbl_extend("force", opts, { desc = "open last markdown path" }))
 end
 
 function M.attach(buf, kind)
