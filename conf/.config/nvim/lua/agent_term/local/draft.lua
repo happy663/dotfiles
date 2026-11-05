@@ -118,6 +118,93 @@ local function open_split_below_target(target_bufnr, fallback_target_patterns, d
   return false
 end
 
+local function use_float()
+  return config.draft.style == "float"
+end
+
+local function is_float_win(winid)
+  return vim.api.nvim_win_is_valid(winid) and vim.api.nvim_win_get_config(winid).relative ~= ""
+end
+
+-- 下書きが split（フロートでない通常ウィンドウ）で表示されているか。
+-- split を閉じるとターミナルの高さが変わるので、送信前に再描画を待つ必要がある。
+local function has_split_window(bufnr)
+  for _, winid in ipairs(vim.fn.win_findbuf(bufnr)) do
+    if vim.api.nvim_win_is_valid(winid) and not is_float_win(winid) then
+      return true
+    end
+  end
+  return false
+end
+
+-- フロートを重ねる先の画面上の位置と大きさ。
+-- ターミナルウィンドウが無ければエディタ全体（タブライン・コマンドラインを除く）を使う。
+local function float_anchor(target_winid)
+  if target_winid and vim.api.nvim_win_is_valid(target_winid) then
+    local pos = vim.api.nvim_win_get_position(target_winid)
+    return {
+      row = pos[1],
+      col = pos[2],
+      width = vim.api.nvim_win_get_width(target_winid),
+      height = vim.api.nvim_win_get_height(target_winid),
+    }
+  end
+
+  local showtabline = vim.o.showtabline
+  local tabline = (showtabline == 2 or (showtabline == 1 and #vim.api.nvim_list_tabpages() > 1)) and 1 or 0
+  return {
+    row = tabline,
+    col = 0,
+    width = vim.o.columns,
+    height = vim.o.lines - vim.o.cmdheight - tabline - 1,
+  }
+end
+
+local function float_config_for(target_winid, height)
+  return draft_buf.float_win_config(float_anchor(target_winid), height, {
+    bottom_margin = config.draft.float and config.draft.float.bottom_margin or 0,
+    title = " Agent Input ",
+  })
+end
+
+-- 下書きをターミナルの下端に重ねたフロートで開く。ターミナルが見つかれば true。
+local function open_float(bufnr, target_bufnr, fallback_target_patterns, default_height)
+  local target_winid = resolve_target_terminal_winid(target_bufnr, fallback_target_patterns)
+  local height = state.get_draft_height(default_height) or config.draft.attached_height
+  local winid = vim.api.nvim_open_win(bufnr, true, float_config_for(target_winid, height))
+  -- 後ろのターミナル（Agent の出力）を空白セル越しに透かして見せる
+  local winblend = config.draft.float and config.draft.float.winblend
+  if type(winblend) == "number" and winblend > 0 then
+    vim.wo[winid].winblend = winblend
+    -- winblend は空白セルをすべて透かすため、そのままだと本文の単語間やインデントにも
+    -- 後ろの文字が入り込む。空白・タブを見た目が空白の NBSP で描き、透けるのを
+    -- 行末より後ろだけにする（表示だけで、バッファの中身は変えない）。
+    local nbsp = "\u{00a0}"
+    local local_win = { scope = "local", win = winid }
+    vim.api.nvim_set_option_value("list", true, local_win)
+    vim.api.nvim_set_option_value(
+      "listchars",
+      string.format("space:%s,tab:%s%s,nbsp:%s", nbsp, nbsp, nbsp, nbsp),
+      local_win
+    )
+  end
+  -- 位置の合わせ直し (reposition_floats) で使う
+  vim.w[winid].agent_input_float = true
+  vim.w[winid].agent_input_anchor_win = target_winid
+  vim.w[winid].agent_input_float_height = height
+  return target_winid ~= nil
+end
+
+-- ターミナルの大きさが変わったとき、下書きフロートの位置と幅を合わせ直す。
+function M.reposition_floats()
+  for _, winid in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_is_valid(winid) and vim.w[winid].agent_input_float then
+      local cfg = float_config_for(vim.w[winid].agent_input_anchor_win, vim.w[winid].agent_input_float_height)
+      pcall(vim.api.nvim_win_set_config, winid, cfg)
+    end
+  end
+end
+
 local function ensure_buffer_keymaps(bufnr)
   draft_buf.apply_send_keymaps(bufnr, {
     send = "AgentDraftSend",
@@ -296,6 +383,15 @@ function M.focus_or_open(opts)
       target_bufnr = state.get_target_terminal_bufnr()
     end
 
+    if use_float() then
+      local via_target = open_float(draft_bufnr, target_bufnr, fallback_target_patterns, opts.draft_height)
+      vim.cmd("startinsert")
+      if not via_target then
+        notify("Target terminal window not found; opened draft at bottom", vim.log.levels.WARN)
+      end
+      return true, "Opened existing draft buffer"
+    end
+
     local via_target = open_split_below_target(target_bufnr, fallback_target_patterns, opts.draft_height)
     vim.api.nvim_win_set_buf(0, draft_bufnr)
     resize_current_draft_window(opts.draft_height)
@@ -315,6 +411,18 @@ function M.focus_or_open(opts)
     return false, "Target terminal not found for draft buffer"
   end
 
+  if use_float() then
+    local _, via_target = M.open_for_target({
+      target_bufnr = terminal_bufnr,
+      fallback_target_patterns = fallback_target_patterns,
+      draft_height = opts.draft_height,
+    })
+    if not via_target then
+      notify("Target terminal window not found; opened draft at bottom", vim.log.levels.WARN)
+    end
+    return true, "Opened draft buffer"
+  end
+
   local via_target = open_split_below_target(terminal_bufnr, fallback_target_patterns, opts.draft_height)
   M.open_input_buffer({
     target_bufnr = terminal_bufnr,
@@ -327,7 +435,9 @@ function M.focus_or_open(opts)
   return true, "Opened draft buffer"
 end
 
-function M.open_input_buffer(opts)
+-- 現在タブの下書きバッファを用意し（無ければ作る）、ターゲット情報を登録して返す。
+-- ウィンドウへの表示は呼び出し側（split / float）が行う。
+function M.ensure_draft_buffer(opts)
   opts = opts or {}
 
   local bufnr = state.get_draft_bufnr()
@@ -344,12 +454,38 @@ function M.open_input_buffer(opts)
   end
   state.set_fallback_target_patterns(opts.fallback_target_patterns)
 
+  return bufnr
+end
+
+function M.open_input_buffer(opts)
+  opts = opts or {}
+
+  local bufnr = M.ensure_draft_buffer(opts)
+
   vim.api.nvim_win_set_buf(0, bufnr)
   resize_current_draft_window(opts.draft_height)
   vim.wo.winfixheight = true
   vim.cmd("startinsert")
 
   return bufnr
+end
+
+-- ターゲットのターミナルに対して下書きを開く（Agent タブ作成直後や AgentDraft から呼ぶ）。
+-- 現在ウィンドウがターゲットのターミナルである前提。
+-- float ならターミナルに重ね、split なら従来どおりターミナルの下に分割する。
+-- ターミナルウィンドウが見つかったか（float のときのみ意味を持つ）を2つ目の戻り値で返す。
+function M.open_for_target(opts)
+  opts = opts or {}
+
+  if use_float() then
+    local bufnr = M.ensure_draft_buffer(opts)
+    local via_target = open_float(bufnr, opts.target_bufnr, opts.fallback_target_patterns, opts.draft_height)
+    vim.cmd("startinsert")
+    return bufnr, via_target
+  end
+
+  vim.cmd("belowright split")
+  return M.open_input_buffer(opts), true
 end
 
 function M.clear_draft()
@@ -453,9 +589,14 @@ function M.send_draft(opts)
   local target = target_index or fallback_target_patterns
 
   if hide_after then
+    -- split を閉じるとターミナルが伸びて TUI が再描画されるので、それを待ってから送る。
+    -- フロートはターミナルの大きさを変えないため待たない。
+    local needs_resize_wait = has_split_window(draft_bufnr)
     M.hide()
-    vim.cmd("redraw")
-    vim.wait(350)
+    if needs_resize_wait then
+      vim.cmd("redraw")
+      vim.wait(350)
+    end
   end
 
   if clear_input then
@@ -557,6 +698,13 @@ function M.setup()
   setup_done = true
 
   local group = vim.api.nvim_create_augroup("AgentInputTabCleanup", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "WinResized", "VimResized" }, {
+    group = vim.api.nvim_create_augroup("AgentInputFloatReposition", { clear = true }),
+    callback = function()
+      M.reposition_floats()
+    end,
+  })
 
   vim.api.nvim_create_autocmd("TabClosed", {
     group = group,

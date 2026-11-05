@@ -49,8 +49,7 @@ function M.open_term_draft(opts)
     return nil
   end
 
-  vim.cmd("belowright split")
-  return draft.open_input_buffer({
+  return draft.open_for_target({
     target_bufnr = target_bufnr,
     draft_height = opts.draft_height or config.draft.attached_height,
   })
@@ -79,8 +78,7 @@ function M.open_agent_codex(opts)
     return target_bufnr
   end
 
-  vim.cmd("belowright split")
-  return draft.open_input_buffer({
+  return draft.open_for_target({
     target_bufnr = target_bufnr,
     fallback_target_patterns = CODEX_COMMAND,
     draft_height = config.codex.draft_height,
@@ -111,8 +109,7 @@ function M.open_agent_pi(opts)
     return target_bufnr
   end
 
-  vim.cmd("belowright split")
-  return draft.open_input_buffer({
+  return draft.open_for_target({
     target_bufnr = target_bufnr,
     fallback_target_patterns = PI_COMMAND,
     draft_height = config.pi.draft_height,
@@ -140,8 +137,7 @@ function M.open_agent_claude(opts)
     return target_bufnr
   end
 
-  vim.cmd("belowright split")
-  return draft.open_input_buffer({
+  return draft.open_for_target({
     target_bufnr = target_bufnr,
     fallback_target_patterns = opts.fallback_target_patterns or config.draft.fallback_target_patterns,
     -- draft_height = config.claude.draft_height,
@@ -175,9 +171,8 @@ function M.open_agent_claude_codex(opts)
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = codex_bufnr, noremap = true, silent = true })
 
   vim.cmd("wincmd h")
-  vim.cmd("belowright split")
 
-  return draft.open_input_buffer({
+  return draft.open_for_target({
     target_bufnr = claude_target_bufnr,
     fallback_target_patterns = opts.fallback_target_patterns or config.draft.fallback_target_patterns,
     draft_height = opts.draft_height or config.claude_codex.draft_height,

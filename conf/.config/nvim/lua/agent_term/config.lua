@@ -3,6 +3,17 @@ local M = {}
 M.draft = {
   fallback_target_patterns = { "claude", "codex", "pi" },
   attached_height = 8,
+  -- トグル / 引用で開く下書きウィンドウの置き方。"float" | "split"。
+  -- float はターミナルの高さを変えないため、Claude Code の TUI が再描画されない。
+  style = "float",
+  float = {
+    -- ターミナル下端から空ける行数。既定はターミナル下端にぴったり重ねる。
+    -- Claude Code の statusline などを常に見せたい場合に増やす。
+    bottom_margin = 0,
+    -- 0〜100。大きいほど後ろのターミナル（Agent の出力）が濃く透けて見える。
+    -- termguicolors が必要。
+    winblend = 40,
+  },
   -- 送信前にターゲットターミナルへ送る入力クリアシーケンス。
   -- デフォルトは backspace (\x7f) を多めに送ることで、改行込みの複数行入力も
   -- TUI 実装に依存せず削除する。Ctrl+U (\x15) は readline multiline や一部 TUI で

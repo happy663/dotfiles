@@ -43,6 +43,32 @@ function M.clear(bufnr)
   end
 end
 
+-- 下書きをフロートで開くときの nvim_open_win 用の設定を返す（副作用なし）。
+-- anchor は重ねる先（ターミナルウィンドウ）の画面上の位置と大きさ { row, col, width, height }。
+-- ターミナル幅に合わせ、下端から opts.bottom_margin 行上に置く。
+-- アンカーのウィンドウが閉じても道連れにならないよう relative="editor" で座標を渡す。
+function M.float_win_config(anchor, height, opts)
+  opts = opts or {}
+  local margin = opts.bottom_margin or 0
+  local border_size = 2
+
+  local available = anchor.height - border_size - margin
+  local h = math.max(1, math.min(height, available))
+  local row = math.max(anchor.row, anchor.row + anchor.height - h - border_size - margin)
+
+  return {
+    relative = "editor",
+    row = math.max(0, row),
+    col = anchor.col,
+    width = math.max(1, anchor.width - border_size),
+    height = h,
+    style = "minimal",
+    border = "rounded",
+    title = opts.title,
+    title_pos = opts.title and "center" or nil,
+  }
+end
+
 -- 送信/クリアのキーマップを張る。呼ぶコマンド名だけが呼び出し側で異なる。
 -- cmds = { send = "AgentDraftSend", send_keep = "AgentDraftSend!", clear = "AgentDraftClear" }
 function M.apply_send_keymaps(bufnr, cmds)
