@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Claude Code ステータスライン
-# フォーマット: dir | branch | model | tokens (色付き)
+# フォーマット: dir:branch | model:effort | tokens | rate_limits (色付き)
 # echo '{"session_id": "...", "model": {...}}' | bash ~/.claude/statusline-script.sh
 
 # カラーコード定義
@@ -49,6 +49,17 @@ five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage //
 seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 five_hour_resets_at=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 seven_day_resets_at=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
+effort_level=$(echo "$input" | jq -r '.effort.level // empty')
+
+# effortレベルから色を返す
+get_effort_color() {
+    case "$1" in
+        low) echo "$GRAY" ;;
+        medium) echo "$GREEN" ;;
+        high) echo "$YELLOW" ;;
+        *) echo "$RED" ;; # xhigh / max など
+    esac
+}
 
 # Unix epoch秒をローカル時刻にフォーマット（macOS / Linux 両対応）
 format_epoch() {
@@ -210,6 +221,11 @@ if [ -n "$git_branch" ]; then
 fi
 
 output="$output ${GRAY}|${RESET} ${BLUE}${model_name}${RESET}"
+
+if [ -n "$effort_level" ]; then
+    effort_color=$(get_effort_color "$effort_level")
+    output="$output${GRAY}:${RESET}${effort_color}${effort_level}${RESET}"
+fi
 
 if [ -n "$token_info" ]; then
     output="$output ${GRAY}|${RESET} ${token_info}"

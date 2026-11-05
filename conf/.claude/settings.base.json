@@ -9,8 +9,6 @@
     "allow": [
       "List(*)",
       "Fetch(https://*)",
-      "Read(*)",
-      "Grep(*)",
       "Read(~/.zshrc)",
       "Read(~/src/github.com/**)",
       "Read(~/dotfiles/**)",
@@ -110,9 +108,7 @@
       "Bash(which:*)",
       "WebSearch"
     ],
-    "deny": [
-      "Bash(rm:*)"
-    ]
+    "deny": ["Bash(rm:*)"]
   },
   "hooks": {
     "PreToolUse": [
