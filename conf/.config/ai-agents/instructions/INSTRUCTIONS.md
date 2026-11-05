@@ -4,7 +4,6 @@
 
 * 常に日本語で会話する
 * Markdownの強調構文（`**太字**`）を使用しない。代わりにシンプルな文章表現を使う
-* 応答の冒頭1〜2文で「この応答で言いたいこと」を端的に述べ、そのあとに詳細を書く。短い応答では、その1〜2文だけで終わってよい
 
 ## Evidence and Numbers
 
@@ -236,6 +235,5 @@ gh api repos/{owner}/{repo}/issues/comments/{id} --jq .body | grep '\\`' || echo
 * スキルは dotfiles リポジトリ（`ghq list | grep happy663/dotfiles` で場所を確認できる。通常は `$(ghq root)/github.com/happy663/dotfiles`）の `conf/.config/ai-agents/skills/` を実体として管理している。
 * そこから `~/.config/ai-agents/skills/` に symlink され、さらに `~/.claude/skills` と `~/.codex/skills` が同じディレクトリを指す symlink になっており、Claude Code と Codex で共有される。
 * 新しいスキルを作成・編集する場合は、実体である dotfiles 側の `conf/.config/ai-agents/skills/<name>/SKILL.md` を対象とすること（symlink 経由で書いても実体に反映されるが、パスの言及や git 操作では dotfiles 内の実体パスを使う）。
-
 
 @RTK.md
