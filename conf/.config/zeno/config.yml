@@ -273,10 +273,6 @@ snippets:
     keyword: ncc
     snippet: nvim-claude-codex
 
-  - name: nvim claude pair
-    keyword: ncp
-    snippet: nvim-claude-pair
-
   - name: nvim octo
     keyword: o
     snippet: nvim-octo

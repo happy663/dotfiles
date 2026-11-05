@@ -149,26 +149,4 @@ function M.set_draft_height(height)
   end
 end
 
-function M.set_agent_claude_pair_state(pair_state)
-  vim.t.agent_claude_pair_active = true
-  vim.t.agent_claude_pair_left_winid = pair_state.left_winid
-  vim.t.agent_claude_pair_right_winid = pair_state.right_winid
-  vim.t.agent_claude_pair_input_winid = pair_state.input_winid
-  vim.t.agent_claude_pair_left_bufnr = pair_state.left_bufnr
-  vim.t.agent_claude_pair_right_bufnr = pair_state.right_bufnr
-  M.set_target_terminal_bufnr(pair_state.left_bufnr)
-end
-
-function M.is_agent_claude_pair_active()
-  return vim.t.agent_claude_pair_active == true
-end
-
-function M.get_agent_claude_pair_cycle()
-  return {
-    vim.t.agent_claude_pair_input_winid,
-    vim.t.agent_claude_pair_left_winid,
-    vim.t.agent_claude_pair_right_winid,
-  }
-end
-
 return M

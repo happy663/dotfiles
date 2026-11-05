@@ -38,12 +38,6 @@ M.claude_codex = {
   open_in_new_tab = true,
 }
 
-M.claude_pair = {
-  input_height = 15,
-  padding_width = 15,
-  fallback_target_patterns = { "claude" },
-}
-
 M.send_to = {
   -- ピッカーを開いている間、一覧を自動で取り直す間隔（ms）。
   -- 0 以下にすると自動更新しない（手動の AgentSendToRefresh のみ）。

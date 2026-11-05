@@ -119,14 +119,6 @@ function nvim-claude-codex() {
   command nvim -c "$ex_cmd"
 }
 
-function nvim-claude-pair() {
-  local ex_cmd="AgentClaudePair"
-  if (( $# > 0 )); then
-    ex_cmd+=" ${(q)@}"
-  fi
-  command nvim -c "$ex_cmd"
-}
-
 function nvim-octo() {
   local ex_cmd="Octo"
   if (( $# > 0 )); then

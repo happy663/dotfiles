@@ -305,16 +305,6 @@ function M.setup()
     end
   end, { nargs = "+", desc = "Send command to terminal by index" })
 
-  vim.api.nvim_create_user_command("AgentClaudePair", function(command)
-    layouts.open_agent_claude_pair({ args = command.args })
-  end, { nargs = "*", desc = "Open two Claude agent terminals with centered input" })
-
-  vim.keymap.set("n", "<leader>aD", ":AgentClaudePair<CR>", {
-    noremap = true,
-    silent = true,
-    desc = "Open Claude agent pair",
-  })
-
   -- 別ペインの Agent へ、ペインを移動せずにプロンプトを送る（issue #316）。
   -- ローカル宛は従来どおり <M-a>。
   vim.api.nvim_create_user_command("AgentSendTo", function()
