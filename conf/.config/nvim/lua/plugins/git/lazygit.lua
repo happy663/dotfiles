@@ -104,20 +104,8 @@ return {
           local tabpage = vim.api.nvim_get_current_tabpage()
 
           -- フローティングウィンドウやターミナルバッファをクリーンアップ
-          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
-            if vim.api.nvim_win_is_valid(win) then
-              local buf = vim.api.nvim_win_get_buf(win)
-              local ft = vim.api.nvim_buf_get_option(buf, "filetype")
-              local name = vim.api.nvim_buf_get_name(buf)
-
-              -- 不要なバッファタイプを削除
-              if ft == "lazygit" or ft == "cmp_menu" or ft == "NvimSeparator" or name == "" then
-                if vim.api.nvim_buf_is_valid(buf) and #vim.api.nvim_tabpage_list_wins(tabpage) > 1 then
-                  pcall(vim.api.nvim_win_close, win, true)
-                end
-              end
-            end
-          end
+          -- no-neck-pain の余白（名前が空の分割）は閉じない。詳細は utils.lazygit_cleanup
+          require("utils.lazygit_cleanup").cleanup(tabpage)
 
           -- lazygit.nvim は終了時に起動元ウィンドウへ戻すため、通常はそのままで良い。
           -- 現在ウィンドウが無効になった場合のみ、同じタブ内のウィンドウへフォーカスする。
