@@ -22,6 +22,8 @@ run "tmux configuration" \
   bash conf/.config/tmux/tests/run-all.sh
 run "review-loop skill" \
   bash conf/.config/ai-agents/skills/review-loop/tests/run-all.sh
+run "disk-cleanup skill" \
+  bash conf/.config/ai-agents/skills/disk-cleanup/tests/test_disk_report.sh
 run "Neovim (Lua) tests" \
   bash conf/.config/nvim/tests/run-all.sh
 
