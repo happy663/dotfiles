@@ -100,7 +100,10 @@ return {
           -- プラグイン側に上書きされないように、遅延して実行
           -- https://github.com/pwntester/octo.nvim/blob/4a3a4fc5a9d3a372c91041f5b846f33b8d6b31fa/lua/octo/model/octo-buffer.lua#L213
           vim.schedule(function()
-            require("plugins.git.octo.fold").setup_window_folds()
+            vim.opt_local.foldmethod = "expr"
+            vim.opt_local.foldexpr = "v:lua.require('plugins.git.octo.fold').octo_fold_all()"
+            vim.opt_local.foldtext = "v:lua.require('plugins.git.octo.fold').octo_foldtext()"
+            vim.opt_local.foldlevel = 0
             vim.opt_local.conceallevel = 2
             -- Ensure fold display is visible
             vim.opt_local.fillchars:append({ fold = " " })

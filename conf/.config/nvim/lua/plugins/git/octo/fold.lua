@@ -105,19 +105,4 @@ function M.octo_foldtext()
   return vim.fn.foldtext()
 end
 
--- 現在のウィンドウにoctoバッファ用のfold設定を適用する
--- octo.nvimはBufEnterのたびにfiletype=octoを再設定してFileTypeが再発火する。
--- 毎回foldexpr/foldlevelを設定し直すと開いたdetailsが閉じるため、ウィンドウ×バッファで1回だけにする
-function M.setup_window_folds()
-  local buf = vim.api.nvim_get_current_buf()
-  if vim.w.octo_fold_initialized_buf == buf then
-    return
-  end
-  vim.w.octo_fold_initialized_buf = buf
-  vim.opt_local.foldmethod = "expr"
-  vim.opt_local.foldexpr = "v:lua.require('plugins.git.octo.fold').octo_fold_all()"
-  vim.opt_local.foldtext = "v:lua.require('plugins.git.octo.fold').octo_foldtext()"
-  vim.opt_local.foldlevel = 0
-end
-
 return M
