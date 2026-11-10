@@ -5,7 +5,7 @@ return {
   branch = "2.x",
   config = function()
     require("no-neck-pain").setup({
-      width = 170,
+      width = 190,
       autocmds = {
         enableOnVimEnter = "safe",
       },
