@@ -21,6 +21,8 @@
       echo "rex: Rex.app が /Applications に見つかりません" >&2
       exit 127
     '')
+    # Rex のペインを Neovim のウィンドウとして使うフロントエンド（flake input の neorex）
+    inputs.neorex.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   home.file."Library/Fonts/akkurat.ttf".source = ../../fonts/akkurat.ttf;

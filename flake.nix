@@ -19,6 +19,11 @@
       url = "github:sorafujitani/ccsession";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Rex 用の Neovim フロントエンド（conf/.config/nix/home-manager/darwin.nix で導入）
+    neorex = {
+      url = "github:alexrlocke/neorex";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
 
@@ -31,7 +36,7 @@
     ];
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, ccsession } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, neovim-nightly-overlay, ccsession, neorex } @ inputs:
     let
       system = {
         darwin = "aarch64-darwin";
