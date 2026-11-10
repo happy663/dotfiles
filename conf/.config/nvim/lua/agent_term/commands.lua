@@ -225,7 +225,7 @@ function M.setup()
     vim.api.nvim_set_current_win(winid)
     vim.cmd("enew")
     local resume_cmd = "claude --resume " .. session_id
-    vim.cmd("terminal " .. resume_cmd)
+    vim.cmd("terminal " .. layouts.claude_terminal_cmd(resume_cmd))
     local new_bufnr = vim.api.nvim_get_current_buf()
     message_nav.attach(new_bufnr, "claude")
     state.set_target_terminal_bufnr(new_bufnr)

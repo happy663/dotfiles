@@ -9,6 +9,17 @@ local PI_COMMAND = "pi"
 
 local M = {}
 
+-- Claude Code を :terminal で起動するコマンドを返す。TMUX を空にして起動する。
+-- Neovim を tmux 内で動かしていると TMUX が Claude Code に引き継がれ、Claude Code は
+-- tmux 内だと判断して /copy 時に tmux 用 DCS passthrough (ESC P tmux; ...) を出す。
+-- 実際の出力先は Neovim の :terminal で、これを解釈できず中身の base64 が画面に表示される。
+-- TMUX_PANE は残すので、TMUX_PANE を使う hook / スクリプトは影響を受けない。
+-- @param cmd string 起動コマンド（例: "claude --resume <id>"）
+-- @return string
+function M.claude_terminal_cmd(cmd)
+  return "TMUX= " .. cmd
+end
+
 -- NvimTree等がターミナルウィンドウに漏れ出させたウィンドウローカルwinhighlight
 -- (Normal:NvimTreeNormal 等) をクリアし、ターミナル文字色がグレーになるのを防ぐ。
 -- 原因: tabnewで作ったターミナルウィンドウにNvimTreeのwinhlが波及する。
@@ -114,7 +125,7 @@ function M.open_agent_claude(opts)
   vim.cmd("tabnew")
   state.mark_current_tab_as_agent()
   vim.cmd("startinsert")
-  vim.cmd("terminal " .. claude_cmd)
+  vim.cmd("terminal " .. M.claude_terminal_cmd(claude_cmd))
   local target_bufnr = vim.api.nvim_get_current_buf()
   clear_term_winhighlight()
   vim.keymap.set("t", "<C-CR>", [[<C-\><C-n>A<CR><Esc>]], { buffer = target_bufnr, noremap = true, silent = true })
@@ -145,7 +156,7 @@ function M.open_agent_claude_codex(opts)
     claude_cmd = claude_cmd .. " " .. opts.args
   end
 
-  vim.cmd("terminal " .. claude_cmd)
+  vim.cmd("terminal " .. M.claude_terminal_cmd(claude_cmd))
   local claude_target_bufnr = vim.api.nvim_get_current_buf()
   clear_term_winhighlight()
   message_nav.attach(claude_target_bufnr, "claude")
