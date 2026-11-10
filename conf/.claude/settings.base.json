@@ -142,6 +142,11 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh clear"
+          },
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'rex __internal session-start --agent claude --feature-session-naming=false 2>/dev/null || true'",
+            "timeout": 5
           }
         ]
       }
