@@ -3,7 +3,8 @@
 #
 # 使い方:
 #   hd.sh start <session> <cwd>        隔離 herdr を起動し、cwd でワークスペースを作る（pane id を表示）
-#   hd.sh nvim  <session> [nvim args]  ペインで素の nvim を起動し、起動完了まで待つ
+#   hd.sh nvim  <session> [--config <dir>] [nvim args]  ペインで素の nvim を起動し、起動完了まで待つ
+#                                    （--config で nvim の設定ディレクトリを差し替える）
 #   hd.sh text  <session> <text>       文字列をそのまま送る（Enter は送らない）
 #   hd.sh keys  <session> <key>...     キーを送る（enter / escape / ctrl+c など）
 #   hd.sh ex    <session> <command>    nvim の Ex コマンドを送って実行する（例: hd.sh ex s 'messages'）
@@ -83,12 +84,25 @@ cmd_nvim() {
   pane=$(pane_of "$session")
   ready="$(state_dir "$session")/ready"
   : >"$ready"
+  # --config <dir>: その nvim 設定ディレクトリで起動する（worktree の設定を試すとき）。
+  # XDG_CONFIG_HOME を一時ディレクトリに向け、その下の nvim だけを <dir> へのリンクにする。
+  # プラグインなどのデータ（~/.local/share/nvim）は普段のものを使う。
+  local env_prefix="env NVIM= NVIM_LISTEN_ADDRESS="
+  if [ "${1:-}" = "--config" ]; then
+    [ -d "${2:-}" ] || die "--config のディレクトリがない: ${2:-}"
+    local xdg
+    xdg="$(state_dir "$session")/xdg"
+    mkdir -p "$xdg"
+    ln -snf "$(cd "$2" && pwd)" "$xdg/nvim"
+    env_prefix+=" XDG_CONFIG_HOME=$(printf '%q' "$xdg")"
+    shift 2
+  fi
   local args=""
   local a
   for a in "$@"; do
     args+=" $(printf '%q' "$a")"
   done
-  H "$session" pane run "$pane" "env NVIM= NVIM_LISTEN_ADDRESS= command nvim +'lua vim.fn.writefile({\"ready\"}, \"$ready\")'$args"
+  H "$session" pane run "$pane" "$env_prefix command nvim +'lua vim.fn.writefile({\"ready\"}, \"$ready\")'$args"
   local i
   for i in $(seq 1 30); do
     [ -s "$ready" ] && break

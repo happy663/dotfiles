@@ -33,6 +33,8 @@ s=nvim-debug
 
 # 2. 素の nvim を起動（起動完了は nvim が書く ready ファイルで待つ）
 "$hd" nvim "$s"            # ファイルを開くなら: "$hd" nvim "$s" path/to/file
+# worktree の nvim 設定で試すなら --config を付ける（nvim の設定だけを差し替え、プラグインは普段のものを使う）
+# "$hd" nvim "$s" --config /path/to/worktree/conf/.config/nvim
 
 # 3. 画面を見る
 "$hd" read "$s"
@@ -84,6 +86,8 @@ herdr まわりの確認では、herdr の CLI でこのセッションの状態
 
 ## 注意点
 
+- worktree のコードを試すときに `--cmd "set rtp^=..."` は効かない。lazy.nvim が起動時に runtimepath を作り直すため。`--config` を使う
+- エージェント用のターミナルを開くときは `:terminal` を送らない（ユーザーの設定で toggleterm などに置き換わることがある）。`luafile` で `vim.fn.jobstart({...}, { term = true })` を呼ぶ
 - 画面なしで起動したサーバーのペインは 120x40。サイズに依存する確認は、ユーザーに attach してもらうか、レイアウトを見てから判断する
 - シェルの起動直後に送ったキーは届かないことがある（start は 2 秒待つ）。届いていなければ `read` で確認してから送り直す
 - `herdr pane report-agent` の source に `herdr:claude` などは使えない（herdr の公式連携用に予約されていて、状態が反映されない）

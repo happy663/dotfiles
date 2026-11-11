@@ -5,7 +5,7 @@ package.path = vim.fn.getcwd()
   .. package.path
 
 -- agent_term.outer（入り口）のテスト。
--- 使える送り先（今は Rex のみ）を集め、1 つもなければ何もしない。
+-- 使える送り先（Rex と herdr）を集め、1 つもなければ何もしない。
 -- 送り先がない環境で対応確認に返事をすると、Claude Code はタイトルの状態記号を消してしまうため。
 
 local outer = require("agent_term.outer")
@@ -29,6 +29,10 @@ local function autocmd_count(group, event)
   local ok, autocmds = pcall(vim.api.nvim_get_autocmds, { group = group, event = event })
   return ok and #autocmds or 0
 end
+
+-- herdr の中でテストを実行しても結果が変わらないよう、herdr の変数を外しておく
+vim.env.HERDR_ENV = nil
+vim.env.HERDR_PANE_ID = nil
 
 test("setup: Rex の外（送り先なし）では何もしない", function()
   vim.env.REX_SESSION = nil
@@ -55,6 +59,23 @@ test("setup: 送り先がなくなって呼び直したら止まる", function()
 
   assert_eq(0, autocmd_count("agent_term_outer_status", "TermRequest"), "status autocmds")
   assert_eq(0, autocmd_count("agent_term_outer_title", "TermRequest"), "title autocmds")
+end)
+
+test("setup: herdr の中でも状態の中継とタイトルを有効にする", function()
+  vim.env.REX_SESSION = nil
+  vim.env.HERDR_ENV = "1"
+  vim.env.HERDR_PANE_ID = "w1:p1"
+  vim.o.title = false
+  outer.setup()
+
+  assert_eq(true, vim.o.title, "'title'")
+  assert_eq(1, autocmd_count("agent_term_outer_status", "TermRequest"), "status autocmds")
+  assert_eq(1, autocmd_count("agent_term_outer_title", "TermRequest"), "title autocmds")
+
+  vim.env.HERDR_ENV = nil
+  vim.env.HERDR_PANE_ID = nil
+  outer.setup()
+  assert_eq(0, autocmd_count("agent_term_outer_status", "TermRequest"), "stopped outside herdr")
 end)
 
 print("ALL OK")
