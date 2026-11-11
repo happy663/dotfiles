@@ -111,6 +111,7 @@ if vim.g.not_in_vscode then
   require("features.restart")
   require("features.debug_trace").setup()
   require("agent_term.commands").setup()
+  require("agent_term.outer").setup()
 else
   require("self-vscode")
 end
