@@ -45,10 +45,12 @@ if [[ -d "${DOTFILES_DIR}/conf/.config/herdr/plugins" ]]; then
   for dir in "${DOTFILES_DIR}"/conf/.config/herdr/plugins/*/; do
     [[ -f "${dir}herdr-plugin.toml" ]] || continue
     id="$(sed -n 's/^id *= *"\(.*\)"/\1/p' "${dir}herdr-plugin.toml" | head -1)"
-    if grep -q "$id" <<<"$installed"; then
-      echo "skip: $id (installed)"
+    real_dir="$(cd "$dir" && pwd -P)"
+    if grep -qF "local:${real_dir}]" <<<"$installed"; then
+      echo "skip: $id (linked)"
       continue
     fi
+    # 別の場所（worktree など）で link 済みでも、link し直せば上書きされる
     echo "link: ${dir%/}"
     herdr plugin link "${dir%/}"
   done
