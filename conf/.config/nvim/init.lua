@@ -114,9 +114,9 @@ if vim.g.not_in_vscode then
   -- Rex 連携（conf/.config/rex）。Rex の外では読み込まない
   if vim.env.REX_SESSION and vim.env.REX_SESSION ~= "" then
     local rex_dir = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "rex")
-    local ok, rex_status = pcall(dofile, vim.fs.joinpath(rex_dir, "nvim", "program_status.lua"))
+    local ok, rex = pcall(dofile, vim.fs.joinpath(rex_dir, "nvim", "init.lua"))
     if ok then
-      rex_status.setup()
+      rex.setup()
     end
   end
 else

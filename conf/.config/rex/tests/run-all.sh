@@ -20,9 +20,11 @@ fi
 SANDBOX_HOME="$(mktemp -d)"
 trap 'rm -rf "$SANDBOX_HOME"' EXIT
 
-printf '\n=== test_program_status.lua ===\n'
-XDG_CONFIG_HOME="$SANDBOX_HOME" nvim --headless -u NONE -l "${TEST_DIR}/test_program_status.lua" ||
-  failed+=("test_program_status.lua")
+for test_file in "${TEST_DIR}"/test_*.lua; do
+  name="$(basename "$test_file")"
+  printf '\n=== %s ===\n' "$name"
+  XDG_CONFIG_HOME="$SANDBOX_HOME" nvim --headless -u NONE -l "$test_file" || failed+=("$name")
+done
 
 if [[ ${#failed[@]} -gt 0 ]]; then
   printf '\nREX TESTS FAILED: %s\n' "${failed[*]}" >&2
