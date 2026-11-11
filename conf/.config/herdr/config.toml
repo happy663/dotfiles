@@ -1,0 +1,13 @@
+# herdr の設定（issue #351）。dotfiles からはこのファイルだけを ~/.config/herdr/config.toml にリンクする。
+# ~/.config/herdr にはソケット・ログ・session.json も置かれるため、ディレクトリごとはリンクしない。
+
+[keys]
+# tmux と同じ prefix。tmux の prefix 系の割り当ては移植せず、herdr の既定のまま使う
+prefix = "ctrl+q"
+
+# prefix なしのキー（tmux の bind -n と同じ割り当て）
+previous_tab = ["prefix+p", "alt+h"]
+next_tab = ["prefix+n", "alt+l"]
+switch_tab = ["prefix+1..9", "alt+1..9"]
+previous_workspace = "alt+k"
+next_workspace = "alt+j"
