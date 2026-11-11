@@ -154,6 +154,15 @@
       #     };
       #   };
       # };
+
+      # アプリ固有の設定（defaults write に相当）
+      CustomUserPreferences = {
+        # Rex: Option キーを Alt として送る（Settings > Terminal > Keyboard > Option key）。
+        # 既定の Automatic は U.S. 配列でしか Alt にならず、ABC 配列では <M-a> が「å」になる
+        "com.superlogical.rex" = {
+          "Workspace.terminalOptionKeyBehavior" = "actsAsAlt";
+        };
+      };
     };
 
     keyboard = {
