@@ -5,6 +5,9 @@
 -- Neovim の :terminal は知らない OSC を外へ流さないため、そのままでは Rex に届かない。
 -- 1 つの Neovim に複数のエージェントがいても区別できるよう、報告には
 -- バッファごとの id（agent/<bufnr>）を付けてから転送する。
+--
+-- Claude Code は起動時に対応確認（OSC 7501 ; ?）を送り、返事があったときだけ
+-- OSC 7501 で状態を報告する。Neovim は返事をしないので、ここで代わりに返事をする。
 
 local M = {}
 
@@ -73,8 +76,14 @@ local function default_enabled()
   return vim.env.REX_SESSION ~= nil and vim.env.REX_SESSION ~= "" and vim.api.nvim_ui_send ~= nil
 end
 
+-- 対応確認（OSC 7501 ; ?）かどうか
+function M.is_query(sequence)
+  return type(sequence) == "string" and sequence:sub(1, #PREFIX + 1) == PREFIX .. "?"
+end
+
 -- opts.enabled: 転送するか（既定: Rex の中で、nvim_ui_send が使えるとき）
 -- opts.send:    転送に使う関数（既定: vim.api.nvim_ui_send）。テスト用。
+-- opts.reply:   対応確認に返事をする関数 (bufnr, data)（既定: そのターミナルの入力へ送る）。テスト用。
 function M.setup(opts)
   opts = opts or {}
   local enabled = opts.enabled
@@ -84,6 +93,13 @@ function M.setup(opts)
   local send = opts.send or function(data)
     vim.api.nvim_ui_send(data)
   end
+  local reply = opts.reply
+    or function(bufnr, data)
+      local channel = vim.bo[bufnr].channel
+      if channel and channel > 0 then
+        pcall(vim.api.nvim_chan_send, channel, data)
+      end
+    end
 
   local group = vim.api.nvim_create_augroup("rex_program_status", { clear = true })
   if not enabled then
@@ -104,7 +120,13 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("TermRequest", {
     group = group,
     callback = function(ev)
-      local data = M.handle(ev.buf, ev.data and ev.data.sequence)
+      local sequence = ev.data and ev.data.sequence
+      if M.is_query(sequence) then
+        -- 仕様の最小の返事（states / kinds を省くと、仕様の既定の一覧を意味する）
+        reply(ev.buf, PREFIX .. "?" .. ST)
+        return
+      end
+      local data = M.handle(ev.buf, sequence)
       if data then
         forwarded[ev.buf] = true
         send(data)

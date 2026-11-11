@@ -165,10 +165,6 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh clear"
-          },
-          {
-            "type": "command",
             "command": "bash ~/.config/tmux/scripts/claude-session-cleanup.sh"
           }
         ]
@@ -185,10 +181,6 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh running"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh working"
           },
           {
             "type": "command",
@@ -225,10 +217,6 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh resume"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh working"
           }
         ]
       }
@@ -255,10 +243,6 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh done"
-          },
-          {
-            "type": "command",
             "command": "bash ~/.claude/hooks/claude-pane-task.sh stop"
           }
         ]
@@ -275,10 +259,6 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh error"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh error"
           }
         ]
       }
@@ -302,10 +282,6 @@
           {
             "type": "command",
             "command": "bash ~/.config/tmux/scripts/agent-window-status.sh blocked"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.config/rex/hooks/program-status.sh notification"
           }
         ]
       }

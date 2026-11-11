@@ -8,9 +8,6 @@ cd "$REPO_ROOT"
 
 failed=()
 
-printf '\n=== test_program_status_hook.sh ===\n'
-bash "${TEST_DIR}/test_program_status_hook.sh" || failed+=("test_program_status_hook.sh")
-
 if ! command -v nvim >/dev/null 2>&1; then
   echo "Error: nvim not found. Run inside 'nix develop .#ci'." >&2
   exit 1

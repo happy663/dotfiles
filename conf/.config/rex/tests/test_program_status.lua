@@ -149,4 +149,69 @@ test("setup: enabled = false なら何も転送しない", function()
   assert_eq({}, sent, "nothing forwarded")
 end)
 
+-- 対応確認（OSC 7501 ; ?）への返事 ------------------------------------------
+-- Claude Code は起動時にこの問い合わせを送り、返事があったときだけ OSC 7501 で状態を報告する。
+
+test("setup: 対応確認に返事をし、Rex へは転送しない", function()
+  local sent, replies = {}, {}
+  ps.setup({
+    enabled = true,
+    send = function(data)
+      table.insert(sent, data)
+    end,
+    reply = function(buf, data)
+      table.insert(replies, { buf, data })
+    end,
+  })
+
+  local buf = run_in_terminal("\\033]7501;?\\033\\\\done\\n")
+  vim.wait(5000, function()
+    return #replies >= 1
+  end, 10)
+  vim.wait(300)
+
+  assert_eq({ { buf, OSC .. "?" .. ST } }, replies, "reply")
+  assert_eq({}, sent, "nothing forwarded")
+end)
+
+test("setup: enabled = false なら対応確認に返事をしない", function()
+  local replies = {}
+  ps.setup({
+    enabled = false,
+    reply = function(buf, data)
+      table.insert(replies, { buf, data })
+    end,
+  })
+
+  run_in_terminal("\\033]7501;?\\033\\\\done\\n")
+  vim.wait(300)
+
+  assert_eq({}, replies, "no reply")
+end)
+
+test("setup: 返事は端末内のプログラムの入力に届く", function()
+  ps.setup({ enabled = true, send = function() end })
+
+  -- 端末を raw にして問い合わせを出し、返ってきた 10 バイト（ESC ] 7501 ; ? ESC \）を od で表示する
+  vim.cmd("enew")
+  local buf = vim.api.nvim_get_current_buf()
+  local exited = false
+  vim.fn.jobstart({
+    "sh",
+    "-c",
+    "stty raw -echo; printf '\\033]7501;?\\033\\\\'; head -c 10 | od -An -c; stty sane",
+  }, {
+    term = true,
+    on_exit = function()
+      exited = true
+    end,
+  })
+  vim.wait(5000, function()
+    return exited
+  end, 10)
+
+  local text = table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), "\n")
+  assert_eq(true, text:find("]   7   5   0   1   ;   ?", 1, true) ~= nil, "reply received by program:\n" .. text)
+end)
+
 print("ALL OK")
