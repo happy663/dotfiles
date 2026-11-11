@@ -79,12 +79,40 @@ function nvim-codex() {
   command nvim -c "$ex_cmd"
 }
 
+# _nvim_as - Rex の中では nvim を別名（argv0）で起動する
+#   Rex はタブで動くプロセスの argv0 でアイコンを選ぶ。Neovim 内でエージェントを動かすタブを
+#   エージェントのアイコンにするため、Rex の中（REX_SESSION があるとき）だけ名前を変える。
+#   mise の shim は argv0 で起動するツールを選ぶため、shim 経由で名前を変えると claude 本体が
+#   起動してしまう。リンクをたどった実体が nvim のものだけを、絶対パスで起動する。
+#   実体が見つからなければ、名前は変えずに普通に起動する。
+function _nvim_real_path() {
+  local candidate
+  for candidate in ${(f)"$(whence -ap nvim)"}; do
+    if [[ "${candidate:A:t}" == nvim && -x "${candidate:A}" ]]; then
+      print -r -- "${candidate:A}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+function _nvim_as() {
+  local name="$1"
+  shift
+  local nvim_path
+  if [[ -n "$REX_SESSION" ]] && nvim_path="$(_nvim_real_path)"; then
+    ARGV0="$name" command "$nvim_path" "$@"
+  else
+    command nvim "$@"
+  fi
+}
+
 function nvim-claude() {
   local ex_cmd="AgentClaude"
   if (( $# > 0 )); then
     ex_cmd+=" ${(q)@}"
   fi
-  command nvim -c "$ex_cmd"
+  _nvim_as claude -c "$ex_cmd"
 }
 
 function nvim-pi() {
@@ -96,7 +124,7 @@ function nvim-pi() {
 }
 
 function nvim-claude-session() {
-  command nvim -c "AgentClaudeSession"
+  _nvim_as claude -c "AgentClaudeSession"
 }
 
 function nvim-codex-session() {
