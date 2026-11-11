@@ -111,14 +111,7 @@ if vim.g.not_in_vscode then
   require("features.restart")
   require("features.debug_trace").setup()
   require("agent_term.commands").setup()
-  -- Rex 連携（conf/.config/rex）。Rex の外では読み込まない
-  if vim.env.REX_SESSION and vim.env.REX_SESSION ~= "" then
-    local rex_dir = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "rex")
-    local ok, rex = pcall(dofile, vim.fs.joinpath(rex_dir, "nvim", "init.lua"))
-    if ok then
-      rex.setup()
-    end
-  end
+  require("agent_term.outer").setup()
 else
   require("self-vscode")
 end
