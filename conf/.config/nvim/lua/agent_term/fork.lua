@@ -65,7 +65,8 @@ function M.find_session(pid, requested_source, deps)
   return nil, nil
 end
 
-function M.build_split_command(source, session_id, cwd)
+-- fork 先のペインで実行するコマンド（nvim を開いてエージェントを分岐させる）
+function M.build_agent_command(source, session_id)
   local agent_command
   if source == "claude" then
     agent_command = "AgentClaude --resume " .. session_id .. " --fork-session"
@@ -75,7 +76,47 @@ function M.build_split_command(source, session_id, cwd)
     error("Unsupported agent source: " .. tostring(source))
   end
 
-  return string.format("tmux split-window -h -c %s \"nvim +'%s'\"", vim.fn.shellescape(cwd), agent_command)
+  return string.format("nvim +'%s'", agent_command)
+end
+
+local function default_system(argv)
+  local result = vim.system(argv, { text = true }):wait()
+  return { code = result.code, stdout = result.stdout or "" }
+end
+
+-- 外側のマルチプレクサ（tmux / herdr）で今のペインを右に分割し、新しいペインで command を実行する。
+-- herdr は分割とコマンドの起動を一度にできないので、分割 → シェルの起動待ち → 入力、の順に行う（issue #351）。
+-- deps.env / deps.system はテスト用。成功したら true。
+function M.split_with_command(cwd, command, deps)
+  deps = deps or {}
+  local env = deps.env or vim.env
+  local system = deps.system or default_system
+
+  if env.HERDR_ENV == "1" and env.HERDR_PANE_ID and env.HERDR_PANE_ID ~= "" then
+    local split =
+      system({ "herdr", "pane", "split", env.HERDR_PANE_ID, "--direction", "right", "--cwd", cwd, "--focus" })
+    if split.code ~= 0 then
+      return false
+    end
+    local ok, decoded = pcall(vim.json.decode, split.stdout)
+    local pane_id = ok
+      and type(decoded) == "table"
+      and decoded.result
+      and decoded.result.pane
+      and decoded.result.pane.pane_id
+    if not pane_id then
+      return false
+    end
+    -- プロンプトが出る前に入力すると Enter が届かないことがあるため、何か表示されるまで待つ
+    system({ "herdr", "pane", "wait-output", pane_id, "--regex", "\\S", "--source", "visible", "--timeout", "5000" })
+    return system({ "herdr", "pane", "run", pane_id, command }).code == 0
+  end
+
+  if env.TMUX and env.TMUX ~= "" then
+    return system({ "tmux", "split-window", "-h", "-c", cwd, command }).code == 0
+  end
+
+  return false
 end
 
 function M.resolve_current(name, requested_source)
@@ -107,10 +148,8 @@ function M.open(name, requested_source)
     return false
   end
 
-  local command = M.build_split_command(source, session_id, vim.fn.getcwd())
-  vim.fn.system(command)
-  if vim.v.shell_error ~= 0 then
-    vim.notify("[" .. name .. "] Failed to open tmux pane", vim.log.levels.ERROR)
+  if not M.split_with_command(vim.fn.getcwd(), M.build_agent_command(source, session_id)) then
+    vim.notify("[" .. name .. "] Failed to open a tmux/herdr pane", vim.log.levels.ERROR)
     return false
   end
 
