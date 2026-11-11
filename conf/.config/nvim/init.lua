@@ -111,7 +111,6 @@ if vim.g.not_in_vscode then
   require("features.restart")
   require("features.debug_trace").setup()
   require("agent_term.commands").setup()
-  -- エージェントの状態とタイトルを外側の端末へ出す（送り先がない環境では何もしない）
   require("agent_term.outer").setup()
 else
   require("self-vscode")
