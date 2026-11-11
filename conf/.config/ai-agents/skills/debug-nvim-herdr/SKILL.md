@@ -84,8 +84,29 @@ herdr まわりの確認では、herdr の CLI でこのセッションの状態
 
 ペイン ID は start が表示する（通常は `w1:p1`）。nvim の中では `HERDR_ENV=1` と `HERDR_PANE_ID` が入っているので、herdr の中で動く処理（OSC 7501 の送り先など）をそのまま試せる。
 
+## herdr のキー割り当てを試す
+
+herdr のキー割り当て（config.toml の `[keys]` や `[[keys.command]]`、プラグインの action）は herdr のクライアントが処理するので、`pane send-keys`（ペインに直接届く）では試せない。隔離した tmux サーバーの中でクライアントを attach し、そこへキーを送る（tmux は試験台として使うだけ）。
+
+```bash
+# worktree の config.toml を使うなら、start の前に HERDR_CONFIG_PATH を export しておく（サーバーとクライアントの両方が読む）
+export HERDR_CONFIG_PATH=/path/to/worktree/conf/.config/herdr/config.toml
+"$hd" start "$s" /path/to/workdir
+
+env -u NVIM -u NVIM_LISTEN_ADDRESS -u TMUX -u TMUX_PANE -u REX_SESSION -u REX_BLOCK -u REX_SERVER \
+  tmux -L herdr-keys new-session -d -s c -x 200 -y 50 "$("$hd" attach-cmd "$s")"
+sleep 3
+tmux -L herdr-keys send-keys -t c C-l       # クライアントにキーを送る
+"$hd" herdr "$s" pane list | jq -r '.result.panes[] | select(.focused) | .pane_id'   # 結果を herdr の CLI で見る
+tmux -L herdr-keys capture-pane -p -t c     # 画面全体（サイドバーや重ねたペインを含む）
+tmux -L herdr-keys kill-server              # 終わったら片付ける
+```
+
+zsh の設定を試すときは、ペインの zsh に worktree のファイルを `source` させる（`"$hd" herdr "$s" pane run w1:p2 "source /path/to/worktree/conf/.config/zsh/keybindings.zsh"`）。
+
 ## 注意点
 
+- nvim を初回に起動したとき、lazy.nvim が足りないプラグインを入れる画面を出すことがある。開いたままだとキーがそちらに取られるので、閉じてから試す
 - worktree のコードを試すときに `--cmd "set rtp^=..."` は効かない。lazy.nvim が起動時に runtimepath を作り直すため。`--config` を使う
 - エージェント用のターミナルを開くときは `:terminal` を送らない（ユーザーの設定で toggleterm などに置き換わることがある）。`luafile` で `vim.fn.jobstart({...}, { term = true })` を呼ぶ
 - 画面なしで起動したサーバーのペインは 120x40。サイズに依存する確認は、ユーザーに attach してもらうか、レイアウトを見てから判断する
