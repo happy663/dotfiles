@@ -120,7 +120,7 @@ function nvim-pi() {
   if (( $# > 0 )); then
     ex_cmd+=" ${(q)@}"
   fi
-  command nvim -c "$ex_cmd"
+  _nvim_as pi -c "$ex_cmd"
 }
 
 function nvim-claude-session() {
@@ -132,7 +132,7 @@ function nvim-codex-session() {
 }
 
 function nvim-pi-session() {
-  command nvim -c "AgentPiSession"
+  _nvim_as pi -c "AgentPiSession"
 }
 
 function nvim-all-session() {
