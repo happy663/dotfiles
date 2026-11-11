@@ -121,9 +121,28 @@ function _navigate_right() {
 }
 function _navigate_down()  { _tmux_navigate_or -D accept-line }
 function _navigate_up()    { _tmux_navigate_or -U kill-line }
+# herdr のペインのリサイズモード（tmux の resize キーテーブルの代わり）。h/j/k/l で動かし、Enter/Esc/q で抜ける。
+# 1 回の量は nvim 側（plugins/navigation/smart-splits.lua の HERDR_RESIZE_STEP）と揃える。
+function _herdr_resize_mode() {
+  local -A names=(h left j down k up l right)
+  local key
+  zle -M "resize: h/j/k/l, Enter/Esc/q to finish"
+  while read -k 1 key; do
+    case $key in
+      h|j|k|l)
+        herdr pane resize --direction ${names[$key]} --amount 0.01 --pane $HERDR_PANE_ID >/dev/null 2>&1
+        ;;
+      *) break ;;
+    esac
+  done
+  zle -M ""
+}
+
 function _resize_or_end_of_line() {
   if [[ -n $TMUX && -z $BUFFER ]]; then
     tmux switch-client -T resize
+  elif [[ $HERDR_ENV == 1 && -n $HERDR_PANE_ID && -z $BUFFER ]]; then
+    _herdr_resize_mode
   else
     zle end-of-line
   fi
