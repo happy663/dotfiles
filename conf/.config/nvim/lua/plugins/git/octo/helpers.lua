@@ -198,24 +198,28 @@ local SUBISSUE_TREE_QUERY = [[
         title
         state
         stateReason
+        url
         subIssues(first: 50) {
           nodes {
             number
             title
             state
             stateReason
+            url
             subIssues(first: 50) {
               nodes {
                 number
                 title
                 state
                 stateReason
+                url
                 subIssues(first: 50) {
                   nodes {
                     number
                     title
                     state
                     stateReason
+                    url
                   }
                 }
               }
@@ -227,10 +231,20 @@ local SUBISSUE_TREE_QUERY = [[
   }
 ]]
 
+-- Key that copies the selected issue URL. Follows Octo's own picker mapping
+-- (picker_config.mappings.copy_url) so both pickers stay on the same key.
+local function copy_url_lhs()
+  local ok, config = pcall(require, "octo.config")
+  local mapping = ok and vim.tbl_get(config, "values", "picker_config", "mappings", "copy_url") or nil
+  return mapping and mapping.lhs or "<C-y>"
+end
+
 -- Open a picker showing the sub-issue tree rooted at ctx.chain[ctx.index].
 -- ctx = { repo, owner, name, chain = {root .. current}, index }.
 -- Inside the picker, <a-,> widens the root one step toward the topmost ancestor
 -- and <a-.> narrows it back toward the current issue, re-rendering each time.
+-- The copy_url key (<C-y> by default) copies the selected issue's URL, like
+-- Octo's built-in issue picker; the picker stays open.
 local function open_subissue_picker(ctx)
   local octo_utils = require("octo.utils")
   local gh = require("octo.gh")
@@ -261,6 +275,7 @@ local function open_subissue_picker(ctx)
               title = issue.title,
               state = issue.state,
               stateReason = issue.stateReason,
+              url = issue.url,
               depth = 0,
             },
           }
@@ -289,6 +304,7 @@ local function open_subissue_picker(ctx)
           end
 
           local issue_icons = octo_utils.icons.issue
+          local copy_lhs = copy_url_lhs()
           vim.ui.select(items, {
             prompt = prompt,
             format_item = function(node, supports_chunks)
@@ -328,18 +344,26 @@ local function open_subissue_picker(ctx)
                     octo_utils.info("既にカレントissueです")
                   end
                 end,
+                -- Snacks wraps each item; `url` falls through to the original node.
+                octo_copy_url = function(_, item)
+                  if item and item.url then
+                    octo_utils.copy_url(item.url)
+                  end
+                end,
               },
               win = {
                 input = {
                   keys = {
                     ["<a-,>"] = { "octo_widen_root", mode = { "i", "n" } },
                     ["<a-.>"] = { "octo_narrow_root", mode = { "i", "n" } },
+                    [copy_lhs] = { "octo_copy_url", mode = { "i", "n" } },
                   },
                 },
                 list = {
                   keys = {
                     ["<a-,>"] = "octo_widen_root",
                     ["<a-.>"] = "octo_narrow_root",
+                    [copy_lhs] = "octo_copy_url",
                   },
                 },
               },
