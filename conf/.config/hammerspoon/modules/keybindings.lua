@@ -93,4 +93,16 @@ hs.hotkey.bind({ "alt" }, "e", function()
 end)
 
 
+hs.hotkey.bind({ "alt" }, "q", function()
+  local app = hs.application.get("com.superlogical.rex")
+  if app then
+    if app:isFrontmost() then
+      app:hide()
+    else
+      app:activate()
+    end
+  else
+    hs.applicatiun.launchOrFucus("rex")
+  end
+end)
 
