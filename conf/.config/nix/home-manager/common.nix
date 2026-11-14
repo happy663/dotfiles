@@ -42,10 +42,7 @@ in
       # forge::pr_open::tests::should_fetch_diff_commits_and_review_metadata_concurrently
       # が落ちてビルドできず、cache.nixos.org にもバイナリがないためテストを止める。
       # nixpkgs 側で直ったら元の `tuicr` に戻す。
-      (tuicr.overrideAttrs (oldAttrs: {
-        doCheck = false;
-        nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ pkg-config ];
-      }))
+      (tuicr.overrideAttrs { doCheck = false; })
       uv
       docker
       docker-compose
