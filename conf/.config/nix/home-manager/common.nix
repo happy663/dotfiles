@@ -54,6 +54,7 @@ in
       fastfetch
       nodejs_24
       tmux
+      herdr
       inputs.ccsession.packages.${pkgs.system}.default
       # Node.js tools managed by Nix
       nodeTools

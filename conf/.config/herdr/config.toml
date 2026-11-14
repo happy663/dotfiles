@@ -1,0 +1,40 @@
+onboarding = false
+# herdr の設定（issue #351）。dotfiles からはこのファイルだけを ~/.config/herdr/config.toml にリンクする。
+# ~/.config/herdr にはソケット・ログ・session.json も置かれるため、ディレクトリごとはリンクしない。
+
+[keys]
+# tmux と同じ prefix。tmux の prefix 系の割り当ては移植せず、herdr の既定のまま使う
+prefix = "ctrl+q"
+
+# prefix なしのキー（tmux の bind -n と同じ割り当て）
+previous_tab = ["prefix+p", "alt+h"]
+next_tab = ["prefix+n", "alt+l"]
+switch_tab = ["prefix+1..9", "alt+1..9"]
+previous_workspace = "alt+k"
+next_workspace = "alt+j"
+
+# C-h/j/k/l: nvim のウィンドウと herdr のペインをまたいで移動する（herdr-nvim-nav。scripts/herdr-plugins.sh で入れる）。
+# 前面が nvim か、プロンプトを出している zsh ならキーをそのペインに渡し、それ以外なら herdr がペインを移る。
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "herdr-nvim-nav.left"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "herdr-nvim-nav.down"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "herdr-nvim-nav.up"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "herdr-nvim-nav.right"
+
+[theme]
+name = "catppuccin"
+auto_switch = false

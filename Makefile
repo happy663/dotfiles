@@ -77,6 +77,10 @@ pi-pull:
 pi-push:
 	scripts/pi-settings.sh push
 
+# herdr のプラグイン（herdr-nvim-nav など）を入れる。何度実行してもよい（issue #351）
+herdr-plugins:
+	scripts/herdr-plugins.sh
+
 # GLM5.2 (z.ai) 接続モードに切替
 claude-glm:
 	scripts/claude-mode.sh glm

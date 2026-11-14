@@ -48,6 +48,12 @@ for dir in "${DOTFILES_DIR}"/.config/*/; do
     # リンクしないディレクトリ（git管理対象なし）
     case "$dirname" in
         colima|gh|fish|github-copilot|git) continue ;;
+        # herdr は ~/.config/herdr にソケット・ログ・session.json も置くため、config.toml だけをリンクする
+        herdr)
+            mkdir -p "$HOME/.config/herdr"
+            ln -snfv "${dir}config.toml" "$HOME/.config/herdr/config.toml"
+            continue
+            ;;
     esac
 
     ln -snfv "$dir" "$HOME/.config/$dirname"
