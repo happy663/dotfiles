@@ -1,30 +1,54 @@
 local M = {}
--- Markdownの折りたたみ関数（<details>タグとコードブロックの両方に対応）
-function M.octo_fold_all()
-  local line = vim.fn.getline(vim.v.lnum)
 
-  -- <details>タグの処理を優先
-  if line:match("^%s*<details") then
-    return ">1"
-  elseif line:match("^%s*</details>") then
-    return "<1"
+-- バッファごとの<details>ネスト深さのキャッシュ。changedtickが変わったら再計算する。
+-- depth[lnum] はその行を処理する前（直前の行まで）の<details>の深さ。
+local details_cache = {}
+
+local function details_depths(bufnr)
+  local tick = vim.api.nvim_buf_get_changedtick(bufnr)
+  local cached = details_cache[bufnr]
+  if cached and cached.tick == tick then
+    return cached.depth
   end
 
-  -- <details>タグ内にいるかチェック
-  local in_details = false
-  for i = vim.v.lnum - 1, 1, -1 do
-    local prev_line = vim.fn.getline(i)
-    if prev_line:match("^%s*<details") then
-      in_details = true
-      break
-    elseif prev_line:match("^%s*</details>") then
-      break
+  local depth = {}
+  local d = 0
+  for i, l in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
+    depth[i] = d
+    if l:match("^%s*<details") then
+      d = d + 1
+    elseif l:match("^%s*</details>") and d > 0 then
+      d = d - 1
     end
   end
 
+  if not cached then
+    vim.api.nvim_buf_attach(bufnr, false, {
+      on_detach = function()
+        details_cache[bufnr] = nil
+      end,
+    })
+  end
+  details_cache[bufnr] = { tick = tick, depth = depth }
+  return depth
+end
+
+-- Markdownの折りたたみ関数（<details>タグとコードブロックの両方に対応）
+function M.octo_fold_all()
+  local lnum = vim.v.lnum
+  local line = vim.fn.getline(lnum)
+  local d = details_depths(vim.api.nvim_get_current_buf())[lnum] or 0
+
+  -- <details>タグの処理を優先。ネストした<details>は深さをfoldレベルにする
+  if line:match("^%s*<details") then
+    return ">" .. (d + 1)
+  elseif line:match("^%s*</details>") and d > 0 then
+    return "<" .. d
+  end
+
   -- <details>内にいる場合、コードブロックのfoldは作成しない
-  if in_details then
-    return "="
+  if d > 0 then
+    return tostring(d)
   end
 
   -- コードブロックの処理（<details>外のみ）
@@ -91,8 +115,12 @@ function M.octo_foldtext()
   if line:match("<details>") then
     local summary = "詳細"
     -- 折りたたまれた範囲内でsummaryタグを探す
+    -- ネストした内側の<details>に入ったら探索をやめる（内側のsummaryを流用しない）
     for i = vim.v.foldstart, vim.v.foldend do
       local l = vim.fn.getline(i)
+      if i > vim.v.foldstart and l:match("^%s*<details") then
+        break
+      end
       local match = l:match("<summary>(.-)</summary>")
       if match then
         summary = match
