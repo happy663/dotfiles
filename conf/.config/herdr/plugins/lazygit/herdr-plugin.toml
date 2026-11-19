@@ -1,0 +1,16 @@
+# lazygit をタブの上に重ねて開く（issue #351）。tmux の display-popup の代わり。
+# nvim（plugins/git/lazygit.lua）から次のように開く:
+#   herdr plugin pane open --plugin dotfiles.lazygit --entrypoint lazygit --placement overlay --cwd <dir>
+# scripts/herdr-plugins.sh が herdr plugin link で登録する。
+id = "dotfiles.lazygit"
+name = "lazygit overlay"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Open lazygit over the current tab"
+platforms = ["macos", "linux"]
+
+[[panes]]
+id = "lazygit"
+title = "lazygit"
+placement = "overlay"
+command = ["lazygit"]

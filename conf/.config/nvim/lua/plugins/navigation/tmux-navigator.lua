@@ -1,3 +1,24 @@
+local WINCMD = { Left = "h", Down = "j", Up = "k", Right = "l" }
+
+-- Neovim のウィンドウと、外側のマルチプレクサ（tmux / herdr）のペインをまたいで移動する。
+-- herdr の中では、端のウィンドウにいるときに herdr のペインへ移る（issue #351）。
+-- herdr 側からのキーの受け渡しは herdr-nvim-nav（plugins/navigation/herdr-nvim-nav.lua）が受け持つ。
+local function navigate(direction)
+  if vim.env.HERDR_ENV == "1" and vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
+    local prev = vim.api.nvim_get_current_win()
+    vim.cmd("wincmd " .. WINCMD[direction])
+    if vim.api.nvim_get_current_win() == prev then
+      vim.system(
+        { "herdr", "pane", "focus", "--direction", direction:lower(), "--pane", vim.env.HERDR_PANE_ID },
+        { text = true },
+        function() end
+      )
+    end
+    return
+  end
+  vim.cmd("TmuxNavigate" .. direction)
+end
+
 return {
   {
     "christoomey/vim-tmux-navigator",
@@ -14,10 +35,30 @@ return {
       -- "TmuxNavigatePrevious",
     },
     keys = {
-      { "<c-h>", "<cmd>TmuxNavigateLeft<cr>" },
-      { "<c-j>", "<cmd>TmuxNavigateDown<cr>" },
-      { "<c-k>", "<cmd>TmuxNavigateUp<cr>" },
-      { "<c-l>", "<cmd>TmuxNavigateRight<cr>" },
+      {
+        "<c-h>",
+        function()
+          navigate("Left")
+        end,
+      },
+      {
+        "<c-j>",
+        function()
+          navigate("Down")
+        end,
+      },
+      {
+        "<c-k>",
+        function()
+          navigate("Up")
+        end,
+      },
+      {
+        "<c-l>",
+        function()
+          navigate("Right")
+        end,
+      },
       -- { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
     },
     config = function()
@@ -114,7 +155,7 @@ return {
           local input = get_current_terminal_input(bufnr)
 
           if input == "" then
-            vim.cmd("TmuxNavigate" .. direction)
+            navigate(direction)
           else
             send_control_char_to_terminal(bufnr, key)
           end

@@ -84,20 +84,35 @@ bindkey '^g' ghq-list
 # vim-tmux-navigator: バッファ空判定によるシームレスなペイン移動
 # バッファが空の時はtmuxペイン移動、入力中は通常のreadline操作
 # -----------------------------------------------------------------------------
+# 外側のマルチプレクサ（tmux / herdr）のペインを移る。どちらの中でもなければ 1 を返す。
+# herdr は新しいペインから TMUX を外すので、両方が同時に立つことはない（issue #351）。
+function _mux_select_pane() {
+  local dir=$1  # L / D / U / R
+  if [[ -n $TMUX ]]; then
+    tmux select-pane -$dir
+    return 0
+  fi
+  if [[ $HERDR_ENV == 1 && -n $HERDR_PANE_ID ]]; then
+    local -A names=(L left D down U up R right)
+    herdr pane focus --direction ${names[$dir]} --pane $HERDR_PANE_ID >/dev/null 2>&1 &!
+    return 0
+  fi
+  return 1
+}
+
 function _tmux_navigate_or() {
   local pane_dir=$1
   local fallback=$2
-  if [[ -n $TMUX && -z $BUFFER ]]; then
-    tmux select-pane $pane_dir
-  else
-    zle $fallback
+  if [[ -z $BUFFER ]] && _mux_select_pane ${pane_dir#-}; then
+    return
   fi
+  zle $fallback
 }
 
 function _navigate_left()  { _tmux_navigate_or -L backward-delete-char }
 function _navigate_right() {
-  if [[ -n $TMUX && -z $BUFFER ]]; then
-    tmux select-pane -R
+  if [[ -z $BUFFER ]] && _mux_select_pane R; then
+    return
   else
     zle -I
     clear
@@ -106,13 +121,54 @@ function _navigate_right() {
 }
 function _navigate_down()  { _tmux_navigate_or -D accept-line }
 function _navigate_up()    { _tmux_navigate_or -U kill-line }
+# herdr のペインのリサイズモード（tmux の resize キーテーブルの代わり）。h/j/k/l で動かし、Enter/Esc/q で抜ける。
+# 1 回の量は nvim 側（plugins/navigation/smart-splits.lua の HERDR_RESIZE_STEP）と揃える。
+function _herdr_resize_mode() {
+  local -A names=(h left j down k up l right)
+  local key
+  zle -M "resize: h/j/k/l, Enter/Esc/q to finish"
+  while read -k 1 key; do
+    case $key in
+      h|j|k|l)
+        herdr pane resize --direction ${names[$key]} --amount 0.01 --pane $HERDR_PANE_ID >/dev/null 2>&1
+        ;;
+      *) break ;;
+    esac
+  done
+  zle -M ""
+}
+
 function _resize_or_end_of_line() {
   if [[ -n $TMUX && -z $BUFFER ]]; then
     tmux switch-client -T resize
+  elif [[ $HERDR_ENV == 1 && -n $HERDR_PANE_ID && -z $BUFFER ]]; then
+    _herdr_resize_mode
   else
     zle end-of-line
   fi
 }
+
+# herdr-nvim-nav の目印（issue #351）。herdr 側のプラグインは、ペインごとの目印ファイルに
+# 生きている PID があればキーをそのペインに渡し、なければ herdr がペインを移る。
+# zsh もプロンプトを出している間だけ目印を置き、C-h/j/k/l を受け取って上の判定（入力が空なら移動）を使う。
+# コマンドの実行中（lazygit など）は目印を消し、herdr にペインを移らせる。nvim は起動時に自分で目印を書く。
+# nvim の :terminal の中の zsh（$NVIM がある）は、外側の nvim の目印を壊さないよう何もしない。
+if [[ $HERDR_ENV == 1 && -n $HERDR_PANE_ID && -z $NVIM ]]; then
+  zmodload -F zsh/files b:zf_rm b:zf_mkdir 2>/dev/null
+  _herdr_nav_marker="${XDG_CACHE_HOME:-$HOME/.cache}/herdr/nvim-panes/$HERDR_PANE_ID"
+  function _herdr_nav_claim() {
+    [[ -d ${_herdr_nav_marker:h} ]] || zf_mkdir -p ${_herdr_nav_marker:h}
+    print -r -- $$ >| $_herdr_nav_marker
+  }
+  function _herdr_nav_release() {
+    [[ -f $_herdr_nav_marker && "$(<$_herdr_nav_marker)" == $$ ]] && zf_rm -f $_herdr_nav_marker
+    return 0
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd _herdr_nav_claim
+  add-zsh-hook preexec _herdr_nav_release
+  add-zsh-hook zshexit _herdr_nav_release
+fi
 
 zle -N _navigate_left
 zle -N _navigate_right

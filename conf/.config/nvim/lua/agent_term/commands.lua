@@ -176,15 +176,15 @@ function M.setup()
 
   vim.api.nvim_create_user_command("AgentFork", function()
     agent_fork.open("AgentFork")
-  end, { desc = "Fork current Claude or Pi session into a new tmux pane with nvim" })
+  end, { desc = "Fork current Claude or Pi session into a new tmux or herdr pane with nvim" })
 
   vim.api.nvim_create_user_command("AgentClaudeFork", function()
     agent_fork.open("AgentClaudeFork", "claude")
-  end, { desc = "Fork current Claude session into a new tmux pane with nvim" })
+  end, { desc = "Fork current Claude session into a new tmux or herdr pane with nvim" })
 
   vim.api.nvim_create_user_command("AgentPiFork", function()
     agent_fork.open("AgentPiFork", "pi")
-  end, { desc = "Fork current Pi session into a new tmux pane with nvim" })
+  end, { desc = "Fork current Pi session into a new tmux or herdr pane with nvim" })
 
   vim.keymap.set("n", "<leader>ak", ":AgentFork<CR>", { desc = "AgentFork", noremap = true, silent = true })
 
@@ -200,10 +200,8 @@ function M.setup()
     -- 完了後の自動終了はしない（ユーザーが確認後にペインを閉じる）。
     local fork_prompt = "/log-ai-conversation"
     local inner = string.format("claude --resume %s --fork-session %s", session_id, vim.fn.shellescape(fork_prompt))
-    local cmd = string.format("tmux split-window -h -c %s %s", vim.fn.shellescape(cwd), vim.fn.shellescape(inner))
-    vim.fn.system(cmd)
-    if vim.v.shell_error ~= 0 then
-      vim.notify("[AgentClaudeLogConversation] Failed to open tmux pane", vim.log.levels.ERROR)
+    if not agent_fork.split_with_command(cwd, inner) then
+      vim.notify("[AgentClaudeLogConversation] Failed to open a tmux/herdr pane", vim.log.levels.ERROR)
       return
     end
     vim.notify("[AgentClaudeLogConversation] Forked log-ai-conversation into a new pane", vim.log.levels.INFO)

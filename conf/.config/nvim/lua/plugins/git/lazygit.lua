@@ -45,8 +45,41 @@ return {
       -- そうでなければ従来の Neovim フローティングウィンドウで lazygit を開く。
       -- ペイン分割等で Neovim の表示幅が狭くなるとフローティングの lazygit が
       -- 潰れて見えなくなるため、一定以下の幅では tmux ポップアップに逃げる。
+      -- herdr の中では、herdr のプラグイン（conf/.config/herdr/plugins/lazygit）でタブの上に重ねて開く（issue #351）。
+      -- 開くコマンドはすぐ戻るので、閉じて nvim に戻ってきたとき（FocusGained）に cwd を合わせる。
+      -- プラグインが入っていないなどで開けなければ、Neovim のフローティングウィンドウで開く。
+      local function open_lazygit_in_herdr_overlay()
+        vim.system({
+          "herdr",
+          "plugin",
+          "pane",
+          "open",
+          "--plugin",
+          "dotfiles.lazygit",
+          "--entrypoint",
+          "lazygit",
+          "--placement",
+          "overlay",
+          "--cwd",
+          vim.fn.getcwd(),
+          "--env",
+          "LAZYGIT_NEW_DIR_FILE=" .. lazygit_new_dir_file,
+          "--focus",
+        }, { text = true }, function(result)
+          vim.schedule(function()
+            if result.code ~= 0 then
+              vim.cmd("LazyGit")
+              return
+            end
+            vim.api.nvim_create_autocmd("FocusGained", { once = true, callback = sync_cwd_from_lazygit })
+          end)
+        end)
+      end
+
       _G.open_lazygit = function()
-        if vim.env.TMUX and vim.env.TMUX ~= "" and vim.o.columns < 120 then
+        if vim.env.HERDR_ENV == "1" and vim.o.columns < 120 then
+          open_lazygit_in_herdr_overlay()
+        elseif vim.env.TMUX and vim.env.TMUX ~= "" and vim.o.columns < 120 then
           local cwd = vim.fn.getcwd()
           local cmd = string.format("tmux display-popup -E -w 95%% -h 95%% -d %s lazygit", vim.fn.shellescape(cwd))
           vim.fn.system(cmd)

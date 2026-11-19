@@ -42,12 +42,72 @@ source, session_id = agent_fork.find_session("101", "pi", {
 assert_eq(source, "pi", "filtered source")
 assert_eq(session_id, "pi-session-id", "filtered session")
 
-local claude_command = agent_fork.build_split_command("claude", "claude-session-id", "/tmp/project dir")
-assert(claude_command:find("AgentClaude %-%-resume claude%-session%-id %-%-fork%-session"), "Claude fork command")
-assert(claude_command:find("tmux split%-window %-h"), "Claude tmux split")
+assert_eq(
+  agent_fork.build_agent_command("claude", "claude-session-id"),
+  "nvim +'AgentClaude --resume claude-session-id --fork-session'",
+  "Claude fork command"
+)
+assert_eq(
+  agent_fork.build_agent_command("pi", "pi-session-id"),
+  "nvim +'AgentPi --fork pi-session-id'",
+  "Pi fork command"
+)
 
-local pi_command = agent_fork.build_split_command("pi", "pi-session-id", "/tmp/project dir")
-assert(pi_command:find("AgentPi %-%-fork pi%-session%-id"), "Pi fork command")
-assert(pi_command:find("tmux split%-window %-h"), "Pi tmux split")
+-- split_with_command: 外側のマルチプレクサ（tmux / herdr）で右に分割し、コマンドを起動する
+local function recorder(responses)
+  local calls = {}
+  return calls,
+    function(argv)
+      table.insert(calls, argv)
+      return responses[#calls] or { code = 0, stdout = "" }
+    end
+end
+
+local function assert_calls(expected, actual, message)
+  if not vim.deep_equal(expected, actual) then
+    error(("%s\nexpected: %s\n  actual: %s"):format(message, vim.inspect(expected), vim.inspect(actual)))
+  end
+end
+
+-- tmux の中
+local calls, system = recorder({})
+local ok = agent_fork.split_with_command("/tmp/project dir", "nvim +'AgentPi --fork x'", {
+  env = { TMUX = "/tmp/tmux-501/default,1,0" },
+  system = system,
+})
+assert_eq(ok, true, "tmux split ok")
+assert_calls({
+  { "tmux", "split-window", "-h", "-c", "/tmp/project dir", "nvim +'AgentPi --fork x'" },
+}, calls, "tmux split")
+
+-- herdr の中: 分割 → シェルの起動待ち → コマンドを入力
+calls, system = recorder({
+  { code = 0, stdout = vim.json.encode({ result = { pane = { pane_id = "w1:p7" }, type = "pane_info" } }) },
+})
+ok = agent_fork.split_with_command("/tmp/project dir", "nvim +'AgentPi --fork x'", {
+  env = { HERDR_ENV = "1", HERDR_PANE_ID = "w1:p1" },
+  system = system,
+})
+assert_eq(ok, true, "herdr split ok")
+assert_calls({
+  { "herdr", "pane", "split", "w1:p1", "--direction", "right", "--cwd", "/tmp/project dir", "--focus" },
+  { "herdr", "pane", "wait-output", "w1:p7", "--regex", "\\S", "--source", "visible", "--timeout", "5000" },
+  { "herdr", "pane", "run", "w1:p7", "nvim +'AgentPi --fork x'" },
+}, calls, "herdr split")
+
+-- herdr の分割に失敗したら false
+calls, system = recorder({ { code = 1, stdout = "" } })
+ok = agent_fork.split_with_command("/tmp", "true", {
+  env = { HERDR_ENV = "1", HERDR_PANE_ID = "w1:p1" },
+  system = system,
+})
+assert_eq(ok, false, "herdr split failure")
+assert_eq(#calls, 1, "no run after failed split")
+
+-- どちらの中でもなければ false（何も実行しない）
+calls, system = recorder({})
+ok = agent_fork.split_with_command("/tmp", "true", { env = {}, system = system })
+assert_eq(ok, false, "outside multiplexer")
+assert_eq(#calls, 0, "nothing executed outside multiplexer")
 
 print("agent_term fork tests passed")

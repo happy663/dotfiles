@@ -15,6 +15,10 @@ local function collect_sinks()
   if rex.available() then
     table.insert(sinks, rex.new())
   end
+  local herdr = require("agent_term.outer.herdr")
+  if herdr.available() then
+    table.insert(sinks, herdr.new())
+  end
   return sinks
 end
 
