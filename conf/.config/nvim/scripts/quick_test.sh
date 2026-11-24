@@ -16,20 +16,21 @@ fi
 
 echo "✅ スクリプトファイル確認済み"
 
-# Pythonとplaywrightの確認
+# uvとplaywrightの確認
 echo "🔍 Python環境を確認中..."
 
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Python3 が見つかりません"
+if ! command -v uv &> /dev/null; then
+    echo "❌ uv が見つかりません"
+    echo "   インストール: Nix（home-manager/common.nix）で導入"
     exit 1
 fi
 
-echo "✅ Python3 確認済み"
+echo "✅ uv 確認済み"
 
-# Playwrightの確認
-if ! python3 -c "import playwright" 2>/dev/null; then
-    echo "❌ Playwright が見つかりません"
-    echo "   インストール: pip3 install playwright"
+# Playwrightの確認（Neovimと同じく uv run --script で依存を解決して import できるか）
+if ! uv run --script "$PERSISTENT_SCRIPT" --help &> /dev/null; then
+    echo "❌ Playwright を読み込めません"
+    echo "   確認: uv run --script $PERSISTENT_SCRIPT --help"
     exit 1
 fi
 
@@ -64,14 +65,14 @@ echo ""
 
 if [ ! -d "$SESSION_DIR" ]; then
     echo "1. 初回セットアップを実行:"
-    echo "   python3 $PERSISTENT_SCRIPT --setup"
+    echo "   uv run --script $PERSISTENT_SCRIPT --setup"
     echo ""
 fi
 
 echo "2. テスト画像をクリップボードにコピー"
 echo ""
 echo "3. 画像アップロードをテスト:"
-echo "   python3 $PERSISTENT_SCRIPT https://github.com/owner/repo/issues/123"
+echo "   uv run --script $PERSISTENT_SCRIPT https://github.com/owner/repo/issues/123"
 echo ""
 echo "4. neovimでの使用:"
 echo "   :GitHubImageUpload または <leader>gi"

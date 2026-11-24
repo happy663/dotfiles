@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12,<3.14"
+# dependencies = [
+#     # ~/Library/Caches/ms-playwright にある webkit-2182 に合わせて固定する
+#     "playwright==1.53.0",
+# ]
+# ///
 
 import asyncio
 import sys

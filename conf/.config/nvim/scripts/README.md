@@ -12,7 +12,7 @@ neovimからGitHub issueに画像を直接アップロードするためのツ�
 ## 📋 前提条件
 
 - **macOS**: Safari自動化機能が必要
-- **Python 3**: Playwrightライブラリが必要
+- **uv**: Nix で導入済み。Playwright などの Python 依存はスクリプト先頭の PEP 723 定義から uv が自動で用意する
 - **Safari**: リモート自動化設定が必要
 - **GitHub アカウント**: 対象リポジトリへのアクセス権限
 
@@ -21,11 +21,10 @@ neovimからGitHub issueに画像を直接アップロードするためのツ�
 ### 1. 依存関係のインストール
 
 ```bash
-# Python依存関係
-pip3 install playwright
+# Python依存関係: 不要（uv run --script 実行時にスクリプト内の定義から自動で入る）
 
-# Playwrightブラウザ
-playwright install webkit
+# Playwrightブラウザ（バージョンはスクリプト内の playwright 指定に合わせる）
+uv run --no-project --with playwright==1.53.0 playwright install webkit
 
 # 画像処理ツール
 brew install pngpaste
@@ -39,7 +38,7 @@ brew install pngpaste
 ### 3. 初回セットアップ
 
 ```bash
-python3 safari_persistent_upload.py --setup
+uv run --script safari_persistent_upload.py --setup
 ```
 
 ## 📖 使用方法
@@ -56,10 +55,10 @@ python3 safari_persistent_upload.py --setup
 
 ```bash
 # クリップボードから
-python3 safari_persistent_upload.py https://github.com/owner/repo/issues/123
+uv run --script safari_persistent_upload.py https://github.com/owner/repo/issues/123
 
 # ファイルから
-python3 safari_persistent_upload.py https://github.com/owner/repo/issues/123 --image /path/to/image.png
+uv run --script safari_persistent_upload.py https://github.com/owner/repo/issues/123 --image /path/to/image.png
 ```
 
 ## 🔧 トラブルシューティング
