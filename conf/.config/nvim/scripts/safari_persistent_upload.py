@@ -113,7 +113,7 @@ async def upload_image_to_github_issue(image_path, issue_url, user_data_dir):
             if login_check > 0:
                 print("❌ ログインセッションが切れています", file=sys.stderr)
                 print("   以下のコマンドで再ログインしてください:", file=sys.stderr)
-                print(f"   python3 {__file__} --setup", file=sys.stderr)
+                print(f"   uv run --script {__file__} --setup", file=sys.stderr)
                 await browser.close()
                 return None
             
