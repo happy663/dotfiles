@@ -81,7 +81,8 @@ function nvim-codex() {
 
 # _nvim_as - Rex の中では nvim を別名（argv0）で起動する
 #   Rex はタブで動くプロセスの argv0 でアイコンを選ぶ。Neovim 内でエージェントを動かすタブを
-#   エージェントのアイコンにするため、Rex の中（REX_SESSION があるとき）だけ名前を変える。
+#   エージェントのアイコンにするため、Rex の中だけ名前を変える。今の Rex は REX_BLOCK だけを
+#   渡すので、それで判定する（REX_SESSION は古い Rex 向け）。
 #   mise の shim は argv0 で起動するツールを選ぶため、shim 経由で名前を変えると claude 本体が
 #   起動してしまう。リンクをたどった実体が nvim のものだけを、絶対パスで起動する。
 #   実体が見つからなければ、名前は変えずに普通に起動する。
@@ -100,7 +101,7 @@ function _nvim_as() {
   local name="$1"
   shift
   local nvim_path
-  if [[ -n "$REX_SESSION" ]] && nvim_path="$(_nvim_real_path)"; then
+  if [[ -n "${REX_BLOCK:-$REX_SESSION}" ]] && nvim_path="$(_nvim_real_path)"; then
     ARGV0="$name" command "$nvim_path" "$@"
   else
     command nvim "$@"

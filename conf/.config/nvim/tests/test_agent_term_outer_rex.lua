@@ -70,15 +70,28 @@ test("new: report は id を付けて送り、clear はそのバッファの記�
   }, sent, "sent sequences")
 end)
 
-test("available: REX_SESSION があり nvim_ui_send が使えるときだけ真", function()
-  local saved = vim.env.REX_SESSION
+test("available: REX_BLOCK か REX_SESSION があり nvim_ui_send が使えるときだけ真", function()
+  local saved_block, saved_session = vim.env.REX_BLOCK, vim.env.REX_SESSION
+  local in_rex = vim.api.nvim_ui_send ~= nil
+
+  vim.env.REX_BLOCK = nil
   vim.env.REX_SESSION = nil
   assert_eq(false, rex.available(), "outside Rex")
+
+  vim.env.REX_BLOCK = ""
   vim.env.REX_SESSION = ""
-  assert_eq(false, rex.available(), "empty REX_SESSION")
+  assert_eq(false, rex.available(), "empty variables")
+
+  vim.env.REX_BLOCK = "block:test"
+  vim.env.REX_SESSION = nil
+  assert_eq(in_rex, rex.available(), "inside Rex (REX_BLOCK)")
+
+  vim.env.REX_BLOCK = nil
   vim.env.REX_SESSION = "session:test"
-  assert_eq(vim.api.nvim_ui_send ~= nil, rex.available(), "inside Rex")
-  vim.env.REX_SESSION = saved
+  assert_eq(in_rex, rex.available(), "inside Rex (REX_SESSION)")
+
+  vim.env.REX_BLOCK = saved_block
+  vim.env.REX_SESSION = saved_session
 end)
 
 print("ALL OK")

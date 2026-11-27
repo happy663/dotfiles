@@ -31,9 +31,14 @@ function M.encode(bufnr, pairs)
   return PREFIX .. table.concat(parts, ":") .. ST
 end
 
+local function present(value)
+  return value ~= nil and value ~= ""
+end
+
 -- Rex の中で、外側の端末へ書き出せるか
+-- 今の Rex は REX_BLOCK だけを渡す。REX_SESSION は古い Rex 向け。
 function M.available()
-  return vim.env.REX_SESSION ~= nil and vim.env.REX_SESSION ~= "" and vim.api.nvim_ui_send ~= nil
+  return (present(vim.env.REX_BLOCK) or present(vim.env.REX_SESSION)) and vim.api.nvim_ui_send ~= nil
 end
 
 -- opts.send: 転送に使う関数（既定: vim.api.nvim_ui_send）。テスト用

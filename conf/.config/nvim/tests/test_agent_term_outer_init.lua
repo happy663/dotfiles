@@ -31,6 +31,7 @@ local function autocmd_count(group, event)
 end
 
 test("setup: Rex の外（送り先なし）では何もしない", function()
+  vim.env.REX_BLOCK = nil
   vim.env.REX_SESSION = nil
   vim.o.title = false
   outer.setup()
@@ -41,7 +42,8 @@ test("setup: Rex の外（送り先なし）では何もしない", function()
 end)
 
 test("setup: Rex の中では状態の中継とタイトルを有効にする", function()
-  vim.env.REX_SESSION = "session:test"
+  vim.env.REX_BLOCK = "block:test"
+  vim.env.REX_SESSION = nil
   outer.setup()
 
   assert_eq(true, vim.o.title, "'title'")
@@ -50,6 +52,7 @@ test("setup: Rex の中では状態の中継とタイトルを有効にする", 
 end)
 
 test("setup: 送り先がなくなって呼び直したら止まる", function()
+  vim.env.REX_BLOCK = nil
   vim.env.REX_SESSION = nil
   outer.setup()
 
